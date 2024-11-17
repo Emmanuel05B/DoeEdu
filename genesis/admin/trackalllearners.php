@@ -102,8 +102,13 @@ if (!isset($_SESSION['email'])) {
                         <div class="column">
                           <div class="card">
                             <div class="card-text">
-                              <h3>ASD Level 1</h3>
+                              <h3>Grade 12</h3>
                               <p>Learners</p>
+                              <!-- Links Inside the Card -->
+                              <div>
+                                <a href="link1.html" class="btn btn-primary btn-block">Mathematics</a>
+                                <a href="link2.html" class="btn btn-primary btn-block">Physical Sciences</a>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -113,19 +118,31 @@ if (!isset($_SESSION['email'])) {
                         <div class="column">
                           <div class="card">
                             <div class="card-text">
-                              <h3>ASD Level 2</h3>
+                              <h3>Grade 11</h3>
                               <p>Learners</p>
+                              
+                              <!-- Links Inside the Card -->
+                              <div>
+                                <a href="link3.html" class="btn btn-primary btn-block">Mathematics</a>
+                                <a href="link4.html" class="btn btn-primary btn-block">Physical Sciences</a>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </a> 
+                      </a>
+
 
                       <a href="trackgradelearners.php?id=3" class="card-link">
                         <div class="column">
                           <div class="card">
                             <div class="card-text">
-                              <h3>ASD Level 3</h3>
+                              <h3>Grade 10</h3>
                               <p>Learners</p>
+                              <!-- Links Inside the Card -->
+                              <div>
+                                <a href="link5.html" class="btn btn-primary btn-block">Mathematics</a>
+                                <a href="link6.html" class="btn btn-primary btn-block">Physical Sciences</a>
+                              </div>
                             </div>
                           </div>
                         </div>
