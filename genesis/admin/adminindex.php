@@ -302,6 +302,7 @@ if (!isset($_SESSION['email'])) {
             </div>
           </div>
 
+          <!-- bar graph -->
           <div class="box box-solid bg-teal-gradient">
             <div class="box-header">
               <i class="fa fa-th"></i>

@@ -90,7 +90,7 @@ if (!isset($_SESSION['email'])) {
               <div class="card-header p-2">
                 <ul class="nav nav-pills">
                   <li class="nav-item"><a class="nav-link addprofile" href="#addprofile" data-toggle="tab">Add Profile</a></li>
-                <!--  <li class="nav-item"><a class="nav-link updateprofile" href="#updateprofile" data-toggle="tab">Update Profile</a></li> -->
+                  <li class="nav-item"><a class="nav-link updateprofile" href="#updateprofile" data-toggle="tab">Update Profile</a></li>
                   <li class="nav-item"><a class="nav-link deleteprofile" href="#deleteprofile" data-toggle="tab">Delete Profile</a></li>
                 </ul>
               </div><!-- /.card-header -->

@@ -40,10 +40,10 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
       
         <li><a href="adminindex.php"><i class="fa fa-circle-o"></i> Home</a></li>
           <li><a href="manegeprofiles.php"><i class="fa fa-circle-o"></i> Manege Profile</a></li>
-          <!--<li><a href="gradesreports.php"><i class="fa fa-circle-o"></i> Reports</a></li> -->
+          <li><a href="finances.php"><i class="fa fa-circle-o"></i> Finances</a></li> 
           <li><a href="trackingprogress.php"><i class="fa fa-circle-o"></i> Tracking and Analysis</a></li>
-          <li><a href="schedulemeeting.php"><i class="fa fa-circle-o"></i> Schedule Meeting</a></li>
-         <!--  <li><a href="manegedfgprograms.php"><i class="fa fa-circle-o"></i> Manege Programs</a></li> -->
+          <li><a href="schedulemeeting.php"><i class="fa fa-circle-o"></i> Communications</a></li>
+          
           
 
           <li><a href="logout.php"><i class="fa fa-circle-o"></i> Log out</a></li>
