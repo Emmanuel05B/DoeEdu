@@ -34,67 +34,56 @@ if (!isset($_SESSION['email'])) {
 
     <!-- Main content -->
     <section class="content">
-      <!-- Info boxes -->
+      <!-- Info boxes ----------------------------------------->
       <div class="row">
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box">
-            <span class="info-box-icon bg-aqua"><i class="ion ion-ios-gear-outline"></i></span>
-
-            <div class="info-box-content">
-              <span class="info-box-text">CPU Traffic</span>
-              <span class="info-box-number">90<small>%</small></span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-        </div>
-        <!-- /.col -->
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box">
-            <span class="info-box-icon bg-red"><i class="fa fa-google-plus"></i></span>
-
-            <div class="info-box-content">
-              <span class="info-box-text">Likes</span>
-              <span class="info-box-number">41,410</span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-        </div>
-        <!-- /.col -->
-
-        <!-- fix for small devices only -->
-        <div class="clearfix visible-sm-block"></div>
-
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box">
-            <span class="info-box-icon bg-green"><i class="ion ion-ios-cart-outline"></i></span>
-
-            <div class="info-box-content">
-              <span class="info-box-text">Sales</span>
-              <span class="info-box-number">760</span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-        </div>
-        <!-- /.col -->
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box">
-            <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
-
-            <div class="info-box-content">
-              <span class="info-box-text">New Members</span>
-              <span class="info-box-number">2,000</span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-        </div>
-        <!-- /.col -->
+  <!-- Financial Balance -->
+  <div class="col-md-3 col-sm-6 col-xs-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-aqua"><i class="fa fa-balance-scale"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Financial Balance</span>
+        <span class="info-box-number">R 2500</span>
       </div>
+    </div>
+  </div>
+
+  <!-- Debts -->
+  <div class="col-md-3 col-sm-6 col-xs-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-red"><i class="fa fa-credit-card"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Debts</span>
+        <span class="info-box-number">41,410</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Amount Due to Us -->
+  <div class="col-md-3 col-sm-6 col-xs-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-green"><i class="fa fa-dollar"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Amount Due to Us</span>
+        <span class="info-box-number">760</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Amount Used -->
+  <div class="col-md-3 col-sm-6 col-xs-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-yellow"><i class="fa fa-money"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Amount Used</span>
+        <span class="info-box-number">2,000</span>
+      </div>
+    </div>
+  </div>
+</div>
+
       <!-- /.row -->
 
+      <!-- monthly recap ----------------------------------------->
       <div class="row">
         <div class="col-md-12">
           <div class="box">
@@ -228,12 +217,10 @@ if (!isset($_SESSION['email'])) {
       </div>
       <!-- /.row -->
 
-      <!-- Main row -->
+      <!-- Main row LATEST ORDERS------------------------------------->
       <div class="row">
         <!-- Left col -->
         <div class="col-md-8">
-        
-         
 
           <!-- TABLE: LATEST ORDERS -->
           <div class="box box-info">
@@ -406,7 +393,8 @@ if (!isset($_SESSION['email'])) {
       </div>
       <!-- /.row -->
     </section>
-    <!-- Main content table-->
+
+    <!-- Main content table--------------------------------------------->
     <section class="content">
       <div class="row">
         <div class="col-xs-12">
@@ -693,7 +681,6 @@ if (!isset($_SESSION['email'])) {
 <script src="dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
-
 <!-- Sparkline -->
 <script src="bower_components/jquery-sparkline/dist/jquery.sparkline.min.js"></script>
 <!-- jvectormap  -->
