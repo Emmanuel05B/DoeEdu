@@ -10,6 +10,11 @@ if (!isset($_SESSION['email'])) {
 }
 ?>
 <?php include("adminpartials/head.php"); ?>
+
+<style>
+
+</style>
+
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
   <!-- Left side column. contains the logo and sidebar -->
@@ -216,50 +221,48 @@ if (!isset($_SESSION['email'])) {
       <!-- /.row -->
 
       <!-- Main row ------------------------------------->
-        <div class="row">
-           <div class="col-md-3 col-sm-6 col-xs-12">
-            <!-- Direct Messages Block -->
-                <button class="btn btn-info btn-block">
-                    <div>
-                    <h4>On Contract--Owing</h4>
-                    <p><strong>20</strong></p>
-                   
-                    </div>
-                </button>
-            </div>
+    <div class="row">
+      <div class="col-md-3 col-sm-6 col-xs-12">
+          <!-- Direct Messages Block -->
+          <a href="status.php?val=<?php echo 1 ?>" style="display: block; text-decoration: none; padding: 10px; color: #fff; text-align: center; border-radius: 5px; margin-bottom: 15px; background-color: #17a2b8; transition: transform 0.3s ease, background-color 0.3s ease;">
+              <div>
+                  <h4>On Contract--Owing</h4>
+                  <p><strong>20</strong></p>
+              </div>
+          </a>
+      </div>
 
-            <div class="col-md-3 col-sm-6 col-xs-12">
-            <!-- Mentions Block -->
-            <button class="btn btn-success btn-block">
-                <div>
-                <h4>On Contract--Not Owing</h4>
-                <p><strong>10</strong></p>
-                </div>
-            </button>
-            </div>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+          <!-- Mentions Block -->
+          <a href="status.php?val=<?php echo 2  ?>" style="display: block; text-decoration: none; padding: 10px; color: #fff; text-align: center; border-radius: 5px; margin-bottom: 15px; background-color: #28a745; transition: transform 0.3s ease, background-color 0.3s ease;">
+              <div>
+                  <h4>On Contract--Not Owing</h4>
+                  <p><strong>10</strong></p>
+              </div>
+          </a>
+      </div>
 
-            <div class="col-md-3 col-sm-6 col-xs-12">
-            <!-- Inventory Block -->
-            <button class="btn btn-warning btn-block">
-                <div>
-                <h4>Expired Contract--Not Owing</h4>
-                <p><strong>7</strong></p>
-                </div>
-            </button>
-            </div>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+          <!-- Inventory Block -->
+          <a href="status.php?val=<?php echo 3 ?>" style="display: block; text-decoration: none; padding: 10px; color: #fff; text-align: center; border-radius: 5px; margin-bottom: 15px; background-color: #ffc107; transition: transform 0.3s ease, background-color 0.3s ease;">
+              <div>
+                  <h4>Expired Contract--Not Owing</h4>
+                  <p><strong>7</strong></p>
+              </div>
+          </a>
+      </div>
 
-            <div class="col-md-3 col-sm-6 col-xs-12">
-            <!-- Downloads Block -->
-            <button class="btn btn-danger btn-block">
-                <div>
-                <h4>Expired Contract--Owing</h4>
-                <p><strong>15</strong></p>
-                </div>
-            </button>
-            </div>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+          <!-- Downloads Block -->
+          <a href="status.php?val=<?php echo 4 ?>" style="display: block; text-decoration: none; padding: 10px; color: #fff; text-align: center; border-radius: 5px; margin-bottom: 15px; background-color: #dc3545; transition: transform 0.3s ease, background-color 0.3s ease;">
+              <div>
+                  <h4>Expired Contract--Owing</h4>
+                  <p><strong>15</strong></p>
+              </div>
+          </a>
+      </div>
+    </div>
 
-            
-        </div>
 
       <!-- /.row -->
     </section>
