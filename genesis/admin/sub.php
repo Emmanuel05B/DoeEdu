@@ -103,6 +103,7 @@ if (!isset($_SESSION['email'])) {
                   <th>Surname</th>
                   <th>Gender</th>
                   <th>Progess</th>
+                  <th>Marks</th>
                   <th>More</th>
                   
                 </tr>
@@ -122,17 +123,26 @@ if (!isset($_SESSION['email'])) {
                   <td><?php echo $final['JF'] ?></td>
         
                   <td>
-                      <p><a class="button" href="tracklearnerprogress.php?id=<?php echo $final['Name'] ?>" 
-                        style="display: inline-block; padding: 3px 7px; color: white; background-color: #007bff; text-align: center">
+                      <p><a href="tracklearnerprogress.php?id=<?php echo $final['Name'] ?>" 
+                        style="display: inline-block; padding: 2px 2px; color: white; background-color: #007bff; text-align: center">
                         Track Progress</a>
                       </p>
                       </td>
+
                       <td>
-                      <p><a class="button" href="learnerprofile.php?id=<?php echo $final['Surname'] ?>" 
-                        style="display: inline-block; padding: 3px 7px; color: white; background-color: #007bff; text-align: center">
+                      <p><a href="learnerprofile.php?id=<?php echo $final['Surname'] ?>" 
+                        style="display: inline-block; padding: 2px 2px; color: white; background-color: #007bff; text-align: center">
+                        Record Marks</a>
+                      </p>
+                      </td>
+
+                      <td>
+                      <p><a href="learnerprofile.php?id=<?php echo $final['Surname'] ?>" 
+                        style="display: inline-block; padding: 2px 2px; color: white; background-color: #007bff; text-align: center">
                         Open Profile</a>
                       </p>
                       </td>
+
                 
 
                 </tr>
@@ -145,6 +155,7 @@ if (!isset($_SESSION['email'])) {
                   <th>Surname</th>
                   <th>Gender</th>
                   <th>Progess</th>
+                  <th>Marks</th>
                   <th>More</th>
                   
                 </tr>
