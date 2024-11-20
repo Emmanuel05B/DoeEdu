@@ -55,58 +55,58 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="#" class="btn btn-block btn-info btn-lg">Momentum and impulse</a>
+                    <a href="recmodal.php?gra=12&sub=2&cha=11" class="btn btn-block btn-info btn-lg">Momentum and impulse</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-warning btn-lg">Work energy and power</a>
+                    <a href="recmodal.php?gra=12&sub=2&cha=21" class="btn btn-block btn-warning btn-lg">Work energy and power</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-success btn-lg">Chemical equilibrium</a>
+                    <a href="recmodal.php?gra=12&sub=2&cha=31" class="btn btn-block btn-success btn-lg">Chemical equilibrium</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-primary btn-lg">Optical phenomena and properties of matter</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <a href="#" class="btn btn-block btn-info btn-lg">Vertical projectile motion in one dimension</a>
-                  </td>
-                  <td>
-                    <a href="#" class="btn btn-block btn-warning btn-lg">Doppler effect</a>
-                  </td>
-                  <td>
-                    <a href="#" class="btn btn-block btn-success btn-lg">Acids and bases</a>
-                  </td>
-                  <td>
-                    <a href="#" class="btn btn-block btn-primary btn-lg">Electrochemical reactions</a>
+                    <a href="recmodal.php?gra=12&sub=2&cha=41" class="btn btn-block btn-primary btn-lg">Optical phenomena and properties of matter</a>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <a href="#" class="btn btn-block btn-info btn-lg">Organic Chemistry</a>
+                    <a href="recmodal.php?gra=12&sub=2&cha=12" class="btn btn-block btn-info btn-lg">Vertical projectile motion in one dimension</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-warning btn-lg">Rate and extent of reaction</a>
+                    <a href="recmodal.php?gra=12&sub=2&cha=22" class="btn btn-block btn-warning btn-lg">Doppler effect</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-success btn-lg">Electric circuits</a>
+                    <a href="recmodal.php?gra=12&sub=2&cha=32" class="btn btn-block btn-success btn-lg">Acids and bases</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-primary btn-lg">The chemical industry</a>
+                    <a href="recmodal.php?gra=12&sub=2&cha=42" class="btn btn-block btn-primary btn-lg">Electrochemical reactions</a>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <a href="#" class="btn btn-block btn-info btn-lg">a</a>
+                    <a href="recmodal.php?gra=12&sub=2&cha=13" class="btn btn-block btn-info btn-lg">Organic Chemistry</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-warning btn-lg">b</a>
+                    <a href="recmodal.php?gra=12&sub=2&cha=23" class="btn btn-block btn-warning btn-lg">Rate and extent of reaction</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-success btn-lg">c</a>
+                    <a href="recmodal.php?gra=12&sub=2&cha=33" class="btn btn-block btn-success btn-lg">Electric circuits</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-primary btn-lg">d</a>
+                    <a href="recmodal.php?gra=12&sub=2&cha=43" class="btn btn-block btn-primary btn-lg">The chemical industry</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="#recmodal.php?gra=12&sub=2&cha=14" class="btn btn-block btn-info btn-lg">a</a>
+                  </td>
+                  <td>
+                    <a href="#recmodal.php?gra=12&sub=2&cha=24" class="btn btn-block btn-warning btn-lg">b</a>
+                  </td>
+                  <td>
+                    <a href="#recmodal.php?gra=12&sub=2&cha=34" class="btn btn-block btn-success btn-lg">c</a>
+                  </td>
+                  <td>
+                    <a href="#recmodal.php?gra=12&sub=2&cha=44" class="btn btn-block btn-primary btn-lg">d</a>
                   </td>
                 </tr>
               </table>

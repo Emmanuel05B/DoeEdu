@@ -95,7 +95,7 @@ if (!isset($_SESSION['email'])) {
               <div class="tab-content">
                 <!-- /.tab-pane -->
                 <div class="active tab-pane" id="addprofile">
-                  <h3>Categories</h3>   
+                  <h3>Record Marks</h3>   
                   <div class="pos">
                     <div class="row">
                       <a href="trackgradelearners.php?id=1" class="card-link">
@@ -106,8 +106,8 @@ if (!isset($_SESSION['email'])) {
                               <p>Learners</p>
                               <!-- Links Inside the Card -->
                               <div>
-                                <a href="recmodal.php?gra=12&sub=1" class="btn btn-primary btn-block">Mathematics</a>
-                                <a href="recmodal.php?gra=12&sub=2" class="btn btn-primary btn-block">Physical Sciences</a>
+                                <a href="maths12.php" class="btn btn-primary btn-block">Mathematics</a>
+                                <a href="physics12.php" class="btn btn-primary btn-block">Physical Sciences</a>
                               </div>
                             </div>
                           </div>

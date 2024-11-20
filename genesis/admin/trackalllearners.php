@@ -95,7 +95,7 @@ if (!isset($_SESSION['email'])) {
               <div class="tab-content">
                 <!-- /.tab-pane -->
                 <div class="active tab-pane" id="addprofile">
-                  <h3>Groups</h3>   
+                  <h3>Tracking Progress</h3>   
                   <div class="pos">
                     <div class="row">
                       <a href="trackgradelearners.php?id=1" class="card-link">

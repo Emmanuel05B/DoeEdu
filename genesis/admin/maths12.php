@@ -55,58 +55,58 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="#" class="btn btn-block btn-info btn-lg">Sequences & Series</a>
+                    <a href="recmodal.php?gra=12&sub=1&cha=11" class="btn btn-block btn-info btn-lg">Sequences & Series</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-warning btn-lg">Financial Mathematics</a>
+                    <a href="recmodal.php?gra=12&sub=1&cha=21" class="btn btn-block btn-warning btn-lg">Financial Mathematics</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-success btn-lg">Statistics</a>
+                    <a href="recmodal.php?gra=12&sub=1&cha=31" class="btn btn-block btn-success btn-lg">Statistics</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-primary btn-lg">3D Trigonometry...</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <a href="#" class="btn btn-block btn-info btn-lg">Trigonometry</a>
-                  </td>
-                  <td>
-                    <a href="#" class="btn btn-block btn-warning btn-lg">Differential Calculus</a>
-                  </td>
-                  <td>
-                    <a href="#" class="btn btn-block btn-success btn-lg">Probability</a>
-                  </td>
-                  <td>
-                    <a href="#" class="btn btn-block btn-primary btn-lg">Measurement</a>
+                    <a href="recmodal.php?gra=12&sub=1&cha=41" class="btn btn-block btn-primary btn-lg">3D Trigonometry...</a>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <a href="#" class="btn btn-block btn-info btn-lg">Functions</a>
+                    <a href="recmodal.php?gra=12&sub=1&cha=12" class="btn btn-block btn-info btn-lg">Trigonometry</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-warning btn-lg">Analytical Geometry</a>
+                    <a href="recmodal.php?gra=12&sub=1&cha=22" class="btn btn-block btn-warning btn-lg">Differential Calculus</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-success btn-lg">Euclidean geometry</a>
+                    <a href="recmodal.php?gra=12&sub=1&cha=32" class="btn btn-block btn-success btn-lg">Probability</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-primary btn-lg">Calculas Application...</a>
+                    <a href="recmodal.php?gra=12&sub=1&cha=42" class="btn btn-block btn-primary btn-lg">Measurement</a>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <a href="#" class="btn btn-block btn-info btn-lg">Inverse Graphs and Log Functions</a>
+                    <a href="recmodal.php?gra=12&sub=1&cha=13" class="btn btn-block btn-info btn-lg">Functions</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-warning btn-lg">...</a>
+                    <a href="recmodal.php?gra=12&sub=1&cha=23" class="btn btn-block btn-warning btn-lg">Analytical Geometry</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-success btn-lg">...</a>
+                    <a href="recmodal.php?gra=12&sub=1&cha=33" class="btn btn-block btn-success btn-lg">Euclidean geometry</a>
                   </td>
                   <td>
-                    <a href="#" class="btn btn-block btn-primary btn-lg">4</a>
+                    <a href="recmodal.php?gra=12&sub=1&cha=43" class="btn btn-block btn-primary btn-lg">Calculas Application...</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="recmodal.php?gra=12&sub=1&cha=14" class="btn btn-block btn-info btn-lg">Inverse Graphs and Log Functions</a>
+                  </td>
+                  <td>
+                    <a href="#recmodal.php?gra=12&sub=1&cha=24" class="btn btn-block btn-warning btn-lg">...</a>
+                  </td>
+                  <td>
+                    <a href="#recmodal.php?gra=12&sub=1&cha=34" class="btn btn-block btn-success btn-lg">...</a>
+                  </td>
+                  <td>
+                    <a href="#recmodal.php?gra=12&sub=1&cha=44" class="btn btn-block btn-primary btn-lg">4</a>
                   </td>
                 </tr>
               </table>

@@ -107,8 +107,8 @@ if (!isset($_SESSION['email'])) {
                               </td>
 
                               <td>
-                                <p><a href="learnerprofile.php?id=<?php echo $final['ActivityName'] ?>" 
-                                    style="display: inline-block; padding: 2px 2px; color: white; background-color: #007bff; text-align: center">
+                                <p><a href="learnerprofile.php?id=<?php echo $final['ActivityName'] ?>" class="btn btn-block btn-primary"
+                                    >
                                     Open</a>
                                 </p>
                             </td>
