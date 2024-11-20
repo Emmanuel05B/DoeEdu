@@ -58,8 +58,8 @@ if (!isset($_SESSION['email'])) {
 
     <?php
     include('../partials/connect.php');
-        $parentId = $_GET['pid'];
-        $learnerId = $_GET['lid'];
+        $grade = $_GET['gra'];
+        $subject = $_GET['sub'];
     ?>
             
 
@@ -77,13 +77,13 @@ if (!isset($_SESSION['email'])) {
               </div>
               <div class="modal-body">
                 
-                <form action="class.php" method="post">
+                <form action="modalhandler.php" method="post">
 
                     <table>
                         <thead>
                             <tr>
                                 <th rowspan="2">Nr</th>
-                                <th rowspan="2">Assessment Items</th>
+                                <th rowspan="2">Labels</th>
                                 <th colspan="5">Fill</th>
                             </tr>
                            
@@ -92,10 +92,10 @@ if (!isset($_SESSION['email'])) {
                         
                         <tr>
                         <td>1</td>
-                            <td>Provide the name of the Activity</td>
-                            <td><input type="text" name="activityname" pattern="[A-Za-z]+" title="Only letters are allowed"></td>
-                            <input type="hidden" id="urlParams" name="parentid" value="<?php echo $parentId ?>">
-                            <input type="hidden" id="urlParams" name="learnerid" value="<?php echo $learnerId ?>">
+                            <td>Provide the name of the activity</td>
+                            <td><input type="text" name="activityname" ></td>
+                            <input type="hidden" id="urlParams" name="graid" value="<?php echo $grade ?>">
+                            <input type="hidden" id="urlParams" name="subid" value="<?php echo $subject ?>">
                         </tr>
                        
                         <tr>

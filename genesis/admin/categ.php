@@ -106,8 +106,8 @@ if (!isset($_SESSION['email'])) {
                               <p>Learners</p>
                               <!-- Links Inside the Card -->
                               <div>
-                                <a href="recmodal.php?val=<?php echo 1 ?>" class="btn btn-primary btn-block">Mathematics</a>
-                                <a href="recmodal.php?val=<?php echo 2 ?>" class="btn btn-primary btn-block">Physical Sciences</a>
+                                <a href="recmodal.php?gra=12&sub=1" class="btn btn-primary btn-block">Mathematics</a>
+                                <a href="recmodal.php?gra=12&sub=2" class="btn btn-primary btn-block">Physical Sciences</a>
                               </div>
                             </div>
                           </div>
@@ -123,8 +123,8 @@ if (!isset($_SESSION['email'])) {
                               
                               <!-- Links Inside the Card -->
                               <div>
-                                <a href="recmodal.php?val=<?php echo 3 ?>" class="btn btn-primary btn-block">Mathematics</a>
-                                <a href="recmodal.php?val=<?php echo 4 ?>" class="btn btn-primary btn-block">Physical Sciences</a>
+                                <a href="recmodal.php?gra=11&sub=1" class="btn btn-primary btn-block">Mathematics</a>
+                                <a href="recmodal.php?gra=11&sub=2" class="btn btn-primary btn-block">Physical Sciences</a>
                               </div>
                             </div>
                           </div>
@@ -140,8 +140,8 @@ if (!isset($_SESSION['email'])) {
                               <p>Learners</p>
                               <!-- Links Inside the Card -->
                               <div>
-                                <a href="recmodal.php?val=<?php echo 5 ?>" class="btn btn-primary btn-block">Mathematics</a>
-                                <a href="recmodal.php?val=<?php echo 6 ?>" class="btn btn-primary btn-block">Physical Sciences</a>
+                                <a href="recmodal.php?gra=10&sub=1" class="btn btn-primary btn-block">Mathematics</a>
+                                <a href="recmodal.php?gra=10&sub=2" class="btn btn-primary btn-block">Physical Sciences</a>
                               </div>
                             </div>
                           </div>
