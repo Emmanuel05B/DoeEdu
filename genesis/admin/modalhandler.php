@@ -57,7 +57,7 @@ $insertStmt = $connect->prepare("INSERT INTO activity
 
 // Execute the prepared statement
 if ($insertStmt->execute()) {
-    header("Location: class.php?lid=$graid&pid=$subid");
+    header("Location: class.php?gid=$graid&sid=$subid");
 
     exit(); 
 } else {

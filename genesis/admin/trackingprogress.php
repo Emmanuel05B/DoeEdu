@@ -65,7 +65,7 @@ if (!isset($_SESSION['email'])) {
                               <a href="trackalllearners.php" >
                               <div class="small-box bg-aqua">
                                 <div class="inner">
-                                  <h4>Track learner Progress ..........+......... Record Marks</h4>
+                                  <h4>Track learner Progress</h4>
                               </div>
                             </div>
                             <div class="pos">
