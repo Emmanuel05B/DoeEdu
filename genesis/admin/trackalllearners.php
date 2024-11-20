@@ -106,8 +106,8 @@ if (!isset($_SESSION['email'])) {
                               <p>Learners</p>
                               <!-- Links Inside the Card -->
                               <div>
-                                <a href="link1.html" class="btn btn-primary btn-block">Mathematics</a>
-                                <a href="link2.html" class="btn btn-primary btn-block">Physical Sciences</a>
+                                <a href="sub.php?val=<?php echo 1 ?>" class="btn btn-primary btn-block">Mathematics</a>
+                                <a href="sub.php?val=<?php echo 2 ?>" class="btn btn-primary btn-block">Physical Sciences</a>
                               </div>
                             </div>
                           </div>
@@ -123,8 +123,8 @@ if (!isset($_SESSION['email'])) {
                               
                               <!-- Links Inside the Card -->
                               <div>
-                                <a href="link3.html" class="btn btn-primary btn-block">Mathematics</a>
-                                <a href="link4.html" class="btn btn-primary btn-block">Physical Sciences</a>
+                                <a href="sub.php?val=<?php echo 3 ?>" class="btn btn-primary btn-block">Mathematics</a>
+                                <a href="sub.php?val=<?php echo 4 ?>" class="btn btn-primary btn-block">Physical Sciences</a>
                               </div>
                             </div>
                           </div>
@@ -140,8 +140,8 @@ if (!isset($_SESSION['email'])) {
                               <p>Learners</p>
                               <!-- Links Inside the Card -->
                               <div>
-                                <a href="link5.html" class="btn btn-primary btn-block">Mathematics</a>
-                                <a href="link6.html" class="btn btn-primary btn-block">Physical Sciences</a>
+                                <a href="sub.php?val=<?php echo 5 ?>" class="btn btn-primary btn-block">Mathematics</a>
+                                <a href="sub.php?val=<?php echo 6 ?>" class="btn btn-primary btn-block">Physical Sciences</a>
                               </div>
                             </div>
                           </div>
