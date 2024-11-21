@@ -103,10 +103,10 @@ if (!isset($_SESSION['email'])) {
                     <a href="#recmodal.php?gra=11&sub=2&cha=24" class="btn btn-block btn-warning btn-lg">b</a>
                   </td>
                   <td>
-                    <a href="#recmodal.php?gra=11&sub=2&cha=34" class="btn btn-block btn-success btn-lg">Types of reactions</a>
+                    <a href="recmodal.php?gra=11&sub=2&cha=34" class="btn btn-block btn-success btn-lg">Types of reactions</a>
                   </td>
                   <td>
-                    <a href="#recmodal.php?gra=11&sub=2&cha=44" class="btn btn-block btn-primary btn-lg">The lithosphere</a>
+                    <a href="recmodal.php?gra=11&sub=2&cha=44" class="btn btn-block btn-primary btn-lg">The lithosphere</a>
                   </td>
                 </tr>
               </table>

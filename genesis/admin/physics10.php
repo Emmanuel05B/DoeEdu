@@ -69,7 +69,7 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=2&cha=12" class="btn btn-block btn-info btn-lg">States of matter and the kinetic molecular theory</a>
+                    <a href="recmodal.php?gra=10&sub=2&cha=12" class="btn btn-block btn-info btn-lg">States of matter and kinetic theory</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=10&sub=2&cha=22" class="btn btn-block btn-warning btn-lg">Transverse pulses</a>
@@ -89,7 +89,7 @@ if (!isset($_SESSION['email'])) {
                     <a href="recmodal.php?gra=10&sub=2&cha=23" class="btn btn-block btn-warning btn-lg">Transverse waves</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=2&cha=33" class="btn btn-block btn-success btn-lg">The particles that substances are made of</a>
+                    <a href="recmodal.php?gra=10&sub=2&cha=33" class="btn btn-block btn-success btn-lg">Particles that make up substances</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=10&sub=2&cha=43" class="btn btn-block btn-primary btn-lg">Electrostatics</a>

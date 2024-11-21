@@ -123,8 +123,8 @@ if (!isset($_SESSION['email'])) {
                               
                               <!-- Links Inside the Card -->
                               <div>
-                                <a href="recmodal.php?gra=11&sub=1" class="btn btn-primary btn-block">Mathematics</a>
-                                <a href="recmodal.php?gra=11&sub=2" class="btn btn-primary btn-block">Physical Sciences</a>
+                                <a href="maths11.php" class="btn btn-primary btn-block">Mathematics</a>
+                                <a href="physics11.php" class="btn btn-primary btn-block">Physical Sciences</a>
                               </div>
                             </div>
                           </div>
@@ -140,8 +140,8 @@ if (!isset($_SESSION['email'])) {
                               <p>Learners</p>
                               <!-- Links Inside the Card -->
                               <div>
-                                <a href="recmodal.php?gra=10&sub=1" class="btn btn-primary btn-block">Mathematics</a>
-                                <a href="recmodal.php?gra=10&sub=2" class="btn btn-primary btn-block">Physical Sciences</a>
+                                <a href="maths10.php" class="btn btn-primary btn-block">Mathematics</a>
+                                <a href="physics10.php" class="btn btn-primary btn-block">Physical Sciences</a>
                               </div>
                             </div>
                           </div>
