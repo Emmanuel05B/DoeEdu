@@ -1,5 +1,5 @@
 <?php
-session_start();
+session_start();  // Ensure session is started before any output
 
 if (!isset($_SESSION['email'])) {
     header("Location: ../common/login.php");
@@ -16,7 +16,7 @@ require '../../vendor/autoload.php';
 include '../partials/Connect.php';
 
 $errors = [];
-$name = $email = $password = '';
+$name = $email = $surname = $contactnumber = $grade = '';
 
 if (isset($_POST['reg'])) {
     // Capture form data
@@ -30,7 +30,7 @@ if (isset($_POST['reg'])) {
     $subjects = $_POST['subjects']; // Array to hold subject and duration details
 
     // Validation
-    if (empty($name) || empty($email) || empty($password) || empty($surname) || empty($contactnumber)) {
+    if (empty($name) || empty($email) || empty($surname) || empty($contactnumber)) {
         $errors[] = "All fields are required.";
     }
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -50,8 +50,11 @@ if (isset($_POST['reg'])) {
         $_SESSION['subjects'] = $subjects;
 
         // Redirect to the next part of the form
-        header("Location: addlearnersecondpart.php"); // Replace with the actual next part URL
+        header("Location: addlearnersecondpart.php");
         exit();
+    } else {
+        // Handle errors if any
+        // Optionally, you can display the errors
     }
 }
 ?>
@@ -126,21 +129,88 @@ if (isset($_POST['reg'])) {
     <div class="content-wrapper">
       <section class="content">
 
-        <form action="addteacher.php" method="POST">
+        <form action="addlearner.php" method="POST">
           <div class="pos">
             <h4>Registering Learner</h4>
           </div>
 
-          <!-- Learner Info -->
-          <h4>Learner Info:</h4>
+         <!-- Perfomace -->
+          <!-- Performance -->
+<h4>Select current level and target level:</h4>
+<table class="subject-table">
+  <thead>
+    <tr>
+      <th>Subject</th>
+      <th>Current Level (1 - 7)</th>
+      <th>Target Level (3 - 7)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="subject-name">Mathematics</td>
+      <td class="subject-options">
+        <select name="subjects[maths][current]" class="form-control">
+          <option value="0">Select Level</option> <!-- Added 0 as default -->
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+        </select>
+      </td>
+      <td class="subject-options">
+        <select name="subjects[maths][target]" class="form-control">
+         <option value="0">Select Target</option> <!-- Added 0 as default -->
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td class="subject-name">Physical Sciences</td>
+      <td class="subject-options">
+        <select name="subjects[physics][current]" class="form-control">
+        <option value="0">Select Level</option> <!-- Added 0 as default -->
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+        </select>
+      </td>
+      <td class="subject-options">
+        <select name="subjects[physics][target]" class="form-control">
+        <option value="0">Select Target</option> <!-- Added 0 as default -->
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+        </select>
+      </td>
+    </tr>
+    <!-- Add more subjects as needed -->
+  </tbody>
+</table><br>
+
+
+          <!-- Parent Info -->
+          <h4>Parent Info:</h4>
           <div class="form-row">
             <div class="form-group col-md-6">
-              <label for="name">First Names</label>
-              <input type="text" class="form-control" id="name" name="name" placeholder="Names" required>
+              <label for="parentname">First Names</label>
+              <input type="text" class="form-control" id="parentname" name="parentname" placeholder="Names" value="">
             </div>
             <div class="form-group col-md-6">
               <label for="surname">Surname</label>
-              <input type="text" class="form-control" id="surname" name="surname" placeholder="Surname" required>
+              <input type="text" class="form-control" id="surname" name="surname" placeholder="Surname" value="">
             </div>
           </div>
 
@@ -148,56 +218,30 @@ if (isset($_POST['reg'])) {
           <div class="form-row">
             <div class="form-group col-md-6">
               <label for="email">Email</label>
-              <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+              <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="">
             </div>
           </div>
-          <div class="form-group col-md-6">
-              <label for="grade">Grade</label>
-              <select type="text" id="grade" name="grade" class="form-control">
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-              </select>
-            </div>
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label for="contactnumber">Contact Number (10 digits):</label>
-              <input type="tel" class="form-control" id="contactnumber" name="contactnumber" pattern="[0-9]{10}" maxlength="10" required>
-            </div>
-           
-          </div>
-          
 
-          <!-- Subject Selection -->
-          <h4>Select Subjects and Duration:</h4>
-          <table class="subject-table">
-            <thead>
-              <tr>
-                <th>Subject</th>
-                <th>Not Registered</th>
-                <th>3 Months</th>
-                <th>6 Months</th>
-                <th>12 Months</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="subject-name">Maths</td>
-                <td class="subject-options"><input type="radio" name="subjects[maths]" value="0" checked></td>
-                <td class="subject-options"><input type="radio" name="subjects[maths]" value="3"></td>
-                <td class="subject-options"><input type="radio" name="subjects[maths]" value="6"></td>
-                <td class="subject-options"><input type="radio" name="subjects[maths]" value="12"></td>
-              </tr>
-              <tr>
-                <td class="subject-name">Physics</td>
-                <td class="subject-options"><input type="radio" name="subjects[physics]" value="0" checked></td>
-                <td class="subject-options"><input type="radio" name="subjects[physics]" value="3"></td>
-                <td class="subject-options"><input type="radio" name="subjects[physics]" value="6"></td>
-                <td class="subject-options"><input type="radio" name="subjects[physics]" value="12"></td>
-              </tr>
-              <!-- Add more subjects as needed -->
-            </tbody>
-          </table>
+          <div class="form-row">
+           <div class="form-row">
+           <div class="form-group col-md-6">
+                   <div class="form-group col-md-6">
+                   <label for="contactnumber">Contact Number (10 digits):</label>
+                   <input type="tel" class="form-control" id="contactnumber" name="contactnumber" pattern="[0-9]{10}" maxlength="10" value="" required>
+                   </div>
+                   <div class="form-group col-md-6">
+                   <label for="title">Title</label>
+                    <select type="text" id="grade" name="grade" class="form-control">
+                     <option value="Mr">Mr</option>
+                     <option value="Mrs">Mrs</option>
+                     <option value="Ms">Ms</option>
+                    </select>
+                   </div>
+            </div>
+           </div>
+          </div>
+
+        
           <button type="submit" class="registerbtn" name="reg">Register Learner</button>
         </form>
 

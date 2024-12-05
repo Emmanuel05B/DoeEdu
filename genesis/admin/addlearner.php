@@ -1,5 +1,5 @@
 <?php
-session_start();
+session_start();  // Make sure session is started before any output
 
 if (!isset($_SESSION['email'])) {
     header("Location: ../common/login.php");
@@ -30,7 +30,7 @@ if (isset($_POST['reg'])) {
     $subjects = $_POST['subjects']; // Array to hold subject and duration details
 
     // Validation
-    if (empty($name) || empty($email) || empty($password) || empty($surname) || empty($contactnumber)) {
+    if (empty($name) || empty($email) || empty($surname) || empty($contactnumber)) {
         $errors[] = "All fields are required.";
     }
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -49,9 +49,16 @@ if (isset($_POST['reg'])) {
 
         $_SESSION['subjects'] = $subjects;
 
+        // Debugging step: Ensure the session variables are being set correctly
+        var_dump($_SESSION['learner_info']);  // Check session data
+        var_dump($_SESSION['subjects']);      // Check selected subjects data
+
         // Redirect to the next part of the form
-        header("Location: addlearnersecondpart.php"); // Replace with the actual next part URL
+        header("Location: addlearnersecondpart.php"); // Make sure the URL is correct
         exit();
+    } else {
+        // Debugging step: Display errors if any
+        var_dump($errors);  // Show any validation errors
     }
 }
 ?>
@@ -126,7 +133,7 @@ if (isset($_POST['reg'])) {
     <div class="content-wrapper">
       <section class="content">
 
-        <form action="addteacher.php" method="POST">
+        <form action="addlearner.php" method="POST">
           <div class="pos">
             <h4>Registering Learner</h4>
           </div>
@@ -186,14 +193,14 @@ if (isset($_POST['reg'])) {
             </thead>
             <tbody>
               <tr>
-                <td class="subject-name">Maths</td>
+                <td class="subject-name">Mathematics</td>
                 <td class="subject-options"><input type="radio" name="subjects[maths]" value="0" checked></td>
                 <td class="subject-options"><input type="radio" name="subjects[maths]" value="3"></td>
                 <td class="subject-options"><input type="radio" name="subjects[maths]" value="6"></td>
                 <td class="subject-options"><input type="radio" name="subjects[maths]" value="12"></td>
               </tr>
               <tr>
-                <td class="subject-name">Physics</td>
+                <td class="subject-name">Physical Sciences</td>
                 <td class="subject-options"><input type="radio" name="subjects[physics]" value="0" checked></td>
                 <td class="subject-options"><input type="radio" name="subjects[physics]" value="3"></td>
                 <td class="subject-options"><input type="radio" name="subjects[physics]" value="6"></td>
@@ -202,7 +209,7 @@ if (isset($_POST['reg'])) {
               <!-- Add more subjects as needed -->
             </tbody>
           </table>
-          <button type="submit" class="registerbtn" name="reg">Register Learner</button>
+          <button type="submit" class="registerbtn" name="reg">Next</button>
         </form>
 
       </section>
