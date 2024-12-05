@@ -151,26 +151,22 @@ if (isset($_POST['reg'])) {
               <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
             </div>
           </div>
-
-          <div class="form-row">
-           <div class="form-row">
-           <div class="form-group col-md-6">
-                   <div class="form-group col-md-6">
-                   <label for="contactnumber">Contact Number (10 digits):</label>
-                   <input type="tel" class="form-control" id="contactnumber" name="contactnumber" pattern="[0-9]{10}" maxlength="10" required>
-                   </div>
-                   <div class="form-group col-md-6">
-                   <label for="grade">Grade</label>
-                    <select type="text" id="grade" name="grade" class="form-control">
-                     <option value="10">10</option>
-                     <option value="11">11</option>
-                     <option value="12">12</option>
-                    </select>
-                   </div>
+          <div class="form-group col-md-6">
+              <label for="grade">Grade</label>
+              <select type="text" id="grade" name="grade" class="form-control">
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+              </select>
             </div>
-           </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="contactnumber">Contact Number (10 digits):</label>
+              <input type="tel" class="form-control" id="contactnumber" name="contactnumber" pattern="[0-9]{10}" maxlength="10" required>
+            </div>
+           
           </div>
-
+          
 
           <!-- Subject Selection -->
           <h4>Select Subjects and Duration:</h4>
