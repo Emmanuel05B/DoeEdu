@@ -236,7 +236,7 @@ if (isset($_POST['reg'])) {
 
   <div class="pos">
     <h4>Registering</h4>
-    <h4>Teacher</h4>
+    <h4>Leaner</h4>
 
    <?php
     // Check session variable and echo JavaScript if condition is met
@@ -307,7 +307,7 @@ if (isset($_POST['reg'])) {
       <input type="text" class="form-control" id="name" name="name" placeholder="Names" required>
     </div>
     <div class="form-group col-md-6">
-      <label for="surname">Last Name</label>
+      <label for="surname">Surname</label>
       <input type="text" class="form-control" id="surname" name="surname" placeholder="Surname" required>
     </div>
   </div>
@@ -363,11 +363,11 @@ if (isset($_POST['reg'])) {
       <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
     </div>
     <div class="form-group col-md-6">
-                 <label for="name">Specialization</label>
+                 <label for="name">Grade</label>
                   <select type="text" id="specialization" name="specialization" class="form-control" >
-                    <option value="ASD Level 1">ASD Level 1</option>
-                    <option value="ASD Level 2">ASD Level 2</option>
-                    <option value="ASD Level 3">ASD Level 3</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
                   </select>
     </div>
   </div>
@@ -376,7 +376,7 @@ if (isset($_POST['reg'])) {
 
     <input type="hidden" id="password" name="password" value="12345">
 
-  <button type="submit" class="registerbtn" name="reg">Register The Teacher</button>
+  <button type="submit" class="registerbtn" name="reg">Register The Learner</button>
 </form>
 
     </section> <!-- end -->

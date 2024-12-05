@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <?php
 session_start();
 
@@ -12,162 +11,229 @@ if (!isset($_SESSION['email'])) {
 
 <?php include("adminpartials/head.php"); ?>
 
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+
 <style>
+  .registerbtn {
+    background-color: #2d98da;
+    color: white;
+    padding: 15px 15px;
+    margin: 2px;
+    align: center;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    height: 50px;
+    opacity: 0.9;
+  }
 
-   
-.registerbtn {
-  background-color: #2d98da;
-  color: white;
-  padding: 15px 15px;
-  margin: 2px;
-  align: center;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  height: 50px;
-  opacity: 0.9;
-}
+  .registerbtn:hover {
+    opacity: 1;
+  }
 
-.registerbtn:hover {
-  opacity: 1;
-}
-.content {  /* for the white thingy */
-  background-color: white;
-  
-  margin-top: 20px;
-  margin-left: 80px;
-  margin-right: 80px;
-}
-.pos {
-  margin-bottom: 30px;
-  text-align: center; 
-}
+  .content {
+    background-color: white;
+    margin-top: 20px;
+    margin-left: 80px;
+    margin-right: 80px;
+  }
+
+  .pos {
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  .subject-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+  }
+
+  .subject-table th, .subject-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+  }
+
+  .subject-name {
+    font-weight: bold;
+  }
+
+  .subject-options {
+    text-align: center;
+  }
+
+  .subject-options input {
+    margin: 0 5px;
+  }
 </style>
 
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-<?php   
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
+require '../../vendor/autoload.php';
+include '../partials/Connect.php';
 
-  include('../partials/connect.php');
+$errors = [];
+$name = $email = $password = '';
+
+if (isset($_SESSION['Name'])) {
+  $name = $_SESSION['Name'];
+}
+
+if (isset($_SESSION['Email'])) {
+  $Email = $_SESSION['Email'];
+}
+
+if (isset($_POST['reg'])) {
+
+  $password = $_POST['password'];
+  $name = trim($_POST['name']);
+  $surname = trim($_POST['surname']);
+  $gender = $_POST['gender'];
+  $contactnumber = $_POST['contactnumber'];
+  $secondcontactnumber = $_POST['secondcontactnumber'];
+  $email = $_POST['email'];
+  $specialisation = $_POST['specialization'];
+
+  $subjects = $_POST['subjects']; // Array to hold subject and duration details
   
-  if(isset($_POST['reg'])){
-     
-     $name = trim($_POST['name']);
-     $surname = trim($_POST['surname']);
-    
-     $gender = $_POST['gender'];
-     $dateofbirth = $_POST['dob'];
- 
-     $gradeid = $_POST['gradeid'];
-     $functionallevel = $_POST['functionallevel'];
-
-
-        $stmt = $connect->prepare("INSERT INTO learner(Name, Surname, Gender, GradeId ,DateOfBirth, FunctionalLevel) VALUES(?,?,?,?,?,?)");
-        $stmt->bind_param("sssiss",$name, $surname, $gender, $gradeid, $dateofbirth, $functionallevel);
-
-        if($stmt->execute()){
-
-        $_SESSION['error_message'] = '<span style="color: green; font-weight: bold;">Succesfully Registered The Learner!.</span>';
-        header('Location: addlearner.php');
-        exit;
-   
-       }else{
-          $_SESSION['error_message'] = '<span style="color: red; font-weight: bold;">Unsuccesfully Registration!.</span>';
-          header('Location: addlearner.php');
-          exit;
-        
-        }
-        $stmt->close();
-        $connect->close();
-   
-  }else{
-    
+  // Validation
+  if (empty($name) || empty($email) || empty($password) || empty($surname) || empty($contactnumber)) {
+    $errors[] = "All fields are required.";
   }
-    
-   
+  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors[] = "Invalid email address.";
+  }
+
+  if (count($errors) === 0) {
+    // Check if the email already exists
+    $_SESSION['Name'] = $name;
+    $_SESSION['Email'] = $email;
+    $stmt = $connect->prepare("SELECT COUNT(*) FROM users WHERE email = ? OR UserId = ?");
+    $stmt->bind_param("ss", $email, $contactnumber);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+
+    if ($count > 0) {
+      $_SESSION['userexists'] = true;
+    } else {
+      // Insert the new user into the database and other details...
+      // Transaction logic
+    }
+  }
+}
 ?>
 
-
 <body class="hold-transition skin-blue sidebar-mini">
-<div class="wrapper">
+  <div class="wrapper">
+    <?php include("adminpartials/header.php") ?>
+    <?php include("adminpartials/mainsidebar.php") ?>
 
-  <?php include("adminpartials/header.php") ?>;
-  <!-- Left side column. contains the logo and sidebar -->
- <?php include("adminpartials/mainsidebar.php") ?>;
-  <!-- Content Wrapper. Contains page content ##start -->
-  <div class="content-wrapper">
-    <section class="content">   <!-- start -->
+    <div class="content-wrapper">
+      <section class="content">
 
-    <form action="addlearner.php" method="POST">
+        <form action="addteacher.php" method="POST">
+          <div class="pos">
+            <h4>Registering Learner</h4>
+          </div>
 
-  <div class="pos">
-    <h4>Registering</h4>
-    <h4>Learner</h4>
-    <h2> <?php
-      if (isset($_SESSION['error_message'])) {
-            echo '<p>' . $_SESSION['error_message'] . '</p>';
-            unset($_SESSION['error_message']);
-            }
-      ?>
-      </h2>
+          <!-- Learner Info -->
+          <h4>Learner Info:</h4>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="inputEmail4">First Names</label>
+              <input type="text" class="form-control" id="name" name="name" placeholder="Names" required>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="surname">Surname</label>
+              <input type="text" class="form-control" id="surname" name="surname" placeholder="Surname" required>
+            </div>
+          </div>
+
+          <!-- Personal Information -->
+          <div class="form-row">
+          <div class="form-group col-md-6">
+                   <label for="email">Email</label>
+                   <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+                   </div>
+           
+          </div>
+
+          <div class="form-row">
+
+    <div class="form-row">
+        
+           <div class="form-group col-md-6">
+                   
+
+                   <div class="form-group col-md-6">
+                    <label for="contactnumber">Contact Number (10 digits):</label>
+                     <input type="tel" class="form-control" id="contactnumber" name="contactnumber" pattern="[0-9]{10}" maxlength="10" required>
+                   </div>
+                   <div class="form-group col-md-6">
+                   <label for="specialization">Grade</label>
+                   <select type="text" id="grade" name="grade" class="form-control">
+                     <option value="10">10</option>
+                     <option value="11">11</option>
+                     <option value="12">12</option>
+                   </select>
+              </div>
+            </div>
+    </div>
   </div>
 
-  <div class="form-row">
-    <div class="form-group col-md-6">
-      <label for="name">First Names</label>
-      <input type="text" class="form-control" id="name" name="name" placeholder="Enter Names" required>
-    </div>
-    <div class="form-group col-md-6">
-      <label for="surname">Last Name</label>
-      <input type="text" class="form-control" id="surname" name="surname" placeholder="Enter Surname" required>
+
+          <!-- Subject Selection -->
+          <h4>Select Subjects and Duration:</h4>
+          <table class="subject-table">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Not Registered</th>
+                <th>3 Months</th>
+                <th>6 Months</th>
+                <th>12 Months</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="subject-name">Maths</td>
+                <td class="subject-options"><input type="radio" name="subjects[maths]" value="0" checked></td>
+                <td class="subject-options"><input type="radio" name="subjects[maths]" value="3"></td>
+                <td class="subject-options"><input type="radio" name="subjects[maths]" value="6"></td>
+                <td class="subject-options"><input type="radio" name="subjects[maths]" value="12"></td>
+              </tr>
+              <tr>
+                <td class="subject-name">Physics</td>
+                <td class="subject-options"><input type="radio" name="subjects[physics]" value="0" checked></td>
+                <td class="subject-options"><input type="radio" name="subjects[physics]" value="3"></td>
+                <td class="subject-options"><input type="radio" name="subjects[physics]" value="6"></td>
+                <td class="subject-options"><input type="radio" name="subjects[physics]" value="12"></td>
+              </tr>
+              <!-- Add more subjects as needed -->
+            </tbody>
+          </table>
+
+          <input type="hidden" id="password" name="password" value="12345">
+
+          <button type="submit" class="registerbtn" name="reg">Register Learner</button>
+        </form>
+
+      </section>
     </div>
   </div>
 
-  <div class="form-row">
-    <div class="form-group col-md-6">
-    <label for="name">Gender </label>
-    <select id="gender" name="gender" class="form-control" required>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-    </select>
-    </div>
-    <div class="form-group col-md-6">
-      <label for="dob">Date of Birth</label>
-      <input type="date" class="form-control" id="dob" name="dob" required>
-    </div>
-  </div>
-  
-  <div class="form-row">
-    <div class="form-group col-md-6">
-      <label for="name">GradeId</label>
-      <select type="text" id="gradeid" name="gradeid" class="form-control" required>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-      </select><br>
-    </div>
-    <div class="form-group col-md-6">
-      <label for="name">Functional Level</label>
-      <select id="functionallevel" name="functionallevel" class="form-control" >
-        <option value="ASD Level 1">ASD Level 1(Requiring Support)</option>
-        <option value="ASD Level 2">ASD Level 2(Requiring Substantial Support)</option>
-        <option value="ASD Level 3">ASD Level 3(Requiring Very Substantial Support)</option>
-      </select><br>
-    </div>
-            
-  </div>
-
-  <button type="submit" class="registerbtn" name="reg">Register Learner</button>
-</form>
-
-    </section> <!-- end -->
-  </div>
-</div>
-
-
-<?php include("adminpartials/queries.php") ?>;
-
-<script src="dist/js/demo.js"></script>
+  <?php include("adminpartials/queries.php"); ?>
+  <script src="dist/js/demo.js"></script>
 </body>
 </html>
-
