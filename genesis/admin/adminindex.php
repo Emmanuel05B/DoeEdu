@@ -39,13 +39,13 @@ if (!isset($_SESSION['email'])) {
     <?php
       include('../partials/connect.php');
 
-      $sql = "SELECT COUNT(*) as count FROM learner";
+      $sql = "SELECT COUNT(*) as count FROM learners";
       $result = $connect->query($sql);
       $row = $result->fetch_assoc();
-
-      $sql = "SELECT COUNT(*) as count FROM details";
-      $result = $connect->query($sql);
-      $reportrow = $result->fetch_assoc();
+/*
+      //$sql = "SELECT COUNT(*) as count FROM details";
+      //$result = $connect->query($sql);
+     // $reportrow = $result->fetch_assoc();
 
       $sql = "SELECT COUNT(*) as count FROM pmessages WHERE IsOpened = 0";
       $result = $connect->query($sql);
@@ -54,6 +54,7 @@ if (!isset($_SESSION['email'])) {
       $sql = "SELECT COUNT(*) as count FROM notices WHERE IsOpened = 0";
       $result = $connect->query($sql);
       $noticesrow = $result->fetch_assoc();
+      */
     ?>
 
       <!-- Small boxes (Stat box) -->
@@ -62,7 +63,7 @@ if (!isset($_SESSION['email'])) {
           <!-- small box -->
           <div class="small-box bg-aqua">
             <div class="inner">
-              <h3><?php echo $noticesrow['count']; ?></h3>
+              <h3><?php echo 20; ?></h3>
               <p>Notifications</p>
             </div>
             <a href="noticepage.php">
@@ -79,7 +80,7 @@ if (!isset($_SESSION['email'])) {
           <!-- small box -->
           <div class="small-box bg-aqua">
             <div class="inner">
-              <h3><?php echo $messagesrow['count']; ?></h3>
+              <h3><?php echo 15; ?></h3>
               <p>New Message/s</p>
             </div>
             <a href="mmailbox.php">
@@ -96,7 +97,7 @@ if (!isset($_SESSION['email'])) {
           <!-- small box -->
           <div class="small-box bg-aqua">
             <div class="inner">
-              <h3><?php echo $reportrow['count']; ?></h3>
+              <h3><?php echo 30; ?></h3>
               <p>Reports</p>
             </div>
             <a href="gradesreports.php">

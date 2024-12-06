@@ -7,12 +7,6 @@ if (!isset($_SESSION['email'])) {
 }
 
 include("adminpartials/head.php");
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
-
-require '../../vendor/autoload.php';
 include '../partials/Connect.php';
 
 $errors = [];
@@ -38,20 +32,18 @@ if (isset($_POST['reg'])) {
     }
 
     if (count($errors) === 0) {
-        // Store data in session
-        $_SESSION['learner_info'] = [
-            'name' => $name,
-            'surname' => $surname,
-            'email' => $email,
-            'contactnumber' => $contactnumber,
-            'grade' => $grade,
-        ];
+        // Store each field data in session individually
+        $_SESSION['learner_name'] = $name;
+        $_SESSION['learner_surname'] = $surname;
+        $_SESSION['learner_email'] = $email;
+        $_SESSION['learner_contactnumber'] = $contactnumber;
+        $_SESSION['learner_grade'] = $grade;
 
+        // Store the subjects array in session
         $_SESSION['subjects'] = $subjects;
 
         // Debugging step: Ensure the session variables are being set correctly
-        var_dump($_SESSION['learner_info']);  // Check session data
-        var_dump($_SESSION['subjects']);      // Check selected subjects data
+        var_dump($_SESSION);  // Check session data
 
         // Redirect to the next part of the form
         header("Location: addlearnersecondpart.php"); // Make sure the URL is correct
