@@ -50,7 +50,7 @@ if (!isset($_SESSION['email'])) {
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <!-- Content Wrapper. Contains page content -->
+  <!-- Content Wrapper. Contains page content. -->
   <div class="content-wrapper">
     
     <!-- Main content -->

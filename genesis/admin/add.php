@@ -130,7 +130,7 @@ if (!isset($_SESSION['email'])) {
 
 <body>
 
-  <form id="regForm" action="addlearner.php" method="POST" enctype="multipart/form-data">
+  <form id="regForm" action="addlearnerhandler.php" method="POST" enctype="multipart/form-data">
     <h1>Registration:</h1>
 
     <!-- 1st tab (Learner Info) -->
@@ -191,17 +191,17 @@ if (!isset($_SESSION['email'])) {
         </tr>
         <tr>
           <td>Mathematics</td>
-          <td><input type="radio" name="subjects[maths]" value="0" checked></td>
-          <td><input type="radio" name="subjects[maths]" value="3"></td>
-          <td><input type="radio" name="subjects[maths]" value="6"></td>
-          <td><input type="radio" name="subjects[maths]" value="12"></td>
+          <td><input type="radio" name="subjects[Mathematics]" value="0" checked></td>
+          <td><input type="radio" name="subjects[Mathematics]" value="450.00"></td>
+          <td><input type="radio" name="subjects[Mathematics]" value="750.00"></td>
+          <td><input type="radio" name="subjects[Mathematics]" value="1119.00"></td>
         </tr>
         <tr>
           <td>Physical Sciences</td>
           <td><input type="radio" name="subjects[physics]" value="0" checked></td>
-          <td><input type="radio" name="subjects[physics]" value="3"></td>
-          <td><input type="radio" name="subjects[physics]" value="6"></td>
-          <td><input type="radio" name="subjects[physics]" value="12"></td>
+          <td><input type="radio" name="subjects[physics]" value="450.00"></td>
+          <td><input type="radio" name="subjects[physics]" value="750.00"></td>
+          <td><input type="radio" name="subjects[physics]" value="1119.00"></td>
         </tr>
         <!-- Add more subjects as needed -->
       </table>
@@ -220,7 +220,7 @@ if (!isset($_SESSION['email'])) {
     <tr>
       <td>Mathematics</td>
       <td>
-        <select name="levels[maths][current]" class="form-control">
+        <select name="levels[Mathematics][current]" class="form-control">
           <option value="0">Select Level</option>
           <option value="1">1</option>
           <option value="2">2</option>
@@ -232,7 +232,7 @@ if (!isset($_SESSION['email'])) {
         </select>
       </td>
       <td>
-        <select name="levels[maths][target]" class="form-control">
+        <select name="levels[Mathematics][target]" class="form-control">
           <option value="0">Select Target</option>
           <option value="3">3</option>
           <option value="4">4</option>
@@ -285,6 +285,16 @@ if (!isset($_SESSION['email'])) {
             <label for="parentsurname">Surname</label>
             <input type="text" class="form-control" id="parentsurname" name="parentsurname" value="">
           </td>
+          <td>
+              <label for="name">Title </label>
+              <select id="title" name="title" class="form-control" >
+                  <option value="Mr">Mr</option>
+                  <option value="Ms">Ms</option>
+                  <option value="Mrs">Mrs</option>
+              </select>
+          </td>
+
+
         </tr>
         <tr>
           <td>

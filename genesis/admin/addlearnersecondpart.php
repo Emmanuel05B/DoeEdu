@@ -81,7 +81,7 @@ include("adminpartials/head.php");
         <div class="content-wrapper">
             <section class="content">
 
-                <form action="addlearnerhandler.php" method="POST">
+                <form action=".....php" method="POST">
                     <div class="pos">
                         <h4>Registering Learner</h4>
                     </div>

@@ -36,6 +36,14 @@ if (!isset($_SESSION['email'])) {
         } else {
             $subject = "Unknown Subject";  // Optional: for other subid values
         }
+
+
+        //where ActivtyId = ... and SubjectId  = ...  i have to refere to the newly created activity
+      // $sql = "SELECT * FROM activities WHERE Grade = $grade AND SubjectId = $subid ";
+       // $sql = "SELECT * FROM activities WHERE ActivtyId = $grade AND SubjectId = $subid ";
+
+      //  $results = $connect->query($sql);
+      //  $final = $results->fetch_assoc()
     ?> 
     </section>
 
@@ -49,16 +57,20 @@ if (!isset($_SESSION['email'])) {
             <div class="box-header">
               <h3 class="box-title">Learners</h3>
             </div>
+
+            <div class="box-header">
+              <h3 class="box-title">Activity Name = ........   and  Total = ......and submit all this data into the learnerActivity Marks.</h3>
+              
+            </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <form id="learnerForm" action="your_form_processing_script.php" method="post">
+              <form id="learnerForm" action="classhandler.php" method="post">
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                     <tr>
                       <th>Name</th>
                       <th>Surname</th>
                       <th>Attendance Status</th>
-                      <th>Activity Name</th>
                       <th>Marks</th>
                       <th>Submitted</th>
                       <th>Reason</th>
@@ -68,7 +80,9 @@ if (!isset($_SESSION['email'])) {
 
                   <tbody>
                     <?php
-                        $sql = "SELECT * FROM activity  ";
+                    //select all leaners who are doing this activity... now im selecting activities
+
+                        $sql = "SELECT * FROM learner";
                         //$sql = "SELECT * FROM activity WHERE Grade = $grade AND Sub = $subid ";
 
                         $results = $connect->query($sql);
@@ -78,10 +92,10 @@ if (!isset($_SESSION['email'])) {
 
 
                               <td>
-                                <?php echo $final['ActivityName'] ?>
-                                <input type="hidden" name="learner_ids[]" value="<?php echo $final['Id'] ?>" />
+                                <?php echo $final['Name'] ?>
+                                <input type="hidden" name="learner_ids[]" value="<?php echo $final['LearnerId'] ?>" />
                               </td>
-                              <td><?php echo $final['ActivityName'] ?></td>
+                              <td><?php echo $final['Surname'] ?></td>
                               <td>
                                  <select name="attendances[]">
                                 <option value="present" selected>Present</option>
@@ -89,25 +103,22 @@ if (!isset($_SESSION['email'])) {
                                 <option value="late">Late</option>
                                  </select>
                              </td>
-                              <td><?php echo $final['ActivityName'] ?></td>
-                              <td><?php echo $final['ActivityName'] ?></td>
+
+                              <td> <input type="number" name="marks[]" value="" placeholder="Enter Marks" ></td>
                               
                               <td>
                               
-                                <select name="medtakens[]">
+                                <select name="submitted[]">
                                     <option value="Yes" selected>Yes</option>
                                     <option value="No">No</option>
-                                    <option value="None">None</option>
                                 </select>
                        
                               </td>
-
+   
+                              <td> <input type="number" name="marks[]" value="" placeholder="provide a reason" ></td>
+                              
                               <td>
-                                <input type="number" name="marks[]" value="" placeholder="Enter Marks">
-                              </td>
-
-                              <td>
-                                <p><a href="learnerprofile.php?id=<?php echo $final['ActivityName'] ?>" class="btn btn-block btn-primary"
+                                <p><a href="learnerprofile.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-block btn-primary"
                                     >
                                     Open</a>
                                 </p>
@@ -122,8 +133,6 @@ if (!isset($_SESSION['email'])) {
                       <th>Name</th>
                       <th>Surname</th>
                       <th>Attendance Status</th>
-                      
-                      <th>Activity Name</th>
                       <th>Marks</th>
                       <th>Submitted</th>
                       <th>Reason</th>

@@ -27,8 +27,8 @@ $stmt->close();
 
 // get form data
 $graid = $_POST['graid'];
-$subid = $_POST['subid'];
-
+$subject = $_POST['subid'];
+/*
 if ($subid == 1) {
     $subject = "Mathematics";
 } elseif ($subid == 2) {
@@ -36,28 +36,23 @@ if ($subid == 1) {
 } else {
     $subject = "Unknown Subject";  // Optional: for other subid values
 }
+*/
 
 $activityname = $_POST['activityname'];    
 $activitytotal = $_POST['activitytotal']; 
 
 // Prepare the SQL insert statement   //create a table for activities
 
-$insertStmt = $connect->prepare("INSERT INTO activity
-    (ActivityName, Creator, Grade, Sub, CreatedAt,Total) 
-    VALUES (?, ?, ?, ?, NOW(), ?)");
+$insertStmt = $connect->prepare("INSERT INTO activities
+    (ActivityName, SubjectId, ActivityDate, MaxMarks, Creator, Grade) 
+    VALUES (?, ?,NOW(), ?, ?, ?)");
 
-// Bind the parameters
-    $insertStmt->bind_param("ssisi",   
-    $activityname,  
-    $Surname,
-    $graid,
-    $subject,
-    $activitytotal
-);
+// Bind the parameters..........come back for subject
+    $insertStmt->bind_param("siisi",  $activityname, $subject, $activitytotal,$Surname, $graid);
 
 // Execute the prepared statement
 if ($insertStmt->execute()) {
-    header("Location: class.php?gid=$graid&sid=$subid");
+    header("Location: class.php?gid=$graid&sid=$subject");
 
     exit(); 
 } else {

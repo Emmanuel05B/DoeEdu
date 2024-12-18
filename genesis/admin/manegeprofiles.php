@@ -111,7 +111,7 @@ if (!isset($_SESSION['email'])) {
                                   <h2>Learner</h2>
                                 
                                 </div>
-                                <a href="addlearner.php" >
+                                <a href="add.php" >
                                 <div class="icon">
                                   <i class="ion ion-person-add"></i>
                                 </div>
