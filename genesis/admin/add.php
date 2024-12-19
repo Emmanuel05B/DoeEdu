@@ -138,9 +138,10 @@ if (!isset($_SESSION['email'])) {
                     <div style="flex: 1;">
                         <label for="grade">Grade</label>
                         <select id="grade" name="grade" class="form-control" required>
-                            <option value="10">10</option>
-                            <option value="11">11</option>
-                            <option value="12">12</option>
+                         <option value="" disabled selected>Select Grade</option>
+                         <option value="10">10</option>
+                         <option value="11">11</option>
+                         <option value="12">12</option>
                         </select>
                     </div>
 
@@ -193,8 +194,9 @@ if (!isset($_SESSION['email'])) {
             <tr>
                 <td>Mathematics</td>
                 <td>
-                    <select name="levels[Mathematics][current]" class="form-control" required>
-                        <option value="0">Select Level</option>
+                    <select name="math-current" class="form-control" required>
+                        <option value="">Select Level</option>
+                        <option value="100">none</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
@@ -205,8 +207,9 @@ if (!isset($_SESSION['email'])) {
                     </select>
                 </td>
                 <td>
-                    <select name="levels[Mathematics][target]" class="form-control" required>
-                        <option value="0">Select Target</option>
+                    <select name="math-target" class="form-control" required>
+                        <option value="">Select Target</option>
+                        <option value="100">none</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
                         <option value="5">5</option>
@@ -218,8 +221,9 @@ if (!isset($_SESSION['email'])) {
             <tr>
                 <td>Physical Sciences</td>
                 <td>
-                    <select name="levels[physics][current]" class="form-control" required>
-                        <option value="0">Select Level</option>
+                    <select name="physics-current" class="form-control" required>
+                        <option value="">Select Level</option>
+                        <option value="100">none</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
@@ -230,8 +234,10 @@ if (!isset($_SESSION['email'])) {
                     </select>
                 </td>
                 <td>
-                    <select name="levels[physics][target]" class="form-control" required>
-                        <option value="0">Select Target</option>
+                    <select name="physics-target" class="form-control" required>
+                        <option value="">Select Target</option>
+                        <option value="100">none</option>
+                        <option value="1">1</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
                         <option value="5">5</option>
@@ -269,12 +275,12 @@ if (!isset($_SESSION['email'])) {
                 <td>
                     <label for="parenttitle">Title</label>
                     <select class="form-control" id="parenttitle" name="parenttitle" required>
-                    <option value="" disabled selected>Select Title</option>
-                    <option value="Mr">Mr.</option>
-                    <option value="Mrs">Mrs.</option>
-                    <option value="Ms">Ms.</option>
-                    <option value="Dr">Dr.</option>
-                    <option value="Prof">Prof.</option>
+                        <option value="">Select Title</option>
+                        <option value="Mr">Mr.</option>
+                        <option value="Mrs">Mrs.</option>
+                        <option value="Ms">Ms.</option>
+                        <option value="Dr">Dr.</option>
+                        <option value="Prof">Prof.</option>
                     </select>
                 </td>
             </tr>
@@ -287,82 +293,98 @@ if (!isset($_SESSION['email'])) {
         <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
     </div>
 
+    <!-- Step Indicator -->
     <div style="text-align:center;margin-top:40px;">
         <span class="step"></span>
         <span class="step"></span>
         <span class="step"></span>
         <span class="step"></span>
     </div>
-
 </form>
 
 <script>
-    var currentTab = 0;
+// JavaScript to handle form navigation and validation
+
+var currentTab = 0;
+showTab(currentTab);
+
+function showTab(n) {
+    var tabs = document.getElementsByClassName("tab");
+    tabs[n].style.display = "block";
+    
+    if (n === 0) {
+        document.getElementById("prevBtn").style.display = "none";
+    } else {
+        document.getElementById("prevBtn").style.display = "inline";
+    }
+    
+    if (n === (tabs.length - 1)) {
+        document.getElementById("nextBtn").innerHTML = "Submit";
+    } else {
+        document.getElementById("nextBtn").innerHTML = "Next";
+    }
+
+    fixStepIndicator(n);
+}
+
+function nextPrev(n) {
+    var tabs = document.getElementsByClassName("tab");
+
+    // Only proceed if the form is valid
+    if (n === 1 && !validateForm()) return false;
+
+    tabs[currentTab].style.display = "none";
+    currentTab = currentTab + n;
+
+    if (currentTab >= tabs.length) {
+        document.getElementById("regForm").submit();
+        return false;
+    }
+
     showTab(currentTab);
+}
 
-    function showTab(n) {
-        var tabs = document.getElementsByClassName("tab");
-        tabs[n].style.display = "block";
-        
-        if (n === 0) {
-            document.getElementById("prevBtn").style.display = "none";
+function validateForm() {
+    var tabs, inputs, selects, i, valid = true;
+
+    tabs = document.getElementsByClassName("tab");
+    inputs = tabs[currentTab].getElementsByTagName("input");
+    selects = tabs[currentTab].getElementsByTagName("select");
+
+    // Validate input elements
+    for (i = 0; i < inputs.length; i++) {
+        if (inputs[i].type !== "radio" && (inputs[i].value === "" || (inputs[i].type === "radio" && !inputs[i].checked))) {
+            inputs[i].style.border = "1px solid red";
+            valid = false;
         } else {
-            document.getElementById("prevBtn").style.display = "inline";
+            inputs[i].style.border = "";
         }
-        
-        if (n === (tabs.length - 1)) {
-            document.getElementById("nextBtn").innerHTML = "Submit";
+    }
+
+    // Validate select elements
+    for (i = 0; i < selects.length; i++) {
+        if (selects[i].value === "" || selects[i].value === "0") {
+            selects[i].style.border = "1px solid red";
+            valid = false;
         } else {
-            document.getElementById("nextBtn").innerHTML = "Next";
+            selects[i].style.border = "";
         }
-
-        fixStepIndicator(n);
     }
 
-    function nextPrev(n) {
-        var tabs = document.getElementsByClassName("tab");
+    return valid;
+}
 
-        if (n === 1 && !validateForm()) return false;
-
-        tabs[currentTab].style.display = "none";
-        currentTab = currentTab + n;
-
-        if (currentTab >= tabs.length) {
-            document.getElementById("regForm").submit();
-            return false;
-        }
-
-        showTab(currentTab);
+function fixStepIndicator(n) {
+    var steps = document.getElementsByClassName("step");
+    
+    for (var i = 0; i < steps.length; i++) {
+        steps[i].classList.remove("active");
+        steps[i].classList.remove("finish");
     }
 
-    function validateForm() {
-        var tabs, inputs, i, valid = true;
-        tabs = document.getElementsByClassName("tab");
-        inputs = tabs[currentTab].getElementsByTagName("input");
-        
-        for (i = 0; i < inputs.length; i++) {
-            if (inputs[i].value === "" || inputs[i].value === 0) {
-                inputs[i].style.border = "1px solid red";
-                valid = false;
-            } else {
-                inputs[i].style.border = "";
-            }
-        }
-        
-        return valid;
-    }
-
-    function fixStepIndicator(n) {
-        var steps = document.getElementsByClassName("step");
-        
-        for (var i = 0; i < steps.length; i++) {
-            steps[i].classList.remove("active");
-            steps[i].classList.remove("finish");
-        }
-
-        steps[n].classList.add("active");
-        if (n > 0) steps[n - 1].classList.add("finish");
-    }
+    steps[n].classList.add("active");
+    if (n > 0) steps[n - 1].classList.add("finish");
+}
 </script>
 
 </body>

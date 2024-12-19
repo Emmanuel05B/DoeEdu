@@ -44,8 +44,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $maths = $_POST['maths'];
   $physics = $_POST['physics'];
 
-echo $maths;
+   // Subject levels
+   $mathsCurrent = $_POST['math-current'];
+   $mathsTarget = $_POST['math-target'];
+   $physicsCurrent = $_POST['physics-current'];
+   $physicsTarget = $_POST['physics-target'];
+
+
+
+
+
+
+/*
+echo $maths; 
+echo "--------";
 echo $physics ;
+echo "--------";
+echo $mathsCurrent;
+echo "--------";
+echo $mathsTarget ;
+echo "--------";
+echo $physicsCurrent;
+echo "--------";
+echo $physicsTarget ;
+*/
 
   // Validate required fields
   if (empty($parent_name) || empty($parent_email) || empty($parent_contactnumber) || empty($parent_surname)) {
@@ -117,12 +139,15 @@ echo $physics ;
           }else{
 
             $subject_id = 1;
+            $mtarget_level = $mathsTarget;
+            $mcurrent_level = $mathsCurrent;
+
 
               if($maths == 450.00){  
       
                 $number_of_terms = 1;     //1 term = 3 months  approximately 90 days
-                //$contract_expiry_date = 60*60*24*90 - NOW();    //90 days in seconds
-                $contract_expiry_date = date('Y-m-d', strtotime(NOW()));                
+                $contract_expiry_date = 60*60*24*90 ;    //90 days in seconds
+                //$contract_expiry_date = date('Y-m-d', strtotime(NOW()));                
 
                 $status = 'Active';
 
@@ -130,13 +155,14 @@ echo $physics ;
                 
                 $number_of_terms = 2;
                 $contract_expiry_date = 60*60*24*180 ;  //180 days in seconds
-
                 $status = 'Active';
+
               }else if($maths == 1119.00){
              
                 $number_of_terms = 4;
                 $contract_expiry_date = 60*60*24*365;
                 $status = 'Active';
+
               }else {
                 $number_of_terms = 0;   //unnecessary
                 $status = 'Not Active';
@@ -145,11 +171,13 @@ echo $physics ;
                 // Insert into LearnersSubject table
                   $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
                                             VALUES (?, ?, ?, ?, ?, ?, ?)");
-                  $stmt2->bind_param("iiiiiis", $learner_id, $subject_id, $target_level, $current_level, $number_of_terms, $contract_expiry_date, $status);
+                  $stmt2->bind_param("iiiiiis", $learner_id, $subject_id, $mtarget_level, $mcurrent_level, $number_of_terms, $contract_expiry_date, $status);
                   $stmt2->execute();
                   $stmt2->close();
 
           }
+
+
 
                     //do for physics
                     if($physics == 0) {  
@@ -158,6 +186,9 @@ echo $physics ;
                        }else{
              
                          $subjectid = 2;
+                         $ptarget_level = $physicsTarget;
+                         $pcurrent_level =$physicsCurrent;
+
              
                            if($physics == 450.00){  
                    
@@ -187,7 +218,7 @@ echo $physics ;
                              // Insert into LearnersSubject table
                                $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
                                                          VALUES (?, ?, ?, ?, ?, ?, ?)");
-                               $stmt2->bind_param("iiiiiis", $learner_id, $subjectid, $target_level, $current_level, $number_of_terms, $contract_expiry_date, $pstatus);
+                               $stmt2->bind_param("iiiiiis", $learner_id, $subjectid, $ptarget_level, $pcurrent_level, $number_of_terms, $contract_expiry_date, $pstatus);
                                $stmt2->execute();
                                $stmt2->close();
              
