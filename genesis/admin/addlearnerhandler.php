@@ -1,7 +1,6 @@
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
 
-
 <?php
 session_start();
 
@@ -18,15 +17,14 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 // Load Composer's autoloader
-require '../../vendor/autoload.php';  
+require '../../vendor/autoload.php';
 
 // Initialize error handling
 $errors = [];
 
 // Handle form submission for parent details
-//if (isset($_POST['reg1'])) {
-
-  // Leraner info from POST
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  // Learner info from POST
   $learner_name = $_POST['name'];
   $learner_surname = $_POST['surname'];
   $learner_email = $_POST['email'];
@@ -38,11 +36,19 @@ $errors = [];
   $parent_name = trim($_POST['parentname']);
   $parent_surname = trim($_POST['parentsurname']);
   $parent_email = $_POST['parentemail'];
-  $parentcontact_number = $_POST['parentcontactnumber'];
-  $parenttitle = $_POST['title'];
+  $parent_contactnumber = $_POST['parentcontact'];
+  $parent_title = $_POST['parenttitle'];
+
+
+  // Subject prices which automatically deertermines the number of terms
+  $maths = $_POST['maths'];
+  $physics = $_POST['physics'];
+
+echo $maths;
+echo $physics ;
 
   // Validate required fields
-  if (empty($parent_name) || empty($parent_email) || empty($parentcontact_number) || empty($parent_surname)) {
+  if (empty($parent_name) || empty($parent_email) || empty($parent_contactnumber) || empty($parent_surname)) {
     $errors[] = "All fields are required.";
   }
 
@@ -66,102 +72,168 @@ $errors = [];
 
       // If parent does not exist, insert parent data
       if (!$parent_id) {
-        $stmt = $connect->prepare("INSERT INTO parents (ParentTiltle, ParentName, ParentEmail, ParentContactNumber, ParentSurname) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssis", $parenttitle, $parent_name, $parent_email, $parentcontact_number, $parent_surname);
+        $stmt = $connect->prepare("INSERT INTO parents (ParentTitle, ParentName, ParentEmail, ParentContactNumber, ParentSurname) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssis", $parent_title, $parent_name, $parent_email, $parent_contactnumber, $parent_surname);
         $stmt->execute();
         $parent_id = $connect->insert_id; // Get the parent ID after insertion
         $stmt->close();
       }
 
+      // Check if the learner already exists
+      $stmt = $connect->prepare("SELECT LearnerId FROM learners WHERE Email = ?");
+      $stmt->bind_param("s", $learner_email);
+      $stmt->execute();
+      $stmt->bind_result($learner_id);
+      $stmt->fetch();
+      $stmt->close();
 
-        // Check if the leaner already exists
-        $stmt = $connect->prepare("SELECT LearnerId FROM learners WHERE Email = ?");
-        $stmt->bind_param("s", $learner_email);
-        $stmt->execute();
-        $stmt->bind_result($learner_id);
-        $stmt->fetch();
-        $stmt->close();
-  
-        // If learner does not exist, insert learner data
-       
-                    // Insert learner data
-            $stmt = $connect->prepare("INSERT INTO learners (Name, Surname, Email, ContactNumber, Grade, RegistrationDate, ContractExpiryDate, LearnerKnockoffTime) VALUES (?, ?, ?, ?, ?, NOW(), ?, ?)");
-            $stmt->bind_param("sssiiss", $learner_name, $learner_surname, $learner_email, $learner_contactnumber, $learner_grade, $contract_expiry_date, $learner_knockout_time);
+      // If learner does not exist, insert learner data
+      if (!$learner_id) {
+        $contract_expiry_date = date('Y-m-d', strtotime($learner_knockout_time)); // Assuming knockout time is used as expiry date
 
-           if ($stmt->execute()) {
-              $learnerId = $connect->insert_id;  // Get the learner ID
-              $stmt->close();
+        // Insert learner data
+        $stmt = $connect->prepare("INSERT INTO learners (Name, Surname, Email, ContactNumber, Grade, RegistrationDate, ContractExpiryDate, LearnerKnockoffTime) VALUES (?, ?, ?, ?, ?, NOW(), ?, ?)");
+        $stmt->bind_param("sssiiss", $learner_name, $learner_surname, $learner_email, $learner_contactnumber, $learner_grade, $contract_expiry_date, $learner_knockout_time);
 
-               // Insert subject levels for the learner
-              if (isset($_POST['subjects'])) {
-                foreach ($_POST['subjects'] as $subject_name) {
-                  // Get the SubjectId based on SubjectName
-                  $subject_query = $connect->prepare("SELECT SubjectId FROM subjects WHERE SubjectName = ?");
-                  $subject_query->bind_param("s", $subject_name);
-                  $subject_query->execute();
-                  $subject_query->bind_result($subject_id);
-                  $subject_query->fetch();
-                  $subject_query->close();
+        if ($stmt->execute()) {
+          $learner_id = $connect->insert_id; // Get the learner ID
+          $stmt->close();
 
-                    // If subject exists, insert data into LearnersSubject table
-                     if ($subject_id) {
-                        $current_level = $_POST['current'];
-                        $target_level = $_POST['target'];
-                        $number_of_terms = isset($levels['terms']) ? $levels['terms'] : 1;  // Default to 1 if not set....this should depend on the number of terms selected for each lubjects.. not levels.
-                        $status = 'Active';  // Assuming 'Active' status, you may change it based on the business logic
 
-                        if ($current_level != 0 && $target_level != 0) {
-                          // Insert into LearnersSubject table
-                           $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
-                                         VALUES (?, ?, ?, ?, ?, ?, ?)");
-                            $stmt2->bind_param("iiiiiis", $learnerId, $subject_id, $target_level, $current_level, $number_of_terms, $contract_expiry_date, $status);
-                            $stmt2->execute();
-                            $stmt2->close();
-                        }
-                      }
-                }
-            }
+         /*/ if (isset($_POST['subjects']) && !empty($_POST['subjects'])) {
+          $current_level = $_POST['current'];
+          $target_level = $_POST['target'];
+          $number_of_terms = isset($_POST['terms']) ? $_POST['terms'] : 1;  // Default to 1 if not set
+          $status = 'Active';  // Assuming 'Active' status
 
-      } else {
-       $connect->rollback();
-       echo "<script>
-               Swal.fire({
-                   icon: 'error',
-                   title: 'Registration Failed',
-                   text: 'Learner data could not be inserted.',
-                   confirmButtonText: 'OK'
-               }).then(function() {
-                   window.location = 'add.php'; 
-               });
-             </script>";
-       exit();
+          if ($current_level != 0 && $target_level != 0) {  */
+
+
+
+          //do for maths
+          if($maths == 0) {  
+         //do nothing
+     
+          }else{
+
+            $subject_id = 1;
+
+              if($maths == 450.00){  
+      
+                $number_of_terms = 1;     //1 term = 3 months  approximately 90 days
+                //$contract_expiry_date = 60*60*24*90 - NOW();    //90 days in seconds
+                $contract_expiry_date = date('Y-m-d', strtotime(NOW()));                
+
+                $status = 'Active';
+
+              }else if($maths == 750.00){
+                
+                $number_of_terms = 2;
+                $contract_expiry_date = 60*60*24*180 ;  //180 days in seconds
+
+                $status = 'Active';
+              }else if($maths == 1119.00){
+             
+                $number_of_terms = 4;
+                $contract_expiry_date = 60*60*24*365;
+                $status = 'Active';
+              }else {
+                $number_of_terms = 0;   //unnecessary
+                $status = 'Not Active';
+              }
+              
+                // Insert into LearnersSubject table
+                  $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
+                                            VALUES (?, ?, ?, ?, ?, ?, ?)");
+                  $stmt2->bind_param("iiiiiis", $learner_id, $subject_id, $target_level, $current_level, $number_of_terms, $contract_expiry_date, $status);
+                  $stmt2->execute();
+                  $stmt2->close();
+
+          }
+
+                    //do for physics
+                    if($physics == 0) {  
+                      //do nothing
+                  
+                       }else{
+             
+                         $subjectid = 2;
+             
+                           if($physics == 450.00){  
+                   
+                             $number_of_terms = 1;     //1 term = 3 months  approximately 90 days
+                             //$contract_expiry_date = 60*60*24*90 - NOW();    //90 days in seconds
+                             $contract_expiry_date = 60*60*24*90;    //90 days in seconds
+                             $pstatus = 'Active';
+                           }else if($physics == 750.00){
+                             
+                             $number_of_terms = 2;
+                             $contract_expiry_date = 60*60*24*180 ;  //180 days in seconds
+                             $pstatus = 'Active';
+
+                          
+                           }else if($physics == 1119.00){
+                          
+                             $number_of_terms = 4;
+                             $contract_expiry_date = 60*60*24*365;
+                             $pstatus = 'Active';
+
+                           }else {
+                             $number_of_terms = 0;   //unnecessary
+                             $pstatus = ' Not Active';
+
+                           }
+                           
+                             // Insert into LearnersSubject table
+                               $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
+                                                         VALUES (?, ?, ?, ?, ?, ?, ?)");
+                               $stmt2->bind_param("iiiiiis", $learner_id, $subjectid, $target_level, $current_level, $number_of_terms, $contract_expiry_date, $pstatus);
+                               $stmt2->execute();
+                               $stmt2->close();
+             
+                       }
+
+
+          // Create parent-learner relationship
+          $stmt2 = $connect->prepare("INSERT INTO parentlearner (ParentId, LearnerId) VALUES (?, ?)");
+          $stmt2->bind_param("ii", $parent_id, $learner_id);
+
+          if ($stmt2->execute()) {
+            $connect->commit(); // Commit the transaction
+
+            // Send confirmation email to parent
+           // sendEmailToParent($parent_email, $parent_name);
+
+          } else {
+            $connect->rollback();
+            echo "<script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Registration Failed',
+                        text: 'Parent-learner link could not be created.',
+                        confirmButtonText: 'OK'
+                    }).then(function() {
+                        window.location = 'add.php'; 
+                    });
+                  </script>";
+            exit();
+          }
+        } else {
+          $connect->rollback();
+          echo "<script>
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Registration Failed',
+                      text: 'Learner data could not be inserted.',
+                      confirmButtonText: 'OK'
+                  }).then(function() {
+                      window.location = 'add.php'; 
+                  });
+                </script>";
+          exit();
+        }
       }
 
-   
-
-      // Create parent-learner relationship
-      $stmt2 = $connect->prepare("INSERT INTO parentlearner (ParentId, LearnerId) VALUES (?, ?)");
-      $stmt2->bind_param("ii", $parent_id, $learnerId);
-
-      if ($stmt2->execute()) {
-         $connect->commit(); // Commit the transaction
-
-        // Send confirmation email to parent
-        //sendEmailToParent($parent_email, $parent_name);
-      } else {
-        $connect->rollback();
-        echo "<script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Registration Failed',
-                    text: 'Parent-learner link could not be created.',
-                    confirmButtonText: 'OK'
-                }).then(function() {
-                    window.location = 'add.php'; 
-                });
-              </script>";
-        exit();
-      }
     } catch (Exception $e) {
       // Rollback on any error
       $connect->rollback();
@@ -169,7 +241,7 @@ $errors = [];
               Swal.fire({
                   icon: 'error',
                   title: 'Registration Failed',
-                  text: 'An error occurred during registration.',
+                  text: 'An error occurred during registration. ' + $e->getMessage(),
                   confirmButtonText: 'OK'
               }).then(function() {
                   window.location = 'add.php'; 
@@ -177,7 +249,7 @@ $errors = [];
             </script>";
     }
   }
-
+}
 
 // Function to send email to parent
 function sendEmailToParent($parent_email, $parent_name) {
@@ -196,9 +268,7 @@ function sendEmailToParent($parent_email, $parent_name) {
 
     // Set recipients
     $mail->setFrom('vilakazinurse128@gmail.com', 'DoE_Genesis');
-    $mail->addAddress($parent_email, $parent_name);  //dont forget the title
-    //$mail->addReplyTo('vilakazinurse128@gmail.com', 'DoE_Genesis'); // Set your Gmail address and your name as the reply-to address
-
+    $mail->addAddress($parent_email, $parent_name);
 
     // Email content
     $mail->isHTML(true);
@@ -230,5 +300,4 @@ function sendEmailToParent($parent_email, $parent_name) {
     echo "Mailer Error: " . $mail->ErrorInfo;
   }
 }
-
 ?>
