@@ -1,6 +1,3 @@
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
-
 <?php
 session_start();
 
@@ -30,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $learner_email = $_POST['email'];
   $learner_contactnumber = $_POST['contactnumber'];
   $learner_grade = $_POST['grade'];
-  $learner_knockout_time = $_POST['knockout_time'];
-
+  $learner_knockout_time = $_POST['knockout_time'];  // Kept as is for other purposes
+  
   // Parent info from POST
   $parent_name = trim($_POST['parentname']);
   $parent_surname = trim($_POST['parentsurname']);
@@ -91,11 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
       // If learner does not exist, insert learner data
       if (!$learner_id) {
-        $contract_expiry_date = date('Y-m-d', strtotime($learner_knockout_time)); // Assuming knockout time is used as expiry date
-
-        // Insert learner data
-        $stmt = $connect->prepare("INSERT INTO learners (Name, Surname, Email, ContactNumber, Grade, RegistrationDate, ContractExpiryDate, LearnerKnockoffTime) VALUES (?, ?, ?, ?, ?, NOW(), ?, ?)");
-        $stmt->bind_param("sssiiss", $learner_name, $learner_surname, $learner_email, $learner_contactnumber, $learner_grade, $contract_expiry_date, $learner_knockout_time);
+        // Insert learner data without using knockout_time for expiry
+        $stmt = $connect->prepare("INSERT INTO learners (Name, Surname, Email, ContactNumber, Grade, RegistrationDate, LearnerKnockoffTime) VALUES (?, ?, ?, ?, ?, NOW(), ?)");
+        $stmt->bind_param("sssiis", $learner_name, $learner_surname, $learner_email, $learner_contactnumber, $learner_grade, $learner_knockout_time);
 
         if ($stmt->execute()) {
           $learner_id = $connect->insert_id; // Get the learner ID
@@ -119,33 +114,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $mtarget_level = $mathsTarget;
             $mcurrent_level = $mathsCurrent;
 
+            // Determine contract expiry date based on maths fee and registration date
+            $registration_date = new DateTime();  // Current date
             switch ($maths) {
                 case 450.00:
+                    // Add 3 months
+                    $registration_date->modify('+3 months');
                     $number_of_terms = 1;
-                    $contract_expiry_date = strtotime("+3 months");
                     break;
                 case 750.00:
+                    // Add 6 months
+                    $registration_date->modify('+6 months');
                     $number_of_terms = 2;
-                    $contract_expiry_date = strtotime("+6 months");
                     break;
                 case 1119.00:
-                    $number_of_terms = 4;
-                    $contract_expiry_date = strtotime("+1 year");
+                    // Add 1 year
+                    $registration_date->modify('+1 year');
+                    $number_of_terms = 3;
                     break;
                 default:
-                    $number_of_terms = 0;
-                    $contract_expiry_date = 0;
+                    $registration_date = null;
                     break;
             }
 
-            $status = ($number_of_terms > 0) ? 'Active' : 'Not Active';
+            $contract_expiry_date = $registration_date ? $registration_date->format('Y-m-d H:i:s') : null;
+            $status = $contract_expiry_date ? 'Active' : 'Not Active';
 
             // Insert into LearnersSubject table for maths
-            $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
-                                        VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt2->bind_param("iiiiiis", $learner_id, $subject_id, $mtarget_level, $mcurrent_level, $number_of_terms, $contract_expiry_date, $status);
+           
+            $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel,NumberOfTerms, ContractExpiryDate, Status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt2->bind_param("iiiiiis", $learner_id, $subject_id, $mtarget_level, $mcurrent_level,$number_of_terms, $contract_expiry_date, $status);
             $stmt2->execute();
             $stmt2->close();
+
+
+
           }
 
           if ($physics != 0) {
@@ -153,26 +157,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $ptarget_level = $physicsTarget;
             $pcurrent_level = $physicsCurrent;
 
+            // Determine contract expiry date based on physics fee and registration date
+            $registration_date = new DateTime();  // Current date
             switch ($physics) {
                 case 450.00:
+                    // Add 3 months
+                    $registration_date->modify('+3 months');
                     $number_of_terms = 1;
-                    $contract_expiry_date = strtotime("+3 months");
                     break;
                 case 750.00:
+                    // Add 6 months
+                    $registration_date->modify('+6 months');
                     $number_of_terms = 2;
-                    $contract_expiry_date = strtotime("+6 months");
                     break;
                 case 1119.00:
-                    $number_of_terms = 4;
-                    $contract_expiry_date = strtotime("+1 year");
+                    // Add 1 year
+                    $registration_date->modify('+1 year');
+                    $number_of_terms = 3;
                     break;
                 default:
-                    $number_of_terms = 0;
-                    $contract_expiry_date = 0;
+                    $registration_date = null;
                     break;
             }
 
-            $status = ($number_of_terms > 0) ? 'Active' : 'Not Active';
+            $contract_expiry_date = $registration_date ? $registration_date->format('Y-m-d H:i:s') : null;
+            $status = $contract_expiry_date ? 'Active' : 'Not Active';
 
             // Insert into LearnersSubject table for physics
             $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
@@ -190,7 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $connect->commit(); // Commit the transaction
 
             // Send confirmation email to parent
-            sendEmailToParent($parent_email, $parent_name);
+            //sendEmailToParent($parent_email, $parent_name);
           } else {
             $connect->rollback();
             echo "<script>
@@ -287,4 +296,4 @@ function sendEmailToParent($parent_email, $parent_name) {
     echo "Mailer Error: " . $mail->ErrorInfo;
   }
 }
-?> 
+?>
