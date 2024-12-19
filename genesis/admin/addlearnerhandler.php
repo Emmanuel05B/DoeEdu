@@ -39,35 +39,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $parent_contactnumber = $_POST['parentcontact'];
   $parent_title = $_POST['parenttitle'];
 
-
-  // Subject prices which automatically deertermines the number of terms
+  // Subject prices which automatically determines the number of terms
   $maths = $_POST['maths'];
   $physics = $_POST['physics'];
 
-   // Subject levels
-   $mathsCurrent = $_POST['math-current'];
-   $mathsTarget = $_POST['math-target'];
-   $physicsCurrent = $_POST['physics-current'];
-   $physicsTarget = $_POST['physics-target'];
-
-
-
-
-
-
-/*
-echo $maths; 
-echo "--------";
-echo $physics ;
-echo "--------";
-echo $mathsCurrent;
-echo "--------";
-echo $mathsTarget ;
-echo "--------";
-echo $physicsCurrent;
-echo "--------";
-echo $physicsTarget ;
-*/
+  // Subject levels
+  $mathsCurrent = $_POST['math-current'];
+  $mathsTarget = $_POST['math-target'];
+  $physicsCurrent = $_POST['physics-current'];
+  $physicsTarget = $_POST['physics-target'];
 
   // Validate required fields
   if (empty($parent_name) || empty($parent_email) || empty($parent_contactnumber) || empty($parent_surname)) {
@@ -121,109 +101,86 @@ echo $physicsTarget ;
           $learner_id = $connect->insert_id; // Get the learner ID
           $stmt->close();
 
+          /////////////////////////////////////////////
+          // Insert into finances table
+          $total_fees = $maths + $physics; // Calculate total fees
+          $total_paid = 0; // Set default value for now
 
-         /*/ if (isset($_POST['subjects']) && !empty($_POST['subjects'])) {
-          $current_level = $_POST['current'];
-          $target_level = $_POST['target'];
-          $number_of_terms = isset($_POST['terms']) ? $_POST['terms'] : 1;  // Default to 1 if not set
-          $status = 'Active';  // Assuming 'Active' status
+          $stmt = $connect->prepare("INSERT INTO finances (LearnerId, Grade, TotalFees, TotalPaid, Math, Physics) VALUES (?, ?, ?, ?, ?, ?)");
+          $stmt->bind_param("iiiddd", $learner_id, $learner_grade, $total_fees, $total_paid, $maths, $physics);
+          $stmt->execute();
+          $stmt->close();
 
-          if ($current_level != 0 && $target_level != 0) {  */
+          /////////////////////////////////////////////
 
-
-
-          //do for maths
-          if($maths == 0) {  
-         //do nothing
-     
-          }else{
-
+          // Insert subjects (Math and Physics)
+          if ($maths != 0) {
             $subject_id = 1;
             $mtarget_level = $mathsTarget;
             $mcurrent_level = $mathsCurrent;
 
+            switch ($maths) {
+                case 450.00:
+                    $number_of_terms = 1;
+                    $contract_expiry_date = strtotime("+3 months");
+                    break;
+                case 750.00:
+                    $number_of_terms = 2;
+                    $contract_expiry_date = strtotime("+6 months");
+                    break;
+                case 1119.00:
+                    $number_of_terms = 4;
+                    $contract_expiry_date = strtotime("+1 year");
+                    break;
+                default:
+                    $number_of_terms = 0;
+                    $contract_expiry_date = 0;
+                    break;
+            }
 
-              if($maths == 450.00){  
-      
-                $number_of_terms = 1;     //1 term = 3 months  approximately 90 days
-                $contract_expiry_date = 60*60*24*90 ;    //90 days in seconds
-                //$contract_expiry_date = date('Y-m-d', strtotime(NOW()));                
+            $status = ($number_of_terms > 0) ? 'Active' : 'Not Active';
 
-                $status = 'Active';
-
-              }else if($maths == 750.00){
-                
-                $number_of_terms = 2;
-                $contract_expiry_date = 60*60*24*180 ;  //180 days in seconds
-                $status = 'Active';
-
-              }else if($maths == 1119.00){
-             
-                $number_of_terms = 4;
-                $contract_expiry_date = 60*60*24*365;
-                $status = 'Active';
-
-              }else {
-                $number_of_terms = 0;   //unnecessary
-                $status = 'Not Active';
-              }
-              
-                // Insert into LearnersSubject table
-                  $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
-                                            VALUES (?, ?, ?, ?, ?, ?, ?)");
-                  $stmt2->bind_param("iiiiiis", $learner_id, $subject_id, $mtarget_level, $mcurrent_level, $number_of_terms, $contract_expiry_date, $status);
-                  $stmt2->execute();
-                  $stmt2->close();
-
+            // Insert into LearnersSubject table for maths
+            $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
+                                        VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt2->bind_param("iiiiiis", $learner_id, $subject_id, $mtarget_level, $mcurrent_level, $number_of_terms, $contract_expiry_date, $status);
+            $stmt2->execute();
+            $stmt2->close();
           }
 
+          if ($physics != 0) {
+            $subject_id = 2;
+            $ptarget_level = $physicsTarget;
+            $pcurrent_level = $physicsCurrent;
 
+            switch ($physics) {
+                case 450.00:
+                    $number_of_terms = 1;
+                    $contract_expiry_date = strtotime("+3 months");
+                    break;
+                case 750.00:
+                    $number_of_terms = 2;
+                    $contract_expiry_date = strtotime("+6 months");
+                    break;
+                case 1119.00:
+                    $number_of_terms = 4;
+                    $contract_expiry_date = strtotime("+1 year");
+                    break;
+                default:
+                    $number_of_terms = 0;
+                    $contract_expiry_date = 0;
+                    break;
+            }
 
-                    //do for physics
-                    if($physics == 0) {  
-                      //do nothing
-                  
-                       }else{
-             
-                         $subjectid = 2;
-                         $ptarget_level = $physicsTarget;
-                         $pcurrent_level =$physicsCurrent;
+            $status = ($number_of_terms > 0) ? 'Active' : 'Not Active';
 
-             
-                           if($physics == 450.00){  
-                   
-                             $number_of_terms = 1;     //1 term = 3 months  approximately 90 days
-                             //$contract_expiry_date = 60*60*24*90 - NOW();    //90 days in seconds
-                             $contract_expiry_date = 60*60*24*90;    //90 days in seconds
-                             $pstatus = 'Active';
-                           }else if($physics == 750.00){
-                             
-                             $number_of_terms = 2;
-                             $contract_expiry_date = 60*60*24*180 ;  //180 days in seconds
-                             $pstatus = 'Active';
-
-                          
-                           }else if($physics == 1119.00){
-                          
-                             $number_of_terms = 4;
-                             $contract_expiry_date = 60*60*24*365;
-                             $pstatus = 'Active';
-
-                           }else {
-                             $number_of_terms = 0;   //unnecessary
-                             $pstatus = ' Not Active';
-
-                           }
-                           
-                             // Insert into LearnersSubject table
-                               $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
-                                                         VALUES (?, ?, ?, ?, ?, ?, ?)");
-                               $stmt2->bind_param("iiiiiis", $learner_id, $subjectid, $ptarget_level, $pcurrent_level, $number_of_terms, $contract_expiry_date, $pstatus);
-                               $stmt2->execute();
-                               $stmt2->close();
-             
-                       }
-
+            // Insert into LearnersSubject table for physics
+            $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
+                                        VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt2->bind_param("iiiiiis", $learner_id, $subject_id, $ptarget_level, $pcurrent_level, $number_of_terms, $contract_expiry_date, $status);
+            $stmt2->execute();
+            $stmt2->close();
+          }
 
           // Create parent-learner relationship
           $stmt2 = $connect->prepare("INSERT INTO parentlearner (ParentId, LearnerId) VALUES (?, ?)");
@@ -233,8 +190,7 @@ echo $physicsTarget ;
             $connect->commit(); // Commit the transaction
 
             // Send confirmation email to parent
-           // sendEmailToParent($parent_email, $parent_name);
-
+            sendEmailToParent($parent_email, $parent_name);
           } else {
             $connect->rollback();
             echo "<script>
@@ -331,4 +287,4 @@ function sendEmailToParent($parent_email, $parent_name) {
     echo "Mailer Error: " . $mail->ErrorInfo;
   }
 }
-?>
+?> 
