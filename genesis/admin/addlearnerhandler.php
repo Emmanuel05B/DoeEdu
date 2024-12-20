@@ -109,87 +109,69 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           /////////////////////////////////////////////
 
           // Insert subjects (Math and Physics)
-          if ($maths != 0) {
-            $subject_id = 1;
-            $mtarget_level = $mathsTarget;
-            $mcurrent_level = $mathsCurrent;
+// Helper function to calculate contract expiry based on fee
+function calculateContractExpiry($fee, $registration_date) {
+  $number_of_terms = 0;
 
-            // Determine contract expiry date based on maths fee and registration date
-            $registration_date = new DateTime();  // Current date
-            switch ($maths) {
-                case 450.00:
-                    // Add 3 months
-                    $registration_date->modify('+3 months');
-                    $number_of_terms = 1;
-                    break;
-                case 750.00:
-                    // Add 6 months
-                    $registration_date->modify('+6 months');
-                    $number_of_terms = 2;
-                    break;
-                case 1119.00:
-                    // Add 1 year
-                    $registration_date->modify('+1 year');
-                    $number_of_terms = 3;
-                    break;
-                default:
-                    $registration_date = null;
-                    break;
-            }
+  switch ($fee) {
+      case 450.00:
+          $registration_date->modify('+3 months');
+          $number_of_terms = 1;
+          break;
+      case 750.00:
+          $registration_date->modify('+6 months');
+          $number_of_terms = 2;
+          break;
+      case 1119.00:
+          $registration_date->modify('+1 year');
+          $number_of_terms = 3;
+          break;
+      default:
+          $registration_date = null;
+          break;
+  }
 
-            $contract_expiry_date = $registration_date ? $registration_date->format('Y-m-d H:i:s') : null;
-            $status = $contract_expiry_date ? 'Active' : 'Not Active';
+  // Return the expiry date, number of terms, and status
+  if ($registration_date) {
+      $contract_expiry_date = $registration_date->format('Y-m-d H:i:s');
+      $status = 'Active';
+  } else {
+      $contract_expiry_date = null;
+      $status = 'Not Active';
+  }
 
-            // Insert into LearnersSubject table for maths
-           
-            $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel,NumberOfTerms, ContractExpiryDate, Status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt2->bind_param("iiiiiis", $learner_id, $subject_id, $mtarget_level, $mcurrent_level,$number_of_terms, $contract_expiry_date, $status);
-            $stmt2->execute();
-            $stmt2->close();
+  return [$contract_expiry_date, $status, $number_of_terms];
+}
 
+// For Maths
+if ($maths != 0) {
+  $subject_id = 1;
+  $registration_date = new DateTime();  // Current date
+  list($contract_expiry_date, $status, $number_of_terms) = calculateContractExpiry($maths, $registration_date);
 
+  // Insert into LearnersSubject table for maths
+  $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
+                              VALUES (?, ?, ?, ?, ?, ?, ?)");
+  $stmt2->bind_param("iiiiiss", $learner_id, $subject_id, $mathsTarget, $mathsCurrent, $number_of_terms, $contract_expiry_date, $status);
+  $stmt2->execute();
+  $stmt2->close();
+}
 
-          }
+// For Physics
+if ($physics != 0) {
+  $subject_id = 2;
+  $registration_date = new DateTime();  // Current date
+  list($contract_expiry_date, $status, $number_of_terms) = calculateContractExpiry($physics, $registration_date);
 
-          if ($physics != 0) {
-            $subject_id = 2;
-            $ptarget_level = $physicsTarget;
-            $pcurrent_level = $physicsCurrent;
+  // Insert into LearnersSubject table for physics
+  $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
+                              VALUES (?, ?, ?, ?, ?, ?, ?)");
+  $stmt2->bind_param("iiiiiss", $learner_id, $subject_id, $physicsTarget, $physicsCurrent, $number_of_terms, $contract_expiry_date, $status);
+  $stmt2->execute();
+  $stmt2->close();
+}
 
-            // Determine contract expiry date based on physics fee and registration date
-            $registration_date = new DateTime();  // Current date
-            switch ($physics) {
-                case 450.00:
-                    // Add 3 months
-                    $registration_date->modify('+3 months');
-                    $number_of_terms = 1;
-                    break;
-                case 750.00:
-                    // Add 6 months
-                    $registration_date->modify('+6 months');
-                    $number_of_terms = 2;
-                    break;
-                case 1119.00:
-                    // Add 1 year
-                    $registration_date->modify('+1 year');
-                    $number_of_terms = 3;
-                    break;
-                default:
-                    $registration_date = null;
-                    break;
-            }
-
-            $contract_expiry_date = $registration_date ? $registration_date->format('Y-m-d H:i:s') : null;
-            $status = $contract_expiry_date ? 'Active' : 'Not Active';
-
-            // Insert into LearnersSubject table for physics
-            $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
-                                        VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt2->bind_param("iiiiiis", $learner_id, $subject_id, $ptarget_level, $pcurrent_level, $number_of_terms, $contract_expiry_date, $status);
-            $stmt2->execute();
-            $stmt2->close();
-          }
+   
 
           // Create parent-learner relationship
           $stmt2 = $connect->prepare("INSERT INTO parentlearner (ParentId, LearnerId) VALUES (?, ?)");
