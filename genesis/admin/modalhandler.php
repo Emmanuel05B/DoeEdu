@@ -30,12 +30,20 @@ $graid = $_POST['graid'];
 $subject = $_POST['subid'];
 $chapter = $_POST['chaid'];
 
-/*      skipped coz of line 57
+/*     skipped coz of line 57
 if ($subid == 1) {
-    $subject = "Mathematics";
+    $subject = "Mathematics12";
 } elseif ($subid == 2) {
-    $subject = "Physical Science";
-} else {
+    $subject = "Physics12";
+} elseif ($subid == 3) {
+    $subject = "Mathematics11";
+} elseif ($subid == 4) {
+    $subject = "Physics11";
+} elseif ($subid == 5) {
+    $subject = "Mathematics10";
+} elseif ($subid == 6) {
+    $subject = "Physics10";
+}else {
     $subject = "Unknown Subject";  /// Optional: for other subid values
 }
 */
@@ -56,14 +64,23 @@ $insertStmt = $connect->prepare("INSERT INTO activities
 if ($insertStmt->execute()) {
 
     //after creating this new/recent activity.. I want its Id so that i can go with it to class.php.    this will be the activity id where ...the id is the biggest
-    
-    $sql = "SELECT * FROM activities WHERE ActivityId = Max";
-    $results = $connect->query($sql);
-    $finalres = $results->fetch_assoc(); 
-     
-    $chapters = $finalres['ActivityId'];
+    //$sql = "SELECT * FROM activities ORDER BY ActivityDate DESC, ActivityId DESC LIMIT 1";
 
-    header("Location: class.php?gid=$graid&sid=$subject&cid=$chapters");
+    $sql = "SELECT * FROM activities ORDER BY ActivityId DESC LIMIT 1";
+    $results = $connect->query($sql);
+
+    // Check if there is any result
+    if ($results->num_rows > 0) {
+    $finalres = $results->fetch_assoc();
+    $activityid = $finalres['ActivityId'];
+
+    header("Location: class.php?aid=$activityid");
+
+    } else {
+    echo "No records found.";
+    }
+     
+ 
 
     exit(); 
 } else {

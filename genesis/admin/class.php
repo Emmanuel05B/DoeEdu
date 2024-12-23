@@ -196,10 +196,19 @@ if (!isset($_SESSION['email'])) {
     <section class="content-header">
     <?php
       include('../partials/connect.php');
+
+      $activityid = intval($_GET['aid']);  // Ensure it's an integer
+
+      $sql = "SELECT * FROM activities WHERE ActivityId = $activityid";
+      $results = $connect->query($sql);
+      $finalres = $results->fetch_assoc(); 
+
+      $activityName = $finalres['ActivityName'];
+      $maxmarks = $finalres['MaxMarks'];
+      $grade = $finalres['Grade'];
+      $subject = $finalres['SubjectId'];
+
       
-      $grade = intval($_GET['gid']);  // Ensure it's an integer
-      $subid = intval($_GET['sid']);  // Ensure it's an integer
-      $chaid = intval($_GET['cid']);  // Ensure it's an integer
 
     ?> 
     </section>
@@ -214,23 +223,14 @@ if (!isset($_SESSION['email'])) {
             <div class="box-header">
               <h3 class="box-title">Learners</h3>
             </div>
-            <?php   
-              // i have to refere to the newly created activity        unless i already have the activity id
-              //it must select the most recent activity... which is the activity with the highest ActivityId...or you can also use date  
-              /*
-              $sql = "SELECT * FROM activities WHERE Grade = $grade AND SubjectId = $subid AND ChapterId = $chaid";
-              $results = $connect->query($sql);
-              $finalres = $results->fetch_assoc();    
-              */
-
-             ?>
-
-
+  
             <div class="box-header">
-              <h3 class="box-title">Activity Name = <?php echo $finalres['ActivityName'] ?> and 
-              Total = <?php echo $finalres['MaxMarks'] ?> and submit all this data into the learnerActivity Marks.
-               in the classhandler.php..   keep in mind that these have to be learners f this particular grade and 
-               subject. the logic might be.. go to the learner subject table and get all learners/IDs who are doing 
+              <h3 class="box-title">Activity Name = <?php echo $activityName ?> and 
+              Total = <?php echo $maxmarks ?> 
+              
+              and submit all this data into the learnerActivity Marks in the classhandler.php..   
+              keep in mind that these have to be learners f this particular grade and subject. 
+              the logic might be.. go to the learner subject table and get all learners/IDs who are doing 
                that subjectId... then find their names in the learners table as well as their grade.</h3>
               
             </div>
@@ -256,13 +256,43 @@ if (!isset($_SESSION['email'])) {
 
                   <tbody>
                     <?php
-                    //select all leaners who are doing this activity... now im selecting activities
 
-                        $sql = "SELECT * FROM learners";
-                        //$sql = "SELECT * FROM activity WHERE Grade = $grade AND Sub = $subid ";
+                   $sql = "SELECT lt.LearnerId, 
+                   lt.Name, 
+                   lt.Surname, 
+                   lt.Email, 
+                   lt.ContactNumber, 
+                   lt.Grade, 
+                   lt.RegistrationDate, 
+                   lt.LearnerKnockoffTime, 
+                   lt.Math, 
+                   lt.Physics, 
+                   lt.TotalFees, 
+                   lt.TotalPaid, 
+                   lt.TotalOwe, 
+                   lt.Creator, 
+                   lt.ChapterId,
+                   ls.LearnerSubjectId,
+                   ls.SubjectId, 
+                   ls.TargetLevel, 
+                   ls.CurrentLevel, 
+                   ls.NumberOfTerms, 
+                   ls.ContractExpiryDate, 
+                   ls.Status
+                   FROM learners AS lt
+                   JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                   WHERE lt.Grade = ? 
+                   AND ls.SubjectId = ? 
+                   AND ls.Status = 'Active'
+                   AND ls.ContractExpiryDate > CURDATE()";  // Ensure contract expiry date is greater than today
 
-                        $results = $connect->query($sql);
 
+                   $stmt = $connect->prepare($sql);
+                   $stmt->bind_param("si", $grade, $subject); 
+                   $stmt->execute();
+                   $result = $stmt->get_result();
+
+                   
                         while($final = $results->fetch_assoc()) { ?>
                             <tr>
 

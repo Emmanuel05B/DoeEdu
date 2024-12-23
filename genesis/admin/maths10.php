@@ -55,58 +55,58 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=11" class="btn btn-block btn-info btn-lg">Algebraic expressions</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=11" class="btn btn-block btn-info btn-lg">Algebraic expressions</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=21" class="btn btn-block btn-warning btn-lg">Trigonometry</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=21" class="btn btn-block btn-warning btn-lg">Trigonometry</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=31" class="btn btn-block btn-success btn-lg">Finance and growth</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=31" class="btn btn-block btn-success btn-lg">Finance and growth</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=41" class="btn btn-block btn-primary btn-lg">Measurement</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=12" class="btn btn-block btn-info btn-lg">Exponents</a>
-                  </td>
-                  <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=22" class="btn btn-block btn-warning btn-lg">Functions</a>
-                  </td>
-                  <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=32" class="btn btn-block btn-success btn-lg">Statistics</a>
-                  </td>
-                  <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=42" class="btn btn-block btn-primary btn-lg">Probability</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=41" class="btn btn-block btn-primary btn-lg">Measurement</a>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=13" class="btn btn-block btn-info btn-lg">Number patterns</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=12" class="btn btn-block btn-info btn-lg">Exponents</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=23" class="btn btn-block btn-warning btn-lg">Euclidean geometry</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=22" class="btn btn-block btn-warning btn-lg">Functions</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=33" class="btn btn-block btn-success btn-lg">Trigonometry</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=32" class="btn btn-block btn-success btn-lg">Statistics</a>
                   </td>
                   <td>
-                    <a href="#recmodal.php?gra=10&sub=1&cha=43" class="btn btn-block btn-primary btn-lg">...</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=42" class="btn btn-block btn-primary btn-lg">Probability</a>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=14" class="btn btn-block btn-info btn-lg">Equations and inequalities</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=13" class="btn btn-block btn-info btn-lg">Number patterns</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=24" class="btn btn-block btn-warning btn-lg">Analytical geometry</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=23" class="btn btn-block btn-warning btn-lg">Euclidean geometry</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=1&cha=34" class="btn btn-block btn-success btn-lg">Euclidean geometry</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=33" class="btn btn-block btn-success btn-lg">Trigonometry</a>
                   </td>
                   <td>
-                    <a href="#recmodal.php?gra=10&sub=1&cha=44" class="btn btn-block btn-primary btn-lg">...</a>
+                    <a href="#recmodal.php?gra=10&sub=5&cha=43" class="btn btn-block btn-primary btn-lg">...</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="recmodal.php?gra=10&sub=5&cha=14" class="btn btn-block btn-info btn-lg">Equations and inequalities</a>
+                  </td>
+                  <td>
+                    <a href="recmodal.php?gra=10&sub=5&cha=24" class="btn btn-block btn-warning btn-lg">Analytical geometry</a>
+                  </td>
+                  <td>
+                    <a href="recmodal.php?gra=10&sub=5&cha=34" class="btn btn-block btn-success btn-lg">Euclidean geometry</a>
+                  </td>
+                  <td>
+                    <a href="#recmodal.php?gra=10&sub=5&cha=44" class="btn btn-block btn-primary btn-lg">...</a>
                   </td>
                 </tr>
               </table>

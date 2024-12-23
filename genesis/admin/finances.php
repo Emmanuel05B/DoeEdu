@@ -297,6 +297,26 @@ if (!isset($_SESSION['email'])) {
                   </thead>
                   <tbody>
                     <?php
+                                 /*   SELECT SUM(column_name) AS total
+                                    FROM learners;
+                                    
+                                    
+    SELECT                 
+    SUM(column_name) AS total_amount,
+    SUM(column_name) AS total_fees,
+    SUM(column_name) AS total_taxes
+    FROM finances
+    WHERE status = 'active';
+
+
+    SELECT 
+    SUM(CASE WHEN column1 > 0 THEN column1 ELSE 0 END) AS total_column1,
+    SUM(CASE WHEN column2 > 0 THEN column2 ELSE 0 END) AS total_column2,
+    SUM(CASE WHEN column3 > 0 THEN column3 ELSE 0 END) AS total_column3
+FROM finances;     avoids negatives
+*/
+
+
                         //select all leaners who are doing this activity... now im selecting activities
                         $sql = "SELECT * FROM learners";
                         $results = $connect->query($sql);
@@ -354,6 +374,9 @@ if (!isset($_SESSION['email'])) {
     <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box bg-aqua">
                 <span class="info-box-icon"><i class="ion-ios-chatbubble-outline"></i></span>
+
+
+
 
                 <div class="info-box-content">
                     <span class="info-box-text">Total Paid by Learners</span>
@@ -654,9 +677,6 @@ if (!isset($_SESSION['email'])) {
 <script src="bower_components/chart.js/Chart.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="dist/js/pages/dashboard2.js"></script>
-
-
-
 
 
 <!-- page script -->
