@@ -117,12 +117,12 @@ if (!isset($_SESSION['email'])) {
               <h3><?php echo $row['count']; ?></h3>
               <p>Learners Registered</p>
             </div>
-            <a href="alllearners.php">
+            <a href="alllearner.php">
               <div class="icon">
                 <i class="ion ion-person"></i>
               </div>
             </a>
-            <a href="alllearners.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="alllearner.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->

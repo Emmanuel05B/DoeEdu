@@ -60,6 +60,7 @@ if (!isset($_SESSION['email'])) {
     include('../partials/connect.php');
         $grade = $_GET['gra'];
         $subject = $_GET['sub'];
+        $chapter = $_GET['cha'];
     ?>
             
 
@@ -96,6 +97,8 @@ if (!isset($_SESSION['email'])) {
                             <td><input type="text" name="activityname" ></td>
                             <input type="hidden" id="urlParams" name="graid" value="<?php echo $grade ?>">
                             <input type="hidden" id="urlParams" name="subid" value="<?php echo $subject ?>">
+                            <input type="hidden" id="urlParams" name="chaid" value="<?php echo $chapter ?>">
+
                         </tr>
                        
                         <tr>

@@ -11,6 +11,18 @@ if (!isset($_SESSION['email'])) {
 ?>
 
 <?php include("adminpartials/head.php"); ?>
+    <style>
+
+     .button-container {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        }
+     .button-container button {
+        padding: 10px 20px;
+     }
+        
+    </style>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -21,6 +33,165 @@ if (!isset($_SESSION['email'])) {
 
   <!-- Content Wrapper. Contains page content --->
   <div class="content-wrapper">
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+
+  <?php
+     include('../partials/connect.php'); 
+
+     if (isset($_POST["submit"])) {
+
+    // get form data
+    $learnerFakeids = $_POST['learnerFakeids'];
+    $activityIds = $_POST['activityIds'];  
+    
+    $attendances = $_POST['attendances'];  
+    $attendancereasons = $_POST['attendancereasons']; 
+
+    $marks = $_POST['marks']; 
+
+    $submissions = $_POST['submitted'];  
+    $submissionreasons = $_POST['submissionreasons'];  
+
+
+    // Prepare the SQL statements
+    $checkStmt = $connect->prepare("SELECT COUNT(*) FROM learneractivitymarks WHERE DateAssigned = CURDATE() AND ActivityId = ?");
+
+    $insertStmt = $connect->prepare("INSERT INTO learneractivitymarks (LearnerId,	ActivityId,	MarkerId,	MarksObtained,	DateAssigned,	Attendance,	AttendanceReason,	Submission,	SubmissionReason) 
+    VALUES (?, ?, ?, ?, Now(), ?, ?, ?, ?)");  	
+
+
+    if ($checkStmt === false || $insertStmt === false) {
+        die("Prepare failed: " . $connect->error); // Handle prepare statement failure
+    }
+
+    $index = 0;
+    $numEntries = count($learnerFakeids);     //count the number of entries.
+    $success = true;
+
+    while ($index < $numEntries) {       //loop throght the Learners
+        $markerId = $_SESSION['user_id'];  // for the marker
+
+        $learnerFakeid = $learnerFakeids[$index];       //learnerId of that specific learner at index number
+        $activityId = $activityIds[$index];  //on hold
+
+        $attendance = $attendances[$index];  
+        $attendanceReason = $attendancereasons[$index]; 
+    
+        $mark = $marks[$index]; 
+    
+        $submission = $submissions[$index]; 
+        $submissionReason = $submissionreasons[$index]; 
+
+
+        // Check if a task already exists for this learner today
+        $checkStmt->bind_param("i", $activityId);    //..................................fix here
+        
+        if (!$checkStmt->execute()) {
+            echo 'Failed to check existing reports. Please try again later.';
+            $success = false;
+            break;
+        }
+
+        $checkStmt->bind_result($count);
+        $checkStmt->fetch();
+        $checkStmt->free_result(); // Free the result set
+
+        if ($count > 0) {
+            echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Report Already Exists",
+                    text: "Data has already been saved for today. Click the Edit Button if you wish to change data",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "class.php?gid=$graid&sid=$subject&cid=$chapter";
+                    }
+                });
+            </script>';
+            $success = false;
+            break;
+        }
+
+        // Bind parameters and execute the insert statement
+        $insertStmt->bind_param("iiiissss", $learnerFakeid, $activityId, $markerId, $mark, $attendance, $attendanceReason, $submission, $submissionReason);
+
+
+        if (!$insertStmt->execute()) {
+            if ($connect->errno === 1062) { // Duplicate entry error code
+                echo '<script>
+                    Swal.fire({
+                        icon: "error",
+                        title: "Duplicate Report",
+                        text: "Data has already been saved for today. Click the Edit Button if you wish to change data000",
+                        confirmButtonColor: "#3085d6",
+                        confirmButtonText: "OK"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "class.php?gid=$graid&sid=$subject&cid=$chapter";
+                        }
+                    });
+                </script>';
+                $success = false;
+                break;
+            } else {
+                echo '<script>
+                    Swal.fire({
+                        icon: "error",
+                        title: "Submission Error",
+                        text: "Failed to submit the report. Please try again later.",
+                        confirmButtonColor: "#3085d6",
+                        confirmButtonText: "OK"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "class.php?gid=$graid&sid=$subject&cid=$chapter";
+                        }
+                    });
+                </script>';
+                $success = false;
+                break;
+            }
+        }
+
+        $index++;
+    }
+
+    // Close the statements
+    $checkStmt->close();
+    $insertStmt->close();
+
+    if ($success) {
+        echo '<script>
+            Swal.fire({
+                icon: "success",
+                title: "Successfully Reported",
+                text: "Data has been saved for all Learners.",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "class.php?gid=$graid&sid=$subject&cid=$chapter";
+                }
+            });
+        </script>';
+    }
+
+    // Close the database connection
+    $connect->close();
+    exit();
+     }
+?>
+
+
+
+  <!-- --------------------------------------front end code below ------------------------------------------------>
+
+
+
+
+
     <!-- Content Header (Page header) -->
     <section class="content-header">
     <?php
@@ -28,22 +199,8 @@ if (!isset($_SESSION['email'])) {
       
       $grade = intval($_GET['gid']);  // Ensure it's an integer
       $subid = intval($_GET['sid']);  // Ensure it's an integer
+      $chaid = intval($_GET['cid']);  // Ensure it's an integer
 
-      if ($subid == 1) {
-        $subject = "Mathematics";
-        } elseif ($subid == 2) {
-            $subject = "Physical Sciences";
-        } else {
-            $subject = "Unknown Subject";  // Optional: for other subid values
-        }
-
-
-        //where ActivtyId = ... and SubjectId  = ...  i have to refere to the newly created activity
-      // $sql = "SELECT * FROM activities WHERE Grade = $grade AND SubjectId = $subid ";
-       // $sql = "SELECT * FROM activities WHERE ActivtyId = $grade AND SubjectId = $subid ";
-
-      //  $results = $connect->query($sql);
-      //  $final = $results->fetch_assoc()
     ?> 
     </section>
 
@@ -57,24 +214,43 @@ if (!isset($_SESSION['email'])) {
             <div class="box-header">
               <h3 class="box-title">Learners</h3>
             </div>
+            <?php   
+              // i have to refere to the newly created activity        unless i already have the activity id
+              //it must select the most recent activity... which is the activity with the highest ActivityId...or you can also use date  
+              /*
+              $sql = "SELECT * FROM activities WHERE Grade = $grade AND SubjectId = $subid AND ChapterId = $chaid";
+              $results = $connect->query($sql);
+              $finalres = $results->fetch_assoc();    
+              */
+
+             ?>
+
 
             <div class="box-header">
-              <h3 class="box-title">Activity Name = ........   and  Total = ......and submit all this data into the learnerActivity Marks.</h3>
+              <h3 class="box-title">Activity Name = <?php echo $finalres['ActivityName'] ?> and 
+              Total = <?php echo $finalres['MaxMarks'] ?> and submit all this data into the learnerActivity Marks.
+               in the classhandler.php..   keep in mind that these have to be learners f this particular grade and 
+               subject. the logic might be.. go to the learner subject table and get all learners/IDs who are doing 
+               that subjectId... then find their names in the learners table as well as their grade.</h3>
               
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <form id="learnerForm" action="classhandler.php" method="post">
+              <form id="learnerForm" action="class.php" method="post">
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                     <tr>
+                      <th>StNo.</th>
                       <th>Name</th>
                       <th>Surname</th>
-                      <th>Attendance Status</th>
-                      <th>Marks</th>
+                      <th>Attendance</th>
+                      <th>Reason</th>
+                      <th>Enter Marks</th>
                       <th>Submitted</th>
                       <th>Reason</th>
                       <th>Edit</th>
+                      <th>Profile</th>
+
                     </tr>
                   </thead>
 
@@ -82,7 +258,7 @@ if (!isset($_SESSION['email'])) {
                     <?php
                     //select all leaners who are doing this activity... now im selecting activities
 
-                        $sql = "SELECT * FROM learner";
+                        $sql = "SELECT * FROM learners";
                         //$sql = "SELECT * FROM activity WHERE Grade = $grade AND Sub = $subid ";
 
                         $results = $connect->query($sql);
@@ -90,61 +266,86 @@ if (!isset($_SESSION['email'])) {
                         while($final = $results->fetch_assoc()) { ?>
                             <tr>
 
-
+                              <td>
+                                <?php echo $final['LearnerId'] ?>
+                              </td>
                               <td>
                                 <?php echo $final['Name'] ?>
-                                <input type="hidden" name="learner_ids[]" value="<?php echo $final['LearnerId'] ?>" />
+                                <input type="hidden" id="urlParams" name="learnerFakeids[]" value="<?php echo $final['LearnerId'] ?>">
+                                <input type="hidden" id="urlParams" name="activityIds[]" value="<?php echo $finalres['ActivityId'] ?>">
                               </td>
-                              <td><?php echo $final['Surname'] ?></td>
                               <td>
-                                 <select name="attendances[]">
-                                <option value="present" selected>Present</option>
-                                <option value="absent">Absent</option>
-                                <option value="late">Late</option>
-                                 </select>
-                             </td>
-
-                              <td> <input type="number" name="marks[]" value="" placeholder="Enter Marks" ></td>
-                              
+                                <?php echo $final['Surname'] ?>
+                              </td>
                               <td>
-                              
-                                <select name="submitted[]">
-                                    <option value="Yes" selected>Yes</option>
-                                    <option value="No">No</option>
+                                <select name="attendances[]">
+                                  <option value="present" selected>Present</option>
+                                  <option value="absent">Absent</option>
+                                  <option value="late">Late</option>
                                 </select>
-                       
-                              </td>
-   
-                              <td> <input type="number" name="marks[]" value="" placeholder="provide a reason" ></td>
-                              
-                              <td>
-                                <p><a href="learnerprofile.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-block btn-primary"
-                                    >
-                                    Open</a>
-                                </p>
-                            </td>
+                             </td>
+                             <td>
+                                <select name="attendancereasons[]">
+                                  <option value="None" selected>None Provided</option>
+                                  <option value="Other">Other</option>
+                                  <option value="Data Issues">Data Issues</option>
 
-                            </tr>
+                                </select>
+                             </td>
+                              <td> 
+                                <input type="number" name="marks[]" value="" placeholder="Marks" min="0", max="<?php echo $finalres['MaxMarks'] ?>" required>
+                              </td>
+                              <td>
+                                <select name="submitted[]">
+                                  <option value="Yes" selected>Yes</option>
+                                  <option value="No">No</option>
+                                </select>
+                              </td>
+                              <td>
+                                <select name="submissionreasons[]">
+                                <option value="None" selected>None Provided</option>
+                                <option value="Other">Other</option>
+                                <option value="Data Issues">Data Issues</option>
+                                <option value="Did Not Write">Did Not Write</option>
+
+                                </select>
+                              </td>
+                              <td>
+                                <p><a href="editmarks.php?id=<?php echo $final['LearnerId'] ?>&max=<?php echo $finalres['MaxMarks'] ?>" class="btn btn-block btn-primary">Edit</a></p>
+                              </td>
+                              <td>
+                                <p><a href="learnerprofile.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-block btn-primary">Open</a></p>
+                              </td>
+
+                          </tr>
+
                     <?php } ?>
                   </tbody>
 
                   <tfoot>
                     <tr>
+                      <th>StNo.</th>
                       <th>Name</th>
                       <th>Surname</th>
-                      <th>Attendance Status</th>
+                      <th>Attendance</th>
+                      <th>Reason</th>
                       <th>Marks</th>
                       <th>Submitted</th>
                       <th>Reason</th>
                       <th>Edit</th>
+                      <th>Profile</th>
+
                     </tr>
                   </tfoot>
                 </table>
 
                 <!-- Submit button -->
                 <div class="button-container">
-                  <button type="submit" name="submit">Submit Learner Information</button>
-                </div>
+                  <button type="submit" name="submit">Submit Learner Data</button><br>
+                  <button type="submit" name="submitreport">Report to Parents</button>
+
+                </div><br>
+               
               </form>
             </div>
             <!-- /.box-body -->

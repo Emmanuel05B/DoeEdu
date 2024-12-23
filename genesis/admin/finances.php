@@ -11,6 +11,7 @@ if (!isset($_SESSION['email'])) {
 ?>
 <?php include("adminpartials/head.php"); ?>
 
+
 <style>
 
 </style>
@@ -267,7 +268,7 @@ if (!isset($_SESSION['email'])) {
       <!-- /.row -->
     </section>
 
-    <!-- Main content table--------------------------------------------->
+    <!-- Main content table--------------------h------------------------->
     <section class="content">
       <div class="row">
         <div class="col-xs-12">
@@ -280,59 +281,65 @@ if (!isset($_SESSION['email'])) {
             <!-- /.box-header -->
             <div class="box-body">
               <table id="example1" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                <th>Name</th>
-                  <th>Surname</th>
-                  <th>Joined From</th>
-                  <th>Joined To</th>
-                  <th>Num Terms</th>
-                  <th>Total Fees</th>
-                  <th>Total Paid</th>
-                  <th>Total Owe</th>
-                  <th>Pay</th>
-                </tr>
-                </thead>
-                <?php
-                    include('../partials/connect.php');
-               
-                    $sql = "SELECT * FROM finances";
-                    $results = $connect->query($sql);
-                    while($final = $results->fetch_assoc()) { ?>
+                  <thead>
+                    <tr>
+                      <th>StNo</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>Grade</th>
+                      <th>Math</th>
+                      <th>Physics</th>
+                      <th>Total Fees</th>
+                      <th>Total Paid</th>
+                      <th>Total Owe</th>
+                      <th>Pay</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php
+                        //select all leaners who are doing this activity... now im selecting activities
+                        $sql = "SELECT * FROM learners";
+                        $results = $connect->query($sql);
+                        while($final = $results->fetch_assoc()) { ?>
+                          <tr>
+                            <td><?php echo $final['LearnerId'] ?></td>
+                            <td><?php echo $final['Name'] ?></td>
+                            <td><?php echo $final['Surname'] ?></td>
+                            <td><?php echo $final['Grade'] ?></td>
+                            <td><?php echo $final['Math'] ?></td>
+                            <td><?php echo $final['Physics'] ?></td>
+                            <td><?php echo $final['TotalFees'] ?></td>
+                            <td><?php echo $final['TotalPaid'] ?></td>
+                            <td> <?php echo $final['TotalOwe'] ?></td>
+                            <td> 
+                              <form action="payhandler.php" method="POST" class="horizontal-container">
+                                <input type="number" class="form-control2" id="newamount" name="newamount" min="-5000" max="5000" required>
+                                <input type="hidden" name="learnerid" value="<?php echo $final['LearnerId']; ?>">                                                                        
+                                <button type="submit" name="updateby" class="button btn btn-primary py-3 px-4">Update By</button>
+                              </form>
+                            </td>
+                          </tr>
 
-                       
-                        
-                <tbody>
-                <tr>
-                  
-                  <td><?php echo $final['Name'] ?></td>
-                  <td><?php echo $final['Surname'] ?></td>
-                  <td><?php echo $final['JF'] ?></td>
-                  <td><?php echo $final['JT'] ?></td>
-                  <td><?php echo $final['NumTerms'] ?></td>
-                  <td><?php echo $final['TotalFees'] ?></td>
-                  <td><?php echo $final['TotalPaid'] ?></td>
-                  <td> vvvv</td>
-                  <td>bbbbbb</td>
+                    <?php } ?>
+                  </tbody>
 
-                </tr>
+                  <tfoot>
+                    <tr>
+                    <th>StNo</th>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Grade</th>
+                    <th>Math</th>
+                    <th>Physics</th>
+                    <th>Total Fees</th>
+                    <th>Total Paid</th>
+                    <th>Total Owe</th>
+                    <th>Pay</th>
 
-                </tbody>
-                <?php } ?>
-                <tfoot>
-                <tr>
-                <th>Name</th>
-                  <th>Surname</th>
-                  <th>Joined From</th>
-                  <th>Joined To</th>
-                  <th>Num Terms</th>
-                  <th>Total Fees</th>
-                  <th>Total Paid</th>
-                  <th>Total Owe</th>
-                  <th>Pay</th>
-                </tr>
-                </tfoot>
+                    </tr>
+                  </tfoot>
               </table>
+
             </div>
             <!-- /.box-body -->
           </div>
@@ -344,13 +351,33 @@ if (!isset($_SESSION['email'])) {
     </section>
     <!-- /.content -->
     <div class="row">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box bg-aqua">
+                <span class="info-box-icon"><i class="ion-ios-chatbubble-outline"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Total Paid by Learners</span>
+                    <span class="info-box-number">163,921</span>
+
+                    <div class="progress">
+                    <div class="progress-bar" style="width: 40%"></div>
+                    </div>
+                    <span class="progress-description">
+                    40% Increase in 30 Days
+                    </span>
+                </div>
+                <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <!-- Info Boxes Style 2 -->
                 <div class="info-box bg-yellow">
                 <span class="info-box-icon"><i class="ion ion-ios-pricetag-outline"></i></span>
 
                 <div class="info-box-content">
-                    <span class="info-box-text">Inventory</span>
+                    <span class="info-box-text">Tot Amound Expexted</span>
                     <span class="info-box-number">5,200</span>
 
                     <div class="progress">
@@ -370,7 +397,7 @@ if (!isset($_SESSION['email'])) {
                 <span class="info-box-icon"><i class="ion ion-ios-heart-outline"></i></span>
 
                 <div class="info-box-content">
-                    <span class="info-box-text">Mentions</span>
+                    <span class="info-box-text">Amound Due to Us</span>
                     <span class="info-box-number">92,050</span>
 
                     <div class="progress">
@@ -390,7 +417,7 @@ if (!isset($_SESSION['email'])) {
                 <span class="info-box-icon"><i class="ion ion-ios-cloud-download-outline"></i></span>
 
                 <div class="info-box-content">
-                    <span class="info-box-text">Downloads</span>
+                    <span class="info-box-text">Amound we Owe</span>
                     <span class="info-box-number">114,381</span>
 
                     <div class="progress">
@@ -405,25 +432,7 @@ if (!isset($_SESSION['email'])) {
                 <!-- /.info-box -->
             </div>
 
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <div class="info-box bg-aqua">
-                <span class="info-box-icon"><i class="ion-ios-chatbubble-outline"></i></span>
-
-                <div class="info-box-content">
-                    <span class="info-box-text">Direct Messages</span>
-                    <span class="info-box-number">163,921</span>
-
-                    <div class="progress">
-                    <div class="progress-bar" style="width: 40%"></div>
-                    </div>
-                    <span class="progress-description">
-                    40% Increase in 30 Days
-                    </span>
-                </div>
-                <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            </div>
+            
         </div>
   </div>
 
@@ -647,18 +656,14 @@ if (!isset($_SESSION['email'])) {
 <script src="dist/js/pages/dashboard2.js"></script>
 
 
+
+
+
 <!-- page script -->
+
 <script>
   $(function () {
     $('#example1').DataTable()
-    $('#example2').DataTable({
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : false,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : false
-    })
   })
 </script>
 

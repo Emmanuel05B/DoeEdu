@@ -1,3 +1,6 @@
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+
 <?php
 session_start();
 
@@ -88,9 +91,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
       // If learner does not exist, insert learner data
       if (!$learner_id) {
+        $total_fees = $maths + $physics; // Calculate total fees
+        $total_paid = 0; // Set default value for now
+        $total_owe = $total_fees;
         // Insert learner data without using knockout_time for expiry
-        $stmt = $connect->prepare("INSERT INTO learners (Name, Surname, Email, ContactNumber, Grade, RegistrationDate, LearnerKnockoffTime) VALUES (?, ?, ?, ?, ?, NOW(), ?)");
-        $stmt->bind_param("sssiis", $learner_name, $learner_surname, $learner_email, $learner_contactnumber, $learner_grade, $learner_knockout_time);
+        $stmt = $connect->prepare("INSERT INTO learners (Name, Surname, Email, ContactNumber, Grade, RegistrationDate, LearnerKnockoffTime, Math, Physics, TotalFees, TotalPaid, TotalOwe) VALUES (?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssiisddddd", $learner_name, $learner_surname, $learner_email, $learner_contactnumber, $learner_grade, $learner_knockout_time, $maths, $physics, $total_fees, $total_paid, $total_owe);
 
         if ($stmt->execute()) {
           $learner_id = $connect->insert_id; // Get the learner ID
@@ -181,7 +187,7 @@ if ($physics != 0) {
             $connect->commit(); // Commit the transaction
 
             // Send confirmation email to parent
-            //sendEmailToParent($parent_email, $parent_name);
+            sendEmailToParent($parent_email, $parent_name);
           } else {
             $connect->rollback();
             echo "<script>

@@ -42,6 +42,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
           <li><a href="manegeprofiles.php"><i class="fa fa-circle-o"></i> Registrations</a></li>
           <li><a href="finances.php"><i class="fa fa-circle-o"></i> Finances</a></li> 
           <li><a href="trackingprogress.php"><i class="fa fa-circle-o"></i> Tracking and Analysis</a></li>
+          <li><a href="categ.php"><i class="fa fa-circle-o"></i> My Class</a></li>
           <li><a href="schedulemeeting.php"><i class="fa fa-circle-o"></i> Communications</a></li>
           
           
