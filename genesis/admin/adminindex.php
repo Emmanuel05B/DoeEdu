@@ -150,82 +150,60 @@ if (!isset($_SESSION['email'])) {
               </div>
             </div>
             <!-- /.box-header -->
-            <div class="box-body">
-              <!-- See dist/js/pages/dashboard.js to activate the todoList plugin -->
-              <ul class="todo-list">
-                <li>
-                  <!-- drag handle -->
-                  <span class="handle">
-                    <i class="fa fa-ellipsis-v"></i>
-                    <i class="fa fa-ellipsis-v"></i>
-                  </span>
-                  <!-- checkbox -->
-                  <input type="checkbox" value="">
-                  <!-- todo text -->
-                  <span class="text">Design a nice theme</span>
-                  <!-- Emphasis label -->
-                  <small class="label label-danger"><i class="fa fa-clock-o"></i> 2 mins</small>
-                  <!-- General tools such as edit or delete-->
-                  <div class="tools">
-                    <i class="fa fa-edit"></i>
-                    <i class="fa fa-trash-o"></i>
-                  </div>
-                </li>
-                <li>
-                      <span class="handle">
-                        <i class="fa fa-ellipsis-v"></i>
-                        <i class="fa fa-ellipsis-v"></i>
-                      </span>
-                  <input type="checkbox" value="">
-                  <span class="text">Make the theme responsive</span>
-                  <small class="label label-info"><i class="fa fa-clock-o"></i> 4 hours</small>
-                  <div class="tools">
-                    <i class="fa fa-edit"></i>
-                    <i class="fa fa-trash-o"></i>
-                  </div>
-                </li>
-                <li>
-                      <span class="handle">
-                        <i class="fa fa-ellipsis-v"></i>
-                        <i class="fa fa-ellipsis-v"></i>
-                      </span>
-                  <input type="checkbox" value="">
-                  <span class="text">Let theme shine like a star</span>
-                  <small class="label label-warning"><i class="fa fa-clock-o"></i> 1 day</small>
-                  <div class="tools">
-                    <i class="fa fa-edit"></i>
-                    <i class="fa fa-trash-o"></i>
-                  </div>
-                </li>
+            <?php
 
+            // Get the logged-in user's ID
+            $creatorId = $_SESSION['user_id']; 
+
+            // Fetch the tasks for the logged-in user from the database
+            $sql = "SELECT * FROM TodoList WHERE CreatorId = ? ORDER BY DueDate ASC";  // You can adjust the sorting as needed
+            $stmt = $connect->prepare($sql);
+            $stmt->bind_param("i", $creatorId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            ?>
+
+<div class="box-body">
+    <!-- See dist/js/pages/dashboard.js to activate the todoList plugin -->
+    <ul class="todo-list">
+        <?php
+        // Check if there are tasks for the logged-in user
+        if ($result->num_rows > 0) {
+            // Loop through the tasks and display them
+            while ($task = $result->fetch_assoc()) {
+                // Format the date and time
+                $dueDate = date('Y-m-d', strtotime($task['DueDate']));
+                $dueTime = date('H:i', strtotime($task['DueDate']));
+                ?>
                 <li>
-                      <span class="handle">
+                    <!-- drag handle -->
+                    <span class="handle">
                         <i class="fa fa-ellipsis-v"></i>
                         <i class="fa fa-ellipsis-v"></i>
-                      </span>
-                  <input type="checkbox" value="">
-                  <span class="text">Check your messages and notifications</span>
-                  <small class="label label-primary"><i class="fa fa-clock-o"></i> 1 week</small>
-                  <div class="tools">
-                    <i class="fa fa-edit"></i>
-                    <i class="fa fa-trash-o"></i>
-                  </div>
+                    </span>
+                    <!-- checkbox -->
+                    <input type="checkbox" value="" <?php if ($task['Status'] == 1) echo 'checked'; ?>>
+                    <!-- todo text -->
+                    <span class="text"><?php echo htmlspecialchars($task['TaskText']); ?></span>
+                    <!-- Emphasis label -->
+                    <small class="label label-info">
+                        <i class="fa fa-clock-o"></i> <?php echo $dueDate . ' ' . $dueTime; ?>
+                    </small>
+                    <!-- General tools such as edit or delete-->
+                    <div class="tools">
+                        <a href="updateTodo.php?todo_id=<?php echo $task['TodoId']; ?>" class="fa fa-edit"></a>
+                        <a href="deleteTodo.php?todo_id=<?php echo $task['TodoId']; ?>" class="fa fa-trash-o" onclick="return confirm('Are you sure you want to delete this task?');"></a>
+                    </div>
                 </li>
-                <li>
-                      <span class="handle">
-                        <i class="fa fa-ellipsis-v"></i>
-                        <i class="fa fa-ellipsis-v"></i>
-                      </span>
-                  <input type="checkbox" value="">
-                  <span class="text">Let theme shine like a star</span>
-                  <small class="label label-default"><i class="fa fa-clock-o"></i> 1 month</small>
-                  <div class="tools">
-                    <i class="fa fa-edit"></i>
-                    <i class="fa fa-trash-o"></i>
-                  </div>
-                </li>
-              </ul>
-            </div>
+                <?php
+            }
+        } else {
+            echo '<li>No tasks found.</li>';
+        }
+        ?>
+    </ul>
+</div>
+
             <!-- /.box-body -->
             <div class="box-footer clearfix no-border">
 
