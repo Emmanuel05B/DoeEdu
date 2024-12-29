@@ -21,51 +21,8 @@ if (!isset($_SESSION['email'])) {
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-    <?php
-      include('../partials/connect.php');
-      
-      $statusValue = intval($_GET['val']);  // Ensure it's an integer
-
-      // Check the status and render different HTML for each case
-      if ($statusValue == 1) {
-          // Status 1
-          echo '<h1>On Contract and Owing Learners</h1>';
-          echo '<ol class="breadcrumb">
-                  <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                  <li class="active">Learners - Status 1</li>
-                </ol>';
-      } else if ($statusValue == 2) {
-          // Status 2
-          echo '<h1>On Contract and Not Owing Learners</h1>';
-          echo '<ol class="breadcrumb">
-                  <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                  <li class="active">Learners - Status 2</li>
-                </ol>';
-      } else if ($statusValue == 3) {
-          // Status 3
-          echo '<h1>Expired Contract and Not Owing Learners</h1>';
-          echo '<ol class="breadcrumb">
-                  <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                  <li class="active">Learners - Status 3</li>
-                </ol>';
-      } else if ($statusValue == 4) {
-          // Status 4
-          echo '<h1>Expired Contract and Owing Learners</h1>';
-          echo '<ol class="breadcrumb">
-                  <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                  <li class="active">Learners - Status 4</li>
-                </ol>';
-      } else {
-          // Default case if none of the statuses match
-          echo '<h1>Learners - Unknown Status</h1>';
-          echo '<ol class="breadcrumb">
-                  <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                  <li class="active">Learners - Unknown Status</li>
-                </ol>';
-      }
-    ?> 
+     
 </section>
-
 
     <!-- Main content table--------------------------------------------->
     <section class="content">
@@ -74,60 +31,102 @@ if (!isset($_SESSION['email'])) {
           <!-- /.box -->
 
           <div class="box">
-            <div class="box-header">
-              <h3 class="box-title">Learners</h3>
-            </div>
             <!-- /.box-header -->
             <div class="box-body">
               <table id="example1" class="table table-bordered table-striped">
                 <thead>
                 <tr>
-                <th>Name</th>
-                  <th>Surname</th>
-                  <th>Joined From</th>
-                  <th>Joined To</th>
-                  <th>Num Terms</th>
-                  <th>Total Fees</th>
-                  <th>Total Paid</th>
-                  <th>Total Owe</th>
-                  <th>Pay</th>
+                      <th>StNo</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>Grade</th>
+                      <th>Math</th>
+                      <th>Physics</th>
+                      <th>Total Fees</th>
+                      <th>Total Paid</th>
+                      <th>Total Owe</th>
                 </tr>
-                </thead>
-                <?php
-                    
-                    $sql = "SELECT * FROM finances WHERE Status = $statusValue";
-                    $results = $connect->query($sql);
-                    
-                    while($final = $results->fetch_assoc()) { ?>  
-                        
+                </thead> 
+
                 <tbody>
+                <?php
+                include('../partials/connect.php');
+      
+                $statusValue = intval($_GET['val']);  // Ensure it's an integer
+          
+                // Check the status and render different HTML for each case
+                if ($statusValue == 1) {
+                    // Status 1
+                    echo '<h3>On Contract and Owing Learners</h3><br>';
+          
+                    $sql = "SELECT lt.LearnerId, lt.TotalOwe,  
+                    ls.LearnerSubjectId,
+                    ls.SubjectId, 
+                    ls.ContractExpiryDate, 
+                    ls.Status
+                    
+                    FROM learners AS lt
+                    JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                    WHERE lt.TotalOwe => 0
+                    AND ls.ContractExpiryDate > CURDATE()";  
+          
+          
+                   // $sql = "SELECT * FROM learners WHERE TotalOwe > 0";
+                   
+          
+                } else if ($statusValue == 2) {
+                    // Status 2
+                    echo '<h3>On Contract and Not Owing Learners</h3><br>';
+          
+                    $sql = "SELECT * FROM learners WHERE TotalOwe <= 0";
+ 
+          
+                } else if ($statusValue == 3) {
+                    // Status 3
+                    echo '<h3>Expired Contract and Not Owing Learners</h3><br>';
+          
+                    $sql = "SELECT * FROM learners WHERE TotalOwe <= 0";
+
+          
+                } else if ($statusValue == 4) {
+                    // Status 4
+                    echo '<h3>Expired Contract and Owing Learners</h3><br>';
+          
+                    $sql = "SELECT * FROM learners WHERE TotalOwe > 0";
+          
+                } else {
+                    // Default case if none of the statuses match
+                    echo '<h1>Learners - Unknown Status</h1>';
+          
+                }
+                    
+                    $results = $connect->query($sql);
+                    while($final = $results->fetch_assoc()) { ?> 
                 <tr>
-                  
-                  <td><?php echo $final['Name'] ?></td>
-                  <td><?php echo $final['Surname'] ?></td>
-                  <td><?php echo $final['JF'] ?></td>
-                  <td><?php echo $final['JT'] ?></td>
-                  <td><?php echo $final['NumTerms'] ?></td>
-                  <td><?php echo $final['TotalFees'] ?></td>
-                  <td><?php echo $final['TotalPaid'] ?></td>
-                  <td> vvvv</td>
-                  <td>bbbbbb</td>
+                    <td><?php echo $final['LearnerId'] ?></td>
+                    <td><?php echo $final['Name'] ?></td>
+                    <td><?php echo $final['Surname'] ?></td>
+                    <td><?php echo $final['Grade'] ?></td>
+                    <td><?php echo $final['Math'] ?></td>
+                    <td><?php echo $final['Physics'] ?></td>
+                    <td><?php echo $final['TotalFees'] ?></td>
+                    <td><?php echo $final['TotalPaid'] ?></td>
+                    <td> <?php echo $final['TotalOwe'] ?></td>
 
                 </tr>
-
-                </tbody>
                 <?php } ?>
+                </tbody>
                 <tfoot>
                 <tr>
-                <th>Name</th>
-                  <th>Surname</th>
-                  <th>Joined From</th>
-                  <th>Joined To</th>
-                  <th>Num Terms</th>
-                  <th>Total Fees</th>
-                  <th>Total Paid</th>
-                  <th>Total Owe</th>
-                  <th>Pay</th>
+                <th>StNo</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>Grade</th>
+                      <th>Math</th>
+                      <th>Physics</th>
+                      <th>Total Fees</th>
+                      <th>Total Paid</th>
+                      <th>Total Owe</th>
                 </tr>
                 </tfoot>
               </table>
@@ -141,7 +140,6 @@ if (!isset($_SESSION['email'])) {
       <!-- /.row -->
     </section>
  
-
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
     <!-- Create the tabs -->

@@ -207,6 +207,7 @@ if (!isset($_SESSION['email'])) {
       $maxmarks = $finalres['MaxMarks'];
       $grade = $finalres['Grade'];
       $subject = $finalres['SubjectId'];
+      
 
       
 
@@ -260,35 +261,26 @@ if (!isset($_SESSION['email'])) {
                    $sql = "SELECT lt.LearnerId, 
                    lt.Name, 
                    lt.Surname, 
-                   lt.Email, 
-                   lt.ContactNumber, 
-                   lt.Grade, 
-                   lt.RegistrationDate, 
-                   lt.LearnerKnockoffTime, 
                    lt.Math, 
                    lt.Physics, 
-                   lt.TotalFees, 
                    lt.TotalPaid, 
                    lt.TotalOwe, 
-                   lt.Creator, 
-                   lt.ChapterId,
+
                    ls.LearnerSubjectId,
                    ls.SubjectId, 
-                   ls.TargetLevel, 
-                   ls.CurrentLevel, 
-                   ls.NumberOfTerms, 
                    ls.ContractExpiryDate, 
                    ls.Status
                    FROM learners AS lt
                    JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
                    WHERE lt.Grade = ? 
                    AND ls.SubjectId = ? 
-                   AND ls.Status = 'Active'
-                   AND ls.ContractExpiryDate > CURDATE()";  // Ensure contract expiry date is greater than today
+                   AND ls.Status = 'Active'";  // Ensure contract expiry date is greater than today  AND ls.ContractExpiryDate > CURDATE()
 
 
                    $stmt = $connect->prepare($sql);
-                   $stmt->bind_param("si", $grade, $subject); 
+                   $stmt->bind_param("si", $grade, $subject);   //remember the subject id..in the learners table
+                   // there is no subject with this subject id coz they re stored as prices... 
+                   //but in learnersubject it is sytored as ids...and thats where we are looking at
                    $stmt->execute();
                    $result = $stmt->get_result();
 
@@ -371,10 +363,10 @@ if (!isset($_SESSION['email'])) {
 
                 <!-- Submit button -->
                 <div class="button-container">
-                  <button type="submit" name="submit">Submit Learner Data</button><br>
-                  <button type="submit" name="submitreport">Report to Parents</button>
-
+                  <button type="submit" name="submit">Submit Learner Data</button>
                 </div><br>
+                <a href="feedback.php" class="btn btn-block btn-primary">Provide feedback to Parents</a>
+
                
               </form>
             </div>

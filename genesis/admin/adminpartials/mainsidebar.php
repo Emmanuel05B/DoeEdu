@@ -42,6 +42,18 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
           <li><a href="manegeprofiles.php"><i class="fa fa-circle-o"></i> Registrations</a></li>
           <li><a href="finances.php"><i class="fa fa-circle-o"></i> Finances</a></li> 
           <li><a href="trackingprogress.php"><i class="fa fa-circle-o"></i> Tracking and Analysis</a></li>
+          
+          <div class="btn-group">
+                  <button type="button" class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-circle-o"></i> Tracking and Analysis</button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="trackalllearners.php">Track learner Progress</a></li>                        
+                    <li><a href="chartjs.php">Activity Analysis</a></li>                        
+                    <li><a href="categ.php">Record Marks</a></li>                        
+                    <li class="divider"></li>
+                    <li><a href="#">Separated link</a></li>
+                  </ul>
+                </div>
           <li><a href="categ.php"><i class="fa fa-circle-o"></i> My Class</a></li>
           <li><a href="schedulemeeting.php"><i class="fa fa-circle-o"></i> Communications</a></li>
           

@@ -46,7 +46,7 @@ if (!isset($_SESSION['email'])) {
             <span class="info-box-icon bg-aqua"><i class="fa fa-balance-scale"></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Financial Balance</span>
-                <span class="info-box-number">R 2500</span>
+                <span class="info-box-number">R2500</span>
             </div>
             </div>
         </div>
@@ -57,7 +57,7 @@ if (!isset($_SESSION['email'])) {
             <span class="info-box-icon bg-red"><i class="fa fa-credit-card"></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Debts</span>
-                <span class="info-box-number">41,410</span>
+                <span class="info-box-number">R41,410</span>
             </div>
             </div>
         </div>
@@ -68,7 +68,7 @@ if (!isset($_SESSION['email'])) {
             <span class="info-box-icon bg-green"><i class="fa fa-dollar"></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Amount Due to Us</span>
-                <span class="info-box-number">760</span>
+                <span class="info-box-number">R760</span>
             </div>
             </div>
         </div>
@@ -79,7 +79,7 @@ if (!isset($_SESSION['email'])) {
             <span class="info-box-icon bg-yellow"><i class="fa fa-money"></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Amount Used</span>
-                <span class="info-box-number">2,000</span>
+                <span class="info-box-number">R2,000</span>
             </div>
             </div>
         </div>
@@ -92,7 +92,7 @@ if (!isset($_SESSION['email'])) {
         <div class="col-md-12">
           <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title">Monthly Recap Report</h3>
+              <h3 class="box-title">Balance Over Time</h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -177,39 +177,52 @@ if (!isset($_SESSION['email'])) {
               <div class="row">
                 <div class="col-sm-3 col-xs-6">
                   <div class="description-block border-right">
-                    <span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 17%</span>
-                    <h5 class="description-header">$35,210.43</h5>
-                    <span class="description-text">TOTAL REVENUE</span>
+                    <a href="status.php?val=<?php echo 1 ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #17a2b8;">
+                    <div>
+                    <h5 class="description-header">Learners</h5>
+                    <span class="description-text">Active--Owing</span>
+                     </div>
+                    </a>
                   </div>
                   <!-- /.description-block -->
                 </div>
-                <!-- /.col -->
-                <div class="col-sm-3 col-xs-6">
-                  <div class="description-block border-right">
-                    <span class="description-percentage text-yellow"><i class="fa fa-caret-left"></i> 0%</span>
-                    <h5 class="description-header">$10,390.90</h5>
-                    <span class="description-text">TOTAL COST</span>
-                  </div>
-                  <!-- /.description-block -->
-                </div>
-                <!-- /.col -->
-                <div class="col-sm-3 col-xs-6">
-                  <div class="description-block border-right">
-                    <span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 20%</span>
-                    <h5 class="description-header">$24,813.53</h5>
-                    <span class="description-text">TOTAL PROFIT</span>
-                  </div>
-                  <!-- /.description-block -->
-                </div>
-                <!-- /.col -->
-                <div class="col-sm-3 col-xs-6">
+                 <!-- /.col -->
+                 <div class="col-sm-3 col-xs-6">
                   <div class="description-block">
-                    <span class="description-percentage text-red"><i class="fa fa-caret-down"></i> 18%</span>
-                    <h5 class="description-header">1200</h5>
-                    <span class="description-text">GOAL COMPLETIONS</span>
+                  <a href="status.php?val=<?php echo 4 ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #dc3545;">
+                  <div>
+                    <h5 class="description-header">Learners</h5>
+                    <span class="description-text">Not Active--Owing</span>
+                     </div>
+                    </a>
                   </div>
                   <!-- /.description-block -->
                 </div>
+                <!-- /.col -->
+                <div class="col-sm-3 col-xs-6">
+                  <div class="description-block border-right">
+                  <a href="status.php?val=<?php echo 2  ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #28a745;">
+                  <div>
+                    <h5 class="description-header">Learners</h5>
+                    <span class="description-text">Active--Not Owing</span>
+                     </div>
+                    </a>
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-3 col-xs-6">
+                  <div class="description-block border-right">
+                  <a href="status.php?val=<?php echo 3 ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #ffc107;">
+                  <div>
+                    <h5 class="description-header">Learners</h5>
+                    <span class="description-text">Not Active--Not Owing</span>
+                     </div>
+                    </a>
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+               
               </div>
               <!-- /.row -->
             </div>
@@ -219,52 +232,6 @@ if (!isset($_SESSION['email'])) {
         </div>
         <!-- /.col -->
       </div>
-      <!-- /.row -->
-
-      <!-- Main row ------------------------------------->
-    <div class="row">
-      <div class="col-md-3 col-sm-6 col-xs-12">
-          <!-- Direct Messages Block -->
-          <a href="status.php?val=<?php echo 1 ?>" style="display: block; text-decoration: none; padding: 10px; color: #fff; text-align: center; border-radius: 5px; margin-bottom: 15px; background-color: #17a2b8; transition: transform 0.3s ease, background-color 0.3s ease;">
-              <div>
-                  <h4>On Contract--Owing</h4>
-                  <p><strong>20</strong></p>
-              </div>
-          </a>
-      </div>
-
-      <div class="col-md-3 col-sm-6 col-xs-12">
-          <!-- Mentions Block -->
-          <a href="status.php?val=<?php echo 2  ?>" style="display: block; text-decoration: none; padding: 10px; color: #fff; text-align: center; border-radius: 5px; margin-bottom: 15px; background-color: #28a745; transition: transform 0.3s ease, background-color 0.3s ease;">
-              <div>
-                  <h4>On Contract--Not Owing</h4>
-                  <p><strong>10</strong></p>
-              </div>
-          </a>
-      </div>
-
-      <div class="col-md-3 col-sm-6 col-xs-12">
-          <!-- Inventory Block -->
-          <a href="status.php?val=<?php echo 3 ?>" style="display: block; text-decoration: none; padding: 10px; color: #fff; text-align: center; border-radius: 5px; margin-bottom: 15px; background-color: #ffc107; transition: transform 0.3s ease, background-color 0.3s ease;">
-              <div>
-                  <h4>Expired Contract--Not Owing</h4>
-                  <p><strong>7</strong></p>
-              </div>
-          </a>
-      </div>
-
-      <div class="col-md-3 col-sm-6 col-xs-12">
-          <!-- Downloads Block -->
-          <a href="status.php?val=<?php echo 4 ?>" style="display: block; text-decoration: none; padding: 10px; color: #fff; text-align: center; border-radius: 5px; margin-bottom: 15px; background-color: #dc3545; transition: transform 0.3s ease, background-color 0.3s ease;">
-              <div>
-                  <h4>Expired Contract--Owing</h4>
-                  <p><strong>15</strong></p>
-              </div>
-          </a>
-      </div>
-    </div>
-
-
       <!-- /.row -->
     </section>
 
@@ -375,12 +342,30 @@ FROM finances;     avoids negatives
                 <div class="info-box bg-aqua">
                 <span class="info-box-icon"><i class="ion-ios-chatbubble-outline"></i></span>
 
+                <?php 
+                 $sql = "SELECT                
+                 SUM(TotalFees) AS TotalFees,
+                 SUM(TotalPaid) AS TotalPaid,
+                 SUM(CASE WHEN TotalOwe > 0 THEN TotalOwe ELSE 0 END) AS TotalOwe,
+                 SUM(CASE WHEN TotalOwe < 0 THEN TotalOwe ELSE 0 END) AS Owe
+
+                 FROM learners";
+                 $results = $connect->query($sql);
+                 $final = $results->fetch_assoc();
+
+                 $TotalFees = $final['TotalFees'];
+                 $TotalPaid = $final['TotalPaid'];
+                 $TotalOwe = $final['TotalOwe'];
+                 $Owe = (-1 * $final['Owe']);
+
+                
+                ?>
 
 
 
                 <div class="info-box-content">
                     <span class="info-box-text">Total Paid by Learners</span>
-                    <span class="info-box-number">163,921</span>
+                    <span class="info-box-number">R<?php echo $TotalPaid ?></span>
 
                     <div class="progress">
                     <div class="progress-bar" style="width: 40%"></div>
@@ -401,7 +386,7 @@ FROM finances;     avoids negatives
 
                 <div class="info-box-content">
                     <span class="info-box-text">Tot Amound Expexted</span>
-                    <span class="info-box-number">5,200</span>
+                    <span class="info-box-number">R<?php echo $TotalFees ?></span>
 
                     <div class="progress">
                     <div class="progress-bar" style="width: 50%"></div>
@@ -421,7 +406,7 @@ FROM finances;     avoids negatives
 
                 <div class="info-box-content">
                     <span class="info-box-text">Amound Due to Us</span>
-                    <span class="info-box-number">92,050</span>
+                    <span class="info-box-number">R<?php echo $TotalOwe ?></span>
 
                     <div class="progress">
                     <div class="progress-bar" style="width: 20%"></div>
@@ -441,7 +426,7 @@ FROM finances;     avoids negatives
 
                 <div class="info-box-content">
                     <span class="info-box-text">Amound we Owe</span>
-                    <span class="info-box-number">114,381</span>
+                    <span class="info-box-number">R<?php echo $Owe ?></span>
 
                     <div class="progress">
                     <div class="progress-bar" style="width: 70%"></div>

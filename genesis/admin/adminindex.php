@@ -156,9 +156,9 @@ if (!isset($_SESSION['email'])) {
                 <li>
                   <!-- drag handle -->
                   <span class="handle">
-                        <i class="fa fa-ellipsis-v"></i>
-                        <i class="fa fa-ellipsis-v"></i>
-                      </span>
+                    <i class="fa fa-ellipsis-v"></i>
+                    <i class="fa fa-ellipsis-v"></i>
+                  </span>
                   <!-- checkbox -->
                   <input type="checkbox" value="">
                   <!-- todo text -->
@@ -197,19 +197,7 @@ if (!isset($_SESSION['email'])) {
                     <i class="fa fa-trash-o"></i>
                   </div>
                 </li>
-                <li>
-                      <span class="handle">
-                        <i class="fa fa-ellipsis-v"></i>
-                        <i class="fa fa-ellipsis-v"></i>
-                      </span>
-                  <input type="checkbox" value="">
-                  <span class="text">Let theme shine like a star</span>
-                  <small class="label label-success"><i class="fa fa-clock-o"></i> 3 days</small>
-                  <div class="tools">
-                    <i class="fa fa-edit"></i>
-                    <i class="fa fa-trash-o"></i>
-                  </div>
-                </li>
+
                 <li>
                       <span class="handle">
                         <i class="fa fa-ellipsis-v"></i>
@@ -240,8 +228,12 @@ if (!isset($_SESSION['email'])) {
             </div>
             <!-- /.box-body -->
             <div class="box-footer clearfix no-border">
-              <button type="button" class="btn btn-default pull-right"><i class="fa fa-plus"></i> Add item</button>
+
+              <a href="todo.php" class="btn btn-block btn-primary"><i class="fa fa-plus"></i> Add item</a>
+
+
             </div>
+
           </div>
           <!-- /.box -->
           <div class="nav-tabs-custom">
@@ -284,22 +276,18 @@ if (!isset($_SESSION['email'])) {
               <!-- /. tools -->
             </div>
             <div class="box-body">
-              <form action="#" method="post">
+              <form action="quickmail.php" method="post">
                 <div class="form-group">
-                  <input type="email" class="form-control" name="emailto" placeholder="Email to:">
+                <input type="email" class="form-control" name="emailto" placeholder="Email to:">
                 </div>
                 <div class="form-group">
                   <input type="text" class="form-control" name="subject" placeholder="Subject">
-                </div>
+                  </div>
                 <div>
-                  <textarea class="textarea" placeholder="Message"
-                            style="width: 100%; height: 125px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                  <textarea class="textarea" name="message" placeholder="Message" style="width: 100%; height: 125px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
                 </div>
+                <input type="submit" value="Submit" name="btnsend">
               </form>
-            </div>
-            <div class="box-footer clearfix">
-              <button type="button" class="pull-right btn btn-default" id="sendEmail">Send
-                <i class="fa fa-arrow-circle-right"></i></button>
             </div>
           </div>
 
@@ -329,6 +317,7 @@ if (!isset($_SESSION['email'])) {
       </div>
 
 <!-- -----------------------end here ----------------------  -  -->
+
 
 <!-- -----------------------start here ----------------------  -  -->
 <?php

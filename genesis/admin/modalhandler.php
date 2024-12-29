@@ -30,6 +30,8 @@ $graid = $_POST['graid'];
 $subject = $_POST['subid'];
 $chapter = $_POST['chaid'];
 
+//$subid = $_POST['subid'];
+
 /*     skipped coz of line 57
 if ($subid == 1) {
     $subject = "Mathematics12";
