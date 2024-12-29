@@ -4,8 +4,9 @@ session_start();
 if (!isset($_SESSION['email'])) {
   header("Location: ../common/login.php");
   exit();
-}
+}    
 ?>
+
 <?php include("adminpartials/head.php"); ?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -14,21 +15,17 @@ if (!isset($_SESSION['email'])) {
   <!-- Left side column. contains the logo and sidebar -->
   <?php include("adminpartials/mainsidebar.php"); ?>
 
-  <!-- Content Wrapper. Contains page content --->
+  <!-- Content Wrapper. Contains page content ---> 
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-     
     </section>
 
     <!-- Main content table---------------------------------------------> 
     <section class="content">
       <div class="row">
         <div class="col-xs-12">
-          <!-- /.box -->
-
           <div class="box">
-            <!-- /.box-header -->
             <div class="box-body">
               <table id="example1" class="table table-bordered table-striped">
                 <thead>
@@ -56,15 +53,8 @@ if (!isset($_SESSION['email'])) {
                     // Status 1: On Contract and Owing Learners
                     echo '<h3>On Contract and Owing Learners</h3><br>';
 
-                    // Correct SQL query for learners owing money and with unexpired contracts
-                   /* $sql = "SELECT lt.LearnerId, lt.Name, lt.Surname, lt.Grade, lt.TotalFees, lt.TotalPaid, lt.TotalOwe,
-                            ls.LearnerSubjectId, ls.SubjectId, ls.Math, ls.Physics, ls.ContractExpiryDate, ls.Status
-                            FROM learners AS lt
-                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                            WHERE lt.TotalOwe > 0
-                            AND ls.ContractExpiryDate > CURDATE()";  */
-
-                             $sql = "SELECT lt.*, ls.*
+                    // SQL query for learners owing money and with unexpired contracts
+                    $sql = "SELECT lt.*, ls.* 
                             FROM learners AS lt
                             JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
                             WHERE lt.TotalOwe > 0
@@ -74,19 +64,51 @@ if (!isset($_SESSION['email'])) {
                                 WHERE ls2.LearnerId = ls.LearnerId
                             )
                             AND ls.ContractExpiryDate > CURDATE()";
-
                 } else if ($statusValue == 2) {
                     // Status 2: On Contract and Not Owing Learners
                     echo '<h3>On Contract and Not Owing Learners</h3><br>';
-                    $sql = "SELECT * FROM learners WHERE TotalOwe <= 0";
+
+                    // SQL query for learners not owing money and with unexpired contracts
+                    $sql = "SELECT lt.*, ls.* 
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            WHERE lt.TotalOwe <= 0
+                            AND ls.ContractExpiryDate = (
+                                SELECT MAX(ls2.ContractExpiryDate)
+                                FROM learnersubject AS ls2
+                                WHERE ls2.LearnerId = ls.LearnerId
+                            )
+                            AND ls.ContractExpiryDate > CURDATE()";
                 } else if ($statusValue == 3) {
                     // Status 3: Expired Contract and Not Owing Learners
                     echo '<h3>Expired Contract and Not Owing Learners</h3><br>';
-                    $sql = "SELECT * FROM learners WHERE TotalOwe <= 0";
+
+                    // SQL query for learners not owing money and with expired contracts
+                    $sql = "SELECT lt.*, ls.* 
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            WHERE lt.TotalOwe <= 0
+                            AND ls.ContractExpiryDate = (
+                                SELECT MAX(ls2.ContractExpiryDate)
+                                FROM learnersubject AS ls2
+                                WHERE ls2.LearnerId = ls.LearnerId
+                            )
+                            AND ls.ContractExpiryDate <= CURDATE()";
                 } else if ($statusValue == 4) {
                     // Status 4: Expired Contract and Owing Learners
                     echo '<h3>Expired Contract and Owing Learners</h3><br>';
-                    $sql = "SELECT * FROM learners WHERE TotalOwe > 0";
+
+                    // SQL query for learners owing money and with expired contracts
+                    $sql = "SELECT lt.*, ls.* 
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            WHERE lt.TotalOwe > 0
+                            AND ls.ContractExpiryDate = (
+                                SELECT MAX(ls2.ContractExpiryDate)
+                                FROM learnersubject AS ls2
+                                WHERE ls2.LearnerId = ls.LearnerId
+                            )
+                            AND ls.ContractExpiryDate <= CURDATE()";
                 } else {
                     // Default case if none of the statuses match
                     echo '<h1>Learners - Unknown Status</h1>';
@@ -122,19 +144,13 @@ if (!isset($_SESSION['email'])) {
                 </tfoot>
               </table>
             </div>
-            <!-- /.box-body -->
           </div>
-          <!-- /.box -->
         </div>
-        <!-- /.col -->
       </div>
-      <!-- /.row -->
     </section>
   </div>
 </div>
-<!-- End of wrapper -->
 
-<!-- Scripts -->
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
@@ -150,4 +166,4 @@ if (!isset($_SESSION['email'])) {
 </script>
 
 </body>
-</html>
+</html>  
