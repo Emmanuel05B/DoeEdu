@@ -8,19 +8,15 @@ if (!isset($_SESSION['email'])) {
     exit();
 }
 ?>
-    <?php
-    include('../partials/connect.php');
-      //  $grade = $_GET['gra'];
-      //  $subject = $_GET['sub'];
-      //  $chapter = $_GET['cha'];
 
-
-      
-    ?>
+<?php
+include('../partials/connect.php');
+?>
 
 <?php include("adminpartials/head.php"); ?>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+
 <style>
     .example-modal .modal {
         position: relative;
@@ -47,82 +43,115 @@ if (!isset($_SESSION['email'])) {
         background-color:rgb(242, 242, 242);
     }
 
+    .modal-body {
+        padding: 20px;
+    }
+
+    textarea {
+        width: 100%;
+        height: 60px;
+        font-size: 14px;
+        line-height: 18px;
+        border: 1px solid #dddddd;
+        padding: 10px;
+    }
+
+    .btn-submit {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-submit:hover {
+        background-color: #45a049;
+    }
 </style>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <!-- Content Wrapper. Contains page content. -->
-  <div class="content-wrapper">
+    <!-- Content Wrapper. Contains page content. -->
+    <div class="content-wrapper">
     
-    <!-- Main content -->
-    <section class="content">
+        <!-- Main content -->
+        <section class="content">
         
-     <div class="modal fade" id="modal-default">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span></button>
-
-                <h4 class="modal-title">Complete</h4><br>
-
-                <p><strong> Set up To Do List </strong></p>
-
-              </div>
-              <div class="modal-body">
-                
-                <form action="modalhandlerhere.php" method="post">
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th rowspan="2">Labels</th>
-                                <th colspan="5">Fill</th>
-                            </tr>
-                           
-                        </thead>
-                        <tbody>
+            <!-- Modal -->
+            <div class="modal fade" id="modal-default">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Complete</h4><br>
+                            <p><strong> Set up To Do List </strong></p>
+                        </div>
                         
-                        <tr>
-                            <td>Task Name</td>
-                            <td>
-                            <textarea class="textarea" name="message" placeholder="Type here" style="width: 100%; height: 60px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
-                            </td>
-                            <input type="hidden" id="urlParams" name="graid" value="<?php echo 10 ?>">
-                            <input type="hidden" id="urlParams" name="subid" value="<?php echo 2 ?>">
-                            <input type="hidden" id="urlParams" name="chaid" value="<?php echo 5 ?>">
+                        <div class="modal-body">
+                            <form action="todohandler.php" method="post">
 
-                        </tr>
-                       
-                        <tr>
-                            <td>Date</td>
-                            <td><input type="date" name="date"></td>
-                        </tr>
-                        <tr>
-                            <td>Time</td>
-                            <td><input type="time" name="time"></td>
-                        </tr>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">Labels</th>
+                                            <th colspan="5">Fill</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Task Name -->
+                                        <tr>
+                                            <td>Task Name</td>
+                                            <td>
+                                                <textarea class="textarea" name="task_name" placeholder="Enter task description here" required></textarea>
+                                            </td>
+                                        </tr>
 
-                        </tbody>
-                    </table>
-                    <br>
-                    <button type="Submit" name="submit">Submit Data</button>                    
-         
-                </form>
-              </div>
-              <div class="modal-footer">
-                
-              </div>
+                                        <!-- Hidden Fields to pass additional info (Grade, Subject, Chapter) -->
+                                        <input type="hidden" name="graid" value="<?php echo 10; ?>">
+                                        <input type="hidden" name="subid" value="<?php echo 2; ?>">
+                                        <input type="hidden" name="chaid" value="<?php echo 5; ?>">
+
+                                        <!-- Due Date -->
+                                        <tr>
+                                            <td>Date</td>
+                                            <td><input type="date" name="due_date" required></td>
+                                        </tr>
+
+                                        <!-- Time -->
+                                        <tr>
+                                            <td>Time</td>
+                                            <td><input type="time" name="due_time" required></td>
+                                        </tr>
+
+                                        <!-- Priority -->
+                                        <tr>
+                                            <td>Priority</td>
+                                            <td>
+                                                <select name="priority" required>
+                                                    <option value="Low">Low</option>
+                                                    <option value="Medium">Medium</option>
+                                                    <option value="High">High</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <button type="submit" class="btn-submit" name="submit">Submit Task</button>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- /.modal-content -->
-          </div>
-          <!-- /.modal-dialog -->
-        </div>
 
-    </section>
-    <!-- /.content -->
-  </div>
+        </section>
+        <!-- /.content -->
+    </div>
   
 </div>
 <!-- ./wrapper -->
@@ -144,12 +173,12 @@ if (!isset($_SESSION['email'])) {
 
       // Close the modal and redirect when clicking on the backdrop
       $('.modal').on('click', function (e) {
-          // Check if the click target is the modal backdrop
           if ($(e.target).is('.modal')) {
               window.location.href = 'adminindex.php'; 
           }
       });
   });
 </script>
+
 </body>
 </html>
