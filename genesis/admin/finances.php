@@ -224,6 +224,9 @@ if (!isset($_SESSION['email'])) {
                 </div>
                
               </div>
+
+              <a href="mailparent.php" class="btn btn-block btn-primary">Mail Parents<i class="fa fa-arrow-circle-right"></i></a>
+
               <!-- /.row -->
             </div>
             <!-- /.box-footer -->
@@ -244,6 +247,7 @@ if (!isset($_SESSION['email'])) {
           <div class="box">
             <div class="box-header">
               <h3 class="box-title">Learners</h3>
+
             </div>
             <!-- /.box-header -->
             <div class="box-body">
@@ -326,6 +330,8 @@ FROM finances;     avoids negatives
                     </tr>
                   </tfoot>
               </table>
+              <a href="mailparent.php" class="btn btn-block btn-primary">Mail Parents<i class="fa fa-arrow-circle-right"></i></a>
+
 
             </div>
             <!-- /.box-body -->

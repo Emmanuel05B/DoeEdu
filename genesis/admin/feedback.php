@@ -61,7 +61,7 @@ if (isset($_POST['btnsendP'])) {
                         confirmButtonText: "OK"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = "schedulemeeting.php";
+                            window.location.href = "class.php";
                         }
                     });
                     </script>';
@@ -77,7 +77,7 @@ if (isset($_POST['btnsendP'])) {
                         confirmButtonText: "OK"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = "schedulemeeting.php";
+                            window.location.href = "class.php";
                         }
                     });
                 </script>';
@@ -95,7 +95,7 @@ if (isset($_POST['btnsendP'])) {
                             confirmButtonText: "OK"
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                window.location.href = "schedulemeeting.php";
+                                window.location.href = "class.php";
                             }
                         });
                     </script>';
@@ -111,7 +111,7 @@ if (isset($_POST['btnsendP'])) {
                         confirmButtonText: "OK"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = "schedulemeeting.php";
+                            window.location.href = "class.php";
                         }
                     });
                     </script>';

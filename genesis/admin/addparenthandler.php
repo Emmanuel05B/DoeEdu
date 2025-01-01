@@ -128,11 +128,6 @@ if (isset($_POST['reg'])) {
           VALUES(?,?)");
           $stmt2->bind_param("ii",$userFakeid, $learnerFakeid);
 
-          if ($stmt2->execute()===TRUE){
-            // Commit transaction
-            $connect->commit();
-              /////////////////time to send the email
-             
                // Send the verification email to the user using PHPMailer
                 $mail = new PHPMailer(true);
                 try {
@@ -192,23 +187,6 @@ if (isset($_POST['reg'])) {
                   $errors[] = "Error while sending email: " . $mail->ErrorInfo;
                 }
 
-
-          }else{
-            // Rollback transaction if second insert fails
-            $connect->rollback();
-           
-            echo "<script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Parent Unsuccessfully Registered',
-                    text: 'No email has been sent to the Parent to verify.',
-                    confirmButtonText: 'OK'
-                }).then(function() {
-                    window.location = 'learner.php'; 
-                });
-            </script>";
-
-          }
         }else{
           // Rollback transaction if first insert fails
           $connect->rollback();

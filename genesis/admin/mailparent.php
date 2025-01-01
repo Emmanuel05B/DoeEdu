@@ -39,6 +39,7 @@ if (!isset($_SESSION['email'])) {
                     <th>Total Fees</th>
                     <th>Total Paid</th>
                     <th>Total Owe</th>
+                    <th>.....</th>
 
                   </tr>
                 </thead> 
@@ -47,14 +48,10 @@ if (!isset($_SESSION['email'])) {
                 <?php
                 include('../partials/connect.php');
       
-                $statusValue = intval($_GET['val']);  // Ensure it's an integer
-          
-                // Check the status and render different HTML for each case
-                if ($statusValue == 1) {
-                    // Status 1: On Contract and Owing Learners
-                    echo '<h3>On Contract and Owing Learners</h3><br>';
+    
+                    echo '<h3>Owing Learners</h3><br>';
 
-                    // SQL query for learners owing money and with unexpired contracts
+                    // SQL query for learners owing money
                     $sql = "SELECT lt.*, ls.* 
                             FROM learners AS lt
                             JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
@@ -64,56 +61,8 @@ if (!isset($_SESSION['email'])) {
                                 FROM learnersubject AS ls2
                                 WHERE ls2.LearnerId = ls.LearnerId
                             )
-                            AND ls.ContractExpiryDate > CURDATE()";
-                } else if ($statusValue == 2) {
-                    // Status 2: On Contract and Not Owing Learners
-                    echo '<h3>On Contract and Not Owing Learners</h3><br>';
-
-                    // SQL query for learners not owing money and with unexpired contracts
-                    $sql = "SELECT lt.*, ls.* 
-                            FROM learners AS lt
-                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                            WHERE lt.TotalOwe <= 0
-                            AND ls.ContractExpiryDate = (
-                                SELECT MAX(ls2.ContractExpiryDate)
-                                FROM learnersubject AS ls2
-                                WHERE ls2.LearnerId = ls.LearnerId
-                            )
-                            AND ls.ContractExpiryDate > CURDATE()";
-                } else if ($statusValue == 3) {
-                    // Status 3: Expired Contract and Not Owing Learners
-                    echo '<h3>Expired Contract and Not Owing Learners</h3><br>';
-
-                    // SQL query for learners not owing money and with expired contracts
-                    $sql = "SELECT lt.*, ls.* 
-                            FROM learners AS lt
-                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                            WHERE lt.TotalOwe <= 0
-                            AND ls.ContractExpiryDate = (
-                                SELECT MAX(ls2.ContractExpiryDate)
-                                FROM learnersubject AS ls2
-                                WHERE ls2.LearnerId = ls.LearnerId
-                            )
-                            AND ls.ContractExpiryDate <= CURDATE()";
-                } else if ($statusValue == 4) {
-                    // Status 4: Expired Contract and Owing Learners
-                    echo '<h3>Expired Contract and Owing Learners</h3><br>';
-
-                    // SQL query for learners owing money and with expired contracts
-                    $sql = "SELECT lt.*, ls.* 
-                            FROM learners AS lt
-                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                            WHERE lt.TotalOwe > 0
-                            AND ls.ContractExpiryDate = (
-                                SELECT MAX(ls2.ContractExpiryDate)
-                                FROM learnersubject AS ls2
-                                WHERE ls2.LearnerId = ls.LearnerId
-                            )
-                            AND ls.ContractExpiryDate <= CURDATE()";
-                } else {
-                    // Default case if none of the statuses match
-                    echo '<h1>Learners - Unknown Status</h1>';
-                }
+                            ";
+        
                     
                 $results = $connect->query($sql);
                 while($final = $results->fetch_assoc()) { ?> 
@@ -127,6 +76,9 @@ if (!isset($_SESSION['email'])) {
                     <td><?php echo $final['TotalFees'] ?></td>
                     <td><?php echo $final['TotalPaid'] ?></td>
                     <td> <?php echo $final['TotalOwe'] ?></td>
+                    <td>
+                    <p><a href="mailindiv.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-block btn-primary">Mail Learner</a></p>
+                    </td>
 
                 </tr>
                 <?php } ?>
@@ -142,10 +94,15 @@ if (!isset($_SESSION['email'])) {
                     <th>Total Fees</th>
                     <th>Total Paid</th>
                     <th>Total Owe</th>
+                    <th>.....</th>
+
 
                   </tr>
                 </tfoot>
-              </table>
+
+              </table><br>
+              <a href="mailparenthandler.php" class="btn btn-block btn-primary">Mail all the Parents</a>
+
             </div>
           </div>
         </div>

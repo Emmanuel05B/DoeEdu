@@ -9,7 +9,7 @@
                 $Teacherresultsfinal = $Teacherresults->fetch_assoc();  
 
 
-                $sql = "SELECT COUNT(*) as count FROM pmessages WHERE IsOpened = 0";
+                $sql = "SELECT COUNT(*) as count FROM notices WHERE IsOpened = 0";
                 // Execute the query
                 $result = $connect->query($sql);
                 $messagesrow = $result->fetch_assoc();
@@ -47,7 +47,7 @@
 
                 <?php
                   
-                  $sql = "SELECT * FROM pmessages WHERE IsOpened = 0";  //comeback for condition
+                  $sql = "SELECT * FROM notices WHERE IsOpened = 0";  //comeback for condition
                   $results = $connect->query($sql);
                   while($final = $results->fetch_assoc()) { ?>
 
