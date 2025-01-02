@@ -41,6 +41,8 @@ $email = $results['Email'];
 $name = $results['Name'];
 $surname = $results['Surname'];
 
+$failedEmails = []; // To store emails that failed to send
+
 try {
     // Create an instance of PHPMailer
     $mail = new PHPMailer(true);
@@ -64,7 +66,7 @@ try {
 
     // Set email format to HTML
     $mail->isHTML(true);                                         // Set email format to HTML
-    $mail->Subject = 'EMAIL VERIFICATION';    ////this if the header of the email
+    $mail->Subject = 'EMAIL VERIFICATION';    ////this is the header of the email
     $mail->Body    = '
     <p>Dear ' . $name . ' ' . $surname . ',</p>
     <p>We hope this mail finds you well.</p>
@@ -80,30 +82,40 @@ try {
     ';
 
     // Send the email
-    $mail->send();
-
-    // Success message using SweetAlert
-    echo '<script>
-            Swal.fire({
-                icon: "success",
-                title: "Mail successfully sent to ' . $name . ' ' . $surname . '!",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "mailparent.php";
-                }
-            });
-          </script>';
-    exit;
+    if($mail->send()) {
+        // Success message for all emails sent successfully
+        echo '<script>
+                Swal.fire({
+                    icon: "success",
+                    title: "Mail successfully sent to ' . $name . ' ' . $surname . '!",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "mailparent.php";
+                    }
+                });
+              </script>';
+        exit;
+    } else {
+        // If email fails to send, record it in the failed emails array
+        $failedEmails[] = $email;
+    }
 
 } catch (Exception $e) {
-    // Error message with detailed PHPMailer error info
+    // Add error to the failed emails list
+    $failedEmails[] = $email;
+}
+
+// If there are any failed emails
+if (count($failedEmails) > 0) {
+    $failedList = implode('<br>', $failedEmails); // Convert array to a list of emails
+    // Error message with detailed failed emails
     echo '<script>
             Swal.fire({
                 icon: "error",
-                title: "Mail could not be sent to ' . $name . ' ' . $surname . '!",
-                text: "Error: ' . $mail->ErrorInfo . '",
+                title: "Mail could not be sent to some parents!",
+                html: "The following emails could not be sent:<br>' . $failedList . '",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK"
             }).then((result) => {

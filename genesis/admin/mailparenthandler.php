@@ -70,6 +70,8 @@ if (!empty($LearnerIDs)) {
         $query2 = "SELECT ParentTitle, ParentEmail, ParentName, ParentSurname, ParentId FROM parents WHERE ParentId IN ($parentidarray)";
         $sql2 = $connect->query($query2);
 
+        $failedEmails = []; // To track failed email addresses
+
         while ($results = $sql2->fetch_assoc()) {  
             $title = $results['ParentTitle'];
             $email = $results['ParentEmail'];
@@ -105,58 +107,73 @@ if (!empty($LearnerIDs)) {
                 $mail->Port = 465; 
 
                 // Recipients
-                $mail->setFrom('thedistributorsofedu@gmail.com', 'Genesis');
+                $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE Genesis');
                 $mail->addAddress($email, $surname); 
-                $mail->addReplyTo('thedistributorsofedu@gmail.com', 'Genesis'); 
+                $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoE Genesis'); 
 
                 // Set email format to HTML
                 $mail->isHTML(true);  // Ensure the email is in HTML format
-                $mail->Subject = 'EMAIL VERIFICATION';
+                
+                // Updated Subject in Capital Letters
+                $mail->Subject = 'OUTSTANDING BALANCE FOR YOUR CHILD';
+
+                // Updated Body content
                 $mail->Body = '
-                    <p>Dear ' . $title . ' ' . $surname . ',</p>
-                    <p>We hope this email finds you well. Your child has an outstanding balance of: ' . number_format($learnerBalance, 2) . '.</p>
-                    <p>Please make the necessary arrangements to pay the balance as soon as possible.</p>
-                    <p>Warm regards,</p>
-                    <p>Distributors of Education</p>
-                    <p>Email: thedistributorsofedu@gmail.com</p>
-                    <p>Phone: +27 81 461 8178</p>
+                    <html>
+                    <body>
+                        <p>Dear ' . $title . ' ' . $surname . ',</p>
+                        <p>We hope this email finds you well. We are writing to inform you that your child currently has an outstanding balance of <strong>' . number_format($learnerBalance, 2) . '</strong>.</p>
+                        <p>We kindly request that you make the necessary arrangements to settle the balance at your earliest convenience. If you have any questions, please do not hesitate to reach out.</p>
+                        <p>Thank you for your attention to this matter.</p>
+                        <p>Warm regards,</p>
+                        <p>Distributors of Education</p>
+                        <p>Email: thedistributorsofedu@gmail.com</p>
+                        <p>Phone: +27 81 461 8178</p>
+                    </body>
+                    </html>
                 ';
 
                 // Send the email
-                $mail->send();                 
+                $mail->send(); 
 
             } catch (Exception $e) {
+                // Track the email failure
+                $failedEmails[] = $title . ' ' . $surname . ' (' . $email . ')';
+
                 // Error handling
-                echo '<script>
-                    Swal.fire({
-                        icon: "error",
-                        title: "Message could not be sent to ' . $title . ' ' . $name . ' ' . $surname . '!",
-                        text: "Error: ' . $mail->ErrorInfo . '",
-                        confirmButtonColor: "#3085d6",
-                        confirmButtonText: "OK"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = "mailparent.php";
-                        }
-                    });
-                </script>';
-                exit;
             }
         }
 
-        echo '<script>
-            Swal.fire({
-                icon: "success",
-                title: "Emails successfully sent to all parents!",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "mailparent.php";
-                }
-            });
-        </script>';
-        exit;
+        // If there are failed emails, display them
+        if (!empty($failedEmails)) {
+            $failedList = implode('<br>', $failedEmails); // Convert the array to a list of names
+            echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Some emails could not be sent!",
+                    html: "The following learners did not receive their emails:<br>' . $failedList . '",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "mailparent.php";
+                    }
+                });
+            </script>';
+        } else {
+            echo '<script>
+                Swal.fire({
+                    icon: "success",
+                    title: "Emails successfully sent to all parents!",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "mailparent.php";
+                    }
+                });
+            </script>';
+        }
 
     } else {
         echo '<script>
