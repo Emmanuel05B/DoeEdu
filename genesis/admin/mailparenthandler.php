@@ -30,110 +30,108 @@ use PHPMailer\PHPMailer\Exception;
 require '../../vendor/autoload.php';  
 include('../partials/connect.php');
 
+// SQL query for learners owing money
+$sql = "SELECT lt.*, ls.* 
+FROM learners AS lt
+JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+WHERE lt.TotalOwe > 0
+AND ls.ContractExpiryDate = (
+    SELECT MAX(ls2.ContractExpiryDate)
+    FROM learnersubject AS ls2
+    WHERE ls2.LearnerId = ls.LearnerId
+)";
 
-//if (isset($_POST['btnsendP'])) {
+$results = $connect->query($sql);
 
-    // SQL query for learners owing money
-    $sql = "SELECT lt.*, ls.* 
-    FROM learners AS lt
-    JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-    WHERE lt.TotalOwe > 0
-    AND ls.ContractExpiryDate = (
-        SELECT MAX(ls2.ContractExpiryDate)
-        FROM learnersubject AS ls2
-        WHERE ls2.LearnerId = ls.LearnerId
-    ) ";
+$LearnerIDs = [];
+$Balances = []; // Store balances separately
+while($final = $results->fetch_assoc()) { 
+    // Store the ids of all learners who owe
+    $LearnerIDs[] = $final['LearnerId'];
+    $Balances[$final['LearnerId']] = $final['TotalOwe']; // Store the balance with LearnerId as key
+} 
 
-    $results = $connect->query($sql);
+if (!empty($LearnerIDs)) {
+    $learneridarray = implode(',', $LearnerIDs);
 
-    $LearnerIDs = [];
-    while($final = $results->fetch_assoc()) { 
-        //ids of all leRNERS WHO OWES
-        $LearnerIDs[] = $final['LearnerId'];
-    } 
-    if (!empty($LearnerIDs)) {
+    // Get parent Ids for each learner who owes
+    $query = "SELECT ParentId FROM parentlearner WHERE LearnerId IN ($learneridarray)";
+    $sql = $connect->query($query);
 
-        $learneridarray = implode(',', $LearnerIDs);
-        // Get parent Ids from their table  for each learner that owess
-        $query = "SELECT ParentId FROM parentlearner WHERE LearnerId IN ($learneridarray)";    //have a look at this line
-        $sql = $connect->query($query);
-    
-        $parentIDs = [];
-        while ($Idresults = $sql->fetch_assoc()) {
-            $parentIDs[] = $Idresults['ParentId'];
-        }
-    
-        if (!empty($parentIDs)) {
-            $parentidarray = implode(',', $parentIDs);
-    
-            $query2 = "SELECT ParentTitle, ParentEmail, ParentName, ParentSurname FROM parents WHERE ParentId IN ($parentidarray)";  //gets emails for the each parentid
-            $sql2 = $connect->query($query2);
-    
-            while ($results = $sql2->fetch_assoc()) {  //fetch the following for the each parentid
-                $title = $results['ParentTitle'];
-                $email = $results['ParentEmail'];
-                $name = $results['ParentName'];
-                $surname = $results['ParentSurname'];
-    
-    
-                // send message here
-                // Send the verification email to the user using PHPMailer
-                $mail = new PHPMailer(true);
-                try {
-                  // Server settings
-                  $mail->isSMTP(); // Set mailer to use SMTP
-                  $mail->Host = 'smtp.gmail.com'; // Specify your SMTP server (in this case, Gmail)
-                  $mail->SMTPAuth = true; // Enable SMTP authentication
-                  $mail->Username = 'thedistributorsofedu@gmail.com'; // SMTP username (your Gmail email address)
-                  $mail->Password = 'bxuxtebkzbibtvej'; // SMTP password (your Gmail password)
-                  $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Enable TLS encryption, `PHPMailer::ENCRYPTION_STARTTLS` also accepted
-                  $mail->Port = 465; // TCP port to connect to (Gmail's SMTP port for SSL)
-    
-                        // Recipients
-                        $mail->setFrom('thedistributorsofedu@gmail.com', 'Genesis');
-                        $mail->addAddress($email, $surname);                           // Add a recipient
-                        $mail->addReplyTo('thedistributorsofedu@gmail.com', 'Genesis'); // Reply-to address
-                                            // Set email format to HTML
-                        $mail->Subject = 'EMAIL VERIFICATION';
-                        $mail->Body = '
-                        <p>Dear ' . $title . ' ' . $surname . ',</p>
-                        <p>We hope this mail finds you well.</p>
-                        <p>remind them that they need to pay.. they have outstading balance :</p>
-                        <p>We have created an account for you as one of the Parent at Tamarisk Primary School.</p>
-                        <p>What Happens Next?</p>
-                        <p>Verify Your Email: Clicking the link above will verify your email address and activate your account.</p>
-                        <p>Once verified, you will have full access to our system, where you can find valuable resources and stay updated with the latest news and events.</p>
-                        <p>Ensure you stay connected with us for important updates and information relevant to you and your Child.</p>
-                        <p>Warm regards,</p>
-                        <p>Distributors of Education</p>
-                        <p>Email: thedistributorsofedu@gmail.com</p>
-                        <p>Phone: +27 81 461 8178</p>
-                        ';
+    $parentIDs = [];
+    while ($Idresults = $sql->fetch_assoc()) {
+        $parentIDs[] = $Idresults['ParentId'];
+    }
 
-                        $mail->send();                 
+    if (!empty($parentIDs)) {
+        $parentidarray = implode(',', $parentIDs);
 
-    
-                        echo '<script>
-                        Swal.fire({
-                            icon: "success",
-                            title: "Announcement successfully sent to all the Parents!",
-                            confirmButtonColor: "#3085d6",
-                            confirmButtonText: "OK"
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = "mailparent.php";
-                            }
-                        });
-                        </script>';
-                        exit;
+        // Get emails for each parent id
+        $query2 = "SELECT ParentTitle, ParentEmail, ParentName, ParentSurname, ParentId FROM parents WHERE ParentId IN ($parentidarray)";
+        $sql2 = $connect->query($query2);
 
-                } catch (Exception $e) {
+        while ($results = $sql2->fetch_assoc()) {  
+            $title = $results['ParentTitle'];
+            $email = $results['ParentEmail'];
+            $name = $results['ParentName'];
+            $surname = $results['ParentSurname'];
+            $parentId = $results['ParentId'];
 
-                    echo '<script>
+            // Sanitize and validate email
+            $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                continue; // Skip invalid emails
+            }
+
+            // Get the learner's balance for this parent (if available)
+            $learnerBalance = 0;
+            $queryForBalance = "SELECT TotalOwe FROM learners WHERE LearnerId IN (SELECT LearnerId FROM parentlearner WHERE ParentId = $parentId)";
+            $balanceResult = $connect->query($queryForBalance);
+            if ($balanceResult) {
+                $balanceRow = $balanceResult->fetch_assoc();
+                $learnerBalance = $balanceRow['TotalOwe'];
+            }
+
+            // send message here using PHPMailer
+            $mail = new PHPMailer(true);
+            try {
+                // Server settings
+                $mail->isSMTP(); 
+                $mail->Host = 'smtp.gmail.com'; 
+                $mail->SMTPAuth = true; 
+                $mail->Username = 'thedistributorsofedu@gmail.com'; // SMTP username
+                $mail->Password = 'bxuxtebkzbibtvej'; // SMTP app password (for Gmail 2FA)
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
+                $mail->Port = 465; 
+
+                // Recipients
+                $mail->setFrom('thedistributorsofedu@gmail.com', 'Genesis');
+                $mail->addAddress($email, $surname); 
+                $mail->addReplyTo('thedistributorsofedu@gmail.com', 'Genesis'); 
+
+                // Set email format to HTML
+                $mail->isHTML(true);  // Ensure the email is in HTML format
+                $mail->Subject = 'EMAIL VERIFICATION';
+                $mail->Body = '
+                    <p>Dear ' . $title . ' ' . $surname . ',</p>
+                    <p>We hope this email finds you well. Your child has an outstanding balance of: ' . number_format($learnerBalance, 2) . '.</p>
+                    <p>Please make the necessary arrangements to pay the balance as soon as possible.</p>
+                    <p>Warm regards,</p>
+                    <p>Distributors of Education</p>
+                    <p>Email: thedistributorsofedu@gmail.com</p>
+                    <p>Phone: +27 81 461 8178</p>
+                ';
+
+                // Send the email
+                $mail->send();                 
+
+            } catch (Exception $e) {
+                // Error handling
+                echo '<script>
                     Swal.fire({
                         icon: "error",
                         title: "Message could not be sent to ' . $title . ' ' . $name . ' ' . $surname . '!",
-                        text: "Please check if you have entered the correct email.",
+                        text: "Error: ' . $mail->ErrorInfo . '",
                         confirmButtonColor: "#3085d6",
                         confirmButtonText: "OK"
                     }).then((result) => {
@@ -143,49 +141,58 @@ include('../partials/connect.php');
                     });
                 </script>';
                 exit;
-                }
-
-                  
-        }   
-        } else {
-            echo '<script>
-                            Swal.fire({
-                                icon: "error",
-                                title: "Message could not be sent!",
-                                text: "No parent exists.",
-                                confirmButtonColor: "#3085d6",
-                                confirmButtonText: "OK"
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.href = "mailparent.php";
-                                }
-                            });
-                        </script>';
+            }
         }
+
+        echo '<script>
+            Swal.fire({
+                icon: "success",
+                title: "Emails successfully sent to all parents!",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "mailparent.php";
+                }
+            });
+        </script>';
+        exit;
 
     } else {
         echo '<script>
-                        Swal.fire({
-                            icon: "error",
-                            title: "Message could not be sent!",
-                            text: "No leaner that owes exists.",
-                            confirmButtonColor: "#3085d6",
-                            confirmButtonText: "OK"
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = "mailparent.php";
-                            }
-                        });
-                    </script>';
+            Swal.fire({
+                icon: "error",
+                title: "Message could not be sent!",
+                text: "No parent exists.",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "mailparent.php";
+                }
+            });
+        </script>';
     }
 
-//}
+} else {
+    echo '<script>
+        Swal.fire({
+            icon: "error",
+            title: "Message could not be sent!",
+            text: "No learner that owes exists.",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "mailparent.php";
+            }
+        });
+    </script>';
+}
+
 ?>
 
 <div class="wrapper"></div>
-
-
-
 
 </body>
 </html>
