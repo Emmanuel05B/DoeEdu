@@ -84,15 +84,15 @@ include('../partials/connect.php');
                   $mail->isSMTP(); // Set mailer to use SMTP
                   $mail->Host = 'smtp.gmail.com'; // Specify your SMTP server (in this case, Gmail)
                   $mail->SMTPAuth = true; // Enable SMTP authentication
-                  $mail->Username = 'vilakazinurse128@gmail.com'; // SMTP username (your Gmail email address)
-                  $mail->Password = 'mvjmvkiowhpohtlk'; // SMTP password (your Gmail password)
+                  $mail->Username = 'thedistributorsofedu@gmail.com'; // SMTP username (your Gmail email address)
+                  $mail->Password = 'bxuxtebkzbibtvej'; // SMTP password (your Gmail password)
                   $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Enable TLS encryption, `PHPMailer::ENCRYPTION_STARTTLS` also accepted
                   $mail->Port = 465; // TCP port to connect to (Gmail's SMTP port for SSL)
     
                         // Recipients
-                        $mail->setFrom('vilakazinurse128@gmail.com', 'Genesis');
+                        $mail->setFrom('thedistributorsofedu@gmail.com', 'Genesis');
                         $mail->addAddress($email, $surname);                           // Add a recipient
-                        $mail->addReplyTo('distributorsdoe@gmail.com', 'Genesis'); // Reply-to address
+                        $mail->addReplyTo('thedistributorsofedu@gmail.com', 'Genesis'); // Reply-to address
                                             // Set email format to HTML
                         $mail->Subject = 'EMAIL VERIFICATION';
                         $mail->Body = '
@@ -106,7 +106,7 @@ include('../partials/connect.php');
                         <p>Ensure you stay connected with us for important updates and information relevant to you and your Child.</p>
                         <p>Warm regards,</p>
                         <p>Distributors of Education</p>
-                        <p>Email: distributorsdoe@gmail.com</p>
+                        <p>Email: thedistributorsofedu@gmail.com</p>
                         <p>Phone: +27 81 461 8178</p>
                         ';
 
@@ -180,23 +180,6 @@ include('../partials/connect.php');
     }
 
 //}
-    
-
-
-
-                    echo '<script>
-                    Swal.fire({
-                        icon: "success",
-                        title: "CODE DIDNT RUN",
-                        confirmButtonColor: "#3085d6",
-                        confirmButtonText: "OK"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = "mailparent.php";
-                        }
-                    });
-                    </script>';
-                    exit;
 ?>
 
 <div class="wrapper"></div>
