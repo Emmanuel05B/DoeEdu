@@ -71,7 +71,6 @@ if (!isset($_SESSION['email'])) {
                 <i class="fa fa-bell-o"></i>
               </div>
             </a>
-            <a href="noticepage.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -88,7 +87,6 @@ if (!isset($_SESSION['email'])) {
                 <i class="fa fa-envelope-o"></i>
               </div>
             </a>
-            <a href="mmailbox.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
 
@@ -105,7 +103,6 @@ if (!isset($_SESSION['email'])) {
                 <i class="fa fa-files-o"></i>
               </div>
             </a>
-            <a href="gradesreports.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
 
@@ -117,12 +114,11 @@ if (!isset($_SESSION['email'])) {
               <h3><?php echo $row['count']; ?></h3>
               <p>Learners Registered</p>
             </div>
-            <a href="alllearner.php">
+            <a href="classes.php">
               <div class="icon">
                 <i class="ion ion-person"></i>
               </div>
             </a>
-            <a href="alllearner.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -270,7 +266,7 @@ if (!isset($_SESSION['email'])) {
           </div>
 
           <!-- bar graph -->
-          <div class="box box-solid bg-teal-gradient">
+          <div class="box box-solid">
             <div class="box-header">
               <i class="fa fa-th"></i>
               <h3 class="box-title">Attendance Graph</h3>
@@ -412,10 +408,10 @@ $ASD3 = $attendanceAverages['ASD Level 3'] ?? 0;
   const doughnutChart = new Chart(ctxDoughnut, {
     type: 'doughnut',
     data: {
-      labels: ['ASD Level 1', 'ASD Level 2', 'ASD Level 3'],
+      labels: ['G-12 Maths', 'G-12 Physics', 'G-11 Maths', 'G-10 Maths'],
       datasets: [{
-        data: [<?php echo $ASD1 ?>, <?php echo $ASD2 ?>, <?php echo $ASD3 ?>],
-        backgroundColor: ['yellow', 'blue', 'skyblue']
+        data: [<?php echo 75 ?>, <?php echo 63 ?>, <?php echo 74 ?>, <?php echo 70 ?>],
+        backgroundColor: ['rgba(14, 241, 14, 0.98)', 'rgb(245, 123, 9)', 'rgba(15, 209, 235, 0.97)', 'rgb(240, 17, 110) ']
       }]
     },
     options: {
@@ -432,24 +428,31 @@ $ASD3 = $attendanceAverages['ASD Level 3'] ?? 0;
       labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12'],
       datasets: [
         {
-          label: 'ASD Level 1 Class',
-          data: [100, 100, 100, 100, 100, 100, 100, 95, 100, 100, 100, 100], 
-          borderColor: '#00a65a',
-          backgroundColor: 'rgba(0,166,90,0.2)',
+          label: 'G-12 Maths',
+          data: [100, 100, 98, 100, 91, 100, 98, 95, 96, 100, 99, 100], 
+          borderColor: 'rgba(14, 241, 14, 0.98)',
+          backgroundColor: 'rgba(14, 241, 14, 0.98)',
           fill: false
         },
         {
-          label: 'ASD Level 2 Class',
-          data: [92, 87, 85, 90, 86, 92, 93, 85, 87, 85, 90, 86], 
-          borderColor: '#f39c12',
-          backgroundColor: 'rgba(243,156,18,0.2)',
+          label: 'G-12 Physics',
+          data: [92, 87, 85, 75, 86, 92, 93, 85, 74, 85, 90, 86], 
+          borderColor: 'rgb(245, 123, 9)',
+          backgroundColor: 'rgb(245, 123, 9)',
           fill: false
         },
         {
-          label: 'ASD Level 3 Class',
+          label: 'G-11 Maths',
           data: [98, 87, 80, 82, 80, 76, 89, 90, 92, 93, 85, 87], 
-          borderColor: '#f56954',
-          backgroundColor: 'rgba(245,105,84,0.2)',
+          borderColor: 'rgba(15, 209, 235, 0.97)',
+          backgroundColor: 'rgba(15, 209, 235, 0.97)',
+          fill: false
+        },
+        {
+          label: 'G-10 Maths',
+          data: [45, 45, 56, 54, 41, 50, 47, 47, 48, 50, 46, 43], 
+          borderColor: 'rgb(240, 17, 110)',
+          backgroundColor: 'rgb(240, 17, 110)',
           fill: false
         }
       ]
@@ -478,14 +481,33 @@ $ASD3 = $attendanceAverages['ASD Level 3'] ?? 0;
   const barChartAttendance = new Chart(ctxBarAttendance, {
     type: 'bar',
     data: {
-      labels: ['ASD Level 1 class', 'ASD Level 2 class ', 'ASD Level 3 class'],
+      labels: ['G-12 Maths', 'G-12 Physics', 'G-11 Maths', 'G-10 Maths'],
+      //labels: ['Grade 12', 'Grade 11', 'Grade 10'],
+
       datasets: [{
         label: 'Attendance',
-        data: [<?php echo $ASD1 ?>, <?php echo $ASD2 ?>, <?php echo $ASD3 ?>],
+        data: [<?php echo 65 ?>, <?php echo 57 ?>, <?php echo 72 ?>, <?php echo 92 ?>],
         backgroundColor: 'rgba(0,166,90,0.2)',
         borderColor: 'rgba(0,166,90,1)',
         borderWidth: 1
       }]
+      /*
+      datasets: [
+        {
+          label: 'Mathematics',
+          fillColor: '#00a65a',
+          strokeColor: '#00a65a',
+          pointColor: '#00a65a',
+          data: [65, 59, 80]
+        },
+        {
+          label: 'Physics',
+          fillColor: '#f39c12',
+          strokeColor: '#f39c12',
+          pointColor: '#f39c12',
+          data: [28, 48, 40]
+        }
+      ] */
     },
     options: {
       responsive: true,

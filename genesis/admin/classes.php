@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-    
+
 <?php
 session_start();
 
@@ -9,163 +9,101 @@ if (!isset($_SESSION['email'])) {
   exit();
 }
 ?>
+
 <?php include("adminpartials/head.php"); ?>
+
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <!-- Left side column. contains the logo and sidebar -->
+
   <?php include("adminpartials/header.php") ?>;
   <!-- Left side column. contains the logo and sidebar -->
- <?php include("adminpartials/mainsidebar.php") ?>;
+  <?php include("adminpartials/mainsidebar.php") ?>;
 
-  <!-- Content Wrapper. Contains page content --->
+
+  <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-    <?php
-      include('../partials/connect.php');
+      <h1>
+        Classes
+        <small>xxxxxxxxxx</small>
+      </h1>
       
-      $statusValue = intval($_GET['val']);  // Ensure it's an integer
+    </section><br>
 
-      // Check the status and render different HTML for each case
-      if ($statusValue == 1) {
-          // Status 1
-          echo '<h1>Grade 12 Mathematics Learners</h1>';
-          echo '<ol class="breadcrumb">
-                  <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                  <li class="active">G 12 Math</li>
-                </ol>';
-      } else if ($statusValue == 2) {
-          // Status 2
-          echo '<h1>Grade 12 Physical Sciences Learners</h1>';
-          echo '<ol class="breadcrumb">
-                  <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                  <li class="active">G 12 Physical Sciences</li>
-                </ol>';
-      } else if ($statusValue == 3) {
-          // Status 3
-          echo '<h1>Grade 11 Mathematics Learners</h1>';
-          echo '<ol class="breadcrumb">
-                  <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                  <li class="active">G 11 Math</li>
-                </ol>';
-      } else if ($statusValue == 4) {
-          // Status 4
-          echo '<h1>Grade 11 Physical Sciences Learners</h1>';
-          echo '<ol class="breadcrumb">
-                  <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                  <li class="active">G 11 Physical Sciences</li>
-                </ol>';
-
-      } else if ($statusValue == 5) {
-                // Status 4
-                echo '<h1>Grade 10 Mathematics Learners</h1>';
-                echo '<ol class="breadcrumb">
-                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                        <li class="active">G 10 Math</li>
-                      </ol>';
-    
-      } else if ($statusValue == 6) {
-                // Status 4
-          echo '<h1>Grade 10 Physical Sciences Learners</h1>';
-          echo '<ol class="breadcrumb">
-                    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                    <li class="active">G 10 Physical Sciences</li>
-                </ol>';
-           
-      } else {
-          // Default case if none of the statuses match
-          echo '<h1>Learners - Unknown Status</h1>';
-          echo '<ol class="breadcrumb">
-                  <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                  <li class="active">Learners - Unknown Status</li>
-                </ol>';
-      }
-    ?> 
-</section>
-
-
-    <!-- Main content table--------------------------------------------->
+    <!-- Main content -->
     <section class="content">
-      <div class="row">
-        <div class="col-xs-12">
-          <!-- /.box -->
 
-          <div class="box">
-            <div class="box-header">
-              <h3 class="box-title">Learners</h3>
-            </div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="box box-solid">
+            <div style="background-color: yellow" class="box-header with-border">
+              <i class="fa fa-text-width"></i>
+              <h3 class="box-title">Grade 12</h3>
+            </div><br>
             <!-- /.box-header -->
             <div class="box-body">
-              <table id="example1" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Surname</th>
-                  <th>Gender</th>
-                  <th>Progess</th>
-                  <th>More</th>
-                  
-                </tr>
-                </thead>
-                <?php
-                    
-                    $sql = "SELECT * FROM finances WHERE Status = $statusValue";
-                    $results = $connect->query($sql);
-                    
-                    while($final = $results->fetch_assoc()) { ?>  
-                        
-                <tbody>
-                <tr>
-                  
-                  <td><?php echo $final['Name'] ?></td>
-                  <td><?php echo $final['Surname'] ?></td>
-                  <td><?php echo $final['JF'] ?></td>
-        
-                  <td>
-                      <p><a href="tracklearnerprogress.php?id=<?php echo $final['Name'] ?>" class="btn btn-block btn-primary">
-                        Track Progress</a>
-                      </p>
-                      </td>
-
-                      <td>
-                      <p><a href="learnerprofile.php?id=<?php echo $final['Surname'] ?>" class="btn btn-block btn-primary">
-                        Open Profile</a>
-                      </p>
-                      </td>
-
-                
-
-                </tr>
-
-                </tbody>
-                <?php } ?>
-                <tfoot>
-                <tr>
-                 <th>Name</th>
-                  <th>Surname</th>
-                  <th>Gender</th>
-                  <th>Progess</th>
-                  <th>More</th>
-                  
-                </tr>
-                </tfoot>
-              </table>
+                <a href="alllearner.php?val=1" class="btn btn-block btn-default btn-lg">Mathematics</a>
+            </div><br>
+            <div class="box-body">
+                <a href="alllearner.php?val=2" class="btn btn-block btn-default btn-lg">Physical Sciences</a>
             </div>
             <!-- /.box-body -->
           </div>
           <!-- /.box -->
         </div>
-        <!-- /.col -->
+        <!-- ./col -->
+
+        <div class="col-md-4">
+          <div class="box box-solid">
+            <div style="background-color: #00c0ef" class="box-header with-border">
+              <i class="fa fa-text-width"></i>
+              <h3 class="box-title">Grade 11</h3>
+            </div><br>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <a href="alllearner.php?val=3" class="btn btn-block btn-default btn-lg">Mathematics</a>
+            </div><br>
+            <div class="box-body">
+                <a href="alllearner.php?val=4" class="btn btn-block btn-default btn-lg">Physical Sciences</a>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- ./col -->
+
+        <div class="col-md-4">
+          <div class="box box-solid">
+            <div style="background-color: pink" class="box-header with-border">
+              <i class="fa fa-text-width"></i>
+              <h3 class="box-title">Grade 10</h3>
+            </div><br>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <a href="alllearner.php?val=5" class="btn btn-block btn-default btn-lg">Mathematics</a>
+            </div><br>
+            <div class="box-body">
+                <a href="alllearner.php?val=6" class="btn btn-block btn-default btn-lg">Physical Sciences</a>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- ./col -->
       </div>
       <!-- /.row -->
     </section>
- 
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
 
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
     <!-- Create the tabs -->
     <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
       <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+
       <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
     </ul>
     <!-- Tab panes -->
@@ -350,43 +288,22 @@ if (!isset($_SESSION['email'])) {
       <!-- /.tab-pane -->
     </div>
   </aside>
+  <!-- /.control-sidebar -->
+  <!-- Add the sidebar's background. This div must be placed
+       immediately after the control sidebar -->
   <div class="control-sidebar-bg"></div>
 </div>
 <!-- ./wrapper -->
-
 
 <!-- jQuery 3 -->
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <!-- Bootstrap 3.3.7 -->
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<!-- DataTables -->
-<script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-<!-- SlimScroll -->
-<script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 <!-- FastClick -->
 <script src="bower_components/fastclick/lib/fastclick.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
-
-
-<!-- page script -->
-<script>
-  $(function () {
-    $('#example1').DataTable()
-    $('#example2').DataTable({
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : false,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : false
-    })
-  })
-</script>
-
-
 </body>
 </html>

@@ -47,15 +47,14 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
              <i class="fa fa-circle-o"></i> Tracking and Analysis <b class="caret"></b>
             </a>
             <ul class="dropdown-menu dropdown-menu-right" role="menu" style="min-width: 200px;">
-              <li><a href="trackalllearners.php" style="padding: 10px 15px;">Track learner Progress</a></li>
+              <li><a href="classes.php" style="padding: 10px 15px;">Track learner Progress</a></li>
               <li><a href="chartjs.php" style="padding: 10px 15px;">Activity Analysis</a></li>
-              <li><a href="categ.php" style="padding: 10px 15px;">Record Marks</a></li>
               <li class="divider"></li>
               <li><a href="#" style="padding: 10px 15px;">Separated link</a></li>
             </ul>
           </li>
 
-          <li><a href="categ.php"><i class="fa fa-circle-o"></i> My Class</a></li>
+          <li><a href="categ.php"><i class="fa fa-circle-o"></i> Record Marks</a></li>
           <li><a href="schedulemeeting.php"><i class="fa fa-circle-o"></i> Communications</a></li>
           <li><a href="logout.php"><i class="fa fa-circle-o"></i> Log out</a></li>
         </li>

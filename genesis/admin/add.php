@@ -73,30 +73,110 @@ if (!isset($_SESSION['email'])) {
             background-color: #04AA6D;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        /* Table styling */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px; /* Adds space between rows */
+    margin-top: 20px;
+}
 
-        th, td {
-            border: none;
-            padding: 8px 12px;
-        }
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border: 1px solid #ddd; /* Adds subtle borders around cells */
+    border-radius: 6px; /* Rounded corners for each cell */
+}
 
-        input[type="radio"], input[type="text"], input[type="email"], input[type="tel"], select {
-            width: 100%;
-            padding: 8px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
+th {
+    background-color: #00a8ff;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
+td {
+    background-color: #f9f9f9;
+}
+
+td input[type="radio"] {
+    margin-right: 10px; /* Adds space between radio buttons */
+}
+
+td select, td input[type="text"], td input[type="email"], td input[type="tel"], td input[type="time"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+td input[type="radio"]:checked {
+    background-color: #00a8ff;
+    border-color: #00a8ff;
+}
+
+td input[type="radio"]:not(:checked) {
+    background-color: #f9f9f9;
+    border-color: #ccc;
+}
+
+td select:focus, td input[type="text"]:focus, td input[type="email"]:focus, td input[type="tel"]:focus, td input[type="time"]:focus {
+    border-color: #00a8ff; /* Highlight border when focused */
+    outline: none;
+}
+
+td input[type="radio"], td input[type="text"], td input[type="email"], td input[type="tel"], td select {
+    box-sizing: border-box;
+}
+
+/* Add hover effect for table rows */
+tr:hover td {
+    background-color: #e6f7ff; /* Light blue background when hovering over rows */
+}
+
+/* Additional styling for the buttons */
+button {
+    background-color: #00a8ff;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* Styling for the form input fields and selects */
+input[type="radio"], input[type="text"], input[type="email"], input[type="tel"], select {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Form containers for spacing */
+.tab {
+    padding: 20px;
+}
+
+
+ 
 
         .next-btn-container {
             text-align: right;

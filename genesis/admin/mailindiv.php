@@ -70,7 +70,7 @@ try {
     $mail->Body    = '
     <p>Dear ' . $name . ' ' . $surname . ',</p>
     <p>We hope this mail finds you well.</p>
-    <p>We have created an account for you as one of the parents at Tamarisk Primary School.</p>
+    <p>We have created an account for you as one of the parents at  Primary School.</p>
     <p>What Happens Next?</p>
     <p>Verify Your Email: Clicking the link above will verify your email address and activate your account.</p>
     <p>Once verified, you will have full access to our system, where you can find valuable resources and stay updated with the latest news and events.</p>

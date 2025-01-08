@@ -36,9 +36,6 @@ if (!isset($_SESSION['email'])) {
           <!-- /.box -->
 
           <div class="box">
-            <div class="box-header">
-              <h3 class="box-title">Learners</h3>
-            </div>
  
             <div class="box-header">
               
@@ -59,7 +56,90 @@ if (!isset($_SESSION['email'])) {
 
                   <tbody>
                     <?php
-                        $sql = "SELECT * FROM learners";
+                       // $sql = "SELECT * FROM learners WHERE Grade = 10 AND Math > 0";
+
+
+                        $statusValue = intval($_GET['val']);  // Ensure it's an integer
+          
+                        // Check the status and render different HTML for each case
+                        if ($statusValue == 1) {
+                            echo '<h3>Grade 12 Mathematics Learners</h3><br>';
+
+                            /*/ SQL query for learners owing money and with unexpired contracts
+                            $sql = "SELECT lt.*, ls.* 
+                                    FROM learners AS lt
+                                    JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                                    WHERE lt.Grade = 12 AND lt.Math > 0
+                                    AND ls.ContractExpiryDate = (
+                                        SELECT MAX(ls2.ContractExpiryDate)
+                                        FROM learnersubject AS ls2
+                                        WHERE ls2.LearnerId = ls.LearnerId
+                                    )
+                                    AND ls.ContractExpiryDate > CURDATE()";  */
+
+                                    $sql = "SELECT lt.*, ls.* 
+                                    FROM learners AS lt
+                                    JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                                    WHERE lt.Grade = 12 AND lt.Math > 0 AND ls.SubjectId = 1
+                                    AND ls.Status = 'Active' ";   // but this also includes physics.
+
+                        } else if ($statusValue == 2) {
+
+                            echo '<h3>Grade 12 Physical Sciences Learners</h3><br>';
+        
+                            // SQL query for learners not owing money and with unexpired contracts
+                            $sql = "SELECT lt.*, ls.* 
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            WHERE lt.Grade = 12 AND lt.Physics > 0 AND ls.SubjectId = 2
+                            AND ls.Status = 'Active' ";
+
+                        } else if ($statusValue == 3) {
+                            echo '<h3>Grade 11 Mathematics Learners</h3><br>';
+        
+                            // SQL query for learners not owing money and with expired contracts
+                            $sql = "SELECT lt.*, ls.* 
+                                    FROM learners AS lt
+                                    JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                                    WHERE lt.Grade = 11 AND lt.Math > 0 AND ls.SubjectId = 3
+                                    AND ls.Status = 'Active' ";
+
+                        } else if ($statusValue == 4) {
+                            echo '<h3>Grade 11 Physical Sciences Learners</h3><br>';
+
+                            // SQL query for learners not owing money and with expired contracts
+                            $sql = "SELECT lt.*, ls.* 
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            WHERE lt.Grade = 11 AND lt.Physics > 0 AND ls.SubjectId = 4
+                            AND ls.Status = 'Active' ";
+
+
+                        } else if ($statusValue == 5) {
+                            echo '<h3>Grade 10 Mathematics Learners</h3><br>';
+
+                            $sql = "SELECT lt.*, ls.* 
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            WHERE lt.Grade = 10 AND lt.Math > 0 AND ls.SubjectId = 5
+                            AND ls.Status = 'Active' ";
+
+         
+                        } else if ($statusValue == 6) {
+                            echo '<h3>Grade 10 Physical Sciences Learners</h3><br>';
+        
+                            // SQL query for learners owing money and with expired contracts
+                            $sql = "SELECT lt.*, ls.* 
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            WHERE lt.Grade = 10 AND lt.Physics > 0 AND ls.SubjectId = 6
+                            AND ls.Status = 'Active' ";
+
+                        } else {
+                            // Default case if none of the statuses match
+                            echo '<h1>Learners - Unknown Status</h1>';
+                        }
+
                         $results = $connect->query($sql);
                         while($final = $results->fetch_assoc()) { ?>
                             <tr>

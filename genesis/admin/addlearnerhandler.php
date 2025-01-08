@@ -1,4 +1,3 @@
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
 
 <?php
@@ -115,69 +114,93 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           /////////////////////////////////////////////
 
           // Insert subjects (Math and Physics)
-// Helper function to calculate contract expiry based on fee
-function calculateContractExpiry($fee, $registration_date) {
-  $number_of_terms = 0;
+          function calculateContractExpiry($fee, $registration_date) {
+            $number_of_terms = 0;
 
-  switch ($fee) {
-      case 450.00:
-          $registration_date->modify('+3 months');
-          $number_of_terms = 1;
-          break;
-      case 750.00:
-          $registration_date->modify('+6 months');
-          $number_of_terms = 2;
-          break;
-      case 1119.00:
-          $registration_date->modify('+1 year');
-          $number_of_terms = 3;
-          break;
-      default:
-          $registration_date = null;
-          break;
-  }
+            switch ($fee) {
+                case 450.00:
+                    $registration_date->modify('+3 months');
+                    $number_of_terms = 1;
+                    break;
+                case 750.00:
+                    $registration_date->modify('+6 months');
+                    $number_of_terms = 2;
+                    break;
+                case 1119.00:
+                    $registration_date->modify('+1 year');
+                    $number_of_terms = 3;
+                    break;
+                default:
+                    $registration_date = null;
+                    break;
+            }
 
-  // Return the expiry date, number of terms, and status
-  if ($registration_date) {
-      $contract_expiry_date = $registration_date->format('Y-m-d H:i:s');
-      $status = 'Active';
-  } else {
-      $contract_expiry_date = null;
-      $status = 'Not Active';
-  }
+            // Return the expiry date, number of terms, and status
+            if ($registration_date) {
+                $contract_expiry_date = $registration_date->format('Y-m-d H:i:s');
+                $status = 'Active';
+            } else {
+                $contract_expiry_date = null;
+                $status = 'Not Active';
+            }
 
-  return [$contract_expiry_date, $status, $number_of_terms];
-}
+            return [$contract_expiry_date, $status, $number_of_terms];
+          }
 
-// For Maths
-if ($maths != 0) {
-  $subject_id = 1;
-  $registration_date = new DateTime();  // Current date
-  list($contract_expiry_date, $status, $number_of_terms) = calculateContractExpiry($maths, $registration_date);
+          // For Maths
+          if ($maths != 0) {
 
-  // Insert into LearnersSubject table for maths
-  $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?)");
-  $stmt2->bind_param("iiiiiss", $learner_id, $subject_id, $mathsTarget, $mathsCurrent, $number_of_terms, $contract_expiry_date, $status);
-  $stmt2->execute();
-  $stmt2->close();
-}
+            //value of $subject_id for maths depends on $learner_grade....  grade 12 = 1  grade 11 = 3    grade 10 = 5
 
-// For Physics
-if ($physics != 0) {
-  $subject_id = 2;
-  $registration_date = new DateTime();  // Current date
-  list($contract_expiry_date, $status, $number_of_terms) = calculateContractExpiry($physics, $registration_date);
+            if($learner_grade == 12){
+              $subject_id = 1;
+            } else if ($learner_grade == 11) {
+              $subject_id = 3;
+            }else if ($learner_grade == 10) {
+              $subject_id = 5;
+            } else {
+              // Default case if none of the statuses match
+              echo '<h1>Grade does not exists</h1>';
+            }
 
-  // Insert into LearnersSubject table for physics
-  $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?)");
-  $stmt2->bind_param("iiiiiss", $learner_id, $subject_id, $physicsTarget, $physicsCurrent, $number_of_terms, $contract_expiry_date, $status);
-  $stmt2->execute();
-  $stmt2->close();
-}
+            $registration_date = new DateTime();  // Current date
+            list($contract_expiry_date, $status, $number_of_terms) = calculateContractExpiry($maths, $registration_date);
 
-   
+            // Insert into LearnersSubject table for maths
+            $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
+                                      VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt2->bind_param("iiiiiss", $learner_id, $subject_id, $mathsTarget, $mathsCurrent, $number_of_terms, $contract_expiry_date, $status);
+            $stmt2->execute();
+            $stmt2->close();
+          }
+
+          // For Physics
+          if ($physics != 0) {
+
+            //value of $subject_id for physics depends on $learner_grade....  grade 12 = 2  grade 11 = 4    grade 10 = 6
+
+            if($learner_grade == 12){
+              $subject_id = 2;
+            } else if ($learner_grade == 11) {
+              $subject_id = 4;
+            }else if ($learner_grade == 10) {
+              $subject_id = 6;
+            } else {
+              // Default case if none of the statuses match
+              echo '<h1>Grade does not exists</h1>';
+            }
+           
+
+            $registration_date = new DateTime();  // Current date
+            list($contract_expiry_date, $status, $number_of_terms) = calculateContractExpiry($physics, $registration_date);
+
+            // Insert into LearnersSubject table for physics
+            $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
+                                      VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt2->bind_param("iiiiiss", $learner_id, $subject_id, $physicsTarget, $physicsCurrent, $number_of_terms, $contract_expiry_date, $status);
+            $stmt2->execute();
+            $stmt2->close();
+          }
 
           // Create parent-learner relationship
           $stmt2 = $connect->prepare("INSERT INTO parentlearner (ParentId, LearnerId) VALUES (?, ?)");
@@ -225,7 +248,7 @@ if ($physics != 0) {
               Swal.fire({
                   icon: 'error',
                   title: 'Registration Failed',
-                  text: 'An error occurred during registration. ' + $e->getMessage(),
+                  text: 'An error occurred during registration. " . $e->getMessage() . "',
                   confirmButtonText: 'OK'
               }).then(function() {
                   window.location = 'add.php'; 
@@ -245,21 +268,24 @@ function sendEmailToParent($parent_email, $parent_name) {
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com'; 
     $mail->SMTPAuth = true;
-    $mail->Username = 'vilakazinurse128@gmail.com'; 
-    $mail->Password = 'mvjmvkiowhpohtlk'; 
+    $mail->Username = 'thedistributorsofedu@gmail.com'; 
+    $mail->Password = 'bxuxtebkzbibtvej'; 
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
     $mail->Port = 465;
 
     // Set recipients
-    $mail->setFrom('vilakazinurse128@gmail.com', 'DoE_Genesis');
+    $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
     $mail->addAddress($parent_email, $parent_name);
+    $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis'); 
 
     // Email content
     $mail->isHTML(true);
     $mail->Subject = 'Learner Registration - DOE Verification';
     $mail->Body = "
       <p>Dear $parent_name,</p>
-      <p>Your learner has been successfully registered with the Distributors of Education (DOE). The registration is complete.</p>
+      <p>Congratulations! You have been successfully registered with the Distributors of Education.</p>
+      <p>Your learner ID: ....</p>
+      <p>We look forward to your academic journey with us!</p>      
       <p>Best regards,</p>
       <p>DOE</p>";
 
@@ -270,18 +296,24 @@ function sendEmailToParent($parent_email, $parent_name) {
             Swal.fire({
                 icon: 'success',
                 title: 'Registration Successful',
-                text: 'Parent and learner have been successfully registered, and an email has been sent.',
-                confirmButtonColor: '#3085d6',
+                text: 'A confirmation email has been sent to $parent_email.',
                 confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = 'add.php';
-                }
+            }).then(function() {
+                window.location = 'index.php'; 
             });
           </script>";
 
   } catch (Exception $e) {
-    echo "Mailer Error: " . $mail->ErrorInfo;
+    echo "<script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Email Send Failed',
+                text: 'There was an issue sending the confirmation email. Please try again later.',
+                confirmButtonText: 'OK'
+            }).then(function() {
+                window.location = 'add.php'; 
+            });
+          </script>";
   }
 }
 ?>

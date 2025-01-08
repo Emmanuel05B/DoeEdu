@@ -194,7 +194,7 @@ if (!isset($_SESSION['email'])) {
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-    <?php
+     <?php
       include('../partials/connect.php');
 
       $activityid = intval($_GET['aid']);  // Ensure it's an integer
@@ -205,13 +205,10 @@ if (!isset($_SESSION['email'])) {
 
       $activityName = $finalres['ActivityName'];
       $maxmarks = $finalres['MaxMarks'];
-      $grade = $finalres['Grade'];
+      //$grade = $finalres['Grade'];    not needed
       $subject = $finalres['SubjectId'];
-      
-
-      
-
-    ?> 
+  
+     ?> 
     </section>
 
     <!-- Main content table---------------------------------------------> 
@@ -222,19 +219,10 @@ if (!isset($_SESSION['email'])) {
 
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Learners</h3>
+            <h3 class="box-title">Activity Name = <?php echo $activityName ?> and 
+            Total = <?php echo $maxmarks ?>   and submit all this data into the learnerActivity Marks in the classhandler.php.<span style="color: red;">ddd</span>          
             </div>
   
-            <div class="box-header">
-              <h3 class="box-title">Activity Name = <?php echo $activityName ?> and 
-              Total = <?php echo $maxmarks ?> 
-              
-              and submit all this data into the learnerActivity Marks in the classhandler.php..   
-              keep in mind that these have to be learners f this particular grade and subject. 
-              the logic might be.. go to the learner subject table and get all learners/IDs who are doing 
-               that subjectId... then find their names in the learners table as well as their grade.</h3>
-              
-            </div>
             <!-- /.box-header -->
             <div class="box-body">
               <form id="learnerForm" action="class.php" method="post">
@@ -257,34 +245,71 @@ if (!isset($_SESSION['email'])) {
 
                   <tbody>
                     <?php
+         
+                   // Check the status and render different HTML for each case
+                   if ($subject == 1) {
+                       echo '<h3>Grade 12 Mathematics Learners</h3><br>';
 
-                   $sql = "SELECT lt.LearnerId, 
-                   lt.Name, 
-                   lt.Surname, 
-                   lt.Math, 
-                   lt.Physics, 
-                   lt.TotalPaid, 
-                   lt.TotalOwe, 
+                               $sql = "SELECT lt.*, ls.* 
+                               FROM learners AS lt
+                               JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                               WHERE lt.Grade = 12 AND lt.Math > 0 AND ls.SubjectId = 1
+                               AND ls.Status = 'Active' ";   
 
-                   ls.LearnerSubjectId,
-                   ls.SubjectId, 
-                   ls.ContractExpiryDate, 
-                   ls.Status
-                   FROM learners AS lt
-                   JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                   WHERE lt.Grade = ? 
-                   AND ls.SubjectId = ? 
-                   AND ls.Status = 'Active'";  // Ensure contract expiry date is greater than today  AND ls.ContractExpiryDate > CURDATE()
+                   } else if ($subject == 2) {
+
+                       echo '<h3>Grade 12 Physical Sciences Learners</h3><br>';
+   
+                       $sql = "SELECT lt.*, ls.* 
+                       FROM learners AS lt
+                       JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                       WHERE lt.Grade = 12 AND lt.Physics > 0 AND ls.SubjectId = 2
+                       AND ls.Status = 'Active' ";
+
+                   } else if ($subject == 3) {
+                       echo '<h3>Grade 11 Mathematics Learners</h3><br>';
+   
+                       $sql = "SELECT lt.*, ls.* 
+                               FROM learners AS lt
+                               JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                               WHERE lt.Grade = 11 AND lt.Math > 0 AND ls.SubjectId = 3
+                               AND ls.Status = 'Active' ";
+
+                   } else if ($subject == 4) {
+                       echo '<h3>Grade 11 Physical Sciences Learners</h3><br>';
+
+                       $sql = "SELECT lt.*, ls.* 
+                       FROM learners AS lt
+                       JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                       WHERE lt.Grade = 11 AND lt.Physics > 0 AND ls.SubjectId = 4
+                       AND ls.Status = 'Active' ";
 
 
-                   $stmt = $connect->prepare($sql);
-                   $stmt->bind_param("si", $grade, $subject);   //remember the subject id..in the learners table
-                   // there is no subject with this subject id coz they re stored as prices... 
-                   //but in learnersubject it is sytored as ids...and thats where we are looking at
-                   $stmt->execute();
-                   $result = $stmt->get_result();
+                   } else if ($subject == 5) {
+                       echo '<h3>Grade 10 Mathematics Learners</h3><br>';
 
-                   
+                       $sql = "SELECT lt.*, ls.* 
+                       FROM learners AS lt
+                       JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                       WHERE lt.Grade = 10 AND lt.Math > 0 AND ls.SubjectId = 5
+                       AND ls.Status = 'Active' ";
+
+    
+                   } else if ($subject == 6) {
+                       echo '<h3>Grade 10 Physical Sciences Learners</h3><br>';
+   
+                       $sql = "SELECT lt.*, ls.* 
+                       FROM learners AS lt
+                       JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                       WHERE lt.Grade = 10 AND lt.Physics > 0 AND ls.SubjectId = 6
+                       AND ls.Status = 'Active' ";
+
+                   } else {
+                       // Default case if none of the statuses match
+                       echo '<h1>Learners - Unknown Status</h1>';
+                   }
+
+                       $results = $connect->query($sql);
                         while($final = $results->fetch_assoc()) { ?>
                             <tr>
 
