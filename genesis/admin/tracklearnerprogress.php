@@ -221,7 +221,7 @@ if ($activityResults->num_rows > 0) {
                     <div id="buttonContainer">
                         <button id="updateButton" onclick="updateSkill()">Update To Clear Old Scores</button>
                         <p id="status"></p><br>
-                        <p><a class="button" href="a-analytics.php?id=<?php echo $learner_id ?>">View Scores</a></p>
+                        <p><a class="button" href="subanalytics.php?id=<?php echo $learner_id ?>">View Scores</a></p>
                     </div>
                 </div>
             </div>

@@ -19,7 +19,6 @@ if (!isset($_SESSION['email'])) {
   <!-- Content Header (Page header) -->
 
 
-
         <!-- ./col 555555555555555555555-->
   <section class="content">
   <body>
@@ -39,11 +38,13 @@ include('../partials/connect.php');
            
 $learner_id = intval($_GET['id']);  //for leaner  //intval to ensure that it is an integer
 
-include('shared.php');
+//     include('shared.php');
 
 ?>
 
 <!------------------------------------ending here------------------------------->
+
+
 
 
 <!-----------------------------start for the line graph here--------------------->
@@ -53,7 +54,7 @@ include('../partials/connect.php');
 $learner_id = intval($_GET['id']);  // Ensure it's an integer
 
 // Initialize arrays to store averages
-$dailyData = [];
+
 $monthlyData = [];
 $yearlyData = [];
 
@@ -73,38 +74,9 @@ $dayResults = $stmt->get_result();
 
 // Fetch all daily averages for the learner
 while ($row = $dayResults->fetch_assoc()) {
-    $dailyData['Day ' . $dayCounter] = $row['dailyAverage']; // Storing average as "Day 1", "Day 2"
+    $weeklyData['Day ' . $dayCounter] = $row['dailyAverage']; // Storing average as "Day 1", "Day 2"
     $dayCounter++; 
 }
-
-// Calculate weekly averages/////////////////////////////////////////////////////////////////////////
-$weekSum = 0; 
-$daysInWeek = 0;
-$weeklyData = [];
-$weekCounter = 1;
-
-foreach ($dailyData as $day => $average) {
-    // Accumulate the daily average into the current week
-    $weekSum += $average;
-    $daysInWeek++;
-
-    // Every 5 days, calculate the weekly average
-    if ($daysInWeek == 5) {
-        $weeklyData[] = $weekSum / 5;  // Calculate the weekly average
-        $weekSum = 0;                  
-        $daysInWeek = 0;               
-        $weekCounter++;               
-    }
-}
-
-if ($daysInWeek > 0) {
-    $weeklyData[] = $weekSum / $daysInWeek;  // Calculate average for the last partial week
-}
-
-// Prepare the chart data to send to the front end
-$chartData = [
-    'weeks' => $weeklyData,      // Your weekly averages
-];
 
 
 // Calculate monthly averages//////////////////////////////////////////////////////////////////////////////
@@ -131,7 +103,7 @@ if ($monthCount > 0) {
 
 // Pass the data to JavaScript
 $chartData = [
-    'days' => $dailyData,
+    
     'weeks' => $weeklyData,
     'months' => $monthlyData,
 ];
@@ -147,20 +119,20 @@ echo "<script>
 
 
 <style>
-/* Container for the label and select */
-.time-frame-container {
+    /* Container for the label and select */
+    .time-frame-container {
     display: flex;
     gap: 10px; 
-}
+    }
 
-/* the select element */
-#timeFrame {
+    /* the select element */
+    #timeFrame {
     font-size: 14px; 
     cursor: pointer; 
     width: 150px; 
-}
+    }
 
-.chart-container {
+    .chart-container {
         position: relative;
         width: 80%; /* Adjust width as needed */
         height: 265px; /* Adjust height as needed */
@@ -189,7 +161,7 @@ echo "<script>
                             <div class="col-lg-6 col-sm-6">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h4 class="card-title">Engagement vs Independance Levels</h4>
+                                        <h4 class="card-title">Mathematics/Physical sciences</h4>
                                     </div>
                                     <div class="card-body">
                                         <canvas id="barChart_1"></canvas>
@@ -228,7 +200,6 @@ echo "<script>
                                 <div class="time-frame-container">
                                 <label for="timeFrame" class="time-frame-label">Select Time Frame:</label>
                                 <select id="timeFrame" class="form-select">
-                                    <option value="days">Days</option>
                                     <option value="weeks">Weeks</option>
                                     <option value="months">Months</option>
                                     <option value="years">Years</option>
@@ -411,7 +382,7 @@ echo "<script>
                 datasets: [{
                     label: 'Sales by Color',
 
-                    data: [<?php echo $LifeSkillsAverage; ?>, <?php echo $OutdoorAverage; ?>, <?php echo $StoryTimeAverage; ?>, <?php echo $SensoryIntegrationAverage; ?>],
+                    data: [<?php echo 50; ?>, <?php echo 40; ?>, <?php echo 54; ?>, <?php echo 75; ?>],
                     backgroundColor: [
                         'yellow',
                         'green',
