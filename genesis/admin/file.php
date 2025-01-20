@@ -49,14 +49,40 @@ include('../partials/connect.php');
 $parentId = isset($_GET['pid']) ? $_GET['pid'] : null;
 $learner_id = isset($_GET['lid']) ? $_GET['lid'] : null;
 
+// Fetch learner details
 if ($parentId) {
-    $psql = "SELECT * FROM users WHERE Id = $parentId";
+    $psql = "SELECT * FROM parents WHERE ParentId = $parentId";
     $presults = $connect->query($psql);
     $pfinal = $presults->fetch_assoc();
 }
 
-include('../teacher/shared.php');
+include('../admin/newshared.php');
 
+// SQL to fetch the activities and marks for the learner
+$activity_sql = "
+    SELECT 
+        lam.ActivityId, 
+        lam.MarksObtained, 
+        a.MaxMarks,
+        lam.DateAssigned
+    FROM learneractivitymarks lam
+    JOIN activities a ON lam.ActivityId = a.ActivityId
+    WHERE lam.LearnerId = ?
+    ORDER BY lam.DateAssigned ASC
+";
+
+$stmt = $connect->prepare($activity_sql);
+$stmt->bind_param('i', $learner_id); // Bind the learner_id to the query
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Fetch the total number of activities for calculating percentage
+$total_activities_sql = "SELECT COUNT(*) as total FROM learneractivitymarks WHERE LearnerId = ?";
+$total_activities_stmt = $connect->prepare($total_activities_sql);
+$total_activities_stmt->bind_param('i', $learner_id);
+$total_activities_stmt->execute();
+$total_activities_result = $total_activities_stmt->get_result();
+$total_activities = $total_activities_result->fetch_assoc()['total'];
 ?>
 
 <div class="content-wrapper">
@@ -65,7 +91,7 @@ include('../teacher/shared.php');
             <div class="col-xs-12">
                 <h2 class="page-header">
                     <i class="fa fa-globe"></i> Report for: <?php echo $final['Name']; ?>
-                    <small class="pull-right"><?php echo $dfinal['CreatedAt']; ?></small>
+                    <small class="pull-right"><?php echo 'today sdate'; ?></small>
                 </h2>
             </div>
         </div>
@@ -75,9 +101,9 @@ include('../teacher/shared.php');
                 <b>Learner Details:</b><br>
                 <b>Name:</b> <?php echo $final['Name']; ?><br>
                 <b>Surname:</b> <?php echo $final['Surname']; ?><br>
-                <b>Date Of Birth:</b> <?php echo $final['DateOfBirth']; ?><br>
-                <b>Gender:</b> <?php echo $final['Gender']; ?><br>
-                <b>Diagnosis:</b> <?php echo $final['FunctionalLevel']; ?>
+                <b>Grade:</b> <?php echo $final['Grade']; ?><br>
+                <b>Contact Number:</b> <?php echo $final['ContactNumber']; ?><br>
+                <b>Email:</b> <?php echo $final['Email']; ?>
             </div>
             <div class="col-sm-4 invoice-col">
                 <b>Teacher Details:</b><br>
@@ -87,9 +113,10 @@ include('../teacher/shared.php');
             </div>
             <div class="col-sm-4 invoice-col">
                 <b>Parent Details:</b><br>
-                <b>Name:</b> <?php echo $pfinal['Name']; ?><br>
-                <b>Surname:</b> <?php echo $pfinal['Surname']; ?><br>
-                <b>Email:</b> <?php echo $pfinal['Email']; ?>
+                <b>Title:</b> <?php echo $pfinal['ParentTitle']; ?><br>
+                <b>Name:</b> <?php echo $pfinal['ParentName']; ?><br>
+                <b>Surname:</b> <?php echo $pfinal['ParentSurname']; ?><br>
+                <b>Email:</b> <?php echo $pfinal['ParentEmail']; ?>
             </div>
         </div>
         
@@ -113,16 +140,16 @@ include('../teacher/shared.php');
             </div>
              
             <div class="col-xs-6">
-                <p class="lead">Participation</p>
+                <p class="lead">Submission:</p>
                 <div class="table-responsive">
                     <table class="table">
                         <tr>
-                            <th style="width:50%">Engagement Level:</th>
-                            <td><?php echo $engagementStatus; ?></td>
+                            <th style="width:50%">Submission rate:</th>
+                            <td><?php echo $submissionrate; ?>%</td>
                         </tr>
                         <tr>
-                            <th>Independence Level:</th>
-                            <td><?php echo $independenceStatus; ?></td>
+                            <th>Activities Missed:</th>
+                            <td><?php echo $submission_no_count; ?>/<?php echo $total; ?> Activities</td>
 
                         </tr>
                     </table>
@@ -135,50 +162,50 @@ include('../teacher/shared.php');
                 <p class="lead">Activities Scores:</p>
                 <div class="table-responsive">
                     <table class="table">
-                        <tr>
-                            <th style="width:50%">Life Skills:</th>
-                            <td><?php echo $LifeSkillsAverage; ?>%</td>
-                        </tr>
-                        <tr>
-                            <th>Sensory Integration:</th>
-                            <td><?php echo $SensoryIntegrationAverage; ?>%</td>
-                        </tr>
-                        <tr>
-                            <th style="width:50%">Story Time:</th>
-                            <td><?php echo $StoryTimeAverage; ?>%</td>
-                        </tr>
-                        <tr>
-                            <th>Outdoor Activities:</th>
-                            <td><?php echo $OutdoorAverage; ?>%</td>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <th>Activity Name</th>
+                                <th>Marks</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($result->num_rows > 0) {
+                                while ($activity = $result->fetch_assoc()) {
+                                    // Calculate percentage for each activity
+                                    $percentage = ($activity['MarksObtained'] / $activity['MaxMarks']) * 100;
+                            ?>
+                            <tr>
+                                <td><b>Activity <?php echo $activity['ActivityId']; ?></b></td>
+                                <td><?php echo $activity['MarksObtained']; ?> / <?php echo $activity['MaxMarks']; ?></td>
+                                <td><?php echo number_format($percentage, 2); ?>%</td>
+                            </tr>
+                            <?php
+                                }
+                            } else {
+                                echo "<tr><td colspan='3'>No activities found.</td></tr>";
+                            }
+                            ?>
+                        </tbody>
                     </table>
+
                 </div>
             </div>
+
             <div class="col-xs-6">
                 <p class="lead">Classroom Transition</p>
                 <div class="table-responsive">
                     <table class="table">
-                        <tr>
-                            <th style="width:50%"> Day 5:</th>
-                            <td><?php echo $d5; ?></td>
-                        </tr>
+
                         <tr>
                             <th style="width:50%">Day 4:</th>
-                            <td><?php echo $d4; ?></td>
+                            <td><?php echo 85; ?></td>
                         </tr>
                         <tr>
                             <th style="width:50%">Day 3: </th>
-                            <td><?php echo $d3; ?></td>
+                            <td><?php echo 95; ?></td>
                         </tr>
-                        <tr>
-                            <th style="width:50%">Day 2:</th>
-                            <td><?php echo $d2; ?> </td>
-                        </tr>
-                        <tr>
-                            <th style="width:50%">Day 1: </th>
-                            <td><?php echo $d1; ?></td>
-                        </tr>
-                        
                     </table>
                 </div>
             </div>
@@ -197,44 +224,10 @@ include('../teacher/shared.php');
                     <tbody>
                         <tr>
                             <td>1</td>
-                            <td>Plays alongside peers</td>
-                            <td><?php echo $dfinal['PAP']; ?></td>
+                            <td>yyyyyyyyyyyyyyy</td>
+                            <td><?php echo 52; ?></td>
                         </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Recognizes familiar sounds</td>
-                            <td><?php echo $dfinal['RFS']; ?></td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Makes eye contact, listens and reacts</td>
-                            <td><?php echo $dfinal['EyeContact']; ?></td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>Responds appropriately to basic classroom instructions</td>
-                            <td><?php echo $dfinal['AppropriateResponse']; ?></td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>Shows appropriate emotions in a given situation</td>
-                            <td><?php echo $dfinal['AppropriateEmotions']; ?></td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>Listens and responds to simple routine instructions</td>
-                            <td><?php echo $dfinal['ListenInstructions']; ?></td>
-                        </tr>
-                        <tr>
-                            <td>7</td>
-                            <td>Listens to speaker without interrupting</td>
-                            <td><?php echo $dfinal['ListensNotInterupting']; ?></td>
-                        </tr>
-                        <tr>
-                            <td>8</td>
-                            <td>Sometimes partakes spontaneously</td>
-                            <td><?php echo $dfinal['PartakesSpontaneously']; ?></td>
-                        </tr>
+
                     </tbody>
                 </table>
             </div>
@@ -242,10 +235,13 @@ include('../teacher/shared.php');
 
         <div class="row no-print">
             <div class="col-xs-12">
-               
                 <form action="generate_pdf.php" method="post" style="display:inline;">
                     <input type="hidden" name="parentId" value="<?php echo $parentId; ?>">
                     <input type="hidden" name="learnerId" value="<?php echo $learner_id; ?>">
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-download"></i> Generate PDF
+                    </button>
                     
                 </form>
             </div>
