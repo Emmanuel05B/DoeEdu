@@ -128,9 +128,10 @@ if (!isset($_SESSION['email'])) {
 include('../partials/connect.php');
            
 $learner_id = intval($_GET['id']);  //for leaner  //intval to ensure that it is an integer
+$statusValue = intval($_GET['val']);  // get the subject value also, Ensure it's an integer  from allleaners.php..
+//from some pages.. you have to find a way of chosing a asubject to track for.  such as learnerprofile.php..
+// make them select the subject prior to opening the tracking page.
 
-$sql = "SELECT * FROM scores WHERE LearnerId = $learner_id" ;
-$fileResults = $connect->query($sql);
 
 if($fileResults ===false){
 
@@ -141,27 +142,80 @@ if($fileResults ===false){
    // Check if any rows were returned
    if ($fileResults->num_rows > 0) {
 
-    //initialise the variables to 0
-    $engagementlevelTotal =  0;
-    $independancelevelTotal = 0;
-
-    $numResults = 0;
-    //get/fetch all reports for this specific kid
-    while($results = $fileResults->fetch_assoc()) 
-    {
-      //all activities
-      $engagementlevelTotal +=  ($results['EngagementLevel']);
-      $independancelevelTotal +=  ($results['IndependanceLevel']);
-    
-      $numResults ++;
-    }
 
 
-    $engagementlevelAVG = round((($engagementlevelTotal) / (10 * $numResults)) * 100, 2);
-    $independancelevelAVG = round((($independancelevelTotal) / (10 * $numResults)) * 100, 2);
+      //first check the subject value.  val=?.. then track progress based on that subject.
+      if ($statusValue == 1) {
+        echo '<h3>Grade 12 Mathematics</h3><br>';
 
-    // Calculate the average score and round it to two decimal places
-    $AVGscore = round((($engagementlevelAVG + $independancelevelAVG) / 200) * 100, 2);
+        //the idea is.  i want combined marks for this particular learner for this subject.
+
+        //subjectid/val  can get me ActivityId from the activities table.   
+
+       // select ActivityId, MaxMarks from activities WHERE SubjectId = 1.  //for statusValue = 1
+
+        //after geting the all the activityid for this subject
+        //put them in an array...already they are in a array/table form.. then go throgh it below.
+
+        while($results = $fileResults->fetch_assoc())
+        {
+        //something like.  
+        //select * from learneractivitymarks where LearnerId = $learner_id AND ActivityId = (one in array))
+        //  $secondsql = " SELECT * from learneractivitymarks where LearnerId = $learner_id AND ActivityId = $results['ActivityId']" ;
+        }
+        //ill have the folllowing for all the activities of this learner.
+        /*
+          Id
+          LearnerId   ActivityId    MarkerId    MarksObtained   DateAssigned    Attendance
+          AttendanceReason    Submission    SubmissionReason
+        */
+
+        $sql = "SELECT * FROM learneractivitymarks WHERE LearnerId = $learner_id" ;
+        $fileResults = $connect->query($sql);
+
+
+              //initialise the variables to 0
+        $MarksObtained =  0;
+        $Totals = 0;
+
+        $numResults = 0;
+        //get/fetch all reports for this specific kid
+        while($results = $fileResults->fetch_assoc()) 
+        {
+          //all activities
+          $MarksObtained +=  ($results['MarksObtained']);    
+          $Totals +=  ($results['MaxMarks']);    
+
+          $numResults ++;
+        }
+
+        $AVGscore = round((($MarksObtained) / ($Totals * $numResults)) * 100, 2);
+
+
+      } else if ($statusValue == 2) {
+
+        echo '<h3>Grade 12 Physical Sciences</h3><br>';
+
+      } else if ($statusValue == 3) {
+        echo '<h3>Grade 11 Mathematics</h3><br>';
+
+
+      } else if ($statusValue == 4) {
+        echo '<h3>Grade 11 Physical Sciences</h3><br>';
+
+      } else if ($statusValue == 5) {
+        echo '<h3>Grade 10 Mathematics</h3><br>';
+
+
+      } else if ($statusValue == 6) {
+        echo '<h3>Grade 10 Physical Sciences</h3><br>';
+
+      } else {
+        // Default case if none of the statuses match
+        echo '<h1>Learners - Unknown Status</h1>';
+      }
+
+
 
 
     } else {

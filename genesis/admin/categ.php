@@ -16,7 +16,7 @@ if (!isset($_SESSION['email'])) {
 <div class="wrapper">
 
   <?php include("adminpartials/header.php") ?>;
-  <!-- Left side column. contains the logo and sidebar -->
+  <!-- Left side column. contains the logo and sidebarmmm -->
   <?php include("adminpartials/mainsidebar.php") ?>;
 
 

@@ -158,7 +158,7 @@ if (!isset($_SESSION['email'])) {
                                 <?php echo $final['Grade'] ?>
                               </td>
                               <td>
-                                <p><a href="tracklearnerprogress.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-block btn-primary">Track Progress</a></p>
+                                <p><a href="tracklearnerprogress.php?id=<?php echo $final['LearnerId'] ?>&val=<?php echo $_GET['val'] ?>" class="btn btn-block btn-primary">Track Progress</a></p>
                               </td>
                               <td>
                                 <p><a href="learnerprofile.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-block btn-primary">Open Profile</a></p>

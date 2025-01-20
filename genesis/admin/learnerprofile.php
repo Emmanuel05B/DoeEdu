@@ -116,14 +116,14 @@ if (!isset($_SESSION['email'])) {
 
                           $sql = "
                           SELECT 
-                              learner.*,
+                              learners.*,
                               parentlearner.ParentId
                           FROM 
-                              learner
+                              learners
                           JOIN 
-                              parentlearner ON learner.LearnerId = parentlearner.LearnerId
+                              parentlearner ON learners.LearnerId = parentlearner.LearnerId
                           WHERE 
-                              learner.LearnerId = ?";
+                              learners.LearnerId = ?";
                               
                       $stmt = $connect->prepare($sql);
                       $stmt->bind_param("i", $learnerId); 
@@ -220,16 +220,16 @@ if (!isset($_SESSION['email'])) {
                         <div class="col-9"><strong><p><?php echo $final['Surname'] ?></p></strong></div>
                       </div>
                       <div class="row mb-3">
-                        <div class="col-3"><strong><p>Gender: </p></strong></div>
-                        <div class="col-9"><strong><p><?php echo $final['Gender'] ?></p></strong></div>
+                        <div class="col-3"><strong><p>Grade: </p></strong></div>
+                        <div class="col-9"><strong><p><?php echo $final['Grade'] ?></p></strong></div>
                       </div>
                       <div class="row mb-3">
-                        <div class="col-3"><strong><p>Date Of Birth: </p></strong></div>
-                        <div class="col-9"><strong><p><?php echo $final['DateOfBirth'] ?></p></strong></div>
+                        <div class="col-3"><strong><p>Email: </p></strong></div>
+                        <div class="col-9"><strong><p><?php echo $final['Email'] ?></p></strong></div>
                       </div>
                       <div class="row mb-3">
-                        <div class="col-3"><strong><p>Functional Level: </p></strong></div>
-                        <div class="col-9"><strong><p><?php echo $final['FunctionalLevel'] ?></p></strong></div>
+                        <div class="col-3"><strong><p>Contact Number: </p></strong></div>
+                        <div class="col-9"><strong><p><?php echo $final['ContactNumber'] ?></p></strong></div>
                       </div>
                   </div>
 

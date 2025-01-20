@@ -11,18 +11,7 @@ if (!isset($_SESSION['email'])) {
 ?>
 
 <?php include("adminpartials/head.php"); ?>
-    <style>
-
-     .button-container {
-        margin-top: 20px;
-        display: flex;
-        gap: 10px;
-        }
-     .button-container button {
-        padding: 10px 20px;
-     }
-        
-    </style>
+   
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -40,6 +29,18 @@ if (!isset($_SESSION['email'])) {
      include('../partials/connect.php'); 
 
      if (isset($_POST["submit"])) {
+
+      $sql = "SELECT * FROM activities ORDER BY ActivityId DESC LIMIT 1";
+      $results = $connect->query($sql);
+  
+      // Check if there is any result
+      if ($results->num_rows > 0) {
+      $finalres = $results->fetch_assoc();
+      $activityno = $finalres['ActivityId'];
+    
+      } else {
+      echo "No records found, after the sweet alert.";
+      }
 
     // get form data
     $learnerFakeids = $_POST['learnerFakeids'];
@@ -130,7 +131,7 @@ if (!isset($_SESSION['email'])) {
                         confirmButtonText: "OK"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = "class.php?gid=$graid&sid=$subject&cid=$chapter";
+                        window.location.href = "class.php?gid=' . $_POST['gid'] . '&sid=' . $_POST['sid'] . '&cid=' . $_POST['cid'] . '&aid=' . $activityno . '";
                         }
                     });
                 </script>';
@@ -146,7 +147,7 @@ if (!isset($_SESSION['email'])) {
                         confirmButtonText: "OK"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = "class.php?gid=$graid&sid=$subject&cid=$chapter";
+                        window.location.href = "class.php?gid=' . $_POST['gid'] . '&sid=' . $_POST['sid'] . '&cid=' . $_POST['cid'] . '&aid=' . $activityno . '";
                         }
                     });
                 </script>';
@@ -163,16 +164,17 @@ if (!isset($_SESSION['email'])) {
     $insertStmt->close();
 
     if ($success) {
+
         echo '<script>
             Swal.fire({
                 icon: "success",
-                title: "Successfully Reported",
+                title: "Successfully saved the marks",
                 text: "Data has been saved for all Learners.",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = "class.php?gid=$graid&sid=$subject&cid=$chapter";
+                        window.location.href = "classhandler.php?gid=' . $_POST['gid'] . '&sid=' . $_POST['sid'] . '&cid=' . $_POST['cid'] . '&aid=' . $activityno . '";
                 }
             });
         </script>';
@@ -220,7 +222,7 @@ if (!isset($_SESSION['email'])) {
           <div class="box">
             <div class="box-header">
             <h3 class="box-title">Activity Name = <?php echo $activityName ?> and 
-            Total = <?php echo $maxmarks ?>   and submit all this data into the learnerActivity Marks in the classhandler.php.<span style="color: red;">ddd</span>          
+            Total = <?php echo $maxmarks ?> <span style="color: red;">ddd</span>          
             </div>
   
             <!-- /.box-header -->
@@ -237,14 +239,16 @@ if (!isset($_SESSION['email'])) {
                       <th>Enter Marks</th>
                       <th>Submitted</th>
                       <th>Reason</th>
-                      <th>Edit</th>
-                      <th>Profile</th>
-
+       
                     </tr>
                   </thead>
 
                   <tbody>
                     <?php
+                    
+                    if (!isset($_SESSION['learnerIds'])) {
+                      $_SESSION['learnerIds'] = []; // Initialize session array if it doesn't exist
+                  }
          
                    // Check the status and render different HTML for each case
                    if ($subject == 1) {
@@ -309,8 +313,13 @@ if (!isset($_SESSION['email'])) {
                        echo '<h1>Learners - Unknown Status</h1>';
                    }
 
-                       $results = $connect->query($sql);
-                        while($final = $results->fetch_assoc()) { ?>
+
+
+                       $results = $connect->query($sql);   //save the list of these learners somewhere so you can use it in the classhandler/viewer
+                        while($final = $results->fetch_assoc()) { 
+                          // Store learner ID in session
+                          $_SESSION['learnerIds'][] = $final['LearnerId']; // Add the LearnerId to the session array
+                          ?>     
                             <tr>
 
                               <td>
@@ -357,12 +366,7 @@ if (!isset($_SESSION['email'])) {
 
                                 </select>
                               </td>
-                              <td>
-                                <p><a href="editmarks.php?id=<?php echo $final['LearnerId'] ?>&max=<?php echo $finalres['MaxMarks'] ?>" class="btn btn-block btn-primary">Edit</a></p>
-                              </td>
-                              <td>
-                                <p><a href="learnerprofile.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-block btn-primary">Open</a></p>
-                              </td>
+ 
 
                           </tr>
 
@@ -376,12 +380,9 @@ if (!isset($_SESSION['email'])) {
                       <th>Surname</th>
                       <th>Attendance</th>
                       <th>Reason</th>
-                      <th>Marks</th>
+                      <th>Enter Marks</th>
                       <th>Submitted</th>
                       <th>Reason</th>
-                      <th>Edit</th>
-                      <th>Profile</th>
-
                     </tr>
                   </tfoot>
                 </table>
@@ -389,8 +390,10 @@ if (!isset($_SESSION['email'])) {
                 <!-- Submit button -->
                 <div class="button-container">
                   <button type="submit" name="submit">Submit Learner Data</button>
+
                 </div><br>
                 <a href="feedback.php" class="btn btn-block btn-primary">Provide feedback to Parents</a>
+                <a href="classlist.php" class="btn btn-block btn-primary">Create Class List</a>
 
                
               </form>
