@@ -76,6 +76,24 @@ $stmt->bind_param('i', $learner_id); // Bind the learner_id to the query
 $stmt->execute();
 $result = $stmt->get_result();
 
+// SQL to fetch the attendance and submission reasons where learner did not attend or submit
+$attendance_submission_sql = "
+    SELECT 
+        lam.ActivityId, 
+        lam.Attendance, 
+        lam.AttendanceReason, 
+        lam.Submission, 
+        lam.SubmissionReason
+    FROM learneractivitymarks lam
+    WHERE lam.LearnerId = ? AND (lam.Attendance = 'absent' OR lam.Submission = 'No')
+    ORDER BY lam.DateAssigned ASC
+";
+
+$stmt2 = $connect->prepare($attendance_submission_sql);
+$stmt2->bind_param('i', $learner_id); // Bind the learner_id to the query
+$stmt2->execute();
+$attendance_submission_result = $stmt2->get_result();
+
 // Fetch the total number of activities for calculating percentage
 $total_activities_sql = "SELECT COUNT(*) as total FROM learneractivitymarks WHERE LearnerId = ?";
 $total_activities_stmt = $connect->prepare($total_activities_sql);
@@ -150,7 +168,6 @@ $total_activities = $total_activities_result->fetch_assoc()['total'];
                         <tr>
                             <th>Activities Missed:</th>
                             <td><?php echo $submission_no_count; ?>/<?php echo $total; ?> Activities</td>
-
                         </tr>
                     </table>
                 </div>
@@ -189,49 +206,51 @@ $total_activities = $total_activities_result->fetch_assoc()['total'];
                             ?>
                         </tbody>
                     </table>
-
                 </div>
             </div>
 
+            <!-- Combined Attendance and Submission Reasons Table -->
             <div class="col-xs-6">
-                <p class="lead">Classroom Transition</p>
+                <p class="lead">Missed Attendance and Submissions Reasons:</p>
                 <div class="table-responsive">
                     <table class="table">
-
-                        <tr>
-                            <th style="width:50%">Day 4:</th>
-                            <td><?php echo 85; ?></td>
-                        </tr>
-                        <tr>
-                            <th style="width:50%">Day 3: </th>
-                            <td><?php echo 95; ?></td>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <th>Activity ID</th>
+                                <th>Reason</th>
+                                <th>Type</th> <!-- Added to differentiate Attendance vs Submission -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($attendance_submission_result->num_rows > 0) {
+                                while ($row = $attendance_submission_result->fetch_assoc()) {
+                                    if ($row['Attendance'] == 'absent') {
+                                        // Display missed attendance with reason
+                                        echo "<tr>";
+                                        echo "<td><b>Activity {$row['ActivityId']}</b></td>";
+                                        echo "<td>" . ($row['AttendanceReason'] !== 'None' && !empty($row['AttendanceReason']) ? $row['AttendanceReason'] : 'N/A') . "</td>";
+                                        echo "<td>Attendance</td>";
+                                        echo "</tr>";
+                                    }
+                                    if ($row['Submission'] == 'No') {
+                                        // Display missed submission with reason
+                                        echo "<tr>";
+                                        echo "<td><b>Activity {$row['ActivityId']}</b></td>";
+                                        echo "<td>" . ($row['SubmissionReason'] !== 'None' && !empty($row['SubmissionReason']) ? $row['SubmissionReason'] : 'N/A') . "</td>";
+                                        echo "<td>Submission</td>";
+                                        echo "</tr>";
+                                    }
+                                }
+                            } else {
+                                echo "<tr><td colspan='3'>No missed attendance or submission records found.</td></tr>";
+                            }
+                            ?>
+                        </tbody>
                     </table>
                 </div>
             </div>
         </div><br>
-
-        <div class="row">
-            <div class="col-xs-12 table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Nr</th>
-                            <th>Question</th>
-                            <th>Rating</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>yyyyyyyyyyyyyyy</td>
-                            <td><?php echo 52; ?></td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
         <div class="row no-print">
             <div class="col-xs-12">
