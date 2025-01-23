@@ -62,8 +62,10 @@ include('../admin/newshared.php');
 $activity_sql = "
     SELECT 
         lam.ActivityId, 
-        lam.MarksObtained, 
+        lam.MarksObtained,
+        a.ActivityName,  
         a.MaxMarks,
+        a.ChapterName,
         lam.DateAssigned
     FROM learneractivitymarks lam
     JOIN activities a ON lam.ActivityId = a.ActivityId
@@ -194,7 +196,7 @@ $total_activities = $total_activities_result->fetch_assoc()['total'];
                                     $percentage = ($activity['MarksObtained'] / $activity['MaxMarks']) * 100;
                             ?>
                             <tr>
-                                <td><b>Activity <?php echo $activity['ActivityId']; ?></b></td>
+                                <td><b> <?php echo $activity['ChapterName']; ?> <?php echo $activity['ActivityName']; ?></b></td>
                                 <td><?php echo $activity['MarksObtained']; ?> / <?php echo $activity['MaxMarks']; ?></td>
                                 <td><?php echo number_format($percentage, 2); ?>%</td>
                             </tr>
@@ -216,7 +218,7 @@ $total_activities = $total_activities_result->fetch_assoc()['total'];
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Activity ID</th>
+                                <th>Activity Name</th>
                                 <th>Reason</th>
                                 <th>Type</th> <!-- Added to differentiate Attendance vs Submission -->
                             </tr>
@@ -230,7 +232,7 @@ $total_activities = $total_activities_result->fetch_assoc()['total'];
                                         echo "<tr>";
                                         echo "<td><b>Activity {$row['ActivityId']}</b></td>";
                                         echo "<td>" . ($row['AttendanceReason'] !== 'None' && !empty($row['AttendanceReason']) ? $row['AttendanceReason'] : 'N/A') . "</td>";
-                                        echo "<td>Attendance</td>";
+                                        echo "<td>Did Not Attend Class</td>";
                                         echo "</tr>";
                                     }
                                     if ($row['Submission'] == 'No') {
@@ -238,7 +240,7 @@ $total_activities = $total_activities_result->fetch_assoc()['total'];
                                         echo "<tr>";
                                         echo "<td><b>Activity {$row['ActivityId']}</b></td>";
                                         echo "<td>" . ($row['SubmissionReason'] !== 'None' && !empty($row['SubmissionReason']) ? $row['SubmissionReason'] : 'N/A') . "</td>";
-                                        echo "<td>Submission</td>";
+                                        echo "<td>Did Not Submit Work</td>";
                                         echo "</tr>";
                                     }
                                 }

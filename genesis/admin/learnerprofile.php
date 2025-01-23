@@ -12,86 +12,86 @@ if (!isset($_SESSION['email'])) {
 <?php include("adminpartials/head.php"); ?>
 
 <style>
-  .profile-personal-info {
-    border-bottom: 2px solid #007bff;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    padding-left: 15px;
+    .profile-personal-info {
+      border-bottom: 2px solid #007bff;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      padding-left: 15px;
+    }
+
+    .profile-personal-info h4 {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+
+    .profile-personal-info .row {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .profile-personal-info .col-3 {
+      flex: 0 0 25%;
+      max-width: 25%;
+      font-weight: bold;
+      color: #333;
+      font-size: 16px;
+      padding-left: 0;
+    }
+
+    .profile-personal-info .col-9 {
+      flex: 0 0 75%;
+      max-width: 75%;
+      font-size: 16px;
+      color: #007bff;
+      padding-right: 0;
+    }
+
+    .profile-personal-info .col-9 p,
+    .profile-personal-info .col-3 p {
+      margin: 0;
+    }
+
+    hr {
+      border: none;
+      border-top: 2px solid #007bff;
+      margin: 20px 0;
+    }
+
+    .bubble-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
   }
 
-  .profile-personal-info h4 {
-    font-size: 24px;
-    font-weight: bold;
-    color: #007bff;
-    margin-bottom: 15px;
+  .bubble {
+      border: 2px solid #add8e6; 
+      padding: 10px 20px;
+      border-radius: 50px; 
+      text-align: center;
+  }
+
+  .bubble:hover {
+      border-color: #007bff; 
+      color: #007bff; 
+  }
+
+
+  .profile-personal-info {
+      border-bottom: 2px solid #007bff;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      padding-left: 30px; /* Added padding to shift content right */
   }
 
   .profile-personal-info .row {
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      margin-left: 10px; /* Adjust if needed to further shift content */
   }
-
-  .profile-personal-info .col-3 {
-    flex: 0 0 25%;
-    max-width: 25%;
-    font-weight: bold;
-    color: #333;
-    font-size: 16px;
-    padding-left: 0;
-  }
-
-  .profile-personal-info .col-9 {
-    flex: 0 0 75%;
-    max-width: 75%;
-    font-size: 16px;
-    color: #007bff;
-    padding-right: 0;
-  }
-
-  .profile-personal-info .col-9 p,
-  .profile-personal-info .col-3 p {
-    margin: 0;
-  }
-
-  hr {
-    border: none;
-    border-top: 2px solid #007bff;
-    margin: 20px 0;
-  }
-
-  .bubble-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.bubble {
-    border: 2px solid #add8e6; 
-    padding: 10px 20px;
-    border-radius: 50px; 
-    text-align: center;
-}
-
-.bubble:hover {
-    border-color: #007bff; 
-    color: #007bff; 
-}
-
-
-.profile-personal-info {
-    border-bottom: 2px solid #007bff;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    padding-left: 30px; /* Added padding to shift content right */
-}
-
-.profile-personal-info .row {
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    margin-left: 10px; /* Adjust if needed to further shift content */
-}
 
 </style>
 
@@ -110,6 +110,8 @@ if (!isset($_SESSION['email'])) {
 
                       <?php
                         include('../partials/connect.php');
+
+                        $statusValue = intval($_GET['val']); // Get the subject value, ensure it's an integer
 
                         if(isset($_GET['id'])){
                           $learnerId = $_GET['id'];
@@ -170,7 +172,7 @@ if (!isset($_SESSION['email'])) {
                     <a href="goals.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-primary btn-block">View Goals</a>
                   </li>  
                   <li class="list-group-item">
-                    <a href="tracklearnerprogress.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-primary btn-block">Track Progress</a>
+                    <a href="tracklearnerprogress.php?id=<?php echo $final['LearnerId'] ?>&val=<?php echo $_GET['val'] ?>" class="btn btn-primary btn-block">Track Progress</a>
                   </li>
                   <li class="list-group-item">
                   <a href="mcomposeparent.php?pid=<?php echo $final['ParentId'] ?>" class="btn btn-primary btn-block">Contact Parent</a>

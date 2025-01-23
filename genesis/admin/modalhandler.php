@@ -28,7 +28,7 @@ $stmt->close();
 // get form data  passed via hidden inputs
 $graid = $_POST['graid'];
 $subject = $_POST['subid'];
-$chapter = $_POST['chaid'];
+$chaptername = $_POST['chaid'];
 
 //$subid = $_POST['subid'];
 
@@ -56,11 +56,11 @@ $activitytotal = $_POST['activitytotal'];
 // Prepare the SQL insert statement   //create a table for activities
 
 $insertStmt = $connect->prepare("INSERT INTO activities
-    (ActivityName, SubjectId, ActivityDate, MaxMarks, Creator, Grade, ChapterId) 
+    (ActivityName, SubjectId, ActivityDate, MaxMarks, Creator, Grade, ChapterName) 
     VALUES (?, ?,NOW(), ?, ?, ?, ?)");
 
 // Bind the parameters..........come back for subject
-    $insertStmt->bind_param("siisii",  $activityname, $subject, $activitytotal,$Surname, $graid, $chapter);
+    $insertStmt->bind_param("siisis",  $activityname, $subject, $activitytotal,$Surname, $graid, $chaptername);
 
 // Execute the prepared statement
 if ($insertStmt->execute()) {
