@@ -263,8 +263,8 @@ $submission_no_count = $missed_activities;
                                     $percentage = ($activity['MarksObtained'] / $activity['MaxMarks']) * 100;
                             ?>
                             <tr>
-                                <td><b><?php echo $activity['ChapterName']; ?> <?php echo $activity['ActivityName']; ?></b></td>
-                                <td><?php echo $activity['MarksObtained']; ?> / <?php echo $activity['MaxMarks']; ?></td>
+                            <td><b><?php echo $activity['ChapterName']; ?> <span style="color: blue;"><?php echo $activity['ActivityName']; ?></span></b></td>
+                            <td><?php echo $activity['MarksObtained']; ?> / <?php echo $activity['MaxMarks']; ?></td>
                                 <td><?php echo number_format($percentage, 2); ?>%</td>
                             </tr>
                             <?php
@@ -308,7 +308,7 @@ $submission_no_count = $missed_activities;
                                     // Add a row for missed attendance
                                     if ($attendance == 'absent') {
                                         echo "<tr>";
-                                        echo "<td><b>{$row['ChapterName']} {$row['ActivityName']}</b></td>";
+                                        echo "<td><b>{$row['ChapterName']} <span style='color: blue;'>{$row['ActivityName']}</span></b></td>";
                                         echo "<td>" . htmlspecialchars($attendanceReason) . "</td>";
                                         echo "<td>Did Not Attend Class</td>";
                                         echo "</tr>";
@@ -317,7 +317,7 @@ $submission_no_count = $missed_activities;
                                     // Add a row for missed submission
                                     if ($submission == 'No') {
                                         echo "<tr>";
-                                        echo "<td><b>{$row['ChapterName']} {$row['ActivityName']}</b></td>";
+                                        echo "<td><b>{$row['ChapterName']} <span style='color: blue;'>{$row['ActivityName']}</span></b></td>";
                                         echo "<td>" . htmlspecialchars($submissionReason) . "</td>";
                                         echo "<td>Did Not Submit Work</td>";
                                         echo "</tr>";
@@ -331,14 +331,139 @@ $submission_no_count = $missed_activities;
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </div><br>
+
+            <div class="col-xs-6">
+    <p class="lead">Overall Performance Status:</p>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="display: inline-block; text-align: center; width: 100%;">Performance Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                // Initialize overall score
+                $total_marks_obtained = 0;
+                $total_max_marks = 0;
+                $activity_count = 0;
+
+                // Calculate total marks obtained and max marks for activity performance
+                $result->data_seek(0); // Reset result pointer for calculation
+                while ($activity = $result->fetch_assoc()) {
+                    $total_marks_obtained += $activity['MarksObtained'];
+                    $total_max_marks += $activity['MaxMarks'];
+                    $activity_count++;
+                }
+
+                // Calculate Overall Activity Score Percentage
+                $overall_activity_score = ($total_max_marks > 0) ? ($total_marks_obtained / $total_max_marks) * 100 : 0;
+
+                // Determine the performance category based on overall activity score
+                if ($overall_activity_score >= 90) {
+                    $performance_category = 'Excellent';
+                    $comment = "Outstanding performance! Keep up the great work!";
+                } elseif ($overall_activity_score >= 70) {
+                    $performance_category = 'Good';
+                    $comment = "Good performance. Keep pushing to reach even higher levels!";
+                } elseif ($overall_activity_score >= 50) {
+                    $performance_category = 'Fair';
+                    $comment = "You’ve done well, but there’s room for improvement. Stay focused!";
+                } else {
+                    $performance_category = 'Poor';
+                    $comment = "There’s significant room for improvement. Focus on your studies and submit work on time!";
+                }
+
+                // Combine attendance and submission rates into the comment
+                if ($attendance_rate < 75) {
+                    $comment .= " Your attendance rate is below 75%. Try to attend all classes for better learning.";
+                } else {
+                    $comment .= " Your attendance rate is great!";
+                }
+
+                if ($submission_rate < 75) {
+                    $comment .= " Your submission rate needs improvement. Make sure to submit all assignments on time.";
+                } else {
+                    $comment .= " Keep up the good work with your submissions!";
+                }
+                ?>
+                <tr>
+                    <td style="display: inline-block; text-align: center; width: 100%;">
+                        <b><?php echo $performance_category; ?></b><br>
+                        Overall Activity Score: <?php echo number_format($overall_activity_score, 2); ?>%<br>
+                        Attendance Rate: <?php echo number_format($attendance_rate, 2); ?>%<br>
+                        Submission Rate: <?php echo number_format($submission_rate, 2); ?>%<br>
+                        <br>
+                        <i><?php echo $comment; ?></i>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div><br>
+
+
+<div class="col-xs-6">
+    <p class="lead">Financial Information:</p>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Total Fees</th>
+                    <th>Total Paid</th>
+                    <th>Total Owe</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                // SQL to fetch financial information
+                $sql = "SELECT 
+                            SUM(TotalFees) AS TotalFees,
+                            SUM(TotalPaid) AS TotalPaid,
+                            SUM(CASE WHEN TotalOwe > 0 THEN TotalOwe ELSE 0 END) AS TotalOwe
+                        FROM learners
+                        WHERE LearnerId = ?";
+                
+                // Prepare and execute the query
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param('i', $learner_id); // Bind the learner_id to the query
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $financial_info = $result->fetch_assoc();
+                
+                // Extract financial values
+                $TotalFees = isset($financial_info['TotalFees']) ? $financial_info['TotalFees'] : 0;
+                $TotalPaid = isset($financial_info['TotalPaid']) ? $financial_info['TotalPaid'] : 0;
+                $TotalOwe = isset($financial_info['TotalOwe']) ? $financial_info['TotalOwe'] : 0;
+
+                // Display financial information in the table
+                echo "<tr>";
+                echo "<td><b>R " . number_format($TotalFees, 2) . "</b></td>";
+                echo "<td>R " . number_format($TotalPaid, 2) . "</td>";
+                echo "<td>R " . number_format($TotalOwe, 2) . "</td>";
+                echo "</tr>";
+                ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
         </div><br>
+
+
+
+        
 
         <div class="row no-print">
             <div class="col-xs-12">
                 <form action="generate_pdf.php" method="post" style="display:inline;">
                     <input type="hidden" name="parentId" value="<?php echo $parentId; ?>">
                     <input type="hidden" name="learnerId" value="<?php echo $learner_id; ?>">
+                    <input type="hidden" name="subjectId" value="<?php echo $_GET['val'] ?>">
+                    
 
                     <button type="submit" class="btn btn-primary">
                         <i class="fa fa-download"></i> Generate PDF
