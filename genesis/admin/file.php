@@ -31,7 +31,9 @@
         }
     </style>
 </head>
+
 <body class="hold-transition skin-blue sidebar-mini">
+
 <?php
 session_start();
 
@@ -113,7 +115,9 @@ $attendance_submission_sql = "
         lam.Attendance, 
         lam.AttendanceReason, 
         lam.Submission, 
-        lam.SubmissionReason
+        lam.SubmissionReason,
+        a.ChapterName,
+        a.ActivityName
     FROM learneractivitymarks lam
     JOIN activities a ON lam.ActivityId = a.ActivityId
     WHERE lam.LearnerId = ? AND (lam.Attendance = 'absent' OR lam.Submission = 'No') 
@@ -139,19 +143,14 @@ $total_activities_stmt->execute();
 $total_activities_result = $total_activities_stmt->get_result();
 $total_activities = $total_activities_result->fetch_assoc()['total'];
 
-// Calculate missed attendance
+// Calculate missed attendance and submissions
 $missed_classes = 0;
+$missed_activities = 0;
 $stmt2->data_seek(0);  // Reset result pointer
 while ($row = $attendance_submission_result->fetch_assoc()) {
     if ($row['Attendance'] == 'absent') {
         $missed_classes++;
     }
-}
-
-// Calculate missed submissions
-$missed_activities = 0;
-$stmt2->data_seek(0);  // Reset result pointer
-while ($row = $attendance_submission_result->fetch_assoc()) {
     if ($row['Submission'] == 'No') {
         $missed_activities++;
     }
@@ -169,19 +168,19 @@ if ($total_activities > 0) {
 // Prepare display variables
 $numabsent = $missed_classes;
 $submission_no_count = $missed_activities;
-
 ?>
 
 <div class="content-wrapper">
     <section class="invoice">
         <div class="row">
-            <div class="col-xs-12">
-                <h2 class="page-header">
-                    <i class="fa fa-globe"></i> Report for: <?php echo $final['Name']; ?>
-                    <i style="text-align: centre;"></i> Subject: <?php echo $SubjectName; ?>
-                    <small class="pull-right"><?php echo 'today sdate'; ?></small>
-                </h2>
-            </div>
+        <div class="col-xs-12">
+            <h2 class="page-header">
+                <i class="fa fa-globe"></i> Report for: <?php echo $final['Name']; ?>
+                <small class="pull-right"><?php echo 'today sdate'; ?></small>
+                <span style="display: inline-block; text-align: center; width: 100%;">Subject: <?php echo $SubjectName; ?></span>
+                
+            </h2>
+        </div>
         </div>
 
         <div class="row invoice-info">
@@ -207,7 +206,7 @@ $submission_no_count = $missed_activities;
                 <b>Email:</b> <?php echo $pfinal['ParentEmail']; ?>
             </div>
         </div>
-        
+
         <hr><br>
 
         <div class="row">
@@ -264,7 +263,7 @@ $submission_no_count = $missed_activities;
                                     $percentage = ($activity['MarksObtained'] / $activity['MaxMarks']) * 100;
                             ?>
                             <tr>
-                                <td><b> <?php echo $activity['ChapterName']; ?> <?php echo $activity['ActivityName']; ?></b></td>
+                                <td><b><?php echo $activity['ChapterName']; ?> <?php echo $activity['ActivityName']; ?></b></td>
                                 <td><?php echo $activity['MarksObtained']; ?> / <?php echo $activity['MaxMarks']; ?></td>
                                 <td><?php echo number_format($percentage, 2); ?>%</td>
                             </tr>
@@ -280,60 +279,59 @@ $submission_no_count = $missed_activities;
             </div>
 
             <!-- Combined Attendance and Submission Reasons Table -->
-<div class="col-xs-6">
-    <p class="lead">Missed Attendance and Submissions Reasons:</p>
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Activity Name</th>
-                    <th>Reason</th>
-                    <th>Type</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                 
-                if ($attendance_submission_result->num_rows > 0) {
-                    echo 'yes results exists, ';
+            <div class="col-xs-6">
+                <p class="lead">Missed Attendance and Submissions Reasons:</p>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Activity Name</th>
+                                <th>Reason</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($attendance_submission_result->num_rows > 0) {
+                                // Reset the pointer before re-looping through the result set
+                                $attendance_submission_result->data_seek(0); // <-- Reset pointer to the beginning
 
-                    while ($row = $attendance_submission_result->fetch_assoc()) {   //the problem might be here.
-                        // Check if the learner was absent and missed the activity
-                        
+                                // Loop through the result set and add rows to the table
+                                while ($row = $attendance_submission_result->fetch_assoc()) {
+                                    // Safely access values and provide fallback if null or undefined
+                                    $activityId = isset($row['ActivityId']) ? $row['ActivityId'] : 'N/A';
+                                    $attendance = isset($row['Attendance']) ? $row['Attendance'] : 'No Attendance';
+                                    $submission = isset($row['Submission']) ? $row['Submission'] : 'No Submission';
+                                    $attendanceReason = isset($row['AttendanceReason']) ? $row['AttendanceReason'] : 'No Reason';
+                                    $submissionReason = isset($row['SubmissionReason']) ? $row['SubmissionReason'] : 'No Reason';
 
-                        if ($row['Attendance'] == 'absent') {
-                            // Output missed attendance with reason
-                            echo "<tr>";
-                            echo "<td><b>Activity {$row['ActivityId']}</b></td>";
-                            echo "<td>" . ($row['AttendanceReason']) . "</td>";
-                            echo "<td>Did Not Attend Class</td>";
-                            echo "</tr>";
+                                    // Add a row for missed attendance
+                                    if ($attendance == 'absent') {
+                                        echo "<tr>";
+                                        echo "<td><b>{$row['ChapterName']} {$row['ActivityName']}</b></td>";
+                                        echo "<td>" . htmlspecialchars($attendanceReason) . "</td>";
+                                        echo "<td>Did Not Attend Class</td>";
+                                        echo "</tr>";
+                                    }
 
-                        }
-                        
-                       
-
-                        // Check if the learner did not submit the activity
-                        if ($row['Submission'] == 'No') {
-                            // Output missed submission with reason
-                            echo "<tr>";
-                            echo "<td><b>Activity {$row['ActivityId']}</b></td>";
-                            echo "<td>" . ($row['SubmissionReason']) . "</td>";
-                            echo "<td>Did Not Submit Work</td>";
-                            echo "</tr>";
-                        }
-                    }
-                } else {
-                    echo "<tr><td colspan='3'>No missed attendance or submission records found.</td></tr>";
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-
-
+                                    // Add a row for missed submission
+                                    if ($submission == 'No') {
+                                        echo "<tr>";
+                                        echo "<td><b>{$row['ChapterName']} {$row['ActivityName']}</b></td>";
+                                        echo "<td>" . htmlspecialchars($submissionReason) . "</td>";
+                                        echo "<td>Did Not Submit Work</td>";
+                                        echo "</tr>";
+                                    }
+                                }
+                            } else {
+                                // If no results, show a message
+                                echo "<tr><td colspan='3'>No missed attendance or submission records found.</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div><br>
 
         <div class="row no-print">
@@ -345,7 +343,6 @@ $submission_no_count = $missed_activities;
                     <button type="submit" class="btn btn-primary">
                         <i class="fa fa-download"></i> Generate PDF
                     </button>
-                    
                 </form>
             </div>
         </div>
