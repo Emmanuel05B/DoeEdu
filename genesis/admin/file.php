@@ -49,6 +49,34 @@ include('../partials/connect.php');
 $parentId = isset($_GET['pid']) ? $_GET['pid'] : null;
 $learner_id = isset($_GET['lid']) ? $_GET['lid'] : null;
 
+$SubjectId = intval($_GET['val']); // Get the subject value, ensure it's an integer
+
+// Set the subject name based on SubjectId
+$SubjectName = '';
+switch ($SubjectId) {
+    case 1:
+        $SubjectName = 'Mathematics';
+        break;
+    case 2:
+        $SubjectName = 'Physical Sciences';
+        break;
+    case 3:
+        $SubjectName = 'Mathematics';
+        break;
+    case 4:
+        $SubjectName = 'Physical Sciences';
+        break;
+    case 5:
+        $SubjectName = 'Mathematics';
+        break;
+    case 6:
+        $SubjectName = 'Physical Sciences';
+        break;
+    default:
+        echo '<h1>Learners - Unknown Status</h1>';
+        exit();
+}
+
 // Fetch learner details
 if ($parentId) {
     $psql = "SELECT * FROM parents WHERE ParentId = $parentId";
@@ -69,12 +97,12 @@ $activity_sql = "
         lam.DateAssigned
     FROM learneractivitymarks lam
     JOIN activities a ON lam.ActivityId = a.ActivityId
-    WHERE lam.LearnerId = ?
+    WHERE lam.LearnerId = ? AND a.SubjectId = ?
     ORDER BY lam.DateAssigned ASC
 ";
 
 $stmt = $connect->prepare($activity_sql);
-$stmt->bind_param('i', $learner_id); // Bind the learner_id to the query
+$stmt->bind_param('ii', $learner_id, $SubjectId); // Bind the learner_id to the query
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -87,22 +115,61 @@ $attendance_submission_sql = "
         lam.Submission, 
         lam.SubmissionReason
     FROM learneractivitymarks lam
-    WHERE lam.LearnerId = ? AND (lam.Attendance = 'absent' OR lam.Submission = 'No')
+    JOIN activities a ON lam.ActivityId = a.ActivityId
+    WHERE lam.LearnerId = ? AND (lam.Attendance = 'absent' OR lam.Submission = 'No') 
+    AND a.SubjectId = ?  
     ORDER BY lam.DateAssigned ASC
 ";
 
 $stmt2 = $connect->prepare($attendance_submission_sql);
-$stmt2->bind_param('i', $learner_id); // Bind the learner_id to the query
+$stmt2->bind_param('ii', $learner_id, $SubjectId); // Bind learner_id and SubjectId to the query
 $stmt2->execute();
 $attendance_submission_result = $stmt2->get_result();
 
 // Fetch the total number of activities for calculating percentage
-$total_activities_sql = "SELECT COUNT(*) as total FROM learneractivitymarks WHERE LearnerId = ?";
+$total_activities_sql = "
+    SELECT COUNT(*) as total 
+    FROM learneractivitymarks lam
+    JOIN activities a ON lam.ActivityId = a.ActivityId
+    WHERE lam.LearnerId = ? AND a.SubjectId = ? 
+";
 $total_activities_stmt = $connect->prepare($total_activities_sql);
-$total_activities_stmt->bind_param('i', $learner_id);
+$total_activities_stmt->bind_param('ii', $learner_id, $SubjectId); // Bind learner_id and SubjectId to the query
 $total_activities_stmt->execute();
 $total_activities_result = $total_activities_stmt->get_result();
 $total_activities = $total_activities_result->fetch_assoc()['total'];
+
+// Calculate missed attendance
+$missed_classes = 0;
+$stmt2->data_seek(0);  // Reset result pointer
+while ($row = $attendance_submission_result->fetch_assoc()) {
+    if ($row['Attendance'] == 'absent') {
+        $missed_classes++;
+    }
+}
+
+// Calculate missed submissions
+$missed_activities = 0;
+$stmt2->data_seek(0);  // Reset result pointer
+while ($row = $attendance_submission_result->fetch_assoc()) {
+    if ($row['Submission'] == 'No') {
+        $missed_activities++;
+    }
+}
+
+// Calculate attendance and submission rates
+if ($total_activities > 0) {
+    $attendance_rate = (($total_activities - $missed_classes) / $total_activities) * 100;
+    $submission_rate = (($total_activities - $missed_activities) / $total_activities) * 100;
+} else {
+    $attendance_rate = 0;
+    $submission_rate = 0;
+}
+
+// Prepare display variables
+$numabsent = $missed_classes;
+$submission_no_count = $missed_activities;
+
 ?>
 
 <div class="content-wrapper">
@@ -111,6 +178,7 @@ $total_activities = $total_activities_result->fetch_assoc()['total'];
             <div class="col-xs-12">
                 <h2 class="page-header">
                     <i class="fa fa-globe"></i> Report for: <?php echo $final['Name']; ?>
+                    <i style="text-align: centre;"></i> Subject: <?php echo $SubjectName; ?>
                     <small class="pull-right"><?php echo 'today sdate'; ?></small>
                 </h2>
             </div>
@@ -149,11 +217,11 @@ $total_activities = $total_activities_result->fetch_assoc()['total'];
                     <table class="table">
                         <tr>
                             <th style="width:50%">Attendance Rate:</th>
-                            <td><?php echo $attendancerate; ?>%</td>
+                            <td><?php echo number_format($attendance_rate, 2); ?>%</td>
                         </tr>
                         <tr>
                             <th>Classes missed:</th>
-                            <td><?php echo $numabsent; ?>/<?php echo $total; ?> classes</td>
+                            <td><?php echo $numabsent; ?>/<?php echo $total_activities; ?> classes</td>
                         </tr>
                     </table>
                 </div>
@@ -165,11 +233,11 @@ $total_activities = $total_activities_result->fetch_assoc()['total'];
                     <table class="table">
                         <tr>
                             <th style="width:50%">Submission rate:</th>
-                            <td><?php echo $submissionrate; ?>%</td>
+                            <td><?php echo number_format($submission_rate, 2); ?>%</td>
                         </tr>
                         <tr>
                             <th>Activities Missed:</th>
-                            <td><?php echo $submission_no_count; ?>/<?php echo $total; ?> Activities</td>
+                            <td><?php echo $submission_no_count; ?>/<?php echo $total_activities; ?> Activities</td>
                         </tr>
                     </table>
                 </div>
@@ -212,46 +280,60 @@ $total_activities = $total_activities_result->fetch_assoc()['total'];
             </div>
 
             <!-- Combined Attendance and Submission Reasons Table -->
-            <div class="col-xs-6">
-                <p class="lead">Missed Attendance and Submissions Reasons:</p>
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Activity Name</th>
-                                <th>Reason</th>
-                                <th>Type</th> <!-- Added to differentiate Attendance vs Submission -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            if ($attendance_submission_result->num_rows > 0) {
-                                while ($row = $attendance_submission_result->fetch_assoc()) {
-                                    if ($row['Attendance'] == 'absent') {
-                                        // Display missed attendance with reason
-                                        echo "<tr>";
-                                        echo "<td><b>Activity {$row['ActivityId']}</b></td>";
-                                        echo "<td>" . ($row['AttendanceReason'] !== 'None' && !empty($row['AttendanceReason']) ? $row['AttendanceReason'] : 'N/A') . "</td>";
-                                        echo "<td>Did Not Attend Class</td>";
-                                        echo "</tr>";
-                                    }
-                                    if ($row['Submission'] == 'No') {
-                                        // Display missed submission with reason
-                                        echo "<tr>";
-                                        echo "<td><b>Activity {$row['ActivityId']}</b></td>";
-                                        echo "<td>" . ($row['SubmissionReason'] !== 'None' && !empty($row['SubmissionReason']) ? $row['SubmissionReason'] : 'N/A') . "</td>";
-                                        echo "<td>Did Not Submit Work</td>";
-                                        echo "</tr>";
-                                    }
-                                }
-                            } else {
-                                echo "<tr><td colspan='3'>No missed attendance or submission records found.</td></tr>";
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<div class="col-xs-6">
+    <p class="lead">Missed Attendance and Submissions Reasons:</p>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Activity Name</th>
+                    <th>Reason</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                 
+                if ($attendance_submission_result->num_rows > 0) {
+                    echo 'yes results exists, ';
+
+                    while ($row = $attendance_submission_result->fetch_assoc()) {   //the problem might be here.
+                        // Check if the learner was absent and missed the activity
+                        
+
+                        if ($row['Attendance'] == 'absent') {
+                            // Output missed attendance with reason
+                            echo "<tr>";
+                            echo "<td><b>Activity {$row['ActivityId']}</b></td>";
+                            echo "<td>" . ($row['AttendanceReason']) . "</td>";
+                            echo "<td>Did Not Attend Class</td>";
+                            echo "</tr>";
+
+                        }
+                        
+                       
+
+                        // Check if the learner did not submit the activity
+                        if ($row['Submission'] == 'No') {
+                            // Output missed submission with reason
+                            echo "<tr>";
+                            echo "<td><b>Activity {$row['ActivityId']}</b></td>";
+                            echo "<td>" . ($row['SubmissionReason']) . "</td>";
+                            echo "<td>Did Not Submit Work</td>";
+                            echo "</tr>";
+                        }
+                    }
+                } else {
+                    echo "<tr><td colspan='3'>No missed attendance or submission records found.</td></tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
         </div><br>
 
         <div class="row no-print">

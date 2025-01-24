@@ -178,7 +178,7 @@ if (!isset($_SESSION['email'])) {
                   <a href="mcomposeparent.php?pid=<?php echo $final['ParentId'] ?>" class="btn btn-primary btn-block">Contact Parent</a>
                   </li>
                   <li class="list-group-item">
-                    <a href="file.php?pid=<?php echo $final['ParentId'] ?>&lid=<?php echo $final['LearnerId'] ?>" class="btn btn-primary btn-block">View Report</a>
+                    <a href="file.php?pid=<?php echo $final['ParentId'] ?>&lid=<?php echo $final['LearnerId'] ?>&val=<?php echo $_GET['val'] ?>" class="btn btn-primary btn-block">View Report</a>
 
                   </li>
 
