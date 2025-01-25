@@ -29,6 +29,14 @@
         .lead {
             font-weight: bold;
         }
+        .top-right-image {
+            position: absolute;
+            top: 0;
+            right: 0;
+            max-height: 130px; /* Adjust the size of the image */
+            margin-top: 0px; /* Adjust the space from the top */
+            margin-right: 30px; /* Adjust the space from the right */
+        }
     </style>
 </head>
 
@@ -75,7 +83,7 @@ switch ($SubjectId) {
         $SubjectName = 'Physical Sciences';
         break;
     default:
-        echo '<h1>Learners - Unknown Status</h1>';
+        echo '<h1>Learners - Unknown Subject</h1>';
         exit();
 }
 
@@ -172,16 +180,25 @@ $submission_no_count = $missed_activities;
 
 <div class="content-wrapper">
     <section class="invoice">
-        <div class="row">
-        <div class="col-xs-12">
-            <h2 class="page-header">
-                <i class="fa fa-globe"></i> Report for: <?php echo $final['Name']; ?>
-                <small class="pull-right"><?php echo 'today sdate'; ?></small>
-                <span style="display: inline-block; text-align: center; width: 100%;">Subject: <?php echo $SubjectName; ?></span>
-                
-            </h2>
-        </div>
-        </div>
+    <div class="row">
+    <div class="col-xs-12">
+         <!-- Contact Info Section -->
+            <div>
+                <p><strong>Registration No:</strong> 2022/735117/07</p>
+                <p><strong>Residential Address:</strong> 50188 Makoshala, Block E, Phokoane, Nebo, Limpopo, 1059</p>
+                <p><strong>Telephone:</strong> 081 461 8178</p>
+                <p><strong>Email:</strong> <a href="mailto:thedistributorsofedu@gmail.com">thedistributorsofedu@gmail.com</a></p>
+            </div><br>
+        <h2 class="page-header">
+            <span style="display: block; text-align: center;">Report for: <?php echo $final['Name']; ?></span>
+            <span style="display: block; text-align: center;">Subject: <?php echo $SubjectName; ?></span>
+
+            <!-- Adding the image -->
+            <img src="images/doe.png" alt="Your Image" class="top-right-image">
+        </h2>
+    </div>
+</div>
+
 
         <div class="row invoice-info">
             <div class="col-sm-4 invoice-col">
@@ -193,7 +210,7 @@ $submission_no_count = $missed_activities;
                 <b>Email:</b> <?php echo $final['Email']; ?>
             </div>
             <div class="col-sm-4 invoice-col">
-                <b>Teacher Details:</b><br>
+                <b>Tutor Details:</b><br>
                 <b>Name:</b> <?php echo $tfinal['Name']; ?><br>
                 <b>Surname:</b> <?php echo $tfinal['Surname']; ?><br>
                 <b>Email:</b> <?php echo $tfinal['Email']; ?>
@@ -339,7 +356,7 @@ $submission_no_count = $missed_activities;
         <table class="table">
             <thead>
                 <tr>
-                    <th style="display: inline-block; text-align: center; width: 100%;">Performance Category</th>
+                    <th style="display: inline-block; text-align: center; width: 100%;">Performance Summary</th>
                 </tr>
             </thead>
             <tbody>
@@ -383,7 +400,7 @@ $submission_no_count = $missed_activities;
                 }
 
                 if ($submission_rate < 75) {
-                    $comment .= " Your submission rate needs improvement. Make sure to submit all assignments on time.";
+                    $comment .= " Your submission rate needs improvement.";
                 } else {
                     $comment .= " Keep up the good work with your submissions!";
                 }

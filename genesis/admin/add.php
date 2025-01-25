@@ -182,13 +182,27 @@ label {
             text-align: right;
             margin-top: 20px;
         }
+        .top-right-image {
+            position: absolute;
+            top: 0;
+            right: 0;
+            max-height: 130px; /* Adjust the size of the image */
+            margin-top: 120px; /* Adjust the space from the top */
+            margin-right: 260px; /* Adjust the space from the right */
+        }
     </style>
 </head>
 <body>
 
 <form id="regForm" action="addlearnerhandler.php" method="POST" enctype="multipart/form-data">
-    <h1>Registration:</h1>
+    <h1>Registration:
 
+     <!-- Adding the image -->
+     <img src="images/doe.png" alt="Your Image" class="top-right-image">
+
+    </h1>
+
+    
     <!-- 1st tab (Learner Info) -->
     <div class="tab">
         <h4>Learner Info:</h4>
