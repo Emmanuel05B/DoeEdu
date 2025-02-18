@@ -55,13 +55,13 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=5&cha=Algebraic_Expressions" class="btn btn-block btn-info btn-lg">Algebraic expressions</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=Algebraic Expressions" class="btn btn-block btn-info btn-lg">Algebraic expressions</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=10&sub=5&cha=Trigonometry" class="btn btn-block btn-warning btn-lg">Trigonometry</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=5&cha=Finance_&_Growth" class="btn btn-block btn-success btn-lg">Finance and growth</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=Finance and Growth" class="btn btn-block btn-success btn-lg">Finance and growth</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=10&sub=5&cha=Measurement" class="btn btn-block btn-primary btn-lg">Measurement</a>
@@ -83,10 +83,10 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=5&cha=Number_Patterns" class="btn btn-block btn-info btn-lg">Number patterns</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=Number Patterns" class="btn btn-block btn-info btn-lg">Number patterns</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=5&cha=Euclidean_Geo" class="btn btn-block btn-warning btn-lg">Euclidean geometry</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=Euclidean Geometry" class="btn btn-block btn-warning btn-lg">Euclidean geometry</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=10&sub=5&cha=Trigonometry" class="btn btn-block btn-success btn-lg">Trigonometry</a>
@@ -97,13 +97,13 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=5&cha=Equations_&_Inequalities" class="btn btn-block btn-info btn-lg">Equations and inequalities</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=Equations and Inequalities" class="btn btn-block btn-info btn-lg">Equations and inequalities</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=5&cha=Analytical_Geo" class="btn btn-block btn-warning btn-lg">Analytical geometry</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=Analytical Geometry" class="btn btn-block btn-warning btn-lg">Analytical geometry</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=5&cha=Euclidean_Geo" class="btn btn-block btn-success btn-lg">Euclidean geometry</a>
+                    <a href="recmodal.php?gra=10&sub=5&cha=Euclidean Geometry" class="btn btn-block btn-success btn-lg">Euclidean geometry</a>
                   </td>
                   <td>
                     <a href="#recmodal.php?gra=10&sub=5&cha=44" class="btn btn-block btn-primary btn-lg">...</a>

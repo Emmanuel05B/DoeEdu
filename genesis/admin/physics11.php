@@ -55,13 +55,13 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=4&cha=Vectors_In_2_dimensions" class="btn btn-block btn-info btn-lg">Vectors in two dimensions</a>
+                    <a href="recmodal.php?gra=11&sub=4&cha=Vectors In 2 dimensions" class="btn btn-block btn-info btn-lg">Vectors in two dimensions</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=4&cha=Intermolecular_Forces" class="btn btn-block btn-warning btn-lg"> Intermolecular forces</a>
+                    <a href="recmodal.php?gra=11&sub=4&cha=Intermolecular Forces" class="btn btn-block btn-warning btn-lg"> Intermolecular forces</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=4&cha=Ideal_Gases" class="btn btn-block btn-success btn-lg">Ideal gases</a>
+                    <a href="recmodal.php?gra=11&sub=4&cha=Ideal Gases" class="btn btn-block btn-success btn-lg">Ideal gases</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=11&sub=4&cha=Electromagnetism" class="btn btn-block btn-primary btn-lg">Electromagnetism</a>
@@ -69,30 +69,30 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=4&cha=Newtons_Laws" class="btn btn-block btn-info btn-lg">Newtons laws</a>
+                    <a href="recmodal.php?gra=11&sub=4&cha=Newtons Laws" class="btn btn-block btn-info btn-lg">Newtons laws</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=4&cha=Geometrical_Optics" class="btn btn-block btn-warning btn-lg">Geometrical optics</a>
+                    <a href="recmodal.php?gra=11&sub=4&cha=Geometrical Optics" class="btn btn-block btn-warning btn-lg">Geometrical optics</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=4&cha=Quantitative_Aspects_Of_Chemical_Change" class="btn btn-block btn-success btn-lg">Quantitative aspects of chemical change</a>
+                    <a href="recmodal.php?gra=11&sub=4&cha=Quantitative Aspects Of Chemical Change" class="btn btn-block btn-success btn-lg">Quantitative aspects of chemical change</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=4&cha=Electric_Circuits" class="btn btn-block btn-primary btn-lg">Electric circuits</a>
+                    <a href="recmodal.php?gra=11&sub=4&cha=Electric Circuits" class="btn btn-block btn-primary btn-lg">Electric circuits</a>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=4&cha=Atomic_Combinations" class="btn btn-block btn-info btn-lg">Atomic combinations</a>
+                    <a href="recmodal.php?gra=11&sub=4&cha=Atomic Combinations" class="btn btn-block btn-info btn-lg">Atomic combinations</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=4&cha=2d_&_3d_wavefronts" class="btn btn-block btn-warning btn-lg">2d and 3d wavefronts</a>
+                    <a href="recmodal.php?gra=11&sub=4&cha=2d and 3d wavefronts" class="btn btn-block btn-warning btn-lg">2d and 3d wavefronts</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=11&sub=4&cha=Electrostatics" class="btn btn-block btn-success btn-lg">Electrostatics</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=4&cha=Energy_&_Chemical_Change" class="btn btn-block btn-primary btn-lg">Energy and chemical change</a>
+                    <a href="recmodal.php?gra=11&sub=4&cha=Energy and Chemical Change" class="btn btn-block btn-primary btn-lg">Energy and chemical change</a>
                   </td>
                 </tr>
                 <tr>
@@ -103,10 +103,10 @@ if (!isset($_SESSION['email'])) {
                     <a href="#recmodal.php?gra=11&sub=4&cha=24" class="btn btn-block btn-warning btn-lg">b</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=4&cha=Types_Of_Reactions" class="btn btn-block btn-success btn-lg">Types of reactions</a>
+                    <a href="recmodal.php?gra=11&sub=4&cha=Types Of Reactions" class="btn btn-block btn-success btn-lg">Types of reactions</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=4&cha=The_Lithosphere" class="btn btn-block btn-primary btn-lg">The lithosphere</a>
+                    <a href="recmodal.php?gra=11&sub=4&cha=The Lithosphere" class="btn btn-block btn-primary btn-lg">The lithosphere</a>
                   </td>
                 </tr>
               </table>

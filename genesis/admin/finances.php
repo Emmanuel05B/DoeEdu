@@ -28,7 +28,7 @@ if (!isset($_SESSION['email'])) {
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Finances 
+        Finances Dev Environment 
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -36,74 +36,82 @@ if (!isset($_SESSION['email'])) {
       </ol>
     </section>
 
-    <!-- Main content -->
     <section class="content">
-      <!-- Info boxes ----------------------------------------->
-        <div class="row">
-        <!-- Financial Balance -->
-        <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="row">
+
+          <?php 
+            $sql = "SELECT                
+            SUM(TotalFees) AS TotalFees,
+            SUM(TotalPaid) AS TotalPaid,
+            SUM(CASE WHEN TotalOwe > 0 THEN TotalOwe ELSE 0 END) AS TotalOwe,
+            SUM(CASE WHEN TotalOwe < 0 THEN TotalOwe ELSE 0 END) AS Owe
+
+            FROM learners";
+            $results = $connect->query($sql);
+            $final = $results->fetch_assoc();
+
+            $TotalFees = $final['TotalFees'];
+            $TotalPaid = $final['TotalPaid'];
+            $TotalOwe = $final['TotalOwe'];
+            $Owe = (-1 * $final['Owe']);
+
+          ?>
+
+          <!--  here  -->
+          <div class="col-md-3 col-sm-6 col-xs-12">
+              <div class="info-box">
+              <span class="info-box-icon bg-aqua"><i class="fa fa-balance-scale"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Total Paid by Learners</span><br>
+                <span class="info-box-number">R<?php echo $TotalPaid ?></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="info-box">
-            <span class="info-box-icon bg-aqua"><i class="fa fa-balance-scale"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Financial Balance</span>
-                <span class="info-box-number">R2500</span>
+              <span class="info-box-icon bg-yellow"><i class="fa fa-money"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Tot Amound Expexted</span><br>
+                <span class="info-box-number">R<?php echo $TotalFees ?></span>
+              </div>
             </div>
-            </div>
-        </div>
+          </div>
 
-        <!-- Debts -->
-        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="info-box">
-            <span class="info-box-icon bg-red"><i class="fa fa-credit-card"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Debts</span>
-                <span class="info-box-number">R41,410</span>
+             <span class="info-box-icon bg-green"><i class="fa fa-dollar"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Amound Due to Us</span><br>
+                <span class="info-box-number">R<?php echo $TotalOwe ?></span>
+              </div>
             </div>
-            </div>
-        </div>
+          </div>
 
-        <!-- Amount Due to Us -->
-        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="info-box">
-            <span class="info-box-icon bg-green"><i class="fa fa-dollar"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Amount Due to Us</span>
-                <span class="info-box-number">R760</span>
+              <span class="info-box-icon bg-red"><i class="fa fa-credit-card"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Amound we Owe</span><br>
+                <span class="info-box-number">R<?php echo $Owe ?></span>
+              </div>
             </div>
-            </div>
-        </div>
+          </div>
 
-        <!-- Amount Used -->
-        <div class="col-md-3 col-sm-6 col-xs-12">
-            <div class="info-box">
-            <span class="info-box-icon bg-yellow"><i class="fa fa-money"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Amount Used</span>
-                <span class="info-box-number">R2,000</span>
-            </div>
-            </div>
-        </div>
-        </div>
+      </div>
 
-      <!-- /.row -->
-
-      <!-- monthly recap ----------------------------------------->
       <div class="row">
         <div class="col-md-12">
-          <div class="box">
-            <div class="box-header with-border">
-
-            </div>
-           
-            <!-- ./box-body -->
+        
             <div class="box-footer">
               <div class="row">
+
                 <div class="col-sm-3 col-xs-6">
                   <div class="description-block border-right">
                     <a href="status.php?val=<?php echo 1 ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #17a2b8;">
                     <div>
                     <h5 class="description-header">Learners</h5>
-                    <span class="description-text">Active--Owing</span>
+                    <span class="description-text">Active - Owing</span>
                      </div>
                     </a>
                   </div>
@@ -111,23 +119,23 @@ if (!isset($_SESSION['email'])) {
                 </div>
                  <!-- /.col -->
                  <div class="col-sm-3 col-xs-6">
-                  <div class="description-block">
-                  <a href="status.php?val=<?php echo 4 ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #dc3545;">
+                  <div class="description-block border-right">
+                  <a href="status.php?val=<?php echo 3 ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #ffc107;">
                   <div>
                     <h5 class="description-header">Learners</h5>
-                    <span class="description-text">Not Active--Owing</span>
+                    <span class="description-text">Not Active - Not Owing</span>
                      </div>
                     </a>
                   </div>
                   <!-- /.description-block -->
                 </div>
-                <!-- /.col -->
+
                 <div class="col-sm-3 col-xs-6">
                   <div class="description-block border-right">
                   <a href="status.php?val=<?php echo 2  ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #28a745;">
                   <div>
                     <h5 class="description-header">Learners</h5>
-                    <span class="description-text">Active--Not Owing</span>
+                    <span class="description-text">Active - Not Owing</span>
                      </div>
                     </a>
                   </div>
@@ -135,28 +143,28 @@ if (!isset($_SESSION['email'])) {
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-3 col-xs-6">
-                  <div class="description-block border-right">
-                  <a href="status.php?val=<?php echo 3 ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #ffc107;">
+                  <div class="description-block">
+                  <a href="status.php?val=<?php echo 4 ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #dc3545;">
                   <div>
                     <h5 class="description-header">Learners</h5>
-                    <span class="description-text">Not Active--Not Owing</span>
+                    <span class="description-text">Not Active - Owing</span>
                      </div>
                     </a>
                   </div>
                   <!-- /.description-block -->
                 </div>
+                <!-- /.col -->
                
               </div>
 
             </div>
             <!-- /.box-footer -->
-          </div>
-          <!-- /.box -->
         </div>
         <!-- /.col -->
       </div>
-      <!-- /.row -->
+
     </section>
+
 
     <!-- Main content table--------------------h------------------------->
     <section class="content">
@@ -166,8 +174,7 @@ if (!isset($_SESSION['email'])) {
 
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Learners</h3>
-
+              <h3 class="box-title">Learners.</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
@@ -188,26 +195,6 @@ if (!isset($_SESSION['email'])) {
                   </thead>
                   <tbody>
                     <?php
-                                 /*   SELECT SUM(column_name) AS total
-                                    FROM learners;
-                                    
-                                    
-    SELECT                 
-    SUM(column_name) AS total_amount,
-    SUM(column_name) AS total_fees,
-    SUM(column_name) AS total_taxes
-    FROM finances
-    WHERE status = 'active';
-
-
-    SELECT 
-    SUM(CASE WHEN column1 > 0 THEN column1 ELSE 0 END) AS total_column1,
-    SUM(CASE WHEN column2 > 0 THEN column2 ELSE 0 END) AS total_column2,
-    SUM(CASE WHEN column3 > 0 THEN column3 ELSE 0 END) AS total_column3
-FROM finances;     avoids negatives
-*/
-
-
                         //select all leaners who are doing this activity... now im selecting activities
                         $sql = "SELECT * FROM learners";
                         $results = $connect->query($sql);
@@ -251,8 +238,6 @@ FROM finances;     avoids negatives
                   </tfoot>
               </table>
               <a href="mailparent.php" class="btn btn-block btn-primary">Mail Parents<i class="fa fa-arrow-circle-right"></i></a>
-
-
             </div>
             <!-- /.box-body -->
           </div>
@@ -263,99 +248,7 @@ FROM finances;     avoids negatives
       <!-- /.row -->
     </section>
     <!-- /.content -->
-  <div class="row">
-    <div class="col-md-3 col-sm-6 col-xs-12">
-                <div class="info-box bg-aqua">
-                <span class="info-box-icon"><i class="ion-ios-chatbubble-outline"></i></span>
 
-                <?php 
-                 $sql = "SELECT                
-                 SUM(TotalFees) AS TotalFees,
-                 SUM(TotalPaid) AS TotalPaid,
-                 SUM(CASE WHEN TotalOwe > 0 THEN TotalOwe ELSE 0 END) AS TotalOwe,
-                 SUM(CASE WHEN TotalOwe < 0 THEN TotalOwe ELSE 0 END) AS Owe
-
-                 FROM learners";
-                 $results = $connect->query($sql);
-                 $final = $results->fetch_assoc();
-
-                 $TotalFees = $final['TotalFees'];
-                 $TotalPaid = $final['TotalPaid'];
-                 $TotalOwe = $final['TotalOwe'];
-                 $Owe = (-1 * $final['Owe']);
-
-                
-                ?>
-
-
-
-                <div class="info-box-content">
-                    <span class="info-box-text">Total Paid by Learners</span>
-                    <span class="info-box-number">R<?php echo $TotalPaid ?></span>
-
-                    <span class="progress-description">
-                    40% Increase in 30 Days
-                    </span>
-                </div>
-                <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            </div>
-
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <!-- Info Boxes Style 2 -->
-                <div class="info-box bg-yellow">
-                <span class="info-box-icon"><i class="ion ion-ios-pricetag-outline"></i></span>
-
-                <div class="info-box-content">
-                    <span class="info-box-text">Tot Amound Expexted</span>
-                    <span class="info-box-number">R<?php echo $TotalFees ?></span>
-
-                    <span class="progress-description">
-                    50% Increase in 30 Days
-                    </span>
-                </div>
-                <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            </div>
-
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <div class="info-box bg-green">
-                <span class="info-box-icon"><i class="ion ion-ios-heart-outline"></i></span>
-
-                <div class="info-box-content">
-                    <span class="info-box-text">Amound Due to Us</span>
-                    <span class="info-box-number">R<?php echo $TotalOwe ?></span>
-
-                    <span class="progress-description">
-                    20% Increase in 30 Days
-                    </span>
-                </div>
-                <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            </div>
-
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <div class="info-box bg-red">
-                <span class="info-box-icon"><i class="ion ion-ios-cloud-download-outline"></i></span>
-
-                <div class="info-box-content">
-                    <span class="info-box-text">Amound we Owe</span>
-                    <span class="info-box-number">R<?php echo $Owe ?></span>
-
-                    <span class="progress-description">
-                    70% Increase in 30 Days
-                    </span>
-                </div>
-                <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            </div>
-
-            
-        </div>
   </div>
 
 

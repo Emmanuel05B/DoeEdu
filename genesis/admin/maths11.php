@@ -55,10 +55,10 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=3&cha=Exponents_&_Surds" class="btn btn-block btn-info btn-lg">Exponents and surds</a>
+                    <a href="recmodal.php?gra=11&sub=3&cha=Exponents and Surds" class="btn btn-block btn-info btn-lg">Exponents and surds</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=3&cha=Analytical_Geo" class="btn btn-block btn-warning btn-lg">Analytical geometry</a>
+                    <a href="recmodal.php?gra=11&sub=3&cha=Analytical Geometry" class="btn btn-block btn-warning btn-lg">Analytical geometry</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=11&sub=3&cha=Measurement" class="btn btn-block btn-success btn-lg">Measurement</a>
@@ -69,13 +69,13 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=3&cha=Equations_&_Inequalities" class="btn btn-block btn-info btn-lg">Equations and inequalities</a>
+                    <a href="recmodal.php?gra=11&sub=3&cha=Equations and Inequalities" class="btn btn-block btn-info btn-lg">Equations and inequalities</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=11&sub=3&cha=Functions" class="btn btn-block btn-warning btn-lg">Functions</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=3&cha=Euclidean_Geo" class="btn btn-block btn-success btn-lg">Euclidean geometry</a>
+                    <a href="recmodal.php?gra=11&sub=3&cha=Euclidean Geometry" class="btn btn-block btn-success btn-lg">Euclidean geometry</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=11&sub=3&cha=Statistics" class="btn btn-block btn-primary btn-lg">Statistics</a>
@@ -83,13 +83,13 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=3&cha=Number_Patterns" class="btn btn-block btn-info btn-lg">Number patterns</a>
+                    <a href="recmodal.php?gra=11&sub=3&cha=Number Patterns" class="btn btn-block btn-info btn-lg">Number patterns</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=11&sub=3&cha=Trigonometry" class="btn btn-block btn-warning btn-lg">Trigonometry</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=11&sub=3&cha=Finance_Growth_&_Decay" class="btn btn-block btn-success btn-lg">Finance growth and decay</a>
+                    <a href="recmodal.php?gra=11&sub=3&cha=Finance Growth and Decay" class="btn btn-block btn-success btn-lg">Finance growth and decay</a>
                   </td>
                   <td>
                     <a href="#recmodal.php?gra=11&sub=3&cha=43" class="btn btn-block btn-primary btn-lg">...</a>

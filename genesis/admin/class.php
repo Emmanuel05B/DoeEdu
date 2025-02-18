@@ -43,6 +43,11 @@ if (!isset($_SESSION['email'])) {
       }
 
     // get form data
+    /*
+    $gid = $_POST['gid'];
+    $sid = $_POST['sid'];  
+    $cid = $_POST['cid'];  */
+
     $learnerFakeids = $_POST['learnerFakeids'];
     $activityIds = $_POST['activityIds'];  
     
@@ -174,7 +179,7 @@ if (!isset($_SESSION['email'])) {
                 confirmButtonText: "OK"
             }).then((result) => {
                 if (result.isConfirmed) {
-                        window.location.href = "classhandler.php?gid=' . $_POST['gid'] . '&sid=' . $_POST['sid'] . '&cid=' . $_POST['cid'] . '&aid=' . $activityno . '";
+                   window.location.href = "classhandler.php?&aid=' . $activityno . '";
                 }
             });
         </script>';
@@ -258,7 +263,7 @@ if (!isset($_SESSION['email'])) {
                                FROM learners AS lt
                                JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
                                WHERE lt.Grade = 12 AND lt.Math > 0 AND ls.SubjectId = 1
-                               AND ls.Status = 'Active' ";   
+                            AND ls.ContractExpiryDate > CURDATE()";    
 
                    } else if ($subject == 2) {
 
@@ -268,7 +273,7 @@ if (!isset($_SESSION['email'])) {
                        FROM learners AS lt
                        JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
                        WHERE lt.Grade = 12 AND lt.Physics > 0 AND ls.SubjectId = 2
-                       AND ls.Status = 'Active' ";
+                      AND ls.ContractExpiryDate > CURDATE()";    
 
                    } else if ($subject == 3) {
                        echo '<h3>Grade 11 Mathematics Learners</h3><br>';
@@ -277,7 +282,7 @@ if (!isset($_SESSION['email'])) {
                                FROM learners AS lt
                                JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
                                WHERE lt.Grade = 11 AND lt.Math > 0 AND ls.SubjectId = 3
-                               AND ls.Status = 'Active' ";
+                               AND ls.ContractExpiryDate > CURDATE()";    
 
                    } else if ($subject == 4) {
                        echo '<h3>Grade 11 Physical Sciences Learners</h3><br>';
@@ -286,7 +291,7 @@ if (!isset($_SESSION['email'])) {
                        FROM learners AS lt
                        JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
                        WHERE lt.Grade = 11 AND lt.Physics > 0 AND ls.SubjectId = 4
-                       AND ls.Status = 'Active' ";
+                            AND ls.ContractExpiryDate > CURDATE()";    
 
 
                    } else if ($subject == 5) {
@@ -296,7 +301,7 @@ if (!isset($_SESSION['email'])) {
                        FROM learners AS lt
                        JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
                        WHERE lt.Grade = 10 AND lt.Math > 0 AND ls.SubjectId = 5
-                       AND ls.Status = 'Active' ";
+                       AND ls.ContractExpiryDate > CURDATE()";    
 
     
                    } else if ($subject == 6) {
@@ -306,7 +311,7 @@ if (!isset($_SESSION['email'])) {
                        FROM learners AS lt
                        JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
                        WHERE lt.Grade = 10 AND lt.Physics > 0 AND ls.SubjectId = 6
-                       AND ls.Status = 'Active' ";
+                       AND ls.ContractExpiryDate > CURDATE()";    
 
                    } else {
                        // Default case if none of the statuses match
@@ -393,7 +398,6 @@ if (!isset($_SESSION['email'])) {
 
                 </div><br>
                 <a href="feedback.php" class="btn btn-block btn-primary">Provide feedback to Parents</a>
-                <a href="classlist.php" class="btn btn-block btn-primary">Create Class List</a>
 
                
               </form>

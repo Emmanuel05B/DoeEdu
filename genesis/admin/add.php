@@ -264,14 +264,14 @@ label {
                 <td><input type="radio" name="maths" value="0" checked></td>
                 <td><input type="radio" name="maths" value="450.00"></td>
                 <td><input type="radio" name="maths" value="750.00"></td>
-                <td><input type="radio" name="maths" value="1119.00"></td>
+                <td><input type="radio" name="maths" value="1199.00"></td>
             </tr>
             <tr>
                 <td>Physical Sciences</td>
                 <td><input type="radio" name="physics" value="0" checked></td>
                 <td><input type="radio" name="physics" value="450.00"></td>
                 <td><input type="radio" name="physics" value="750.00"></td>
-                <td><input type="radio" name="physics" value="1119.00"></td>
+                <td><input type="radio" name="physics" value="1199.00"></td>
             </tr>
         </table>
     </div>

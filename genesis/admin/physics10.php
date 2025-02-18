@@ -55,27 +55,27 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=6&cha=Classification_Of_Matter" class="btn btn-block btn-info btn-lg">Classification of matter</a>
+                    <a href="recmodal.php?gra=10&sub=6&cha=Classification Of Matter" class="btn btn-block btn-info btn-lg">Classification of matter</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=6&cha=Chemical_Bonding" class="btn btn-block btn-warning btn-lg">Chemical bonding</a>
+                    <a href="recmodal.php?gra=10&sub=6&cha=Chemical Bonding" class="btn btn-block btn-warning btn-lg">Chemical bonding</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=10&sub=6&cha=Sound" class="btn btn-block btn-success btn-lg">Sound</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=6&cha=Representing_Chemical_Change" class="btn btn-block btn-primary btn-lg">Representing chemical change</a>
+                    <a href="recmodal.php?gra=10&sub=6&cha=Representing Chemical Change" class="btn btn-block btn-primary btn-lg">Representing chemical change</a>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=6&cha=States_of_matter_&_Kinetic_Theory" class="btn btn-block btn-info btn-lg">States of matter and kinetic theory</a>
+                    <a href="recmodal.php?gra=10&sub=6&cha=States of matter and Kinetic Theory" class="btn btn-block btn-info btn-lg">States of matter and kinetic theory</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=6&cha=Transverse_Pulses" class="btn btn-block btn-warning btn-lg">Transverse pulses</a>
+                    <a href="recmodal.php?gra=10&sub=6&cha=Transverse Pulses" class="btn btn-block btn-warning btn-lg">Transverse pulses</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=6&cha=Electromagnetic_Radiation" class="btn btn-block btn-success btn-lg">Electromagnetic radiation</a>
+                    <a href="recmodal.php?gra=10&sub=6&cha=Electromagnetic Radiation" class="btn btn-block btn-success btn-lg">Electromagnetic radiation</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=10&sub=6&cha=Magnetism" class="btn btn-block btn-primary btn-lg">Magnetism</a>
@@ -83,13 +83,13 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=6&cha=The_Atom" class="btn btn-block btn-info btn-lg">The atom</a>
+                    <a href="recmodal.php?gra=10&sub=6&cha=The Atom" class="btn btn-block btn-info btn-lg">The atom</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=6&cha=Transverse_Waves" class="btn btn-block btn-warning btn-lg">Transverse waves</a>
+                    <a href="recmodal.php?gra=10&sub=6&cha=Transverse Waves" class="btn btn-block btn-warning btn-lg">Transverse waves</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=6&cha=Particles_That_Make_Up_Substances" class="btn btn-block btn-success btn-lg">Particles that make up substances</a>
+                    <a href="recmodal.php?gra=10&sub=6&cha=Particles That Make Up Substances" class="btn btn-block btn-success btn-lg">Particles that make up substances</a>
                   </td>
                   <td>
                     <a href="recmodal.php?gra=10&sub=6&cha=Electrostatics" class="btn btn-block btn-primary btn-lg">Electrostatics</a>
@@ -97,16 +97,16 @@ if (!isset($_SESSION['email'])) {
                 </tr>
                 <tr>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=6&cha=The_Periodic_Table" class="btn btn-block btn-info btn-lg">The periodic table</a>
+                    <a href="recmodal.php?gra=10&sub=6&cha=The Periodic Table" class="btn btn-block btn-info btn-lg">The periodic table</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=6&cha=Longitudinal_Waves" class="btn btn-block btn-warning btn-lg">Longitudinal waves</a>
+                    <a href="recmodal.php?gra=10&sub=6&cha=Longitudinal Waves" class="btn btn-block btn-warning btn-lg">Longitudinal waves</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=6&cha=Physical_&_Chemical_Change" class="btn btn-block btn-success btn-lg">Physical and chemical change</a>
+                    <a href="recmodal.php?gra=10&sub=6&cha=Physical and Chemical_Change" class="btn btn-block btn-success btn-lg">Physical and chemical change</a>
                   </td>
                   <td>
-                    <a href="recmodal.php?gra=10&sub=6&cha=Electric_Circuits" class="btn btn-block btn-primary btn-lg">Electric circuits</a>
+                    <a href="recmodal.php?gra=10&sub=6&cha=Electric Circuits" class="btn btn-block btn-primary btn-lg">Electric circuits</a>
                   </td>
                 </tr>
               </table>

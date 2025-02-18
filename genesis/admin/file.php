@@ -61,7 +61,7 @@ $learner_id = isset($_GET['lid']) ? $_GET['lid'] : null;
 
 $SubjectId = intval($_GET['val']); // Get the subject value, ensure it's an integer
 
-// Set the subject name based on SubjectId
+// Set the subject name based on SubjectId e
 $SubjectName = '';
 switch ($SubjectId) {
     case 1:
@@ -350,75 +350,77 @@ $submission_no_count = $missed_activities;
                 </div>
             </div><br>
 
+
+
             <div class="col-xs-6">
-    <p class="lead">Overall Performance Status:</p>
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th style="display: inline-block; text-align: center; width: 100%;">Performance Summary</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                // Initialize overall score
-                $total_marks_obtained = 0;
-                $total_max_marks = 0;
-                $activity_count = 0;
+                <p class="lead">Overall Performance Status:</p>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="display: inline-block; text-align: center; width: 100%;">Performance Summary</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Initialize overall score
+                            $total_marks_obtained = 0;
+                            $total_max_marks = 0;
+                            $activity_count = 0;
 
-                // Calculate total marks obtained and max marks for activity performance
-                $result->data_seek(0); // Reset result pointer for calculation
-                while ($activity = $result->fetch_assoc()) {
-                    $total_marks_obtained += $activity['MarksObtained'];
-                    $total_max_marks += $activity['MaxMarks'];
-                    $activity_count++;
-                }
+                            // Calculate total marks obtained and max marks for activity performance
+                            $result->data_seek(0); // Reset result pointer for calculation
+                            while ($activity = $result->fetch_assoc()) {
+                                $total_marks_obtained += $activity['MarksObtained'];
+                                $total_max_marks += $activity['MaxMarks'];
+                                $activity_count++;
+                            }
 
-                // Calculate Overall Activity Score Percentage
-                $overall_activity_score = ($total_max_marks > 0) ? ($total_marks_obtained / $total_max_marks) * 100 : 0;
+                            // Calculate Overall Activity Score Percentage
+                            $overall_activity_score = ($total_max_marks > 0) ? ($total_marks_obtained / $total_max_marks) * 100 : 0;
 
-                // Determine the performance category based on overall activity score
-                if ($overall_activity_score >= 90) {
-                    $performance_category = 'Excellent';
-                    $comment = "Outstanding performance! Keep up the great work!";
-                } elseif ($overall_activity_score >= 70) {
-                    $performance_category = 'Good';
-                    $comment = "Good performance. Keep pushing to reach even higher levels!";
-                } elseif ($overall_activity_score >= 50) {
-                    $performance_category = 'Fair';
-                    $comment = "You’ve done well, but there’s room for improvement. Stay focused!";
-                } else {
-                    $performance_category = 'Poor';
-                    $comment = "There’s significant room for improvement. Focus on your studies and submit work on time!";
-                }
+                            // Determine the performance category based on overall activity score
+                            if ($overall_activity_score >= 90) {
+                                $performance_category = 'Excellent';
+                                $comment = "Outstanding performance! Keep up the great work!";
+                            } elseif ($overall_activity_score >= 70) {
+                                $performance_category = 'Good';
+                                $comment = "Good performance. Keep pushing to reach even higher levels!";
+                            } elseif ($overall_activity_score >= 50) {
+                                $performance_category = 'Fair';
+                                $comment = "You’ve done well, but there’s room for improvement. Stay focused!";
+                            } else {
+                                $performance_category = 'Poor';
+                                $comment = "There’s significant room for improvement. Focus on your studies and submit work on time!";
+                            }
 
-                // Combine attendance and submission rates into the comment
-                if ($attendance_rate < 75) {
-                    $comment .= " Your attendance rate is below 75%. Try to attend all classes for better learning.";
-                } else {
-                    $comment .= " Your attendance rate is great!";
-                }
+                            // Combine attendance and submission rates into the comment
+                            if ($attendance_rate < 75) {
+                                $comment .= " Your attendance rate is below 75%. Try to attend all classes for better learning.";
+                            } else {
+                                $comment .= " Your attendance rate is great!";
+                            }
 
-                if ($submission_rate < 75) {
-                    $comment .= " Your submission rate needs improvement.";
-                } else {
-                    $comment .= " Keep up the good work with your submissions!";
-                }
-                ?>
-                <tr>
-                    <td style="display: inline-block; text-align: center; width: 100%;">
-                        <b><?php echo $performance_category; ?></b><br>
-                        Overall Activity Score: <?php echo number_format($overall_activity_score, 2); ?>%<br>
-                        Attendance Rate: <?php echo number_format($attendance_rate, 2); ?>%<br>
-                        Submission Rate: <?php echo number_format($submission_rate, 2); ?>%<br>
-                        <br>
-                        <i><?php echo $comment; ?></i>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div><br>
+                            if ($submission_rate < 75) {
+                                $comment .= " Your submission rate needs improvement.";
+                            } else {
+                                $comment .= " Keep up the good work with your submissions!";
+                            }
+                            ?>
+                            <tr>
+                                <td style="display: inline-block; text-align: center; width: 100%;">
+                                    <b><?php echo $performance_category; ?></b><br>
+                                    Overall Activity Score: <?php echo number_format($overall_activity_score, 2); ?>%<br>
+                                    Attendance Rate: <?php echo number_format($attendance_rate, 2); ?>%<br>
+                                    Submission Rate: <?php echo number_format($submission_rate, 2); ?>%<br>
+                                    <br>
+                                    <i><?php echo $comment; ?></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div><br>
 
 
 <div class="col-xs-6">

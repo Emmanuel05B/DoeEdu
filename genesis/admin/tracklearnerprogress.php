@@ -15,129 +15,129 @@ if (!isset($_SESSION['email'])) {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
 
 <style>
-/* Add your existing styles here */
-.content {
-    background-color: white;
-    margin-top: 20px;
-    margin-left: 100px;
-    margin-right: 100px;
-}
+    /* Add your existing styles here */
+    .content {
+        background-color: white;
+        margin-top: 20px;
+        margin-left: 100px;
+        margin-right: 100px;
+    }
 
-.pos {
-    margin-top: 50px;
-    margin-left: 10px;
-    margin-right: 10px;
-}
+    .pos {
+        margin-top: 50px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
 
-.container {
-    width: 100%;
-    background-color: white;
-    position: relative;
-    margin-bottom: 20px;
-}
+    .container {
+        width: 100%;
+        background-color: white;
+        position: relative;
+        margin-bottom: 20px;
+    }
 
-.scale {
-    width: 100%;
-    height: 20px;
-    position: relative;
-    background: linear-gradient(to right, #f00 0%, #ffa500 50%, #0f0 100%);
-}
+    .scale {
+        width: 100%;
+        height: 20px;
+        position: relative;
+        background: linear-gradient(to right, #f00 0%, #ffa500 50%, #0f0 100%);
+    }
 
-.scale-mark {
-    position: absolute;
-    height: 20px;
-    width: 1px;
-    background-color: #000;
-}
+    .scale-mark {
+        position: absolute;
+        height: 20px;
+        width: 1px;
+        background-color: #000;
+    }
 
-.scale-mark.start {
-    left: 0;
-}
+    .scale-mark.start {
+        left: 0;
+    }
 
-.scale-mark.middle {
-    left: 50%;
-}
+    .scale-mark.middle {
+        left: 50%;
+    }
 
-.scale-mark.end {
-    left: 100%;
-}
+    .scale-mark.end {
+        left: 100%;
+    }
 
-.skills-container {
-    position: relative;
-    height: 43px;
-    border: 1px solid #000;
-    border-radius: 5px;
-}
+    .skills-container {
+        position: relative;
+        height: 43px;
+        border: 1px solid #000;
+        border-radius: 5px;
+    }
 
-.skills {
-    text-align: right;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    color: white;
-    position: absolute;
-    box-sizing: border-box;
-}
+    .skills {
+        text-align: right;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        color: white;
+        position: absolute;
+        box-sizing: border-box;
+    }
 
-.css {
-    background-color: white; /* Default color */
-}
+    .css {
+        background-color: white; /* Default color */
+    }
 
-.scale-label {
-    position: absolute;
-    font-size: 12px;
-    top: -20px; /* Position above the progress bar */
-    width: 40px;
-    text-align: center;
-}
+    .scale-label {
+        position: absolute;
+        font-size: 12px;
+        top: -20px; /* Position above the progress bar */
+        width: 40px;
+        text-align: center;
+    }
 
-#buttonContainer {
-    display: flex;
-    flex-direction: column; /* Stack items vertically */
-    align-items: center; /* Center items horizontally */
-}
+    #buttonContainer {
+        display: flex;
+        flex-direction: column; /* Stack items vertically */
+        align-items: center; /* Center items horizontally */
+    }
 
-#updateButton {
-    background-color: blue;
-    width: 180px;
-    padding: 10px;
-    border: none;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-bottom: 20px;
-}
+    #updateButton {
+        background-color: blue;
+        width: 180px;
+        padding: 10px;
+        border: none;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
 
-#status {
-    border: 1px solid #ccc;
-    padding: 10px; /* Padding inside the box */
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    width: 320px;
-}
+    #status {
+        border: 1px solid #ccc;
+        padding: 10px; /* Padding inside the box */
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        width: 320px;
+    }
 
-.scale-label.start {
-    left: 0;
-}
+    .scale-label.start {
+        left: 0;
+    }
 
-.scale-label.middle {
-    left: 50%;
-    transform: translateX(-50%);
-}
+    .scale-label.middle {
+        left: 50%;
+        transform: translateX(-50%);
+    }
 
-.scale-label.end {
-    right: 0;
-}
+    .scale-label.end {
+        right: 0;
+    }
 
-.button {
-    background-color: blue;
-    width: 120px; /* Adjust width as needed */
-    padding: 10px; /* Adjust padding for thickness */
-    border: none;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px; /* Optional: Add border radius for rounded corners */
-    margin-bottom: 20px;
-}
+    .button {
+        background-color: blue;
+        width: 120px; /* Adjust width as needed */
+        padding: 10px; /* Adjust padding for thickness */
+        border: none;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px; /* Optional: Add border radius for rounded corners */
+        margin-bottom: 20px;
+    }
 </style>
 
 <?php
@@ -184,7 +184,7 @@ if ($activityResults->num_rows > 0) {
     // Calculate percentage
     $AVGscore = $Totals > 0 ? round(($MarksObtained / $Totals) * 100, 2) : 0;
 } else {
-    echo "No activities found for the selected subject.";
+    echo "No activities found for the selected subject.     put sweet alert here...  line   187";
     exit;
 }
 ?>

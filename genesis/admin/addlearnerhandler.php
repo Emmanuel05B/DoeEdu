@@ -91,6 +91,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       // If learner does not exist, insert learner data
       if (!$learner_id) {
         $total_fees = $maths + $physics; // Calculate total fees
+
+          if($total_fees == 900.00){
+            $total_fees = 850.00;
+          }else if($total_fees == 1500.00){
+            $total_fees = 1250.00;
+          }else if($total_fees == 2398.00){
+            $total_fees = 1950.00;
+          } else {
+            // Default case if none of the statuses match
+            $total_fees = $total_fees;
+          }
+
         $total_paid = 0; // Set default value for now
         $total_owe = $total_fees;
         // Insert learner data without using knockout_time for expiry
@@ -126,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $registration_date->modify('+6 months');
                     $number_of_terms = 2;
                     break;
-                case 1119.00:
+                case 1199.00:
                     $registration_date->modify('+1 year');
                     $number_of_terms = 3;
                     break;
@@ -135,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     break;
             }
 
-            // Return the expiry date, number of terms, and status
+            // Return the expiry date, number of terms, and status h
             if ($registration_date) {
                 $contract_expiry_date = $registration_date->format('Y-m-d H:i:s');
                 $status = 'Active';
