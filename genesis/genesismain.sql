@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 18, 2025 at 11:57 AM
+-- Generation Time: May 10, 2025 at 01:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -44,7 +44,25 @@ CREATE TABLE `activities` (
 
 INSERT INTO `activities` (`ActivityId`, `ActivityName`, `SubjectId`, `ActivityDate`, `MaxMarks`, `Creator`, `Grade`, `ChapterName`) VALUES
 (99, 'activity 1', 2, '2025-02-17 17:01:37', 8.00, 'Boshielo', 12, 'Momentum and Impulse'),
-(100, 'activity 1', 1, '2025-02-17 17:01:22', 27.00, 'Boshielo', 12, 'Sequences and Series');
+(100, 'activity 1', 1, '2025-02-17 17:01:22', 27.00, 'Boshielo', 12, 'Sequences and Series'),
+(101, 'activity 1', 2, '2025-02-20 18:44:26', 20.00, 'Boshielo', 12, 'Vertical Projectile'),
+(102, 'activity 1', 3, '2025-02-20 18:46:56', 13.00, 'Boshielo', 11, 'Exponents and Surds'),
+(103, 'activity 1', 1, '2025-02-24 17:32:00', 20.00, 'Boshielo', 12, 'Functions'),
+(104, 'Inverse', 1, '2025-03-03 20:04:44', 20.00, 'Boshielo', 12, 'Functions'),
+(105, 'activity 1', 2, '2025-03-03 20:07:45', 14.00, 'Boshielo', 12, 'Organic Chemistry'),
+(106, 'activity 1', 3, '2025-03-03 20:08:58', 27.00, 'Boshielo', 11, 'Equations and Inequalities'),
+(107, 'activity 1', 5, '2025-03-06 18:35:38', 16.00, 'Boshielo', 10, 'Algebraic Expressions'),
+(108, 'activity 1', 1, '2025-03-11 20:15:56', 18.00, 'Boshielo', 12, 'Trigonometry'),
+(109, 'activity 2', 3, '2025-03-11 20:17:13', 27.00, 'Boshielo', 11, 'Equations and Inequalities'),
+(110, 'activity 2', 3, '2025-03-15 11:44:04', 23.00, 'Boshielo', 11, 'Trigonometry'),
+(111, 'activity 2', 2, '2025-03-15 12:07:23', 24.00, 'Boshielo', 12, 'Organic Chemistry'),
+(112, 'activity 1', 3, '2025-03-15 12:00:09', 20.00, 'Boshielo', 11, 'Trigonometry'),
+(113, 'activity 1', 5, '2025-03-17 17:53:48', 30.00, 'Boshielo', 10, 'Exponents'),
+(114, 'Test 1', 3, '2025-03-17 17:57:52', 60.00, 'Boshielo', 11, 'Statistics'),
+(115, 'activity 3', 2, '2025-03-17 17:59:03', 42.00, 'Boshielo', 12, 'Organic Chemistry'),
+(116, 'activity 4', 2, '2025-03-27 19:26:29', 17.00, 'Boshielo', 12, 'Organic Chemistry'),
+(117, 'activity 2', 5, '2025-03-27 19:28:24', 49.00, 'Boshielo', 10, 'Equations and Inequalities'),
+(118, 'activity 2', 1, '2025-03-27 19:33:39', 16.00, 'Boshielo', 12, 'Trigonometry');
 
 -- --------------------------------------------------------
 
@@ -115,7 +133,10 @@ INSERT INTO `finances` (`FinanceId`, `LearnerId`, `Grade`, `TotalFees`, `TotalPa
 (47, 91, 12, 1199.00, 0.00, 1199.00, 0.00),
 (49, 93, 12, 1199.00, 0.00, 1199.00, 0.00),
 (50, 94, 11, 1199.00, 0.00, 1199.00, 0.00),
-(51, 95, 11, 750.00, 0.00, 750.00, 0.00);
+(51, 95, 11, 750.00, 0.00, 750.00, 0.00),
+(52, 96, 12, 1500.00, 0.00, 750.00, 750.00),
+(53, 97, 12, 1500.00, 0.00, 750.00, 750.00),
+(54, 98, 12, 750.00, 0.00, 0.00, 750.00);
 
 -- --------------------------------------------------------
 
@@ -181,7 +202,44 @@ INSERT INTO `learneractivitymarks` (`Id`, `LearnerId`, `ActivityId`, `MarkerId`,
 (133, 89, 100, 65, 0, '2025-02-17 16:28:26', 'present', 'None', 'No', 'Did Not Write'),
 (134, 90, 100, 65, 9, '2025-02-17 16:28:26', 'present', 'None', 'Yes', 'None'),
 (135, 91, 100, 65, 9, '2025-02-17 16:28:27', 'present', 'None', 'Yes', 'None'),
-(136, 93, 100, 65, 0, '2025-02-17 16:28:27', 'present', 'None', 'No', 'Did Not Write');
+(136, 93, 100, 65, 0, '2025-02-17 16:28:27', 'present', 'None', 'No', 'Did Not Write'),
+(137, 89, 101, 65, 9, '2025-02-20 18:44:44', 'present', 'None', 'Yes', 'None'),
+(138, 90, 101, 65, 8, '2025-02-20 18:44:44', 'present', 'None', 'Yes', 'None'),
+(139, 94, 102, 65, 6, '2025-02-20 18:47:09', 'present', 'None', 'Yes', 'None'),
+(140, 89, 103, 65, 16, '2025-02-24 17:50:44', 'present', 'None', 'Yes', 'None'),
+(141, 90, 103, 65, 0, '2025-02-24 17:50:44', 'absent', 'None', 'No', 'None'),
+(142, 91, 103, 65, 8, '2025-02-24 17:50:45', 'absent', 'Data Issues', 'Yes', 'None'),
+(143, 93, 103, 65, 0, '2025-02-24 17:50:45', 'present', 'None', 'Yes', 'None'),
+(144, 89, 104, 65, 0, '2025-03-03 20:05:46', 'absent', 'None', 'No', 'None'),
+(145, 90, 104, 65, 0, '2025-03-03 20:05:46', 'absent', 'Data Issues', 'No', 'None'),
+(146, 91, 104, 65, 0, '2025-03-03 20:05:46', 'absent', 'Other', 'No', 'None'),
+(147, 93, 104, 65, 0, '2025-03-03 20:05:46', 'absent', 'Data Issues', 'No', 'None'),
+(148, 89, 105, 65, 14, '2025-03-03 20:08:18', 'present', 'None', 'Yes', 'None'),
+(149, 90, 105, 65, 1, '2025-03-03 20:08:18', 'present', 'None', 'Yes', 'None'),
+(150, 94, 106, 65, 9, '2025-03-03 20:09:12', 'present', 'None', 'Yes', 'None'),
+(151, 95, 107, 65, 6, '2025-03-06 18:35:50', 'present', 'None', 'Yes', 'None'),
+(152, 89, 108, 65, 0, '2025-03-11 20:11:21', 'present', 'None', 'Yes', 'None'),
+(153, 90, 108, 65, 0, '2025-03-11 20:11:21', 'present', 'None', 'No', 'None'),
+(154, 91, 108, 65, 18, '2025-03-11 20:11:21', 'present', 'None', 'Yes', 'None'),
+(155, 93, 108, 65, 0, '2025-03-11 20:11:21', 'present', 'None', 'No', 'None'),
+(156, 94, 109, 65, 13, '2025-03-11 20:17:19', 'present', 'None', 'Yes', 'None'),
+(157, 94, 110, 65, 12, '2025-03-15 11:44:12', 'present', 'None', 'Yes', 'None'),
+(158, 89, 111, 65, 0, '2025-03-15 11:45:50', 'absent', 'None', 'No', 'None'),
+(159, 90, 111, 65, 21, '2025-03-15 11:45:50', 'present', 'None', 'Yes', 'None'),
+(160, 94, 112, 65, 10, '2025-03-15 12:00:15', 'present', 'None', 'Yes', 'None'),
+(161, 95, 113, 65, 16, '2025-03-17 17:54:06', 'present', 'None', 'Yes', 'None'),
+(162, 94, 114, 65, 27, '2025-03-17 17:58:04', 'present', 'None', 'Yes', 'None'),
+(163, 89, 115, 65, 0, '2025-03-17 17:59:21', 'present', 'None', 'Yes', 'None'),
+(164, 90, 115, 65, 25, '2025-03-17 17:59:22', 'present', 'None', 'Yes', 'None'),
+(165, 90, 116, 65, 14, '2025-03-27 19:26:46', 'present', 'None', 'Yes', 'None'),
+(166, 96, 116, 65, 17, '2025-03-27 19:26:46', 'present', 'None', 'Yes', 'None'),
+(167, 97, 116, 65, 17, '2025-03-27 19:26:46', 'present', 'None', 'Yes', 'None'),
+(168, 95, 117, 65, 4, '2025-03-27 19:28:33', 'present', 'None', 'Yes', 'None'),
+(169, 90, 118, 65, 0, '2025-03-27 19:35:35', 'present', 'None', 'No', 'None'),
+(170, 91, 118, 65, 0, '2025-03-27 19:35:35', 'present', 'None', 'No', 'None'),
+(171, 93, 118, 65, 14, '2025-03-27 19:35:35', 'present', 'None', 'Yes', 'None'),
+(172, 96, 118, 65, 0, '2025-03-27 19:35:35', 'present', 'None', 'No', 'None'),
+(173, 97, 118, 65, 0, '2025-03-27 19:35:35', 'absent', 'None', 'No', 'None');
 
 -- --------------------------------------------------------
 
@@ -223,11 +281,14 @@ CREATE TABLE `learners` (
 
 INSERT INTO `learners` (`LearnerId`, `Name`, `Surname`, `Email`, `ContactNumber`, `Grade`, `RegistrationDate`, `LearnerKnockoffTime`, `Math`, `Physics`, `TotalFees`, `TotalPaid`, `TotalOwe`) VALUES
 (89, 'California', 'Malata', 'smokeyflab13.02.4e@gmail.com', 727227777, 12, '2025-02-07 18:57:23', '17:00:00.000000', 1199.00, 1199.00, 1950.00, 150.00, 1800.00),
-(90, 'Sindi', 'Matianyane', 'matianyanesindi09@gmail.com', 606102144, 12, '2025-02-07 19:00:59', '14:30:00.000000', 1199.00, 1199.00, 1950.00, 0.00, 1950.00),
-(91, 'Beauty', 'Malatji', 'malatjibeauty37@gmail.com', 674864174, 12, '2025-02-07 19:03:09', '16:00:00.000000', 1199.00, 0.00, 1199.00, 0.00, 1199.00),
-(93, 'Lesedi Lebogang', 'Maeyane', 'leboganglesedi41@gmail.com', 699548120, 12, '2025-02-15 12:45:46', '16:45:00.000000', 1199.00, 0.00, 1199.00, 0.00, 1199.00),
-(94, 'Angel', 'Moruni', 'moruniangel@gmail.com', 663744561, 11, '2025-02-15 21:52:01', '16:00:00.000000', 1199.00, 0.00, 1199.00, 0.00, 1199.00),
-(95, 'Neo', 'Mampana', 'neo@gmail.com', 609268321, 10, '2025-02-18 10:53:11', '16:00:00.000000', 750.00, 0.00, 750.00, 750.00, 0.00);
+(90, 'Sindi', 'Matianyane', 'matianyanesindi09@gmail.com', 606102144, 12, '2025-02-07 19:00:59', '14:30:00.000000', 1199.00, 1199.00, 1950.00, 700.00, 1250.00),
+(91, 'Beauty', 'Malatji', 'malatjibeauty37@gmail.com', 674864174, 12, '2025-02-07 19:03:09', '16:00:00.000000', 1199.00, 0.00, 1199.00, 120.00, 1079.00),
+(93, 'Lesedi Lebogang', 'Maeyane', 'leboganglesedi41@gmail.com', 699548120, 12, '2025-02-15 12:45:46', '16:45:00.000000', 1199.00, 0.00, 1199.00, 150.00, 1049.00),
+(94, 'Angel', 'Moruni', 'moruniangel@gmail.com', 663744561, 11, '2025-02-15 21:52:01', '16:00:00.000000', 1199.00, 0.00, 1199.00, 450.00, 749.00),
+(95, 'Neo', 'Mampana', 'neo@gmail.com', 609268321, 10, '2025-02-18 10:53:11', '16:00:00.000000', 750.00, 0.00, 750.00, 750.00, 0.00),
+(96, 'Nombulelo', 'Dlamini', 'ndlamini2411@gmail.com', 648126426, 12, '2025-03-27 05:05:53', '16:00:00.000000', 750.00, 750.00, 1250.00, 200.00, 1050.00),
+(97, 'Precious', 'Nkaiseng', 'nkaiengtshegofatso2@gmail.com', 719543166, 12, '2025-03-27 05:09:06', '16:00:00.000000', 750.00, 750.00, 1250.00, 200.00, 1050.00),
+(98, 'Khomotso', 'Mahole', 'kgomomahole@gmail.com', 697730300, 12, '2025-04-25 19:22:19', '15:00:00.000000', 0.00, 750.00, 750.00, 150.00, 600.00);
 
 -- --------------------------------------------------------
 
@@ -251,14 +312,19 @@ CREATE TABLE `learnersubject` (
 --
 
 INSERT INTO `learnersubject` (`LearnerSubjectId`, `LearnerId`, `SubjectId`, `TargetLevel`, `CurrentLevel`, `NumberOfTerms`, `ContractExpiryDate`, `Status`) VALUES
-(46, 89, 1, 7, 4, 0, '2026-02-07 18:28:48', 'Not Active'),
-(47, 89, 2, 7, 2, 0, '2026-02-07 18:28:48', 'Not Active'),
+(46, 89, 1, 7, 4, 0, '2000-02-07 18:28:48', 'Not Active'),
+(47, 89, 2, 7, 2, 0, '2000-02-07 18:28:48', 'Not Active'),
 (48, 90, 1, 4, 1, 0, '2026-02-07 18:28:48', 'Not Active'),
 (49, 90, 2, 4, 2, 0, '2026-02-07 18:28:48', 'Not Active'),
 (50, 91, 1, 4, 2, 0, '2026-02-07 18:28:48', 'Not Active'),
 (52, 93, 1, 5, 3, 3, '2026-02-15 13:45:47', 'Active'),
 (53, 94, 3, 5, 1, 3, '2026-02-15 22:52:02', 'Active'),
-(54, 95, 3, 7, 4, 2, '2025-08-18 11:53:11', 'Active');
+(54, 95, 5, 7, 4, 2, '2025-08-18 11:53:11', 'Active'),
+(55, 96, 1, 6, 2, 2, '2025-09-27 06:05:53', 'Active'),
+(56, 96, 2, 6, 3, 2, '2025-09-27 06:05:53', 'Active'),
+(57, 97, 1, 7, 2, 2, '2025-09-27 06:09:06', 'Active'),
+(58, 97, 2, 7, 2, 2, '2025-09-27 06:09:06', 'Active'),
+(59, 98, 2, 4, 2, 2, '2025-10-25 21:22:19', 'Active');
 
 -- --------------------------------------------------------
 
@@ -310,7 +376,10 @@ INSERT INTO `parentlearner` (`ParentId`, `LearnerId`) VALUES
 (122, 92),
 (122, 93),
 (123, 94),
-(124, 95);
+(124, 95),
+(125, 96),
+(126, 97),
+(127, 98);
 
 -- --------------------------------------------------------
 
@@ -338,7 +407,10 @@ INSERT INTO `parents` (`ParentId`, `ParentTitle`, `ParentName`, `ParentEmail`, `
 (121, 'Ms', 'Mokgadi', 'yvonnemala16@gmail.com', '822597551', 'Malatji'),
 (122, 'Mrs', 'Cecilia', 'noneprovided2@gmail.com', '793643050', 'Maeyane'),
 (123, 'Ms', 'Emmah', 'emmahmasterm@gmail.com', '768585649', 'Moruni'),
-(124, 'Ms', 'Tshepiso', 'kanyanetshepiso35@gmail.com', '728436832', 'Matlanyane');
+(124, 'Ms', 'Tshepiso', 'kanyanetshepiso35@gmail.com', '728436832', 'Matlanyane'),
+(125, 'Mr', 'Johannes', 'thakisip@gmail.com', '723262280', 'Thakisi'),
+(126, 'Mr', 'Johannes', 'thakhisip@gmail.com', '723262280', 'Thakisi'),
+(127, 'Mr', 'Michael', 'michaelmahole6@gmail.com', '789354912', 'Mahole');
 
 -- --------------------------------------------------------
 
@@ -580,7 +652,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activities`
 --
 ALTER TABLE `activities`
-  MODIFY `ActivityId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `ActivityId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
 
 --
 -- AUTO_INCREMENT for table `activity`
@@ -592,7 +664,7 @@ ALTER TABLE `activity`
 -- AUTO_INCREMENT for table `finances`
 --
 ALTER TABLE `finances`
-  MODIFY `FinanceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `FinanceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `learner`
@@ -604,19 +676,19 @@ ALTER TABLE `learner`
 -- AUTO_INCREMENT for table `learneractivitymarks`
 --
 ALTER TABLE `learneractivitymarks`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=137;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=174;
 
 --
 -- AUTO_INCREMENT for table `learners`
 --
 ALTER TABLE `learners`
-  MODIFY `LearnerId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+  MODIFY `LearnerId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
 
 --
 -- AUTO_INCREMENT for table `learnersubject`
 --
 ALTER TABLE `learnersubject`
-  MODIFY `LearnerSubjectId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `LearnerSubjectId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `notices`
@@ -628,7 +700,7 @@ ALTER TABLE `notices`
 -- AUTO_INCREMENT for table `parents`
 --
 ALTER TABLE `parents`
-  MODIFY `ParentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
+  MODIFY `ParentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
 
 --
 -- AUTO_INCREMENT for table `registrationquestions`

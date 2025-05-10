@@ -160,7 +160,7 @@ if (!isset($_SESSION['email'])) {
             <div class="box box-primary">
               <div class="box-body box-profile">
                 <div class="profile-photo-square">
-                  <img class="profile-user-img img-responsive img-circle" src="images/doe.png" alt="User profile picture">
+                  <img class="profile-user-img img-responsive img-circle" src="images/1.jpg" alt="User profile picture">
                 </div>
 
                 <h3 class="profile-username text-center"><?php echo $final['Name'] ?> <?php echo $final['Surname'] ?></h3>

@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html>
+
+
+<link rel="stylesheet" type="text/css" href="./fontawesome-free-6.4.0-web\fontawesome-free-6.4.0-web\css\all.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
 
 <?php
@@ -92,19 +100,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       if (!$learner_id) {
         $total_fees = $maths + $physics; // Calculate total fees
 
-          if($total_fees == 900.00){
-            $total_fees = 850.00;
-          }else if($total_fees == 1500.00){
-            $total_fees = 1250.00;
-          }else if($total_fees == 2398.00){
-            $total_fees = 1950.00;
-          } else {
-            // Default case if none of the statuses match
-            $total_fees = $total_fees;
-          }
+        // Adjust fees based on conditions
+        if($total_fees == 900.00){
+          $total_fees = 850.00;
+        }else if($total_fees == 1500.00){
+          $total_fees = 1250.00;
+        }else if($total_fees == 2398.00){
+          $total_fees = 1950.00;
+        } else {
+          // Default case if none of the statuses match
+          $total_fees = $total_fees;
+        }
 
         $total_paid = 0; // Set default value for now
         $total_owe = $total_fees;
+        
         // Insert learner data without using knockout_time for expiry
         $stmt = $connect->prepare("INSERT INTO learners (Name, Surname, Email, ContactNumber, Grade, RegistrationDate, LearnerKnockoffTime, Math, Physics, TotalFees, TotalPaid, TotalOwe) VALUES (?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sssiisddddd", $learner_name, $learner_surname, $learner_email, $learner_contactnumber, $learner_grade, $learner_knockout_time, $maths, $physics, $total_fees, $total_paid, $total_owe);
@@ -147,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     break;
             }
 
-            // Return the expiry date, number of terms, and status h
+            // Return the expiry date, number of terms, and status
             if ($registration_date) {
                 $contract_expiry_date = $registration_date->format('Y-m-d H:i:s');
                 $status = 'Active';
@@ -162,8 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           // For Maths
           if ($maths != 0) {
 
-            //value of $subject_id for maths depends on $learner_grade....  grade 12 = 1  grade 11 = 3    grade 10 = 5
-
+            // Value of $subject_id for maths depends on $learner_grade
             if($learner_grade == 12){
               $subject_id = 1;
             } else if ($learner_grade == 11) {
@@ -171,8 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }else if ($learner_grade == 10) {
               $subject_id = 5;
             } else {
-              // Default case if none of the statuses match
-              echo '<h1>Grade does not exists</h1>';
+              echo '<h1>Grade does not exist</h1>';
             }
 
             $registration_date = new DateTime();  // Current date
@@ -189,8 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           // For Physics
           if ($physics != 0) {
 
-            //value of $subject_id for physics depends on $learner_grade....  grade 12 = 2  grade 11 = 4    grade 10 = 6
-
+            // Value of $subject_id for physics depends on $learner_grade
             if($learner_grade == 12){
               $subject_id = 2;
             } else if ($learner_grade == 11) {
@@ -198,10 +205,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }else if ($learner_grade == 10) {
               $subject_id = 6;
             } else {
-              // Default case if none of the statuses match
-              echo '<h1>Grade does not exists</h1>';
+              echo '<h1>Grade does not exist</h1>';
             }
-           
 
             $registration_date = new DateTime();  // Current date
             list($contract_expiry_date, $status, $number_of_terms) = calculateContractExpiry($physics, $registration_date);
@@ -294,26 +299,39 @@ function sendEmailToParent($parent_email, $parent_name) {
     $mail->isHTML(true);
     $mail->Subject = 'Learner Registration - DOE Verification';
     $mail->Body = "
+
       <p>Dear $parent_name,</p>
-      <p>Congratulations! You have been successfully registered with the Distributors of Education.</p>
-      <p>Your learner ID: ....</p>
-      <p>We look forward to your academic journey with us!</p>      
-      <p>Best regards,</p>
-      <p>DOE</p>";
+      <p>We are thrilled to welcome you and your child to the Distributors of Education family!</p>
+      <p>We’re pleased to inform you that your child has been successfully registered with us. We are excited to have them on board and look forward to supporting them on their academic journey.</p>
+      <p>If you have any questions or need further assistance, feel free to reach out to us.</p>
+      <p>Once again, welcome—and thank you for choosing the Distributors of Education.</p>
+      <br>
+      <p>Warm regards,</p>
+      <p><strong>DOE Team</strong></p>";
+    // Send email d
 
-    // Send email
-    $mail->send();
+    if($mail->send()) {
+      // Success message for all emails sent successfully
+      echo '<script>
+              Swal.fire({
+                  icon: "success",
+                  title: "Registration Successful",
+                  text: "A confirmation email has been sent to $parent_email.",
 
-    echo "<script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Registration Successful',
-                text: 'A confirmation email has been sent to $parent_email.',
-                confirmButtonText: 'OK'
-            }).then(function() {
-                window.location = 'index.php'; 
-            });
-          </script>";
+                  confirmButtonColor: "#3085d6",
+                  confirmButtonText: "OK"
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      window.location.href = "add2.php";
+                  }
+              });
+            </script>';
+      exit;
+  } else {
+      // If email fails to send, record it in the failed emails array
+      $failedEmails[] = $email;
+  }
+
 
   } catch (Exception $e) {
     echo "<script>
@@ -329,3 +347,8 @@ function sendEmailToParent($parent_email, $parent_name) {
   }
 }
 ?>
+
+<div class="wrapper"></div>
+
+</body>
+</html>

@@ -1,144 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #e8eff1;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #e8eff1;
+      margin: 0;
+      padding: 0;
+    }
 
-        /* Container for the whole login section */
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-        .login-box {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            width: 70%;
-            max-width: 1000px;
-            display: flex;
-            overflow: hidden;
-        }
+    .login-box {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      width: 70%;
+      max-width: 500px;
+      display: flex;
+      overflow: hidden;
+      flex-direction: row;
+    }
 
-        /* Left column with the image */
-        .image-column {
-            flex: 1;
-            background: #f0f4f8;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    .image-column {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        .image-column img {
-            max-width: 80%;
-            border-radius: 0px;
-            object-fit: cover;
-        }
+    .image-column img {
+      width: 200px;
+      height: auto;
+      max-height: 200px;
+      object-fit: contain;
+    }
 
-        /* Right column with the form */
-        .form-column {
-            flex: 1.5;
-            padding: 30px;
-        }
+    .form-column {
+      flex: 1;
+      padding: 30px;
+    }
 
-        .form-column h2 {
-            text-align: center;
-            font-size: 30px;
-            color: #333;
-            margin-bottom: 20px;
-        }
+    .form-column h2 {
+      text-align: center;
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 10px;
+    }
 
-        .container {
-            padding: 16px;
-        }
+    .container {
+      padding: 8px 0;
+    }
 
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 15px;
-            margin: 0; /* Remove margin to make them align perfectly */
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            background-color: #f9f9f9;
-            box-sizing: border-box; /* Include padding and border in width calculation */
-            transition: border-color 0.3s ease-in-out;
-        }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 12px;
+      background-color: #f9f9f9;
+      box-sizing: border-box;
+    }
 
-        input[type="text"]:focus, input[type="password"]:focus {
-            border-color: #007bff;
-            outline: none;
-        }
+    input[type="text"]:focus, input[type="password"]:focus {
+      border-color: #007bff;
+      outline: none;
+    }
 
-        .loginbtn {
-            width: 100%; /* Ensures the button takes up the full width */
-            padding: 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            box-sizing: border-box; /* Ensure button padding and border are included */
-        }
+    .loginbtn {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+    }
 
-        .loginbtn:hover {
-            background-color: #0056b3;
-        }
+    .loginbtn:hover {
+      background-color: #0056b3;
+    }
 
-        .cancelbtn {
-            width: auto;
-            padding: 10px 18px;
-            background-color: #e2e2e2;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
+    .cancelbtn:hover {
+      background-color: #c4c4c4;
+    }
 
-        .cancelbtn:hover {
-            background-color: #c4c4c4;
-        }
+    .psw {
+      float: right;
+      font-size: 13px;
+    }
 
-        .psw {
-            float: right;
-            font-size: 14px;
-        }
+    .error-message {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+    }
 
-        /* Error message styling */
-        .error-message {
-            color: red;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .login-box {
-                flex-direction: column;
-                width: 90%;
-            }
-
-            .image-column {
-                display: none;
-            }
-
-            .form-column {
-                padding: 20px;
-            }
-        }
-    </style>
+  </style>
 </head>
 <body>
 
@@ -180,6 +146,9 @@ if(isset($_POST['login'])){
                 $_SESSION['email'] = $final['Email'];
 
                 switch ($final['employeeType']) {
+                    case '2': 
+                        header('Location: ../learner/modal.php');
+                        break;
                     case '1': 
                         header('Location: ../teacher/modal.php');
                         break;
@@ -212,45 +181,46 @@ if(isset($_POST['login'])){
 
 <!-- Login Container -->
 <div class="login-container">
-    <div class="login-box">
-        <!-- Left image column -->
-        <div class="image-column">
-            <img src="../admin/images/doe.png" alt="Login Image"> <!-- Replace with the actual image path -->
-        </div>
+  <div class="login-box">
+  <div class="form-column">
 
-        <!-- Right form column -->
-        <div class="form-column">
-            <h2>Login</h2>
-            
-            <?php
-            if (isset($_SESSION['error_message'])) {
-                echo $_SESSION['error_message'];
-                unset($_SESSION['error_message']);
-            }
-            ?>
-            
-            <!-- Login Form -->
-            <form action="login.php" method="post">
-                <div class="container">
-                    <label for="email"><b>Email</b></label> <br>
-                    <input type="text" placeholder="Enter Email" id="email" name="email" required><br>
-
-                    <label for="password"><b>Password</b></label><br>
-                    <input type="password" placeholder="Enter Password" id="password" name="password" required><br><br>
-
-                    <button type="submit" class="loginbtn" name="login">Login</button><br>
-                    <label>
-                        <input type="checkbox" checked="checked" name="remember"> Remember me
-                    </label>
-                </div>
-
-                <div class="container" style="background-color:#f1f1f1">
-                    <button type="button" class="cancelbtn">Cancel</button>
-                    <span class="psw">Reset <a href="forgotpassword.php">password?</a></span>
-                </div>
-            </form>
-        </div>
+    <div class="image-column">
+      <img src="../admin/images/westtt.png" alt="Login Image">
     </div>
+    
+      <h2>Login</h2>
+
+      <?php
+      if (isset($_SESSION['error_message'])) {
+          echo $_SESSION['error_message'];
+          unset($_SESSION['error_message']);
+      }
+      ?>
+
+      <!-- Login Form -->
+      <form action="login.php" method="post">
+        <div class="container">
+          <label for="email"><b>Email</b></label>
+          <input type="text" placeholder="Enter Email" id="email" name="email" required>
+        </div>
+
+        <div class="container">
+          <label for="password"><b>Password</b></label>
+          <input type="password" placeholder="Enter Password" id="password" name="password" required>
+        </div>
+
+        <div class="container">
+          <button type="submit" class="loginbtn" name="login">Login</button>
+          <label><input type="checkbox" checked="checked" name="remember"> Remember me</label>
+        </div>
+
+        <div class="container" style="background-color:#f1f1f1">
+          <button type="button" class="cancelbtn">Cancel</button>
+          <span class="psw">Reset <a href="forgotpassword.php">password?</a></span>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 </body>

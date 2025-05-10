@@ -38,6 +38,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
         <li class="header">MAIN NAVIGATION</li>
 
           <li><a href="adminindex.php"><i class="fa fa-circle-o"></i> Home</a></li>
+          <li><a href="admin.php"><i class="fa fa-circle-o"></i> Administration</a></li>
           <li><a href="manegeprofiles.php"><i class="fa fa-circle-o"></i> Registrations</a></li>
           <li><a href="finances.php"><i class="fa fa-circle-o"></i> Finances</a></li>
 

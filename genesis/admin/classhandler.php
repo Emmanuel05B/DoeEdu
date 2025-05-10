@@ -94,6 +94,7 @@ if (!isset($_SESSION['email'])) {
                             <input type="hidden" name="learnerFakeids[]" value="<?php echo $final['LearnerId'] ?>">
                             <input type="hidden" name="activityIds[]" value="<?php echo $activityid ?>">
                           </td>
+                          
                           <td><?php echo $final['Surname'] ?></td>
                           <td><?php echo $final['Attendance']?></td>
                           <td><?php echo $final['AttendanceReason'] ?></td>

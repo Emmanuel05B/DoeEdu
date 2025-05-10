@@ -198,7 +198,7 @@ label {
     <h1>Registration:
 
      <!-- Adding the image -->
-     <img src="images/doe.png" alt="Your Image" class="top-right-image">
+     <img src="images/westtt.png" alt="Your Image" class="top-right-image">
 
     </h1>
 
