@@ -42,6 +42,7 @@ if (!isset($_SESSION['email'])) {
             </div>
             <!-- /.box-header -->
             <div class="box-body">
+                <div class="table-responsive"> <!-- the magic!!!! -->
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                     <tr>
@@ -166,6 +167,7 @@ if (!isset($_SESSION['email'])) {
 
                   </tfoot>
                 </table>
+                </div>
                 <p><a href="classform.php?val=<?php echo $_GET['val'] ?>" class="btn btn-block btn-primary">Create Class Form</a></p>
                 <p><a href="expiredclasslist.php?val=<?php echo $_GET['val'] ?>" class="btn btn-block btn-primary">Expired contract List</a></p>
 

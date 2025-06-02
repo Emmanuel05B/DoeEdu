@@ -54,8 +54,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
               <li><a href="#" style="padding: 10px 15px;">Separated link</a></li>
             </ul>
           </li>
-
-          <li><a href="categ.php"><i class="fa fa-circle-o"></i> Record Marks</a></li>
+          <li><a href="categ.php"><i class="fa fa-circle-o"></i> Activity Manegement</a></li>
           <li><a href="schedulemeeting.php"><i class="fa fa-circle-o"></i> Communications</a></li>
           <li><a href="logout.php"><i class="fa fa-circle-o"></i> Log out</a></li>
         </li>

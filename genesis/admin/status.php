@@ -27,6 +27,7 @@ if (!isset($_SESSION['email'])) {
         <div class="col-xs-12">
           <div class="box">
             <div class="box-body">
+              <div class="table-responsive"> <!-- the magic!!!! -->
               <table id="example1" class="table table-bordered table-striped">
                 <thead>
                   <tr>
@@ -146,6 +147,7 @@ if (!isset($_SESSION['email'])) {
                   </tr>
                 </tfoot>
               </table>
+              </div>
             </div>
           </div>
         </div>

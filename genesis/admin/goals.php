@@ -26,8 +26,7 @@ if (!isset($_SESSION['email'])) {
     .content {
         background-color: white;
         margin-top: 20px;
-        margin-left: 100px;
-        margin-right: 100px;
+        
     }
 
     .pos {
@@ -98,82 +97,83 @@ if (!isset($_SESSION['email'])) {
                                     <div class="pos">
                                             <div class="box box-info">
                                                 <div class="box-header with-border">
-                                                    <h3>Goals Set</h3>
+                                                    <h3>Goals Set....learner name somewhere for small screens</h3>
                                                 </div>
                                                 <!-- /.box-header -->
                                                 <div class="box-body">
-                                                    <table class="table table-bordered">
-                                                        <tr>
-                                                            <th style="width: 10px">#</th>
-                                                            <th>Goal Type</th>
-                                                            <th>Progress</th>
-                                                            <th style="width: 40px">Label</th>
-                                                            <th>Time Left:</th>
-                                                            <th>Status</th>
-                                                            <th>Update Current Score (%)</th>
-                                                        </tr>
-                                                        <?php
-                                                        include('../partials/connect.php');
-                                                        $learnerId = $_GET['id'];
-                                                        $sql = "SELECT * FROM goals WHERE LearnerId = $learnerId"; 
-                                                        $results = $connect->query($sql);
-                                                        while($final = $results->fetch_assoc()) { ?>
-
-                                                       <?php 
-                                                         $currentTime = time();
-
-                                                         // Example data (replace with your actual data from the database)
-                                                         $goalTargetTimestamp = strtotime($final['GoalTargetDate']); // Goal target date timestamp
-                                                         $goalSetTimestamp = strtotime($final['GoalSetDate']);       // Goal set date timestamp
-                                                         
-                                                         // Calculate the remaining time between the current time and the goal target date
-                                                         $timeRemaining = $goalTargetTimestamp - $currentTime;
-                                                         
-                                                         $inDays = floor($timeRemaining / 86400); // Number of days
-                                                         $inWeeks = floor($timeRemaining / (7 * 86400)); // Number of weeks
-                                                         $inMonths = floor($timeRemaining / (30 * 86400)); // Approximate number of months
-                                                         
-                                                         // Determine the appropriate time unit to display
-                                                         if ($timeRemaining < 604800) { // Less than a week
-                                                             $elapsedTime = $inDays . ' day/s';
-                                                         } elseif ($timeRemaining < 2592000) { // Less than a month
-                                                             $elapsedTime = $inWeeks . ' week/s';
-                                                         } else {
-                                                             $elapsedTime = $inMonths . ' month/s';
-                                                         }
-                                                          
-                                                        ?>
-
-                                                                         
+                                                    <div class="table-responsive"> <!-- the magic!!!! -->
+                                                        <table class="table table-bordered">
                                                             <tr>
-                                                                <td><?php echo $final['GoalId']; ?></td>
-                                                                <td><?php echo $final['Subject']; ?></td>
-                                                                <td>
-                                                                    <div class="progress progress-xs">
-                                                                        <div class="progress-bar progress-bar-yellow" style="width: <?php echo $final['CurrentPercentage']; ?>%"></div>
-                                                                    </div>
-                                                                </td>
-                                                                <td><span class="badge bg-yellow"><?php echo $final['CurrentPercentage']; ?>%</span></td>
-                                         
-                                                                <td><span class="badge"><?php echo $elapsedTime; ?></span></td>
-
-                                                             
-                                                                <td><?php echo $final['Status']; ?></td>
-                                                               
-                                                                <td>
-                                                                    <form action="updategoal.php" method="POST" class="horizontal-container">
-                                                                        <input type="number" class="form-control2" id="currentscore" name="currentscore" min="0" max="100" required>
-                                                                        <input type="hidden" name="goalid" value="<?php echo $final['GoalId']; ?>">
-                                                                        <input type="hidden" name="learnerid" value="<?php echo $learnerId; ?>">
-                                                                        
-                                                                        <button type="submit" name="update" class="button btn btn-primary py-3 px-4">Update</button>
-                                                                    </form>
-                                                                </td>
-                                                                
+                                                                <th style="width: 10px">#</th>
+                                                                <th>Goal Type</th>
+                                                                <th>Progress</th>
+                                                                <th style="width: 40px">Label</th>
+                                                                <th>Time Left:</th>
+                                                                <th>Status</th>
+                                                                <th>Update Current Score (%)</th>
                                                             </tr>
-                                                        <?php } ?>
-                                                    </table> <br><br>
+                                                            <?php
+                                                            include('../partials/connect.php');
+                                                            $learnerId = $_GET['id'];
+                                                            $sql = "SELECT * FROM goals WHERE LearnerId = $learnerId"; 
+                                                            $results = $connect->query($sql);
+                                                            while($final = $results->fetch_assoc()) { ?>
 
+                                                         <?php 
+                                                            $currentTime = time();
+
+                                                            // Example data (replace with your actual data from the database)
+                                                            $goalTargetTimestamp = strtotime($final['GoalTargetDate']); // Goal target date timestamp
+                                                            $goalSetTimestamp = strtotime($final['GoalSetDate']);       // Goal set date timestamp
+                                                            
+                                                            // Calculate the remaining time between the current time and the goal target date
+                                                            $timeRemaining = $goalTargetTimestamp - $currentTime;
+                                                            
+                                                            $inDays = floor($timeRemaining / 86400); // Number of days
+                                                            $inWeeks = floor($timeRemaining / (7 * 86400)); // Number of weeks
+                                                            $inMonths = floor($timeRemaining / (30 * 86400)); // Approximate number of months
+                                                            
+                                                            // Determine the appropriate time unit to display
+                                                            if ($timeRemaining < 604800) { // Less than a week
+                                                                $elapsedTime = $inDays . ' day/s';
+                                                            } elseif ($timeRemaining < 2592000) { // Less than a month
+                                                                $elapsedTime = $inWeeks . ' week/s';
+                                                            } else {
+                                                                $elapsedTime = $inMonths . ' month/s';
+                                                            }
+                                                            
+                                                            ?>
+
+                                                                            
+                                                                <tr>
+                                                                    <td><?php echo $final['GoalId']; ?></td>
+                                                                    <td><?php echo $final['Subject']; ?></td>
+                                                                    <td>
+                                                                        <div class="progress progress-xs">
+                                                                            <div class="progress-bar progress-bar-yellow" style="width: <?php echo $final['CurrentPercentage']; ?>%"></div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td><span class="badge bg-yellow"><?php echo $final['CurrentPercentage']; ?>%</span></td>
+                                            
+                                                                    <td><span class="badge"><?php echo $elapsedTime; ?></span></td>
+
+                                                                
+                                                                    <td><?php echo $final['Status']; ?></td>
+                                                                
+                                                                    <td>
+                                                                        <form action="updategoal.php" method="POST" class="horizontal-container">
+                                                                            <input type="number" class="form-control2" id="currentscore" name="currentscore" min="0" max="100" required>
+                                                                            <input type="hidden" name="goalid" value="<?php echo $final['GoalId']; ?>">
+                                                                            <input type="hidden" name="learnerid" value="<?php echo $learnerId; ?>">
+                                                                            
+                                                                            <button type="submit" name="update" class="button btn btn-primary py-3 px-4">Update</button>
+                                                                        </form>
+                                                                    </td>
+                                                                    
+                                                                </tr>
+                                                            <?php } ?>
+                                                        </table> <br><br>
+                                                    </div>
                                                     <a href="tracklearnerprogress.php?id=<?php echo $learnerId ?>" class="btn btn-primary btn-block">Track Overall Avarage</a>
 
                                                 </div>

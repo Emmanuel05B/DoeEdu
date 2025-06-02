@@ -150,7 +150,7 @@ if(isset($_POST['login'])){
                         header('Location: ../learner/modal.php');
                         break;
                     case '1': 
-                        header('Location: ../teacher/modal.php');
+                        header('Location: ../tutor/adminindex.php');
                         break;
                     case '0': 
                         header('Location: ../admin/adminindex.php');

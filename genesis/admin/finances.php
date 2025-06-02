@@ -178,9 +178,53 @@ if (!isset($_SESSION['email'])) {
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <table id="example1" class="table table-bordered table-striped">
-                  <thead>
-                    <tr>
+
+              <div class="table-responsive"> <!-- the magic!!!! -->
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th>StNo</th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Grade</th>
+                        <th>Math</th>
+                        <th>Physics</th>
+                        <th>Total Fees</th>
+                        <th>Total Paid</th>
+                        <th>Total Owe</th>
+                        <th>Pay</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php
+                          //select all leaners who are doing this activity... now im selecting activities
+                          $sql = "SELECT * FROM learners";
+                          $results = $connect->query($sql);
+                          while($final = $results->fetch_assoc()) { ?>
+                            <tr>
+                              <td><?php echo $final['LearnerId'] ?></td>
+                              <td><?php echo $final['Name'] ?></td>
+                              <td><?php echo $final['Surname'] ?></td>
+                              <td><?php echo $final['Grade'] ?></td>
+                              <td><?php echo $final['Math'] ?></td>
+                              <td><?php echo $final['Physics'] ?></td>
+                              <td><?php echo $final['TotalFees'] ?></td>
+                              <td><?php echo $final['TotalPaid'] ?></td>
+                              <td> <?php echo $final['TotalOwe'] ?></td>
+                              <td> 
+                                <form action="payhandler.php" method="POST" class="horizontal-container">
+                                  <input type="number" class="form-control2" id="newamount" name="newamount" min="-5000" max="5000" required>
+                                  <input type="hidden" name="learnerid" value="<?php echo $final['LearnerId']; ?>">                                                                        
+                                  <button type="submit" name="updateby" class="button btn btn-primary py-3 px-4">Update By</button>
+                                </form>
+                              </td>
+                            </tr>
+
+                      <?php } ?>
+                    </tbody>
+
+                    <tfoot>
+                      <tr>
                       <th>StNo</th>
                       <th>Name</th>
                       <th>Surname</th>
@@ -191,52 +235,11 @@ if (!isset($_SESSION['email'])) {
                       <th>Total Paid</th>
                       <th>Total Owe</th>
                       <th>Pay</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php
-                        //select all leaners who are doing this activity... now im selecting activities
-                        $sql = "SELECT * FROM learners";
-                        $results = $connect->query($sql);
-                        while($final = $results->fetch_assoc()) { ?>
-                          <tr>
-                            <td><?php echo $final['LearnerId'] ?></td>
-                            <td><?php echo $final['Name'] ?></td>
-                            <td><?php echo $final['Surname'] ?></td>
-                            <td><?php echo $final['Grade'] ?></td>
-                            <td><?php echo $final['Math'] ?></td>
-                            <td><?php echo $final['Physics'] ?></td>
-                            <td><?php echo $final['TotalFees'] ?></td>
-                            <td><?php echo $final['TotalPaid'] ?></td>
-                            <td> <?php echo $final['TotalOwe'] ?></td>
-                            <td> 
-                              <form action="payhandler.php" method="POST" class="horizontal-container">
-                                <input type="number" class="form-control2" id="newamount" name="newamount" min="-5000" max="5000" required>
-                                <input type="hidden" name="learnerid" value="<?php echo $final['LearnerId']; ?>">                                                                        
-                                <button type="submit" name="updateby" class="button btn btn-primary py-3 px-4">Update By</button>
-                              </form>
-                            </td>
-                          </tr>
 
-                    <?php } ?>
-                  </tbody>
-
-                  <tfoot>
-                    <tr>
-                    <th>StNo</th>
-                    <th>Name</th>
-                    <th>Surname</th>
-                    <th>Grade</th>
-                    <th>Math</th>
-                    <th>Physics</th>
-                    <th>Total Fees</th>
-                    <th>Total Paid</th>
-                    <th>Total Owe</th>
-                    <th>Pay</th>
-
-                    </tr>
-                  </tfoot>
-              </table>
+                      </tr>
+                    </tfoot>
+                </table>
+              </div>
               <a href="mailparent.php" class="btn btn-block btn-primary">Mail Parents<i class="fa fa-arrow-circle-right"></i></a>
             </div>
             <!-- /.box-body -->

@@ -233,164 +233,166 @@ if (!isset($_SESSION['email'])) {
             <!-- /.box-header -->
             <div class="box-body">
               <form id="learnerForm" action="class.php" method="post">
-                <table id="example1" class="table table-bordered table-striped">
-                  <thead>
-                    <tr>
-                      <th>StNo.</th>
-                      <th>Name</th>
-                      <th>Surname</th>
-                      <th>Attendance</th>
-                      <th>Reason</th>
-                      <th>Enter Marks</th>
-                      <th>Submitted</th>
-                      <th>Reason</th>
-       
-                    </tr>
-                  </thead>
+                <div class="table-responsive"> <!-- the magic!!!! -->
+                  <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th>StNo.</th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Attendance</th>
+                        <th>Reason</th>
+                        <th>Enter Marks</th>
+                        <th>Submitted</th>
+                        <th>Reason</th>
+        
+                      </tr>
+                    </thead>
 
-                  <tbody>
-                    <?php
-                    
-                    if (!isset($_SESSION['learnerIds'])) {
-                      $_SESSION['learnerIds'] = []; // Initialize session array if it doesn't exist
-                  }
-         
-                   // Check the status and render different HTML for each case
-                   if ($subject == 1) {
-                       echo '<h3>Grade 12 Mathematics Learners</h3><br>';
+                    <tbody>
+                      <?php
+                      
+                      if (!isset($_SESSION['learnerIds'])) {
+                        $_SESSION['learnerIds'] = []; // Initialize session array if it doesn't exist
+                    }
+          
+                    // Check the status and render different HTML for each case
+                    if ($subject == 1) {
+                        echo '<h3>Grade 12 Mathematics Learners</h3><br>';
 
-                               $sql = "SELECT lt.*, ls.* 
-                               FROM learners AS lt
-                               JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                               WHERE lt.Grade = 12 AND lt.Math > 0 AND ls.SubjectId = 1
-                            AND ls.ContractExpiryDate > CURDATE()";    
+                                $sql = "SELECT lt.*, ls.* 
+                                FROM learners AS lt
+                                JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                                WHERE lt.Grade = 12 AND lt.Math > 0 AND ls.SubjectId = 1
+                              AND ls.ContractExpiryDate > CURDATE()";    
 
-                   } else if ($subject == 2) {
+                    } else if ($subject == 2) {
 
-                       echo '<h3>Grade 12 Physical Sciences Learners</h3><br>';
-   
-                       $sql = "SELECT lt.*, ls.* 
-                       FROM learners AS lt
-                       JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                       WHERE lt.Grade = 12 AND lt.Physics > 0 AND ls.SubjectId = 2
-                      AND ls.ContractExpiryDate > CURDATE()";    
-
-                   } else if ($subject == 3) {
-                       echo '<h3>Grade 11 Mathematics Learners</h3><br>';
-   
-                       $sql = "SELECT lt.*, ls.* 
-                               FROM learners AS lt
-                               JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                               WHERE lt.Grade = 11 AND lt.Math > 0 AND ls.SubjectId = 3
-                               AND ls.ContractExpiryDate > CURDATE()";    
-
-                   } else if ($subject == 4) {
-                       echo '<h3>Grade 11 Physical Sciences Learners</h3><br>';
-
-                       $sql = "SELECT lt.*, ls.* 
-                       FROM learners AS lt
-                       JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                       WHERE lt.Grade = 11 AND lt.Physics > 0 AND ls.SubjectId = 4
-                            AND ls.ContractExpiryDate > CURDATE()";    
-
-
-                   } else if ($subject == 5) {
-                       echo '<h3>Grade 10 Mathematics Learners</h3><br>';
-
-                       $sql = "SELECT lt.*, ls.* 
-                       FROM learners AS lt
-                       JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                       WHERE lt.Grade = 10 AND lt.Math > 0 AND ls.SubjectId = 5
-                       AND ls.ContractExpiryDate > CURDATE()";    
-
+                        echo '<h3>Grade 12 Physical Sciences Learners</h3><br>';
     
-                   } else if ($subject == 6) {
-                       echo '<h3>Grade 10 Physical Sciences Learners</h3><br>';
-   
-                       $sql = "SELECT lt.*, ls.* 
-                       FROM learners AS lt
-                       JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                       WHERE lt.Grade = 10 AND lt.Physics > 0 AND ls.SubjectId = 6
-                       AND ls.ContractExpiryDate > CURDATE()";    
+                        $sql = "SELECT lt.*, ls.* 
+                        FROM learners AS lt
+                        JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                        WHERE lt.Grade = 12 AND lt.Physics > 0 AND ls.SubjectId = 2
+                        AND ls.ContractExpiryDate > CURDATE()";    
 
-                   } else {
-                       // Default case if none of the statuses match
-                       echo '<h1>Learners - Unknown Status</h1>';
-                   }
+                    } else if ($subject == 3) {
+                        echo '<h3>Grade 11 Mathematics Learners</h3><br>';
+    
+                        $sql = "SELECT lt.*, ls.* 
+                                FROM learners AS lt
+                                JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                                WHERE lt.Grade = 11 AND lt.Math > 0 AND ls.SubjectId = 3
+                                AND ls.ContractExpiryDate > CURDATE()";    
+
+                    } else if ($subject == 4) {
+                        echo '<h3>Grade 11 Physical Sciences Learners</h3><br>';
+
+                        $sql = "SELECT lt.*, ls.* 
+                        FROM learners AS lt
+                        JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                        WHERE lt.Grade = 11 AND lt.Physics > 0 AND ls.SubjectId = 4
+                              AND ls.ContractExpiryDate > CURDATE()";    
+
+
+                    } else if ($subject == 5) {
+                        echo '<h3>Grade 10 Mathematics Learners</h3><br>';
+
+                        $sql = "SELECT lt.*, ls.* 
+                        FROM learners AS lt
+                        JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                        WHERE lt.Grade = 10 AND lt.Math > 0 AND ls.SubjectId = 5
+                        AND ls.ContractExpiryDate > CURDATE()";    
+
+      
+                    } else if ($subject == 6) {
+                        echo '<h3>Grade 10 Physical Sciences Learners</h3><br>';
+    
+                        $sql = "SELECT lt.*, ls.* 
+                        FROM learners AS lt
+                        JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                        WHERE lt.Grade = 10 AND lt.Physics > 0 AND ls.SubjectId = 6
+                        AND ls.ContractExpiryDate > CURDATE()";    
+
+                    } else {
+                        // Default case if none of the statuses match
+                        echo '<h1>Learners - Unknown Status</h1>';
+                    }
 
 
 
-                       $results = $connect->query($sql);   //save the list of these learners somewhere so you can use it in the classhandler/viewer
-                        while($final = $results->fetch_assoc()) { 
-                          // Store learner ID in session
-                          $_SESSION['learnerIds'][] = $final['LearnerId']; // Add the LearnerId to the session array
-                          ?>     
-                            <tr>
+                        $results = $connect->query($sql);   //save the list of these learners somewhere so you can use it in the classhandler/viewer
+                          while($final = $results->fetch_assoc()) { 
+                            // Store learner ID in session
+                            $_SESSION['learnerIds'][] = $final['LearnerId']; // Add the LearnerId to the session array
+                            ?>     
+                              <tr>
 
-                              <td>
-                                <?php echo $final['LearnerId'] ?>
+                                <td>
+                                  <?php echo $final['LearnerId'] ?>
+                                </td>
+                                <td>
+                                  <?php echo $final['Name'] ?>
+                                  <input type="hidden" id="urlParams" name="learnerFakeids[]" value="<?php echo $final['LearnerId'] ?>">
+                                  <input type="hidden" id="urlParams" name="activityIds[]" value="<?php echo $finalres['ActivityId'] ?>">
+                                </td>
+                                <td>
+                                  <?php echo $final['Surname'] ?>
+                                </td>
+                                <td>
+                                  <select name="attendances[]">
+                                    <option value="present" selected>Present</option>
+                                    <option value="absent">Absent</option>
+                                    <option value="late">Late</option>
+                                  </select>
                               </td>
                               <td>
-                                <?php echo $final['Name'] ?>
-                                <input type="hidden" id="urlParams" name="learnerFakeids[]" value="<?php echo $final['LearnerId'] ?>">
-                                <input type="hidden" id="urlParams" name="activityIds[]" value="<?php echo $finalres['ActivityId'] ?>">
+                                  <select name="attendancereasons[]">
+                                    <option value="None" selected>None Provided</option>
+                                    <option value="Other">Other</option>
+                                    <option value="Data Issues">Data Issues</option>
+
+                                  </select>
                               </td>
-                              <td>
-                                <?php echo $final['Surname'] ?>
-                              </td>
-                              <td>
-                                <select name="attendances[]">
-                                  <option value="present" selected>Present</option>
-                                  <option value="absent">Absent</option>
-                                  <option value="late">Late</option>
-                                </select>
-                             </td>
-                             <td>
-                                <select name="attendancereasons[]">
+                                <td> 
+                                  <input type="number" name="marks[]" value="" placeholder="Marks" min="0", max="<?php echo $finalres['MaxMarks'] ?>" required>
+                                </td>
+                                <td>
+                                  <select name="submitted[]">
+                                    <option value="Yes" selected>Yes</option>
+                                    <option value="No">No</option>
+                                  </select>
+                                </td>
+                                <td>
+                                  <select name="submissionreasons[]">
                                   <option value="None" selected>None Provided</option>
                                   <option value="Other">Other</option>
                                   <option value="Data Issues">Data Issues</option>
+                                  <option value="Did Not Write">Did Not Write</option>
 
-                                </select>
-                             </td>
-                              <td> 
-                                <input type="number" name="marks[]" value="" placeholder="Marks" min="0", max="<?php echo $finalres['MaxMarks'] ?>" required>
-                              </td>
-                              <td>
-                                <select name="submitted[]">
-                                  <option value="Yes" selected>Yes</option>
-                                  <option value="No">No</option>
-                                </select>
-                              </td>
-                              <td>
-                                <select name="submissionreasons[]">
-                                <option value="None" selected>None Provided</option>
-                                <option value="Other">Other</option>
-                                <option value="Data Issues">Data Issues</option>
-                                <option value="Did Not Write">Did Not Write</option>
+                                  </select>
+                                </td>
+  
 
-                                </select>
-                              </td>
- 
+                            </tr>
 
-                          </tr>
+                      <?php } ?>
+                    </tbody>
 
-                    <?php } ?>
-                  </tbody>
-
-                  <tfoot>
-                    <tr>
-                      <th>StNo.</th>
-                      <th>Name</th>
-                      <th>Surname</th>
-                      <th>Attendance</th>
-                      <th>Reason</th>
-                      <th>Enter Marks</th>
-                      <th>Submitted</th>
-                      <th>Reason</th>
-                    </tr>
-                  </tfoot>
-                </table>
+                    <tfoot>
+                      <tr>
+                        <th>StNo.</th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Attendance</th>
+                        <th>Reason</th>
+                        <th>Enter Marks</th>
+                        <th>Submitted</th>
+                        <th>Reason</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
 
                 <!-- Submit button -->
                 <div class="button-container">

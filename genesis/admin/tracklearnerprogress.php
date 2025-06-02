@@ -19,8 +19,7 @@ if (!isset($_SESSION['email'])) {
     .content {
         background-color: white;
         margin-top: 20px;
-        margin-left: 100px;
-        margin-right: 100px;
+
     }
 
     .pos {
@@ -200,7 +199,7 @@ if ($activityResults->num_rows > 0) {
             <div class="container-fluid">
                 <div class="oder">
                     <div style="text-align: center;">
-                        <h2 style="display: inline-block;">Learner Progress</h2><br><br><br>
+                        <h2 style="display: inline-block;">Learner Progress.=== name somewhere</h2><br><br><br>
                     </div>
 
                     <div class="container">

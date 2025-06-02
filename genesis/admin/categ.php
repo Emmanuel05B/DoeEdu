@@ -25,7 +25,7 @@ if (!isset($_SESSION['email'])) {
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Record Marks
+        Record Marks Or Generate Activity
         <small>classes</small>
       </h1>
       
