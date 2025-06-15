@@ -27,40 +27,40 @@ if (!isset($_SESSION['email'])) {
     </section>
 
      <?php
-     // might be unnecessary.
-    include('../partials/connect.php');
+        // might be unnecessary.
+        include('../partials/connect.php');
         $grade = $_GET['gra'];
        // $subject = $_GET['sub'];
         $chaptername = $_GET['cha'];
 
         $SubjectId = intval($_GET['sub']); // Get the subject value, ensure it's an integer
 
-// Set the subject name based on SubjectId e
-$SubjectName = '';
-switch ($SubjectId) {
-    case 1:
-        $SubjectName = 'Mathematics';
-        break;
-    case 2:
-        $SubjectName = 'Physical Sciences';
-        break;
-    case 3:
-        $SubjectName = 'Mathematics';
-        break;
-    case 4:
-        $SubjectName = 'Physical Sciences';
-        break;
-    case 5:
-        $SubjectName = 'Mathematics';
-        break;
-    case 6:
-        $SubjectName = 'Physical Sciences';
-        break;
-    default:
-        echo '<h1>Learners - Unknown Subject</h1>';
-        exit();
-}
-    ?>
+        // Set the subject name based on SubjectId e
+        $SubjectName = '';
+        switch ($SubjectId) {
+            case 1:
+                $SubjectName = 'Mathematics';
+                break;
+            case 2:
+                $SubjectName = 'Physical Sciences';
+                break;
+            case 3:
+                $SubjectName = 'Mathematics';
+                break;
+            case 4:
+                $SubjectName = 'Physical Sciences';
+                break;
+            case 5:
+                $SubjectName = 'Mathematics';
+                break;
+            case 6:
+                $SubjectName = 'Physical Sciences';
+                break;
+            default:
+                echo '<h1>Learners - Unknown Subject</h1>';
+                exit();
+        }
+     ?>
 
     <section class="content">
       <div class="box box-primary">
@@ -68,7 +68,8 @@ switch ($SubjectId) {
           <h3 class="box-title">Activity Details</h3>
         </div>
 
-        <form action="save_activity.php" method="POST">
+        <form action="saveactivity.php" method="POST" enctype="multipart/form-data">
+
           <div class="box-body">
             <div class="row text-center activity-info">
               <div class="col-sm-4">
@@ -88,11 +89,40 @@ switch ($SubjectId) {
             <hr>
 
             <div class="form-group">
-              <label for="activity_title">Activity Title</label>
-              <input type="text" class="form-control input-sm" id="activity_title" name="activity_title" placeholder="Enter activity title" required>
+              
+              <div class="row">
+                <div class="col-sm-3">
+                  <div class="form-group">
+                    <label for="activity_title">Activity Title</label>
+                    <input type="text" class="form-control input-sm" id="activity_title" name="activity_title" placeholder="Enter activity title" required>
+                  </div>
+                </div>
+                <div class="col-sm-3">
+                  <div class="form-group">
+                    <label for="due_date">Due Date</label>
+                    <input type="date" class="form-control input-sm" id="due_date" name="due_date" required>
+                  </div>
+                </div>
+                <div class="col-sm-3">
+                  <div class="form-group">
+                    <label for="due_time">Due Time</label>
+                    <input type="time" class="form-control input-sm" id="due_time" name="due_time" required>
+                  </div>
+                </div>
+                <div class="col-sm-3">
+                 <div class="form-group">
+                    <label>Attach Image (optional)</label>
+                    <input type="file" name="activity_image" accept="image/*" class="form-control input-sm">
+                  </div>
+                </div>
+
+              </div>
+
+            
             </div>
 
             <div id="questions_container">
+             
               <div class="question-block">
                 <hr>
                 <h4>Question 1</h4>
@@ -101,42 +131,47 @@ switch ($SubjectId) {
                   <textarea name="questions[0][text]" class="form-control input-sm" required></textarea>
                 </div>
                 <div class="row">
-                  <div class="col-sm-6">
+                  <div class="col-sm-2">
                     <div class="form-group">
                       <label>Option A</label>
                       <input type="text" name="questions[0][options][A]" class="form-control input-sm" required>
                     </div>
                   </div>
-                  <div class="col-sm-6">
+                  <div class="col-sm-2">
                     <div class="form-group">
                       <label>Option B</label>
                       <input type="text" name="questions[0][options][B]" class="form-control input-sm" required>
                     </div>
                   </div>
-                </div>
-                <div class="row">
-                  <div class="col-sm-6">
+                  <div class="col-sm-2">
                     <div class="form-group">
                       <label>Option C</label>
                       <input type="text" name="questions[0][options][C]" class="form-control input-sm" required>
                     </div>
                   </div>
-                  <div class="col-sm-6">
+                  <div class="col-sm-2">
                     <div class="form-group">
                       <label>Option D</label>
                       <input type="text" name="questions[0][options][D]" class="form-control input-sm" required>
                     </div>
                   </div>
+
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <label>Set Correct Answer</label>
+                      <select name="questions[0][correct]" class="form-control input-sm" required>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                      </select>
+                    </div>
+                  </div>
+
+
                 </div>
-                <div class="form-group">
-                  <label>Correct Answer</label>
-                  <select name="questions[0][correct]" class="form-control input-sm" required>
-                    <option value="A">A</option>
-                    <option value="B">B</option>
-                    <option value="C">C</option>
-                    <option value="D">D</option>
-                  </select>
-                </div>
+               
+               
               </div>
             </div>
 
@@ -355,12 +390,17 @@ switch ($SubjectId) {
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="dist/js/adminlte.min.js"></script>
+
+
+
 <script>
   let questionIndex = 1;
+
   document.getElementById('add_question_btn').addEventListener('click', function () {
     const container = document.getElementById('questions_container');
     const newBlock = document.createElement('div');
     newBlock.classList.add('question-block');
+
     newBlock.innerHTML = `
       <hr>
       <h4>Question ${questionIndex + 1}</h4>
@@ -368,48 +408,69 @@ switch ($SubjectId) {
         <label>Question</label>
         <textarea name="questions[${questionIndex}][text]" class="form-control input-sm" required></textarea>
       </div>
+
       <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-2">
           <div class="form-group">
             <label>Option A</label>
             <input type="text" name="questions[${questionIndex}][options][A]" class="form-control input-sm" required>
           </div>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-2">
           <div class="form-group">
             <label>Option B</label>
             <input type="text" name="questions[${questionIndex}][options][B]" class="form-control input-sm" required>
           </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-2">
           <div class="form-group">
             <label>Option C</label>
             <input type="text" name="questions[${questionIndex}][options][C]" class="form-control input-sm" required>
           </div>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-2">
           <div class="form-group">
             <label>Option D</label>
             <input type="text" name="questions[${questionIndex}][options][D]" class="form-control input-sm" required>
           </div>
         </div>
+        <div class="col-sm-2">
+          <div class="form-group">
+            <label>Set Correct Answer</label>
+            <select name="questions[${questionIndex}][correct]" class="form-control input-sm" required>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <div class="form-group">
+
+            <label>Delete</label>
+            <button type="button" class="btn btn-danger btn-sm remove-question-btn"><i class="fa fa-trash"></i> Delete Question</button>
+
+          </div>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Correct Answer</label>
-        <select name="questions[${questionIndex}][correct]" class="form-control input-sm" required>
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-          <option value="D">D</option>
-        </select>
-      </div>
+
     `;
+
+    // Append the question block
     container.appendChild(newBlock);
     questionIndex++;
   });
+
+  // Delegate delete button click to container
+  document.getElementById('questions_container').addEventListener('click', function (e) {
+    if (e.target.closest('.remove-question-btn')) {
+      const block = e.target.closest('.question-block');
+      block.remove();
+    }
+  });
 </script>
+
 
 <style>
   .form-control {

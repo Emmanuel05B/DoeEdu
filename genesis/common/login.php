@@ -147,7 +147,7 @@ if(isset($_POST['login'])){
 
                 switch ($final['employeeType']) {
                     case '2': 
-                        header('Location: ../learner/modal.php');
+                        header('Location: ../learner/learnerindex.php');
                         break;
                     case '1': 
                         header('Location: ../tutor/adminindex.php');

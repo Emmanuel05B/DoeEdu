@@ -119,11 +119,15 @@ if (!isset($_SESSION['email'])) {
                 <!-- Generate Activity Button -->
                 <div style="text-align: center; margin-top: 20px;">
                     <a href="generateactivity.php?gra=<?php echo $grade ?>&sub=<?php echo $subject ?>&cha=<?php echo $chaptername ?>" class="btn btn-primary">
-                        Generate Activity Instead
+                        Generate Quiz Instead
+                    </a>
+                    <a href="generateactivity.php?gra=<?php echo $grade ?>&sub=<?php echo $subject ?>&cha=<?php echo $chaptername ?>" class="btn btn-primary">
+                        View/Forward Quiz Instead
                     </a>
                 </div>
 
-                  <hr>
+                <hr>
+                
 
                 <div style="text-align: center; margin-top: 20px;">
                     <a href="categ.php" class="btn btn-primary">
