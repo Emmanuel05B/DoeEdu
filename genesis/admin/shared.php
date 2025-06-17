@@ -19,7 +19,7 @@ $dresults = $connect->query($dsql);
 $dfinal = $dresults->fetch_assoc();
 
 //attendace
-// Query to get total appearances
+// Query to get total appearances s
 $sql_total = "SELECT COUNT(*) AS total_appearances FROM welcome WHERE LearnerId = $learner_id;";
 $result_total = $connect->query($sql_total);
 $total = $result_total->fetch_assoc();
@@ -195,7 +195,7 @@ if ($fileResultsLatestIds === false) {
         if ($fileResultsLatest === false) {
             echo "Error executing the query for latest records.";
         } else {
-            // Initialize totals for the latest records
+            // Initialize totals for the latest records f
             $engagementlevelTotalLatest = 0;
             $independancelevelTotalLatest = 0;
             $numResultsLatest = 0;

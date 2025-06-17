@@ -97,6 +97,8 @@ if (!isset($_SESSION['email'])) {
                         if ($stmt->execute() === TRUE) {
                           $userFakeid = $connect->insert_id;
 
+                          specify somewhere that this is a tutor not a director.
+
                           $stmt2 = $connect->prepare("INSERT INTO employee(Id, StartDate, employeeType ,Specialisation) VALUES(?, Now(), 1, ?)");
                           $stmt2->bind_param("is", $userFakeid, $specialisation);
 

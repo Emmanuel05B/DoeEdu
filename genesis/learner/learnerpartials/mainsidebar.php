@@ -38,11 +38,25 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
         <li class="header">MAIN NAVIGATION</li>
 
           <li><a href="learnerindex.php"><i class="fa fa-circle-o"></i> Home</a></li>
+          <li><a href="learnerdashboard.php"><i class="fa fa-circle-o"></i> Dashboard</a></li>
+          <li><a href="learnerdashboard2.php"><i class="fa fa-circle-o"></i> Dashboard2</a></li>
+          <li><a href="learnerdashboard3.php"><i class="fa fa-circle-o"></i> Dashboard3</a></li>
           <li><a href="homework.php"><i class="fa fa-circle-o"></i>Homeworks</a></li>
           <li><a href="perfomance.php"><i class="fa fa-circle-o"></i>My Performance</a></li>
           <li><a href="booking.php"><i class="fa fa-circle-o"></i> Session Booking</a></li>
           <li><a href="voices.php"><i class="fa fa-circle-o"></i>Student Voice</a></li>
           <li><a href="logout.php"><i class="fa fa-circle-o"></i> Log out</a></li>
+
+
+          <li><a href="mytutors.php"><i class="fa fa-circle-o"></i> My Tutors</a></li>
+          <li><a href="learningresources.php"><i class="fa fa-circle-o"></i> Learning Resources</a></li>
+          <li><a href="progresstracker.php"><i class="fa fa-circle-o"></i> Progress Tracker</a></li>
+          <li><a href="myhomeworks.php"><i class="fa fa-circle-o"></i> Homework & Assessments</a></li>
+          <li><a href="announcements.php"><i class="fa fa-circle-o"></i> Announcements / News</a></li>
+          <li><a href="forums.php"><i class="fa fa-circle-o"></i> Discussion Forums</a></li>
+          <li><a href="calendar.php"><i class="fa fa-circle-o"></i> Calendar / Schedule</a></li>
+          <li><a href="profilesettings.php"><i class="fa fa-circle-o"></i> Profile Settings</a></li>
+          <li><a href="help.php"><i class="fa fa-circle-o"></i> Help & Support</a></li>
         </li>
         
       </ul>

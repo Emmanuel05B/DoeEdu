@@ -84,9 +84,9 @@ if (!isset($_SESSION['email'])) {
           <div class="small-box bg-aqua">
             <div class="inner">
               <h3><?php echo 30; ?></h3>
-              <p>Requests</p>
+              <p>Upcoming Deadlines</p>
             </div>
-            <a href="gradesreports.php">
+            <a href="......php">
               <div class="icon">
                 <i class="fa fa-files-o"></i>
               </div>
@@ -94,15 +94,16 @@ if (!isset($_SESSION['email'])) {
           </div>
         </div>
 
+
         <!-- ./col -->
         <div class="col-lg-3 col-xs-6">
           <!-- small box -->
           <div class="small-box bg-aqua">
             <div class="inner">
               <h3><?php echo $row['count']; ?></h3>
-              <p>Learners Registered</p>
+              <p>f ff fff</p>
             </div>
-            <a href="classes.php">
+            <a href="hghj.php">
               <div class="icon">
                 <i class="ion ion-person"></i>
               </div>
