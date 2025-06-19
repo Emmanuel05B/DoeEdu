@@ -55,28 +55,13 @@ if (!isset($_SESSION['email'])) {
               <hr>
               <button class="btn btn-sm btn-info disabled">Give Feedback</button>
               <button class="btn btn-sm btn-warning disabled">Rate Tutor</button>
+              <button class="btn btn-sm disabled">Book Session</button>
             </div>
           </div>
         </div>
 
         <!-- Add more tutor cards as needed -->
-
-          <div class="col-md-4">
-          <div class="box box-success">
-            <div class="box-header with-border text-center">
-              <img src="../assets/tutors/tutor2.jpg" alt="Tutor Picture" class="img-circle" width="80" height="80">
-              <h3 class="box-title" style="margin-top:10px;">Ms. Lerato Dlamini</h3>
-              <p>Subjects: Physical Sciences</p>
-            </div>
-            <div class="box-body">
-              <p><strong>Email:</strong> lerato@doe.co.za</p>
-              <p><strong>Availability:</strong> Tue, Wed, Sat (Flexible)</p>
-              <hr>
-              <button class="btn btn-sm btn-info disabled">Give Feedback</button>
-              <button class="btn btn-sm btn-warning disabled">Rate Tutor</button>
-            </div>
-          </div>
-        </div>
+         
 
       </div>
     </section>
