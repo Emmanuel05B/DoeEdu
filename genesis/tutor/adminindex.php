@@ -7,521 +7,189 @@ if (!isset($_SESSION['email'])) {
   header("Location: ../common/login.php");
   exit();
 }
-?>
 
-<?php include("adminpartials/head.php"); ?>
+include('../partials/connect.php');
+include("tutorpartials/head.php");
+?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include("adminpartials/header.php"); ?>
+  <?php include("tutorpartials/header.php"); ?>
+  <?php include("tutorpartials/mainsidebar.php"); ?>
 
-  <!-- Left side column. contains the logo and sidebar -->
-  <?php include("adminpartials/mainsidebar.php"); ?>
-
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
+  <div class="content-wrapper" style="background-color:#f7f9fc;">
     <section class="content-header">
-      <h1>
+      <h1 style="color:#4a6fa5;">
         Dashboard
-        <small>Control panel</small>
+        <small>Your tutor overview</small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="tutordashboard.php"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">Dashboard</li>
       </ol>
     </section>
 
-    <!-- Main content -->
     <section class="content">
 
-    <?php
-      include('../partials/connect.php');
-
-      $sql = "SELECT COUNT(*) as count FROM learners";
-      $result = $connect->query($sql);
-      $row = $result->fetch_assoc();
-/*
-      //$sql = "SELECT COUNT(*) as count FROM details";
-      //$result = $connect->query($sql);
-     // $reportrow = $result->fetch_assoc();
-
-      $sql = "SELECT COUNT(*) as count FROM pmessages WHERE IsOpened = 0";
-      $result = $connect->query($sql);
-      $messagesrow = $result->fetch_assoc();
-
-      $sql = "SELECT COUNT(*) as count FROM notices WHERE IsOpened = 0";
-      $result = $connect->query($sql);
-      $noticesrow = $result->fetch_assoc();
-      */
-    ?>
-
-      <!-- Small boxes (Stat box) -->
       <div class="row">
         <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-aqua">
+          <div class="small-box" style="background:#556cd6; color:#fff;">
             <div class="inner">
-              <h3><?php echo 20; ?></h3>
-              <p>Announcements</p>
+              <h3>34</h3>
+              <p>Total Activities</p>
             </div>
-            <a href="noticepage.php">
-              <div class="icon">
-                <i class="fa fa-bell-o"></i>
-              </div>
-            </a>
-          </div>
-        </div>
-        <!-- ./col -->
-        
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-aqua">
-            <div class="inner">
-              <h3><?php echo 15; ?></h3>
-              <p>My Classes</p>
+            <div class="icon">
+              <i class="fa fa-tasks"></i>
             </div>
-            <a href="mmailbox.php">
-              <div class="icon">
-                <i class="fa fa-envelope-o"></i>
-              </div>
+            <a href="manageactivities.php" class="small-box-footer" style="color:#d4dbff;">
+              Manage Activities <i class="fa fa-arrow-circle-right"></i>
             </a>
           </div>
         </div>
 
-        <!-- ./col -->
         <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-aqua">
+          <div class="small-box" style="background:#a3bffa; color:#000;">
             <div class="inner">
-              <h3><?php echo 30; ?></h3>
-              <p>Requests</p>
+              <h3>5</h3>
+              <p>Pending Session Requests</p>
             </div>
-            <a href="gradesreports.php">
-              <div class="icon">
-                <i class="fa fa-files-o"></i>
-              </div>
+            <div class="icon">
+              <i class="fa fa-clock-o"></i>
+            </div>
+            <a href="sessionrequests.php" class="small-box-footer" style="color:#3a479a;">
+              View Requests <i class="fa fa-arrow-circle-right"></i>
             </a>
           </div>
         </div>
 
-        <!-- ./col -->
         <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-aqua">
+          <div class="small-box" style="background:#9f86d1; color:#fff;">
             <div class="inner">
-              <h3><?php echo $row['count']; ?></h3>
-              <p>Learners Registered</p>
+              <h3>120</h3>
+              <p>Active Learners</p>
             </div>
-            <a href="classes.php">
-              <div class="icon">
-                <i class="ion ion-person"></i>
-              </div>
+            <div class="icon">
+              <i class="fa fa-users"></i>
+            </div>
+            <a href="learnergroups.php" class="small-box-footer" style="color:#d7cafb;">
+              Manage Groups <i class="fa fa-arrow-circle-right"></i>
             </a>
           </div>
         </div>
-        <!-- ./col -->
+
+        <div class="col-lg-3 col-xs-6">
+          <div class="small-box" style="background:#b2d8b2; color:#355e35;">
+            <div class="inner">
+              <h3>3</h3>
+              <p>Upcoming Deadlines</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-calendar"></i>
+            </div>
+            <a href="manageactivities.php" class="small-box-footer" style="color:#5a7b57;">
+              View Deadlines <i class="fa fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
       </div>
-      <!-- /.row -->
-<!-- -----------------------start here ----------------------  -  -->
-<div class="row">
-        <!-- Left col -->
-        <section class="col-lg-7 connectedSortable">
-          <!-- TO DO List -->
-          <div class="box box-primary">
-            <div class="box-header">
-              <i class="ion ion-clipboard"></i>
 
-              <h3 class="box-title">To Do List</h3>
-
-              <div class="box-tools pull-right">
-                <ul class="pagination pagination-sm inline">
-                  <li><a href="#">&laquo;</a></li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li><a href="#">&raquo;</a></li>
-                </ul>
-              </div>
+      <div class="row">
+        <div class="col-md-7">
+          <div class="box box-solid box-primary">
+            <div class="box-header" style="background-color:#a3bffa; color:#2e3c82;">
+              <i class="fa fa-line-chart"></i>
+              <h3 class="box-title">Learner Progress Overview</h3>
             </div>
-            <!-- /.box-header -->
-            <?php
+            <div class="box-body" style="background-color:#d1d9ff;">
+              <canvas id="progressChart" style="width:100%; height:280px;"></canvas>
+            </div>
+          </div>
+        </div>
 
-            // Get the logged-in user's ID
-            $creatorId = $_SESSION['user_id']; 
-
-            // Fetch the tasks for the logged-in user from the database
-            $sql = "SELECT * FROM TodoList WHERE CreatorId = ? ORDER BY DueDate ASC";  // You can adjust the sorting as needed
-            $stmt = $connect->prepare($sql);
-            $stmt->bind_param("i", $creatorId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            ?>
-
-<div class="box-body">
-    <!-- See dist/js/pages/dashboard.js to activate the todoList plugin -->
-    <ul class="todo-list">
-        <?php
-        // Check if there are tasks for the logged-in user
-        if ($result->num_rows > 0) {
-            // Loop through the tasks and display them
-            while ($task = $result->fetch_assoc()) {
-                // Format the date and time
-                $dueDate = date('Y-m-d', strtotime($task['DueDate']));
-                $dueTime = date('H:i', strtotime($task['DueDate']));
-                ?>
+        <div class="col-md-5">
+          <div class="box box-solid box-purple">
+            <div class="box-header" style="background-color:#9f86d1; color:#fff;">
+              <i class="fa fa-bell"></i>
+              <h3 class="box-title">Notifications</h3>
+            </div>
+            <div class="box-body" style="background-color:#dcd7f7; max-height:280px; overflow-y:auto;">
+              <ul class="timeline timeline-inverse" style="margin-bottom:0;">
                 <li>
-                    <!-- drag handle -->
-                    <span class="handle">
-                        <i class="fa fa-ellipsis-v"></i>
-                        <i class="fa fa-ellipsis-v"></i>
-                    </span>
-                    <!-- checkbox -->
-                    <input type="checkbox" value="" <?php if ($task['Status'] == 1) echo 'checked'; ?>>
-                    <!-- todo text -->
-                    <span class="text"><?php echo htmlspecialchars($task['TaskText']); ?></span>
-                    <!-- Emphasis label -->
-                    <small class="label label-info">
-                        <i class="fa fa-clock-o"></i> <?php echo $dueDate . ' ' . $dueTime; ?>
-                    </small>
-                    <!-- General tools such as edit or delete-->
-                    <div class="tools">
-                        <a href="updateTodo.php?todo_id=<?php echo $task['TodoId']; ?>" class="fa fa-edit"></a>
-                        <a href="deleteTodo.php?todo_id=<?php echo $task['TodoId']; ?>" class="fa fa-trash-o" onclick="return confirm('Are you sure you want to delete this task?');"></a>
+                  <i class="fa fa-info-circle bg-blue"></i>
+                  <div class="timeline-item">
+                    <span class="time"><i class="fa fa-clock-o"></i> 2 hours ago</span>
+                    <h3 class="timeline-header"><a href="#">Director</a> posted a new announcement</h3>
+                    <div class="timeline-body">
+                      New study materials uploaded for Grade 11 Science.
                     </div>
-                </li>
-                <?php
-            }
-        } else {
-            echo '<li>No tasks found.</li>';
-        }
-        ?>
-    </ul>
-</div>
-
-            <!-- /.box-body -->
-            <div class="box-footer clearfix no-border">
-
-              <a href="todo.php" class="btn btn-block btn-primary"><i class="fa fa-plus"></i> Add item</a>
-
-
-            </div>
-
-          </div>
-          <!-- /.box -->
-          <div class="nav-tabs-custom">
-            <!-- Tabs within a box -->
-            <ul class="nav nav-tabs pull-right">
-              <li class="active"><a href="#attendance-line-chart" data-toggle="tab">Attendance Line Chart</a></li>
-              <li><a href="#sales-chart" data-toggle="tab"> Class Attendence Averages</a></li>
-              <li class="pull-left header"><i class="fa fa-inbox"></i> Activities</li>
-            </ul>
-            <div class="tab-content no-padding">
-              <!-- Attendance Line Chart -->
-              <div class="chart tab-pane active" id="attendance-line-chart" style="position: relative; height: 300px;">
-                <canvas id="lineChartAttendance" style="height: 300px;"></canvas>
-              </div>
-              <!-- Doughnut Chart -->
-              <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;">
-                <canvas id="doughnutChart" style="height: 300px;"></canvas>
-              </div>
-            </div>
-          </div>
-         
-
-
-        </section>
-        <!-- /.Left col -->
-        <!-- right col (We are only adding the ID to make the widgets sortable)-->
-        <section class="col-lg-5 connectedSortable">
-          <!-- quick email widget -->
-          <div class="box box-info">
-            <div class="box-header">
-              <i class="fa fa-envelope"></i>
-
-              <h3 class="box-title">Quick Email</h3>
-              <!-- tools box -->
-              <div class="pull-right box-tools">
-                <button type="button" class="btn btn-info btn-sm" data-widget="remove" data-toggle="tooltip"
-                        title="Remove">
-                  <i class="fa fa-times"></i></button>
-              </div>
-              <!-- /. tools -->
-            </div>
-            <div class="box-body">
-              <form action="quickmail.php" method="post">
-                <div class="form-group">
-                <input type="email" class="form-control" name="emailto" placeholder="Email to:">
-                </div>
-                <div class="form-group">
-                  <input type="text" class="form-control" name="subject" placeholder="Subject">
                   </div>
-                <div>
-                  <textarea class="textarea" name="message" placeholder="Message" style="width: 100%; height: 125px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
-                </div>
-                <input type="submit" value="Submit" name="btnsend">
-              </form>
+                </li>
+                <li>
+                  <i class="fa fa-calendar bg-purple"></i>
+                  <div class="timeline-item">
+                    <span class="time"><i class="fa fa-clock-o"></i> Yesterday</span>
+                    <h3 class="timeline-header"><a href="#">System</a> Reminder</h3>
+                    <div class="timeline-body">
+                      Upcoming maintenance scheduled for 28 June.
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <i class="fa fa-users bg-green"></i>
+                  <div class="timeline-item">
+                    <span class="time"><i class="fa fa-clock-o"></i> 3 days ago</span>
+                    <h3 class="timeline-header"><a href="#">Session Requests</a> pending approval</h3>
+                    <div class="timeline-body">
+                      You have 5 session requests awaiting your response.
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
-
-          <!-- bar graph -->
-          <div class="box box-solid">
-            <div class="box-header">
-              <i class="fa fa-th"></i>
-              <h3 class="box-title">Attendance Graph</h3>
-              <div class="box-tools pull-right">
-                <button type="button" class="btn bg-teal btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                <button type="button" class="btn bg-teal btn-sm" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
-            <div class="box-body border-radius-none">
-              <div class="chart" id="attendance-chart" style="height: 250px;">
-                <canvas id="barChartAttendance" style="height: 250px;"></canvas>
-              </div>
-            </div>
-        
-            </div>
-            <!-- /.box-footer -->
-          </div>
-
-
-        </section>
-        <!-- right col -->
+        </div>
       </div>
 
-<!-- -----------------------end here ----------------------  -  -->
+    </section>
+  </div>
 
-
-<!-- -----------------------start here ----------------------  -  -->
-<?php
-include('../partials/connect.php');
-
-// Step 1: Fetch all reporter_ids of type 1
-$fetchIdsSql = "SELECT Id FROM employee WHERE employeeType = 1";
-$fetchIdsResult = $connect->query($fetchIdsSql);
-
-if ($fetchIdsResult === false) {
-    echo "Error fetching reporter IDs: " . $connect->error;
-    exit;
-}
-
-// Array to hold reporter IDs
-$reporter_ids = [];
-
-// Fetch the IDs and store them in the array
-while ($row = $fetchIdsResult->fetch_assoc()) {
-    $reporter_ids[] = $row['Id'];
-}
-
-// Check if there are any reporter IDs
-if (empty($reporter_ids)) {
-    echo "No reporter IDs of type 1 found.";
-    exit;
-}
-
-// Initialize array to hold attendance data
-$classAttendance = [];
-
-// Step 2: Process each reporter_id to fetch class names and attendance data
-foreach ($reporter_ids as $reporter_id) {
-    // Get the class name for the current reporter
-    $classSql = "SELECT Specialisation FROM employee WHERE Id = $reporter_id";
-    $classResult = $connect->query($classSql);
-
-    if ($classResult === false) {
-        echo "Error fetching class for Reporter ID $reporter_id: " . $connect->error;
-        continue;
-    }
-
-    $classRow = $classResult->fetch_assoc();
-    $className = $classRow['Specialisation'];
-
-    if ($className) {
-        // Initialize attendance counts
-        if (!isset($classAttendance[$className])) {
-            $classAttendance[$className] = [
-                'totalDays' => 0,
-                'presentCount' => 0,
-            ];
-        }
-
-        // Count attendance statuses for the class from the welcome table
-        $attendanceSql = "SELECT Attendance FROM welcome WHERE ReporterId = '$reporter_id'";
-        $attendanceResult = $connect->query($attendanceSql);
-
-        if ($attendanceResult === false) {
-            echo "Error fetching attendance for Class $className: " . $connect->error;
-            continue;
-        }
-
-        // Count the statuses
-        while ($row = $attendanceResult->fetch_assoc()) {
-            $status = $row['Attendance'];
-            $classAttendance[$className]['totalDays']++;
-
-            // Count both "Present" and "Late" as present
-            if ($status === 'Present' || $status === 'Late') {
-                $classAttendance[$className]['presentCount']++;
-            }
-        }
-    } else {
-        echo "No class found for Reporter ID $reporter_id.";  
-    }
-}
-
-$attendanceAverages = []; // Array to hold attendance averages
-foreach ($classAttendance as $className => $attendance) {
-    $totalDays = $attendance['totalDays'];
-    $presentCount = $attendance['presentCount'];
-    
-    // Calculate attendance average as a percentage
-    $averageAttendance = ($totalDays > 0) ? ($presentCount / $totalDays) * 100 : 0; 
-
-    // Store the attendance average in a variable
-    $attendanceAverages[$className] = round($averageAttendance, 2);
-}
-
-$ASD1 = $attendanceAverages['ASD Level 1'] ?? 0; 
-$ASD2 = $attendanceAverages['ASD Level 2'] ?? 0; 
-$ASD3 = $attendanceAverages['ASD Level 3'] ?? 0; 
-
-
-?>
-
-<!-- -----------------------end here ----------------------  -  -->
-
-
-
-<div class="row">
-    
-  <!-- Add the sidebar's background. This div must be placed immediately after the control sidebar -->
-  <div class="control-sidebar-bg"></div>
 </div>
-<!-- ./wrapper -->
 
-<!-- ChartJS -->
+<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
+<script src="../bootstrap/js/bootstrap.min.js"></script>
+<script src="../dist/js/app.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  // Doughnut Chart Example
-  const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
-  const doughnutChart = new Chart(ctxDoughnut, {
-    type: 'doughnut',
-    data: {
-      labels: ['G-12 Maths', 'G-12 Physics', 'G-11 Maths', 'G-10 Maths'],
-      datasets: [{
-        data: [<?php echo 75 ?>, <?php echo 63 ?>, <?php echo 74 ?>, <?php echo 70 ?>],
-        backgroundColor: ['rgba(14, 241, 14, 0.98)', 'rgb(245, 123, 9)', 'rgba(15, 209, 235, 0.97)', 'rgb(240, 17, 110) ']
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-    }
-  });
 
-  // Line Chart for Attendance
-  const ctxLineAttendance = document.getElementById('lineChartAttendance').getContext('2d');
-  const lineChartAttendance = new Chart(ctxLineAttendance, {
+<script>
+  const ctx = document.getElementById('progressChart').getContext('2d');
+  const progressChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12'],
-      datasets: [
-        {
-          label: 'G-12 Maths',
-          data: [100, 100, 98, 100, 91, 100, 98, 95, 96, 100, 99, 100], 
-          borderColor: 'rgba(14, 241, 14, 0.98)',
-          backgroundColor: 'rgba(14, 241, 14, 0.98)',
-          fill: false
-        },
-        {
-          label: 'G-12 Physics',
-          data: [92, 87, 85, 75, 86, 92, 93, 85, 74, 85, 90, 86], 
-          borderColor: 'rgb(245, 123, 9)',
-          backgroundColor: 'rgb(245, 123, 9)',
-          fill: false
-        },
-        {
-          label: 'G-11 Maths',
-          data: [98, 87, 80, 82, 80, 76, 89, 90, 92, 93, 85, 87], 
-          borderColor: 'rgba(15, 209, 235, 0.97)',
-          backgroundColor: 'rgba(15, 209, 235, 0.97)',
-          fill: false
-        },
-        {
-          label: 'G-10 Maths',
-          data: [45, 45, 56, 54, 41, 50, 47, 47, 48, 50, 46, 43], 
-          borderColor: 'rgb(240, 17, 110)',
-          backgroundColor: 'rgb(240, 17, 110)',
-          fill: false
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          beginAtZero: true
-        },
-        y: {
-          beginAtZero: true
-        }
-      },
-      elements: {
-        line: {
-          tension: 0.1
-        }
-      }
-    }
-  });
-
-  // Bar Chart for Attendance
-  const ctxBarAttendance = document.getElementById('barChartAttendance').getContext('2d');
-  const barChartAttendance = new Chart(ctxBarAttendance, {
-    type: 'bar',
-    data: {
-      labels: ['G-12 Maths', 'G-12 Physics', 'G-11 Maths', 'G-10 Maths'],
-      //labels: ['Grade 12', 'Grade 11', 'Grade 10'],
-
+      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
       datasets: [{
-        label: 'Attendance',
-        data: [<?php echo 65 ?>, <?php echo 57 ?>, <?php echo 72 ?>, <?php echo 92 ?>],
-        backgroundColor: 'rgba(0,166,90,0.2)',
-        borderColor: 'rgba(0,166,90,1)',
-        borderWidth: 1
+        label: 'Average Score',
+        data: [75, 80, 78, 85, 90],
+        backgroundColor: 'rgba(163, 191, 250, 0.4)',
+        borderColor: '#556cd6',
+        borderWidth: 3,
+        pointBackgroundColor: '#556cd6',
+        fill: true,
+        tension: 0.3
       }]
-      /*
-      datasets: [
-        {
-          label: 'Mathematics',
-          fillColor: '#00a65a',
-          strokeColor: '#00a65a',
-          pointColor: '#00a65a',
-          data: [65, 59, 80]
-        },
-        {
-          label: 'Physics',
-          fillColor: '#f39c12',
-          strokeColor: '#f39c12',
-          pointColor: '#f39c12',
-          data: [28, 48, 40]
-        }
-      ] */
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false,
       scales: {
         y: {
-          beginAtZero: true
+          min: 0,
+          max: 100,
+          ticks: { stepSize: 10 }
         }
       }
     }
   });
 </script>
 
-<?php include("adminpartials/queries.php"); ?>
-<script src="dist/js/demo.js"></script>
 </body>
 </html>

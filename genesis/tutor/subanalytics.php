@@ -13,7 +13,7 @@ if (!isset($_SESSION['email'])) {
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
   <!-- Left side column. contains the logo and sidebar -->
-  <?php include("adminpartials/mainsidebar.php") ?>
+  <?php include("tutorpartials/mainsidebar.php") ?>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -28,7 +28,7 @@ if (!isset($_SESSION['email'])) {
                 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             </head>
 
-            <?php include("adminpartials/head.php"); ?>
+            <?php include("tutorpartials/head.php"); ?>
 
             <!-- PHP Data Fetching -->
             <?php
@@ -248,7 +248,7 @@ if (!isset($_SESSION['email'])) {
                     updateBarChart('weeks');
                 </script>
 
-                <?php include("adminpartials/queries.php"); ?>
+                <?php include("tutorpartials/queries.php"); ?>
                 <script src="dist/js/demo.js"></script>
             </body>
         </html>

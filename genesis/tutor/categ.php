@@ -10,14 +10,14 @@ if (!isset($_SESSION['email'])) {
 }
 ?>
 
-<?php include("adminpartials/head.php"); ?>
+<?php include("tutorpartials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include("adminpartials/header.php") ?>;
+  <?php include("tutorpartials/header.php") ?>;
   <!-- Left side column. contains the logo and sidebarmmm -->
-  <?php include("adminpartials/mainsidebar.php") ?>;
+  <?php include("tutorpartials/mainsidebar.php") ?>;
 
 
   <!-- Content Wrapper. Contains page content -->

@@ -9,7 +9,7 @@ if (!isset($_SESSION['email'])) {
 }
 ?>
 
-<?php include("adminpartials/head.php"); ?>
+<?php include("tutorpartials/head.php"); ?>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 <style>
@@ -73,7 +73,7 @@ if (!isset($_SESSION['email'])) {
                   <span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Complete</h4><br>
 
-                <p><strong> Set up the Activivty </strong></p>
+                <p><strong> Set up the Activivty or Generate an Online Activity </strong></p>
 
               </div>
               <div class="modal-body">
@@ -110,9 +110,31 @@ if (!isset($_SESSION['email'])) {
                         </tbody>
                     </table>
                     <br>
-                    <button type="Submit" name="submit">Submit Data</button>                    
+                    <button type="Submit" name="submit">Submit</button>                    
          
                 </form>
+
+                   <hr>
+
+                <!-- Generate Activity Button -->
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="generateactivity.php?gra=<?php echo $grade ?>&sub=<?php echo $subject ?>&cha=<?php echo $chaptername ?>" class="btn btn-primary">
+                        Generate Quiz Instead
+                    </a>
+                    <a href="generateactivity.php?gra=<?php echo $grade ?>&sub=<?php echo $subject ?>&cha=<?php echo $chaptername ?>" class="btn btn-primary">
+                        View/Forward Quiz Instead
+                    </a>
+                </div>
+
+                <hr>
+                
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="categ.php" class="btn btn-primary">
+                       Back
+                    </a>
+                </div>
+
               </div>
               <div class="modal-footer">
                 

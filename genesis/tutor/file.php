@@ -50,9 +50,9 @@ if (!isset($_SESSION['email'])) {
     exit();
 }
 
-include("adminpartials/head.php");
-include("adminpartials/header.php");
-include("adminpartials/mainsidebar.php");
+include("tutorpartials/head.php");
+include("tutorpartials/header.php");
+include("tutorpartials/mainsidebar.php");
 
 include('../partials/connect.php');
 

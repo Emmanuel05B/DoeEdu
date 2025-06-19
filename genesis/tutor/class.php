@@ -10,15 +10,15 @@ if (!isset($_SESSION['email'])) {
 }
 ?>
 
-<?php include("adminpartials/head.php"); ?>
+<?php include("tutorpartials/head.php"); ?>
    
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
   <!-- Left side column. contains the logo and sidebar -->
-  <?php include("adminpartials/header.php") ?>;
+  <?php include("tutorpartials/header.php") ?>;
   <!-- Left side column. contains the logo and sidebar -->
-  <?php include("adminpartials/mainsidebar.php") ?>;
+  <?php include("tutorpartials/mainsidebar.php") ?>;
 
   <!-- Content Wrapper. Contains page content --->
   <div class="content-wrapper">
@@ -233,8 +233,8 @@ if (!isset($_SESSION['email'])) {
             <!-- /.box-header -->
             <div class="box-body">
               <form id="learnerForm" action="class.php" method="post">
-                <table id="example1" class="table table-bordered table-striped">
-                  <thead>
+                <table id="example1" class="table table-bordered table-striped table-hover" style="width:100%; table-layout: fixed;">
+                  <thead style="background-color:#d1d9ff;">
                     <tr>
                       <th>StNo.</th>
                       <th>Name</th>
@@ -338,32 +338,34 @@ if (!isset($_SESSION['email'])) {
                               <td>
                                 <?php echo $final['Surname'] ?>
                               </td>
-                              <td>
-                                <select name="attendances[]">
+                              <td class="align-middle">
+                                <select name="attendances[]" class="form-control input-sm">
                                   <option value="present" selected>Present</option>
                                   <option value="absent">Absent</option>
                                   <option value="late">Late</option>
                                 </select>
                              </td>
-                             <td>
-                                <select name="attendancereasons[]">
+                             <td class="align-middle">
+                                <select name="attendancereasons[]" class="form-control input-sm">
                                   <option value="None" selected>None Provided</option>
                                   <option value="Other">Other</option>
                                   <option value="Data Issues">Data Issues</option>
 
                                 </select>
                              </td>
-                              <td> 
-                                <input type="number" name="marks[]" value="" placeholder="Marks" min="0", max="<?php echo $finalres['MaxMarks'] ?>" required>
+                              <td class="align-middle"> 
+                                <input type="number" name="marks[]" class="form-control input-sm" value="" placeholder="Marks" min="0", max="<?php echo $finalres['MaxMarks'] ?>" required>
                               </td>
-                              <td>
-                                <select name="submitted[]">
+                          
+                              <td class="align-middle">
+                                <select name="submitted[]" class="form-control input-sm">
                                   <option value="Yes" selected>Yes</option>
                                   <option value="No">No</option>
                                 </select>
                               </td>
-                              <td>
-                                <select name="submissionreasons[]">
+                         
+                              <td class="align-middle">
+                                <select name="submissionreasons[]" class="form-control input-sm">
                                 <option value="None" selected>None Provided</option>
                                 <option value="Other">Other</option>
                                 <option value="Data Issues">Data Issues</option>
@@ -378,7 +380,7 @@ if (!isset($_SESSION['email'])) {
                     <?php } ?>
                   </tbody>
 
-                  <tfoot>
+                  <tfoot style="background-color:#d1d9ff;">
                     <tr>
                       <th>StNo.</th>
                       <th>Name</th>
@@ -393,12 +395,16 @@ if (!isset($_SESSION['email'])) {
                 </table>
 
                 <!-- Submit button -->
-                <div class="button-container">
-                  <button type="submit" name="submit">Submit Learner Data</button>
-
-                </div><br>
-                <a href="feedback.php" class="btn btn-block btn-primary">Provide feedback to Parents</a>
-
+                 <div class="form-group mt-3 d-flex justify-content-between">
+                    <div class="button-container">
+                       <button type="submit" name="submit" class="btn btn-primary"><i class="fa fa-save" style="background-color:#556cd6; border:none;"></i> Submit Learner Data</button>
+                  
+                        <button type="reset" class="btn btn-default">
+                          <i class="fa fa-refresh"></i> Reset Form
+                        </button>
+                    </div><br>
+                 </div>
+                <a href="feedback.php" class="btn btn-block btn-primary"><i class="fa fa-commenting"></i> Provide feedback to Parents</a>
                
               </form>
             </div>
@@ -410,6 +416,8 @@ if (!isset($_SESSION['email'])) {
       </div>
       <!-- /.row -->
     </section>
+    
+
 
   </div>
 

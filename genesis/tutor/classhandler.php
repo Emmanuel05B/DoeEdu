@@ -10,7 +10,7 @@ if (!isset($_SESSION['email'])) {
 }
 ?>
 
-<?php include("adminpartials/head.php"); ?>
+<?php include("tutorpartials/head.php"); ?>
 <style>
   .button-container {
     margin-top: 20px;
@@ -25,8 +25,8 @@ if (!isset($_SESSION['email'])) {
 
 <body class="hold-transition skin-blue sidebar-mini">
   <div class="wrapper">
-    <?php include("adminpartials/header.php"); ?>
-    <?php include("adminpartials/mainsidebar.php"); ?>
+    <?php include("tutorpartials/header.php"); ?>
+    <?php include("tutorpartials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
       <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>

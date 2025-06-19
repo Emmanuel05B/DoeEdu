@@ -9,7 +9,7 @@ if (!isset($_SESSION['email'])) {
 }
 ?>
 
-<?php include("adminpartials/head.php"); ?>
+<?php include("tutorpartials/head.php"); ?>
 
 <style>
     .profile-personal-info {
@@ -99,10 +99,10 @@ if (!isset($_SESSION['email'])) {
   <div class="wrapper">
 
     <!-- Left side column. contains the logo and sidebar -->
-    <?php include("adminpartials/header.php"); ?>
+    <?php include("tutorpartials/header.php"); ?>
 
     <!-- Left side column. contains the logo and sidebar -->
-    <?php include("adminpartials/mainsidebar.php"); ?>
+    <?php include("tutorpartials/mainsidebar.php"); ?>
     <!-- /.sidebar -->
 
     <!-- Content Wrapper. Contains page content -->
@@ -365,7 +365,7 @@ if (!isset($_SESSION['email'])) {
     <div class="control-sidebar-bg"></div>
   </div>
 
-  <?php include("adminpartials/queries.php"); ?>
+  <?php include("tutorpartials/queries.php"); ?>
   <script src="dist/js/demo.js"></script>
 
 </body>

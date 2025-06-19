@@ -10,7 +10,7 @@ if (!isset($_SESSION['email'])) {
 }
 ?>
 
-<?php include("adminpartials/head.php"); //affects the alert styling ?>
+<?php include("tutorpartials/head.php"); //affects the alert styling ?>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
 
@@ -192,8 +192,8 @@ if ($activityResults->num_rows > 0) {
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-    <?php include("adminpartials/header.php"); ?>
-    <?php include("adminpartials/mainsidebar.php"); ?>
+    <?php include("tutorpartials/header.php"); ?>
+    <?php include("tutorpartials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
         <section class="content">
@@ -265,7 +265,7 @@ function updateSkillElement(score) {
 }
 </script>
 
-<?php include("adminpartials/queries.php"); ?>
+<?php include("tutorpartials/queries.php"); ?>
 <script src="dist/js/demo.js"></script>
 </body>
 </html>

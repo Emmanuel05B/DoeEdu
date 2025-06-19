@@ -38,11 +38,22 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
         <li class="header">MAIN NAVIGATION</li>
 
           <li><a href="adminindex.php"><i class="fa fa-circle-o"></i> Home</a></li>
+          <li><a href="tutordashboard.php"><i class="fa fa-circle-o"></i> Dashboard</a></li>
+
           <li><a href="chartjs.php"><i class="fa fa-circle-o"></i>Activity Analysis</a></li>
           <li><a href="categ.php"><i class="fa fa-circle-o"></i> Record Marks</a></li>
           <li><a href="classes.php"><i class="fa fa-circle-o"></i> Track learner Progress</a></li>
           <li><a href="schedulemeeting.php"><i class="fa fa-circle-o"></i> Communications</a></li>
           <li><a href="logout.php"><i class="fa fa-circle-o"></i> Log out</a></li>
+           <li><a href="manageactivities.php"><i class="fa fa-circle-o"></i> Manage Activities </a></li>
+           <li><a href="managestudymaterials.php"><i class="fa fa-circle-o"></i> Manage Study materials </a></li>
+           <li><a href="Sessions.php"><i class="fa fa-circle-o"></i> Sessions </a></li>
+           <li><a href="announcements.php"><i class="fa fa-circle-o"></i> Announcements </a></li>
+           <li><a href="reminders.php"><i class="fa fa-circle-o"></i> Reminders </a></li>
+           <li><a href="profilemanagement.php"><i class="fa fa-circle-o"></i> My Profile </a></li>
+           <li><a href="attendancetracking.php"><i class="fa fa-circle-o"></i> Attendance </a></li>
+           <li><a href="#.php"><i class="fa fa-circle-o"></i> xxxxxx </a></li>
+
         </li>
         
       </ul>

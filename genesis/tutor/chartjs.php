@@ -33,9 +33,9 @@ if (!isset($_SESSION['email'])) {
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-<?php include("adminpartials/header.php"); ?>
+<?php include("tutorpartials/header.php"); ?>
 
-<?php include("adminpartials/mainsidebar.php"); ?> 
+<?php include("tutorpartials/mainsidebar.php"); ?> 
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
