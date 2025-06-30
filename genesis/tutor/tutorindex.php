@@ -34,22 +34,22 @@ include("tutorpartials/head.php");
 
       <div class="row">
         <div class="col-lg-3 col-xs-6">
-          <div class="small-box" style="background:#556cd6; color:#fff;">
+          <div class="small-box" style="background:#a3bffa; color:#000;">
             <div class="inner">
               <h3>34</h3>
-              <p>Total Activities</p>
+              <p>My Uploads</p>
             </div>
             <div class="icon">
               <i class="fa fa-tasks"></i>
             </div>
             <a href="manageactivities.php" class="small-box-footer" style="color:#d4dbff;">
-              Manage Activities <i class="fa fa-arrow-circle-right"></i>
+              Manage Uploads <i class="fa fa-arrow-circle-right"></i>
             </a>
           </div>
         </div>
 
         <div class="col-lg-3 col-xs-6">
-          <div class="small-box" style="background:#a3bffa; color:#000;">
+          <div class="small-box" style="background:#3498db; color:#ffffff;">
             <div class="inner">
               <h3>5</h3>
               <p>Pending Session Requests</p>
@@ -57,7 +57,7 @@ include("tutorpartials/head.php");
             <div class="icon">
               <i class="fa fa-clock-o"></i>
             </div>
-            <a href="sessionrequests.php" class="small-box-footer" style="color:#3a479a;">
+            <a href="sessionrequests.php" class="small-box-footer" style="color:#d7cafb;">
               View Requests <i class="fa fa-arrow-circle-right"></i>
             </a>
           </div>
@@ -67,28 +67,28 @@ include("tutorpartials/head.php");
           <div class="small-box" style="background:#9f86d1; color:#fff;">
             <div class="inner">
               <h3>120</h3>
-              <p>Active Learners</p>
+              <p>My Learners</p>
             </div>
             <div class="icon">
               <i class="fa fa-users"></i>
             </div>
-            <a href="learnergroups.php" class="small-box-footer" style="color:#d7cafb;">
-              Manage Groups <i class="fa fa-arrow-circle-right"></i>
+            <a href="classes1.php" class="small-box-footer" style="color:#d7cafb;">
+              Visit Classes <i class="fa fa-arrow-circle-right"></i>
             </a>
           </div>
         </div>
 
         <div class="col-lg-3 col-xs-6">
-          <div class="small-box" style="background:#b2d8b2; color:#355e35;">
+          <div class="small-box" style="background:#556cd6; color:#fff;">
             <div class="inner">
               <h3>3</h3>
-              <p>Upcoming Deadlines</p>
+              <p>Reminders</p>
             </div>
             <div class="icon">
               <i class="fa fa-calendar"></i>
             </div>
-            <a href="manageactivities.php" class="small-box-footer" style="color:#5a7b57;">
-              View Deadlines <i class="fa fa-arrow-circle-right"></i>
+            <a href="manageactivities.php" class="small-box-footer" style="color:#d7cafb;">
+              View reminders <i class="fa fa-arrow-circle-right"></i>
             </a>
           </div>
         </div>

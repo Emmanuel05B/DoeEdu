@@ -56,61 +56,84 @@ if (!isset($_SESSION['email'])) {
                     echo '<h3>On Contract and Owing Learners</h3><br>';
 
                     // SQL query for learners owing money and with unexpired contracts
-                    $sql = "SELECT lt.*, ls.* 
+                    $sql = "SELECT 
+                                lt.*, 
+                                ls.*, 
+                                u.Name, 
+                                u.Surname
                             FROM learners AS lt
                             JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users AS u ON u.Id = lt.LearnerId
                             WHERE lt.TotalOwe > 0
-                            AND ls.ContractExpiryDate = (
-                                SELECT MAX(ls2.ContractExpiryDate)
-                                FROM learnersubject AS ls2
-                                WHERE ls2.LearnerId = ls.LearnerId
-                            )
-                            AND ls.ContractExpiryDate > CURDATE()";
+                              AND ls.ContractExpiryDate = (
+                                  SELECT MAX(ls2.ContractExpiryDate)
+                                  FROM learnersubject AS ls2
+                                  WHERE ls2.LearnerId = ls.LearnerId
+                              )
+                              AND ls.ContractExpiryDate > CURDATE()";
+
+                            
                 } else if ($statusValue == 2) {
                     // Status 2: On Contract and Not Owing Learners
                     echo '<h3>On Contract and Not Owing Learners</h3><br>';
 
                     // SQL query for learners not owing money and with unexpired contracts
-                    $sql = "SELECT lt.*, ls.* 
+                    $sql = "SELECT 
+                                lt.*, 
+                                ls.*, 
+                                u.Name, 
+                                u.Surname
                             FROM learners AS lt
                             JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users AS u ON u.Id = lt.LearnerId
                             WHERE lt.TotalOwe <= 0
-                            AND ls.ContractExpiryDate = (
-                                SELECT MAX(ls2.ContractExpiryDate)
-                                FROM learnersubject AS ls2
-                                WHERE ls2.LearnerId = ls.LearnerId
-                            )
-                            AND ls.ContractExpiryDate > CURDATE()";
+                              AND ls.ContractExpiryDate = (
+                                  SELECT MAX(ls2.ContractExpiryDate)
+                                  FROM learnersubject AS ls2
+                                  WHERE ls2.LearnerId = ls.LearnerId
+                              )
+                              AND ls.ContractExpiryDate > CURDATE()";
                 } else if ($statusValue == 3) {
                     // Status 3: Expired Contract and Not Owing Learners
                     echo '<h3>Expired Contract and Not Owing Learners</h3><br>';
 
                     // SQL query for learners not owing money and with expired contracts
-                    $sql = "SELECT lt.*, ls.* 
-                            FROM learners AS lt
-                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                            WHERE lt.TotalOwe <= 0
-                            AND ls.ContractExpiryDate = (
-                                SELECT MAX(ls2.ContractExpiryDate)
-                                FROM learnersubject AS ls2
-                                WHERE ls2.LearnerId = ls.LearnerId
-                            )
-                            AND ls.ContractExpiryDate <= CURDATE()";
+                    $sql = "SELECT 
+                        lt.*, 
+                        ls.*, 
+                        u.Name, 
+                        u.Surname
+                    FROM learners AS lt
+                    JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                    JOIN users AS u ON u.Id = lt.LearnerId
+                    WHERE lt.TotalOwe <= 0
+                      AND ls.ContractExpiryDate = (
+                          SELECT MAX(ls2.ContractExpiryDate)
+                          FROM learnersubject AS ls2
+                          WHERE ls2.LearnerId = ls.LearnerId
+                      )
+                      AND ls.ContractExpiryDate <= CURDATE()";
                 } else if ($statusValue == 4) {
                     // Status 4: Expired Contract and Owing Learners
                     echo '<h3>Expired Contract and Owing Learners</h3><br>';
 
                     // SQL query for learners owing money and with expired contracts
-                    $sql = "SELECT lt.*, ls.* 
-                            FROM learners AS lt
-                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                            WHERE lt.TotalOwe > 0
-                            AND ls.ContractExpiryDate = (
-                                SELECT MAX(ls2.ContractExpiryDate)
-                                FROM learnersubject AS ls2
-                                WHERE ls2.LearnerId = ls.LearnerId
-                            )
-                            AND ls.ContractExpiryDate <= CURDATE()";
+                    $sql = "SELECT 
+                        lt.*, 
+                        ls.*, 
+                        u.Name, 
+                        u.Surname
+                    FROM learners AS lt
+                    JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                    JOIN users AS u ON u.Id = lt.LearnerId
+                    WHERE lt.TotalOwe > 0
+                      AND ls.ContractExpiryDate = (
+                          SELECT MAX(ls2.ContractExpiryDate)
+                          FROM learnersubject AS ls2
+                          WHERE ls2.LearnerId = ls.LearnerId
+                      )
+                      AND ls.ContractExpiryDate <= CURDATE()";
+
                 } else {
                     // Default case if none of the statuses match
                     echo '<h1>Learners - Unknown Status</h1>';

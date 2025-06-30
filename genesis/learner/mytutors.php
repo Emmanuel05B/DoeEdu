@@ -35,8 +35,9 @@ if (!isset($_SESSION['email'])) {
               <p><strong>Email:</strong> thabo@doe.co.za</p>
               <p><strong>Availability:</strong> Mon - Fri, 16:00 - 19:00</p>
               <hr>
-              <button class="btn btn-sm btn-info disabled">Give Feedback</button>
-              <button class="btn btn-sm btn-warning disabled">Rate Tutor</button>
+              <a href="feedback.php?tutor=thabo" class="btn btn-sm btn-info">Give Feedback</a>
+              <a href="rate.php?tutor=thabo" class="btn btn-sm btn-warning">Rate Tutor</a>
+              <a href="booking.php?tutor=thabo" class="btn btn-sm btn-primary">Book Session</a>
             </div>
           </div>
         </div>
@@ -53,17 +54,17 @@ if (!isset($_SESSION['email'])) {
               <p><strong>Email:</strong> lerato@doe.co.za</p>
               <p><strong>Availability:</strong> Tue, Wed, Sat (Flexible)</p>
               <hr>
-              <button class="btn btn-sm btn-info disabled">Give Feedback</button>
-              <button class="btn btn-sm btn-warning disabled">Rate Tutor</button>
-              <button class="btn btn-sm disabled">Book Session</button>
+              <a href="feedback.php?tutor=lerato" class="btn btn-sm btn-info">Give Feedback</a>
+              <a href="rate.php?tutor=lerato" class="btn btn-sm btn-warning">Rate Tutor</a>
+              <a href="booking.php?tutor=lerato" class="btn btn-sm btn-primary">Book Session</a>
             </div>
           </div>
         </div>
 
         <!-- Add more tutor cards as needed -->
-         
 
       </div>
+
     </section>
   </div>
 

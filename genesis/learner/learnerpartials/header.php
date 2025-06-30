@@ -8,12 +8,12 @@
                 $Teacherresults = $connect->query($usql);
                 $Teacherresultsfinal = $Teacherresults->fetch_assoc();  
 
-
+/*
                 $sql = "SELECT COUNT(*) as count FROM notices WHERE IsOpened = 0";
                 // Execute the query
                 $result = $connect->query($sql);
                 $messagesrow = $result->fetch_assoc();
-               
+               */
     ?>
 
 <header class="main-header">
@@ -42,17 +42,17 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
 
               <i class="fa fa-envelope-o"></i>
-              <span class="label label-success"><?php echo $messagesrow['count'];?></span>
+              <span class="label label-success">EEEEE</span>
             </a>
             <ul class="dropdown-menu">
-              <li class="header">You have <?php echo $messagesrow['count'];?> messages</li>
+              <li class="header">You have EEEEE messages</li>
               <li>
                 <!-- inner menu: contains the actual data -->
                 <ul class="menu">
 
                 <?php
                   
-                  $sql = "SELECT * FROM notices WHERE IsOpened = 0";  //comeback for condition
+                  $sql = "SELECT * FROM users";  //comeback for condition
                   $results = $connect->query($sql);
                   while($final = $results->fetch_assoc()) { ?>
 
@@ -115,7 +115,7 @@
 
           <?php
 
-                $sql = "SELECT COUNT(*) as countnotices FROM notices";
+                $sql = "SELECT COUNT(*) as countnotices FROM users";
                 // Execute the query
                 $result = $connect->query($sql);
                 $noticesrow = $result->fetch_assoc();
@@ -137,13 +137,13 @@
 
                 <?php
                   
-                  $sql = "SELECT * FROM notices WHERE IsOpened = 0";  //comeback for condition
+                  $sql = "SELECT * FROM users";  //comeback for condition
                   $results = $connect->query($sql);
                   while($final = $results->fetch_assoc()) { ?>
          
                   <li>
                     <a href="#">
-                      <i class="fa fa-user text-red"></i> <?php echo $final['Notice'];?>
+                      <i class="fa fa-user text-red"></i> <?php echo $final['Name'];?>
                     </a>
                   </li>
                   <?php } ?>

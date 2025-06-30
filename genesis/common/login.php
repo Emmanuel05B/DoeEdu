@@ -109,75 +109,151 @@
 <body>
 
 <?php
+/*
+  session_start();
+
+  if(isset($_POST['login'])){
+      include('../partials/connect.php');
+        
+      $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+      $password = trim($_POST['password']);
+      $userType = $_POST['Radio'];
+
+      $errors = []; 
+
+      if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+          $errors[] = '<span class="error-message"> Invalid Email Address.</span>';
+      }
+      if (empty($password)) {
+          $errors[] = '<span class="error-message">Password is required.</span>';
+      }
+
+      $sql = "SELECT users.Id, users.Email, users.UserPassword, employee.employeeType  
+      FROM users  
+      JOIN employee ON users.Id = employee.Id 
+      WHERE users.Email = ?";
+
+      if ($stmt = $connect->prepare($sql)) {
+          $stmt->bind_param("s", $email);
+          $stmt->execute();
+          $result = $stmt->get_result();
+          $final = $result->fetch_assoc();
+          $stmt->close();
+
+          if (!empty($final)) {
+              if (password_verify($password, $final['UserPassword'])) {
+                  $_SESSION['user_id'] = $final['Id'];
+                  $_SESSION['EmployeeType'] = $final['employeeType'];
+                  $_SESSION['email'] = $final['Email'];
+
+                  switch ($final['employeeType']) {
+                      case '2': 
+                          header('Location: ../learner/learnerindex.php');
+                          break;
+                      case '1': 
+                          header('Location: ../tutor/tutorindex.php');
+                          break;
+                      case '0': 
+                          header('Location: ../admin/adminindex.php');
+                          break;
+                      default:
+                          $_SESSION['error_message'] = '<span class="error-message">User Not Registered.</span>';
+                          header('Location: login.php');
+                          break;
+                  }
+                  exit;
+              } else {
+                  $_SESSION['error_message'] = '<span class="error-message">Invalid password.</span>';
+                  header('Location: login.php');
+                  exit;
+              }
+          } else {
+              $_SESSION['error_message'] = '<span class="error-message">Email does not exist.</span>';
+              header('Location: login.php?');
+              exit;
+          }
+      } else {
+          $_SESSION['error_message'] = '<span class="error-message">System Offline.</span>';
+          header('Location: login.php');
+          exit;
+      }
+  }
+      */
+?>
+
+<?php
 session_start();
 
 if(isset($_POST['login'])){
     include('../partials/connect.php');
-      
+
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
     $password = trim($_POST['password']);
-    $userType = $_POST['Radio'];
 
-    $errors = []; 
+    $errors = [];
 
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = '<span class="error-message"> Invalid Email Address.</span>';
+        $errors[] = '<span class="error-message">Invalid Email Address.</span>';
     }
     if (empty($password)) {
         $errors[] = '<span class="error-message">Password is required.</span>';
     }
 
-    $sql = "SELECT users.Id, users.Email, users.UserPassword, employee.employeeType  
-    FROM users  
-    JOIN employee ON users.Id = employee.Id 
-    WHERE users.Email = ?";
+    if (empty($errors)) {
+        $sql = "SELECT Id, Email, UserPassword, UserType FROM users WHERE Email = ?";
 
-    if ($stmt = $connect->prepare($sql)) {
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $final = $result->fetch_assoc();
-        $stmt->close();
+        if ($stmt = $connect->prepare($sql)) {
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $user = $result->fetch_assoc();
+            $stmt->close();
 
-        if (!empty($final)) {
-            if (password_verify($password, $final['UserPassword'])) {
-                $_SESSION['user_id'] = $final['Id'];
-                $_SESSION['EmployeeType'] = $final['employeeType'];
-                $_SESSION['email'] = $final['Email'];
+            if (!empty($user)) {
+                if (password_verify($password, $user['UserPassword'])) {
+                    $_SESSION['user_id'] = $user['Id'];
+                    $_SESSION['UserType'] = $user['UserType'];
+                    $_SESSION['email'] = $user['Email'];
 
-                switch ($final['employeeType']) {
-                    case '2': 
-                        header('Location: ../learner/learnerindex.php');
-                        break;
-                    case '1': 
-                        header('Location: ../tutor/adminindex.php');
-                        break;
-                    case '0': 
-                        header('Location: ../admin/adminindex.php');
-                        break;
-                    default:
-                        $_SESSION['error_message'] = '<span class="error-message">User Not Registered.</span>';
-                        header('Location: login.php');
-                        break;
+                    switch ($user['UserType']) {
+                        case 0: // Admin
+                            header('Location: ../admin/adminindex.php');
+                            break;
+                        case 1: // Tutor
+                            header('Location: ../tutor/tutorindex.php');
+                            break;
+                        case 2: // Learner
+                            header('Location: ../learner/learnerindex.php');
+                            break;
+                        default:
+                            $_SESSION['error_message'] = '<span class="error-message">Invalid user role.</span>';
+                            header('Location: login.php');
+                            break;
+                    }
+                    exit;
+                } else {
+                    $_SESSION['error_message'] = '<span class="error-message">Invalid password.</span>';
+                    header('Location: login.php');
+                    exit;
                 }
-                exit;
             } else {
-                $_SESSION['error_message'] = '<span class="error-message">Invalid password.</span>';
+                $_SESSION['error_message'] = '<span class="error-message">Email does not exist.</span>';
                 header('Location: login.php');
                 exit;
             }
         } else {
-            $_SESSION['error_message'] = '<span class="error-message">Email does not exist.</span>';
-            header('Location: login.php?');
+            $_SESSION['error_message'] = '<span class="error-message">System error. Please try again later.</span>';
+            header('Location: login.php');
             exit;
         }
     } else {
-        $_SESSION['error_message'] = '<span class="error-message">System Offline.</span>';
+        $_SESSION['error_message'] = implode('<br>', $errors);
         header('Location: login.php');
         exit;
     }
 }
 ?>
+
 
 <!-- Login Container -->
 <div class="login-container">

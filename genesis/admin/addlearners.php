@@ -20,7 +20,7 @@ if (!isset($_SESSION['email'])) {
             <h3 class="box-title" style="text-align: center;">Learner Registration Form</h3>
            
             <div class="box-body">
-              <form action="addlearnerhandler.php" method="post">
+              <form action="addlearnerh.php" method="post">
 
                 <!-- Learner Info Block -->
                 <fieldset class="tab">
@@ -43,8 +43,20 @@ if (!isset($_SESSION['email'])) {
                     <div class="col-md-3">
                       <label for="contactnumber">Contact Number (10 digits)</label>
                       <input type="tel" class="form-control" id="contactnumber" name="contactnumber" pattern="[0-9]{10}" maxlength="10" required>
+                      <input type="hidden" id="password" name="password" value="12345">
+
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
+                      <label for="learnertitle">Title</label>
+                      <select class="form-control" id="learnertitle" name="learnertitle" required>
+                        <option value="">Select Title</option>
+                        <option value="Mr">Mr.</option>
+                        <option value="Mrs">Mrs.</option>
+                        <option value="Ms">Ms.</option>
+                       
+                      </select>
+                    </div>
+                    <div class="col-md-2">
                       <label for="grade">Grade</label>
                       <select id="grade" name="grade" class="form-control" required>
                         <option value="" disabled selected>Select Grade</option>
@@ -53,7 +65,7 @@ if (!isset($_SESSION['email'])) {
                         <option value="12">12</option>
                       </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                       <label for="knockout_time">Knockout Time</label>
                       <input type="time" class="form-control" id="knockout_time" name="knockout_time" required>
                     </div>

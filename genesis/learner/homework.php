@@ -66,7 +66,7 @@ include("learnerpartials/head.php");
 
             <div class="box-body table-responsive">
               <table class="table table-bordered table-striped" style="width:100%;">
-                <thead>
+                <thead style="background-color: #3c8dbc; color: white;">
                   <tr>
                     <th>Title</th>
                     <th>Chapter</th>
@@ -117,7 +117,7 @@ include("learnerpartials/head.php");
 
     <?php
       } // end foreach
-    } // end else
+    } // end else 
     ?>
 
   </div>

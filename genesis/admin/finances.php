@@ -198,7 +198,20 @@ if (!isset($_SESSION['email'])) {
                     <tbody>
                       <?php
                           //select all leaners who are doing this activity... now im selecting activities
-                          $sql = "SELECT * FROM learners";
+                          $sql = "
+                            SELECT 
+                            learners.LearnerId, 
+                            users.Name, 
+                            users.Surname, 
+                            learners.Grade, 
+                            learners.Math, 
+                            learners.Physics,
+                            learners.TotalFees, 
+                            learners.TotalPaid, 
+                            learners.TotalOwe
+                          FROM learners
+                          JOIN users ON learners.LearnerId = users.Id
+                          ";
                           $results = $connect->query($sql);
                           while($final = $results->fetch_assoc()) { ?>
                             <tr>

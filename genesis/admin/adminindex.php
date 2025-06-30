@@ -43,9 +43,6 @@ if (!isset($_SESSION['email'])) {
       $result = $connect->query($sql);
       $row = $result->fetch_assoc();
 /*
-      //$sql = "SELECT COUNT(*) as count FROM details";
-      //$result = $connect->query($sql);
-     // $reportrow = $result->fetch_assoc();
 
       $sql = "SELECT COUNT(*) as count FROM pmessages WHERE IsOpened = 0";
       $result = $connect->query($sql);
@@ -290,104 +287,6 @@ if (!isset($_SESSION['email'])) {
         <!-- right col -->
       </div>
 
-<!-- -----------------------end here ----------------------  -  -->
-
-
-<!-- -----------------------start here ----------------------  -  -->
-<?php
-include('../partials/connect.php');
-
-// Step 1: Fetch all reporter_ids of type 1
-$fetchIdsSql = "SELECT Id FROM employee WHERE employeeType = 1";
-$fetchIdsResult = $connect->query($fetchIdsSql);
-
-if ($fetchIdsResult === false) {
-    echo "Error fetching reporter IDs: " . $connect->error;
-    exit;
-}
-
-// Array to hold reporter IDs
-$reporter_ids = [];
-
-// Fetch the IDs and store them in the array
-while ($row = $fetchIdsResult->fetch_assoc()) {
-    $reporter_ids[] = $row['Id'];
-}
-
-// Check if there are any reporter IDs
-if (empty($reporter_ids)) {
-    echo "No reporter IDs of type 1 found.";
-    exit;
-}
-
-// Initialize array to hold attendance data
-$classAttendance = [];
-
-// Step 2: Process each reporter_id to fetch class names and attendance data
-foreach ($reporter_ids as $reporter_id) {
-    // Get the class name for the current reporter
-    $classSql = "SELECT Specialisation FROM employee WHERE Id = $reporter_id";
-    $classResult = $connect->query($classSql);
-
-    if ($classResult === false) {
-        echo "Error fetching class for Reporter ID $reporter_id: " . $connect->error;
-        continue;
-    }
-
-    $classRow = $classResult->fetch_assoc();
-    $className = $classRow['Specialisation'];
-
-    if ($className) {
-        // Initialize attendance counts
-        if (!isset($classAttendance[$className])) {
-            $classAttendance[$className] = [
-                'totalDays' => 0,
-                'presentCount' => 0,
-            ];
-        }
-
-        // Count attendance statuses for the class from the welcome table
-        $attendanceSql = "SELECT Attendance FROM welcome WHERE ReporterId = '$reporter_id'";
-        $attendanceResult = $connect->query($attendanceSql);
-
-        if ($attendanceResult === false) {
-            echo "Error fetching attendance for Class $className: " . $connect->error;
-            continue;
-        }
-
-        // Count the statuses
-        while ($row = $attendanceResult->fetch_assoc()) {
-            $status = $row['Attendance'];
-            $classAttendance[$className]['totalDays']++;
-
-            // Count both "Present" and "Late" as present
-            if ($status === 'Present' || $status === 'Late') {
-                $classAttendance[$className]['presentCount']++;
-            }
-        }
-    } else {
-        echo "No class found for Reporter ID $reporter_id.";  
-    }
-}
-
-$attendanceAverages = []; // Array to hold attendance averages
-foreach ($classAttendance as $className => $attendance) {
-    $totalDays = $attendance['totalDays'];
-    $presentCount = $attendance['presentCount'];
-    
-    // Calculate attendance average as a percentage
-    $averageAttendance = ($totalDays > 0) ? ($presentCount / $totalDays) * 100 : 0; 
-
-    // Store the attendance average in a variable
-    $attendanceAverages[$className] = round($averageAttendance, 2);
-}
-
-$ASD1 = $attendanceAverages['ASD Level 1'] ?? 0; 
-$ASD2 = $attendanceAverages['ASD Level 2'] ?? 0; 
-$ASD3 = $attendanceAverages['ASD Level 3'] ?? 0; 
-
-
-?>
 
 <!-- -----------------------end here ----------------------  -  -->
 

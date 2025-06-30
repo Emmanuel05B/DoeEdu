@@ -2,7 +2,7 @@
 $Host ="localhost";
 $User ="root";
 $Password ="";
-$dbname = "genesis";
+$dbname = "newgenesis";
 $connect = mysqli_connect($Host,$User,$Password,$dbname);
 
 ?>

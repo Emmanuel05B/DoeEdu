@@ -58,8 +58,8 @@ totalowe = totalfees - totalpaid
         echo '<script>
         Swal.fire({
             icon: "success",
-            title: "Successfully Updated Goal",
-            text: "Data has been saved for the Learner.",
+            title: "Payment Updated Successfully",
+            text: "The learner\'s payment information has been saved.",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK"
         }).then((result) => {
@@ -72,8 +72,8 @@ totalowe = totalfees - totalpaid
         echo '<script>
         Swal.fire({
             icon: "error",
-            title: "Submission Error",
-            text: "Failed to Update Goal.",
+            title: "Update Failed",
+            text: "Unable to update the payment record. Please try again.",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK"
         }).then((result) => {

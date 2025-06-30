@@ -1,149 +1,89 @@
 <!DOCTYPE html>
 <html>
-    
 <?php
 session_start();
-
 if (!isset($_SESSION['email'])) {
   header("Location: ../common/login.php");
   exit();
 }
 ?>
-
-<?php include("adminpartials/head.php"); ?>
-   
+<?php include("tutorpartials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <!-- Left side column. contains the logo and sidebar -->
-  <?php include("adminpartials/header.php") ?>;
-  <!-- Left side column. contains the logo and sidebar -->
-  <?php include("adminpartials/mainsidebar.php") ?>;
+  <?php include("tutorpartials/header.php") ?>
+  <?php include("tutorpartials/mainsidebar.php") ?>
 
-  <!-- Content Wrapper. Contains page content --->
   <div class="content-wrapper">
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
-
-
-
-    <!-- Main content table---------------------------------------------> 
-    <section class="content">
-      <div class="row">
-        <div class="col-xs-12">
-          <!-- /.box -->
-
-          <div class="box">
-            <div class="box-header">
-              <h3 class="box-title">Classes</h3>
-            </div>
-            
-  
-        
-            <!-- /.box-header -->
-            <div class="box-body">
-            
-                <!-- Main content -->
-                <section class="content">
-
-<div class="row">
-  <div class="col-md-4">
-    <div style="background-color: #d2d6de" class="box box-solid">
-      <div style="background-color: yellow" class="box-header with-border">
-        <i class="fa fa-text-width"></i>
-        <h3 class="box-title">Grade 12</h3>
-      </div><br>
-      <!-- /.box-header -->
-      <div class="box-body">
-          <a href="alllearner.php?val=1" class="btn btn-block btn-default btn-lg">Mathematics</a>
-      </div><br>
-      <div class="box-body">
-          <a href="alllearner.php?val=2" class="btn btn-block btn-default btn-lg">Physical Sciences</a>
-      </div>
-      <!-- /.box-body -->
-    </div>
-    <!-- /.box -->
-  </div>
-  <!-- ./col -->
-
-  <div class="col-md-4">
-    <div style="background-color: #d2d6de"class="box box-solid">
-      <div style="background-color: #00c0ef" class="box-header with-border">
-        <i class="fa fa-text-width"></i>
-        <h3 class="box-title">Grade 11</h3>
-      </div><br>
-      <!-- /.box-header -->
-      <div class="box-body">
-          <a href="alllearner.php?val=3" class="btn btn-block btn-default btn-lg">Mathematics</a>
-      </div><br>
-      <div class="box-body">
-          <a href="alllearner.php?val=4" class="btn btn-block btn-default btn-lg">Physical Sciences</a>
-      </div>
-      <!-- /.box-body -->
-    </div>
-    <!-- /.box -->
-  </div>
-  <!-- ./col -->
-
-  <div class="col-md-4">
-    <div style="background-color: #d2d6de" class="box box-solid">
-      <div style="background-color: pink" class="box-header with-border">
-        <i class="fa fa-text-width"></i>
-        <h3 class="box-title">Grade 10</h3>
-      </div><br>
-      <!-- /.box-header -->
-      <div class="box-body">
-          <a href="alllearner.php?val=5" class="btn btn-block btn-default btn-lg">Mathematics</a>
-      </div><br>
-      <div class="box-body">
-          <a href="alllearner.php?val=6" class="btn btn-block btn-default btn-lg">Physical Sciences</a>
-      </div>
-      <!-- /.box-body -->
-    </div>
-    <!-- /.box -->
-  </div>
-  <!-- ./col -->
-</div>
-                <!-- /.row -->
-                </section>
-
-
-            </div>
-            <!-- /.box-body -->
-          </div>
-          <!-- /.box -->
-        </div>
-        <!-- /.col -->
-      </div>
-      <!-- /.row -->
+    <section class="content-header">
+      <h1>My Classe(s)</h1>
+      <p class="text-muted">Below are the subjects you're currently teaching.</p>
     </section>
 
+    <section class="content">
+      <div class="row">
+
+        <!-- Subject Card Example -->
+        <div class="col-md-6">
+          <div class="box box-primary">
+            <div class="box-header with-border text-center" style="background-color:#a3bffa;">
+              <h3 class="box-title" style="margin:10px auto;">Grade 12</h3>
+              <p><i class="fa fa-book"></i> Mathematics</p>
+              <p><i class="fa fa-users"></i> <strong>18 learners</strong></p> 
+            </div>
+            <div class="box-body text-center">
+              <!-- <a href="alllearner.php?grade=12&subject=mathematics" class="btn btn-info btn-sm">Open Class</a>
+               -->
+              <a href="maths12.php" class="btn btn-info btn-sm">Record Marks</a>
+              <a href="alllearner.php?val=1" class="btn btn-info btn-sm">Track Learner Progress</a>
+              <a href="alllearner.php?val=1" class="btn btn-info btn-sm">Open Class</a>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="box box-primary">
+            <div class="box-header with-border text-center" style="background-color:#a3bffa;">
+              <h3 class="box-title" style="margin:10px auto;">Grade 10</h3>
+              <p><i class="fa fa-book"></i> Mathematics</p>
+              <p><i class="fa fa-users"></i> <strong>16 learners</strong></p> 
+            </div>
+            <div class="box-body text-center">
+              <!-- <a href="alllearner.php?grade=12&subject=mathematics" class="btn btn-info btn-sm">Open Class</a>
+               -->
+              <a href="maths12.php" class="btn btn-info btn-sm">Record Marks</a>
+              <a href="alllearner.php?val=1" class="btn btn-info btn-sm">Track Learner Progress</a>
+              <a href="alllearner.php?val=1" class="btn btn-info btn-sm">Open Class</a>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Duplicate for other subjects -->
+        <div class="col-md-6">
+          <div class="box box-primary">
+            <div class="box-header with-border text-center" style="background-color:#d5a6ff;">
+              <h3 class="box-title" style="margin:10px auto;">Grade 11</h3>
+              <p><i class="fa fa-book"></i> Physical Sciences</p>
+              <p><i class="fa fa-users"></i> <strong>28 learners</strong></p> 
+
+            </div>
+            <div class="box-body text-center">
+              <a href="alllearner.php?grade=11&subject=physicalsciences" class="btn btn-info btn-sm">Open Class</a>
+            </div>
+          </div>
+        </div>
+
+  
+
+        <!-- Continue duplicating blocks as needed -->
+
+      </div>
+    </section>
   </div>
 
   <div class="control-sidebar-bg"></div>
 </div>
-
-<!-- jQuery 3 -->
-<script src="bower_components/jquery/dist/jquery.min.js"></script>
-<!-- Bootstrap 3.3.7 -->
-<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<!-- DataTables -->
-<script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-<!-- SlimScroll -->
-<script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
-<!-- FastClick -->
-<script src="bower_components/fastclick/lib/fastclick.js"></script>
-<!-- AdminLTE App -->
-<script src="dist/js/adminlte.min.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="dist/js/demo.js"></script>
-
-<script>
-  $(function () {
-    $('#example1').DataTable()
-  })
-</script>
-
 </body>
 </html>

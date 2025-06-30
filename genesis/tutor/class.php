@@ -358,7 +358,7 @@ if (!isset($_SESSION['email'])) {
                               </td>
                           
                               <td class="align-middle">
-                                <select name="submitted[]" class="form-control input-sm">
+                                <select name="submitted[]" class="form-control">
                                   <option value="Yes" selected>Yes</option>
                                   <option value="No">No</option>
                                 </select>
