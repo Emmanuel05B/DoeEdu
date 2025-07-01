@@ -47,17 +47,25 @@ $checkStmt->store_result();
 
 if ($checkStmt->num_rows > 0) {
     $checkStmt->close();
-    echo "<script>
-        Swal.fire({
-            icon: 'info',
-            title: 'Already Submitted',
-            text: 'You have already submitted this homework.',
-            confirmButtonText: 'OK'
-        }).then(() => {
-            window.location.href = 'learnerdashboard.php';
-        });
-    </script>";
-    exit();
+ echo "<script>
+
+    Swal.fire({
+        icon: 'info',
+        title: 'Already Submitted',
+        text: 'You have already submitted this homework.',
+        showCancelButton: true,
+        confirmButtonText: 'View Memo',
+        cancelButtonText: 'Go to Dashboard'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'viewmemo.php?activityid={$activityId}';
+        } else {
+            window.location.href = 'homework.php';
+        }
+    });
+</script>";
+exit();
+
 }
 $checkStmt->close();
 
@@ -97,15 +105,22 @@ $resultStmt->close();
 
 $connect->close();
 
-// Final SweetAlert
+// Final SweetAlert....//note that the id at the memo is causing that flag
 echo "<script>
+
     Swal.fire({
         icon: 'success',
         title: 'Homework Submitted',
         text: 'Score: {$score}%',
-        confirmButtonText: 'OK'
-    }).then(() => {
-        window.location.href = 'learnerdashboard.php';
+        showCancelButton: true,
+        confirmButtonText: 'View Memo',
+        cancelButtonText: 'Go to Dashboard'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'viewmemo.php?activityid={$activityId}'; 
+        } else {
+            window.location.href = 'homework.php';
+        }
     });
 </script>";
 ?>

@@ -197,7 +197,6 @@ if (!isset($_SESSION['email'])) {
                     </thead>
                     <tbody>
                       <?php
-                          //select all leaners who are doing this activity... now im selecting activities
                           $sql = "
                             SELECT 
                             learners.LearnerId, 

@@ -30,36 +30,18 @@ if (!isset($_SESSION['email'])) {
         // might be unnecessary.
         include('../partials/connect.php');
         $grade = $_GET['gra'];
-       // $subject = $_GET['sub'];
         $chaptername = $_GET['cha'];
-
         $SubjectId = intval($_GET['sub']); // Get the subject value, ensure it's an integer
 
-        // Set the subject name based on SubjectId e
-        $SubjectName = '';
-        switch ($SubjectId) {
-            case 1:
-                $SubjectName = 'Mathematics';
-                break;
-            case 2:
-                $SubjectName = 'Physical Sciences';
-                break;
-            case 3:
-                $SubjectName = 'Mathematics';
-                break;
-            case 4:
-                $SubjectName = 'Physical Sciences';
-                break;
-            case 5:
-                $SubjectName = 'Mathematics';
-                break;
-            case 6:
-                $SubjectName = 'Physical Sciences';
-                break;
-            default:
-                echo '<h1>Learners - Unknown Subject</h1>';
-                exit();
+        $stmt = $connect->prepare("SELECT SubjectName FROM subjects WHERE SubjectId = ?");
+        $stmt->bind_param("i", $SubjectId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($row = $result->fetch_assoc()) {
+            $SubjectName = $row['SubjectName'];
         }
+
      ?>
 
     <section class="content">

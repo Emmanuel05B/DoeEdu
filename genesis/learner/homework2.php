@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 
@@ -24,8 +23,10 @@ include("learnerpartials/head.php");
     <?php
     include('../partials/connect.php');
 
-    $LearnerId = $_SESSION['user_id']; // Use logged-in learner ID
+    // For now, hardcoded learner ID (replace with $_SESSION['user_id'] in production)
+    $LearnerId = '3';
 
+    // Utility function to map SubjectId to subject names
     function getSubjectName($id) {
       $map = [
         1 => "Mathematics",
@@ -38,6 +39,7 @@ include("learnerpartials/head.php");
       return $map[$id] ?? "Unknown Subject";
     }
 
+    // Get all subjects assigned to the learner (limit to 2)
     $stmt = $connect->prepare("SELECT SubjectId FROM learnersubject WHERE LearnerId = ? ORDER BY SubjectId ASC LIMIT 2");
     $stmt->bind_param("i", $LearnerId);
     $stmt->execute();
@@ -71,13 +73,16 @@ include("learnerpartials/head.php");
                     <th>Received On</th>
                     <th>Due Date</th>
                     <th>Status</th>
+                    <th>Total Marks</th>
                     <th>Score</th>
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                 <?php
-                $stmt2 = $connect->prepare("SELECT Id, Title, Topic, CreatedAt, DueDate, TotalMarks FROM onlineactivities WHERE SubjectName = ?");
+                // Fetch homework activities for the current subject
+                $stmt2 = $connect->prepare("SELECT Id, Title, Topic, CreatedAt, DueDate, TotalMarks 
+                                            FROM onlineactivities WHERE SubjectName = ?");
                 $stmt2->bind_param("i", $SubjectId);
                 $stmt2->execute();
                 $activities = $stmt2->get_result();
@@ -86,50 +91,15 @@ include("learnerpartials/head.php");
                   echo "<tr><td colspan='8'>No homework available for this subject.</td></tr>";
                 } else {
                   while ($activity = $activities->fetch_assoc()) {
-                    $activityId = $activity['Id'];
-
-                    // Check if learner submitted answers
-                    $answerStmt = $connect->prepare("SELECT oq.CorrectAnswer, la.SelectedAnswer
-                                                     FROM learneranswers la
-                                                     JOIN onlinequestions oq ON la.QuestionId = oq.Id
-                                                     WHERE la.UserId = ? AND la.ActivityId = ?");
-                    $answerStmt->bind_param("ii", $LearnerId, $activityId);
-                    $answerStmt->execute();
-                    $answersResult = $answerStmt->get_result();
-
-                    $correct = 0;
-                    $totalAnswered = 0;
-
-                    while ($ans = $answersResult->fetch_assoc()) {
-                      $totalAnswered++;
-                      if ($ans['SelectedAnswer'] === $ans['CorrectAnswer']) {
-                        $correct++;
-                      }
-                    }
-
-                    $answerStmt->close();
-
-                    if ($totalAnswered > 0) {
-                      $status = "<span class='label label-success'>Completed</span>";
-                      $score = "{$correct}/{$activity['TotalMarks']}";
-                      $memoBtn = "<a href='viewmemo.php?activityid={$activityId}' class='btn btn-info btn-sm'>View Memo</a>";
-                    } else {
-                      $status = "<span class='label label-warning'>Not Started</span>";
-                      $score = "-";
-                      $memoBtn = "";
-                    }
-
                     echo "<tr>
                             <td>{$activity['Title']}</td>
                             <td>{$activity['Topic']}</td>
                             <td>{$activity['CreatedAt']}</td>
                             <td>{$activity['DueDate']}</td>
-                            <td>{$status}</td>
-                            <td>{$score}</td>
-                            <td>
-                              <a href='viewhomework.php?activityId={$activityId}' class='btn btn-primary btn-sm'>Open</a>
-                              {$memoBtn}
-                            </td>
+                            <td><span class='label label-warning'>Not Started</span></td>
+                            <td>{$activity['TotalMarks']}</td>
+                            <td>-</td>
+                            <td><a href='viewhomework.php?activityId={$activity['Id']}' class='btn btn-primary btn-sm'>Open</a></td>
                           </tr>";
                   }
                 }
@@ -146,8 +116,8 @@ include("learnerpartials/head.php");
     </section>
 
     <?php
-      }
-    }
+      } // end foreach
+    } // end else 
     ?>
 
   </div>
@@ -173,4 +143,6 @@ include("learnerpartials/head.php");
 
 </body>
 </html>
+
+
 

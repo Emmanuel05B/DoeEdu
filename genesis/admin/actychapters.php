@@ -53,58 +53,58 @@ if (!isset($_SESSION['email'])) {
                                 </tr>
                                 <tr>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Algebraic Expressions" class="btn btn-block btn-info btn-lg">Algebraic expressions</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Algebraic Expressions" class="btn btn-block btn-info btn-lg">Algebraic expressions</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Trigonometry" class="btn btn-block btn-warning btn-lg">Trigonometry</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Trigonometry" class="btn btn-block btn-warning btn-lg">Trigonometry</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Finance and Growth" class="btn btn-block btn-success btn-lg">Finance and growth</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Finance and Growth" class="btn btn-block btn-success btn-lg">Finance and growth</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Measurement" class="btn btn-block btn-primary btn-lg">Measurement</a>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Exponents" class="btn btn-block btn-info btn-lg">Exponents</a>
-                                  </td>
-                                  <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Functions" class="btn btn-block btn-warning btn-lg">Functions</a>
-                                  </td>
-                                  <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Statistics" class="btn btn-block btn-success btn-lg">Statistics</a>
-                                  </td>
-                                  <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Probability" class="btn btn-block btn-primary btn-lg">Probability</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Measurement" class="btn btn-block btn-primary btn-lg">Measurement</a>
                                   </td>
                                 </tr>
                                 <tr>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Number Patterns" class="btn btn-block btn-info btn-lg">Number patterns</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Exponents" class="btn btn-block btn-info btn-lg">Exponents</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Euclidean Geometry" class="btn btn-block btn-warning btn-lg">Euclidean geometry</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Functions" class="btn btn-block btn-warning btn-lg">Functions</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Trigonometry" class="btn btn-block btn-success btn-lg">Trigonometry</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Statistics" class="btn btn-block btn-success btn-lg">Statistics</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=43" class="btn btn-block btn-primary btn-lg">...</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Probability" class="btn btn-block btn-primary btn-lg">Probability</a>
                                   </td>
                                 </tr>
                                 <tr>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Equations and Inequalities" class="btn btn-block btn-info btn-lg">Equations and inequalities</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Number Patterns" class="btn btn-block btn-info btn-lg">Number patterns</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Analytical Geometry" class="btn btn-block btn-warning btn-lg">Analytical geometry</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Euclidean Geometry" class="btn btn-block btn-warning btn-lg">Euclidean geometry</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Euclidean Geometry" class="btn btn-block btn-success btn-lg">Euclidean geometry</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Trigonometry" class="btn btn-block btn-success btn-lg">Trigonometry</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=44" class="btn btn-block btn-primary btn-lg">...</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=43" class="btn btn-block btn-primary btn-lg">...</a>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Equations and Inequalities" class="btn btn-block btn-info btn-lg">Equations and inequalities</a>
+                                  </td>
+                                  <td>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Analytical Geometry" class="btn btn-block btn-warning btn-lg">Analytical geometry</a>
+                                  </td>
+                                  <td>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Euclidean Geometry" class="btn btn-block btn-success btn-lg">Euclidean geometry</a>
+                                  </td>
+                                  <td>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=44" class="btn btn-block btn-primary btn-lg">...</a>
                                   </td>
                                 </tr>
                               </table>
@@ -144,58 +144,58 @@ if (!isset($_SESSION['email'])) {
                                 </tr>
                                 <tr>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Classification Of Matter" class="btn btn-block btn-info btn-lg">Classification of matter</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Classification Of Matter" class="btn btn-block btn-info btn-lg">Classification of matter</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Chemical Bonding" class="btn btn-block btn-warning btn-lg">Chemical bonding</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Chemical Bonding" class="btn btn-block btn-warning btn-lg">Chemical bonding</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Sound" class="btn btn-block btn-success btn-lg">Sound</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Sound" class="btn btn-block btn-success btn-lg">Sound</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Representing Chemical Change" class="btn btn-block btn-primary btn-lg">Representing chemical change</a>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=States of matter and Kinetic Theory" class="btn btn-block btn-info btn-lg">States of matter and kinetic theory</a>
-                                  </td>
-                                  <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Transverse Pulses" class="btn btn-block btn-warning btn-lg">Transverse pulses</a>
-                                  </td>
-                                  <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electromagnetic Radiation" class="btn btn-block btn-success btn-lg">Electromagnetic radiation</a>
-                                  </td>
-                                  <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Magnetism" class="btn btn-block btn-primary btn-lg">Magnetism</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Representing Chemical Change" class="btn btn-block btn-primary btn-lg">Representing chemical change</a>
                                   </td>
                                 </tr>
                                 <tr>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=The Atom" class="btn btn-block btn-info btn-lg">The atom</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=States of matter and Kinetic Theory" class="btn btn-block btn-info btn-lg">States of matter and kinetic theory</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Transverse Waves" class="btn btn-block btn-warning btn-lg">Transverse waves</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Transverse Pulses" class="btn btn-block btn-warning btn-lg">Transverse pulses</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Particles That Make Up Substances" class="btn btn-block btn-success btn-lg">Particles that make up substances</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electromagnetic Radiation" class="btn btn-block btn-success btn-lg">Electromagnetic radiation</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electrostatics" class="btn btn-block btn-primary btn-lg">Electrostatics</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Magnetism" class="btn btn-block btn-primary btn-lg">Magnetism</a>
                                   </td>
                                 </tr>
                                 <tr>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=The Periodic Table" class="btn btn-block btn-info btn-lg">The periodic table</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=The Atom" class="btn btn-block btn-info btn-lg">The atom</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Longitudinal Waves" class="btn btn-block btn-warning btn-lg">Longitudinal waves</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Transverse Waves" class="btn btn-block btn-warning btn-lg">Transverse waves</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Physical and Chemical_Change" class="btn btn-block btn-success btn-lg">Physical and chemical change</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Particles That Make Up Substances" class="btn btn-block btn-success btn-lg">Particles that make up substances</a>
                                   </td>
                                   <td>
-                                    <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electric Circuits" class="btn btn-block btn-primary btn-lg">Electric circuits</a>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electrostatics" class="btn btn-block btn-primary btn-lg">Electrostatics</a>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=The Periodic Table" class="btn btn-block btn-info btn-lg">The periodic table</a>
+                                  </td>
+                                  <td>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Longitudinal Waves" class="btn btn-block btn-warning btn-lg">Longitudinal waves</a>
+                                  </td>
+                                  <td>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Physical and Chemical_Change" class="btn btn-block btn-success btn-lg">Physical and chemical change</a>
+                                  </td>
+                                  <td>
+                                    <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electric Circuits" class="btn btn-block btn-primary btn-lg">Electric circuits</a>
                                   </td>
                                 </tr>
                               </table>
@@ -235,58 +235,58 @@ if (!isset($_SESSION['email'])) {
                             </tr>
                             <tr>
                               <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Exponents and Surds" class="btn btn-block btn-info btn-lg">Exponents and surds</a>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Exponents and Surds" class="btn btn-block btn-info btn-lg">Exponents and surds</a>
                               </td>
                               <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Analytical Geometry" class="btn btn-block btn-warning btn-lg">Analytical geometry</a>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Analytical Geometry" class="btn btn-block btn-warning btn-lg">Analytical geometry</a>
                               </td>
                               <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Measurement" class="btn btn-block btn-success btn-lg">Measurement</a>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Measurement" class="btn btn-block btn-success btn-lg">Measurement</a>
                               </td>
                               <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Probability" class="btn btn-block btn-primary btn-lg">Probability</a>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Equations and Inequalities" class="btn btn-block btn-info btn-lg">Equations and inequalities</a>
-                              </td>
-                              <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Functions" class="btn btn-block btn-warning btn-lg">Functions</a>
-                              </td>
-                              <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Euclidean Geometry" class="btn btn-block btn-success btn-lg">Euclidean geometry</a>
-                              </td>
-                              <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Statistics" class="btn btn-block btn-primary btn-lg">Statistics</a>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Probability" class="btn btn-block btn-primary btn-lg">Probability</a>
                               </td>
                             </tr>
                             <tr>
                               <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Number Patterns" class="btn btn-block btn-info btn-lg">Number patterns</a>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Equations and Inequalities" class="btn btn-block btn-info btn-lg">Equations and inequalities</a>
                               </td>
                               <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Trigonometry" class="btn btn-block btn-warning btn-lg">Trigonometry</a>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Functions" class="btn btn-block btn-warning btn-lg">Functions</a>
                               </td>
                               <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Finance Growth and Decay" class="btn btn-block btn-success btn-lg">Finance growth and decay</a>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Euclidean Geometry" class="btn btn-block btn-success btn-lg">Euclidean geometry</a>
                               </td>
                               <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=43" class="btn btn-block btn-primary btn-lg">...</a>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Statistics" class="btn btn-block btn-primary btn-lg">Statistics</a>
                               </td>
                             </tr>
                             <tr>
                               <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=14" class="btn btn-block btn-info btn-lg">...</a>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Number Patterns" class="btn btn-block btn-info btn-lg">Number patterns</a>
                               </td>
                               <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=24" class="btn btn-block btn-warning btn-lg">...</a>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Trigonometry" class="btn btn-block btn-warning btn-lg">Trigonometry</a>
                               </td>
                               <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=34" class="btn btn-block btn-success btn-lg">...</a>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Finance Growth and Decay" class="btn btn-block btn-success btn-lg">Finance growth and decay</a>
                               </td>
                               <td>
-                                <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=44" class="btn btn-block btn-primary btn-lg">...</a>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=43" class="btn btn-block btn-primary btn-lg">...</a>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=14" class="btn btn-block btn-info btn-lg">...</a>
+                              </td>
+                              <td>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=24" class="btn btn-block btn-warning btn-lg">...</a>
+                              </td>
+                              <td>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=34" class="btn btn-block btn-success btn-lg">...</a>
+                              </td>
+                              <td>
+                                <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=44" class="btn btn-block btn-primary btn-lg">...</a>
                               </td>
                             </tr>
                           </table>
@@ -326,58 +326,58 @@ if (!isset($_SESSION['email'])) {
                               </tr>
                               <tr>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Vectors In 2 dimensions" class="btn btn-block btn-info btn-lg">Vectors in two dimensions</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Vectors In 2 dimensions" class="btn btn-block btn-info btn-lg">Vectors in two dimensions</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Intermolecular Forces" class="btn btn-block btn-warning btn-lg">Intermolecular forces</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Intermolecular Forces" class="btn btn-block btn-warning btn-lg">Intermolecular forces</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Ideal Gases" class="btn btn-block btn-success btn-lg">Ideal gases</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Ideal Gases" class="btn btn-block btn-success btn-lg">Ideal gases</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electromagnetism" class="btn btn-block btn-primary btn-lg">Electromagnetism</a>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Newtons Laws" class="btn btn-block btn-info btn-lg">Newtons laws</a>
-                                </td>
-                                <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Geometrical Optics" class="btn btn-block btn-warning btn-lg">Geometrical optics</a>
-                                </td>
-                                <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Quantitative Aspects Of Chemical Change" class="btn btn-block btn-success btn-lg">Quantitative aspects of chemical change</a>
-                                </td>
-                                <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electric Circuits" class="btn btn-block btn-primary btn-lg">Electric circuits</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electromagnetism" class="btn btn-block btn-primary btn-lg">Electromagnetism</a>
                                 </td>
                               </tr>
                               <tr>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Atomic Combinations" class="btn btn-block btn-info btn-lg">Atomic combinations</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Newtons Laws" class="btn btn-block btn-info btn-lg">Newtons laws</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=2d and 3d wavefronts" class="btn btn-block btn-warning btn-lg">2d and 3d wavefronts</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Geometrical Optics" class="btn btn-block btn-warning btn-lg">Geometrical optics</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electrostatics" class="btn btn-block btn-success btn-lg">Electrostatics</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Quantitative Aspects Of Chemical Change" class="btn btn-block btn-success btn-lg">Quantitative aspects of chemical change</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Energy and Chemical Change" class="btn btn-block btn-primary btn-lg">Energy and chemical change</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electric Circuits" class="btn btn-block btn-primary btn-lg">Electric circuits</a>
                                 </td>
                               </tr>
                               <tr>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=14" class="btn btn-block btn-info btn-lg">a</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Atomic Combinations" class="btn btn-block btn-info btn-lg">Atomic combinations</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=24" class="btn btn-block btn-warning btn-lg">b</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=2d and 3d wavefronts" class="btn btn-block btn-warning btn-lg">2d and 3d wavefronts</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Types Of Reactions" class="btn btn-block btn-success btn-lg">Types of reactions</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electrostatics" class="btn btn-block btn-success btn-lg">Electrostatics</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=The Lithosphere" class="btn btn-block btn-primary btn-lg">The lithosphere</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Energy and Chemical Change" class="btn btn-block btn-primary btn-lg">Energy and chemical change</a>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=14" class="btn btn-block btn-info btn-lg">a</a>
+                                </td>
+                                <td>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=24" class="btn btn-block btn-warning btn-lg">b</a>
+                                </td>
+                                <td>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Types Of Reactions" class="btn btn-block btn-success btn-lg">Types of reactions</a>
+                                </td>
+                                <td>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=The Lithosphere" class="btn btn-block btn-primary btn-lg">The lithosphere</a>
                                 </td>
                               </tr>
                             </table>
@@ -416,58 +416,58 @@ if (!isset($_SESSION['email'])) {
                               </tr>
                               <tr>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Sequences and Series" class="btn btn-block btn-info btn-lg">Sequences & Series</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Sequences and Series" class="btn btn-block btn-info btn-lg">Sequences & Series</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Financial Mathematics" class="btn btn-block btn-warning btn-lg">Financial Mathematics</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Financial Mathematics" class="btn btn-block btn-warning btn-lg">Financial Mathematics</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Statistics" class="btn btn-block btn-success btn-lg">Statistics</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Statistics" class="btn btn-block btn-success btn-lg">Statistics</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=3D_Trigonometry" class="btn btn-block btn-primary btn-lg">3D Trigonometry...</a>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Trigonometry" class="btn btn-block btn-info btn-lg">Trigonometry</a>
-                                </td>
-                                <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Differential Calculus" class="btn btn-block btn-warning btn-lg">Differential Calculus</a>
-                                </td>
-                                <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Probability" class="btn btn-block btn-success btn-lg">Probability</a>
-                                </td>
-                                <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Measurement" class="btn btn-block btn-primary btn-lg">Measurement</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=3D_Trigonometry" class="btn btn-block btn-primary btn-lg">3D Trigonometry...</a>
                                 </td>
                               </tr>
                               <tr>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Functions" class="btn btn-block btn-info btn-lg">Functions</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Trigonometry" class="btn btn-block btn-info btn-lg">Trigonometry</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Analytical Geometry" class="btn btn-block btn-warning btn-lg">Analytical Geometry</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Differential Calculus" class="btn btn-block btn-warning btn-lg">Differential Calculus</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Euclidean Geometry" class="btn btn-block btn-success btn-lg">Euclidean Geometry</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Probability" class="btn btn-block btn-success btn-lg">Probability</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Calculas Application" class="btn btn-block btn-primary btn-lg">Calculas Application...</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Measurement" class="btn btn-block btn-primary btn-lg">Measurement</a>
                                 </td>
                               </tr>
                               <tr>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Inverse_Graphs_and_Log_Functions" class="btn btn-block btn-info btn-lg">Inverse Graphs and Log Functions</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Functions" class="btn btn-block btn-info btn-lg">Functions</a>
                                 </td>
                                 <td>
-                                  <a href="#recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=24" class="btn btn-block btn-warning btn-lg">...</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Analytical Geometry" class="btn btn-block btn-warning btn-lg">Analytical Geometry</a>
                                 </td>
                                 <td>
-                                  <a href="#recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=34" class="btn btn-block btn-success btn-lg">...</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Euclidean Geometry" class="btn btn-block btn-success btn-lg">Euclidean Geometry</a>
                                 </td>
                                 <td>
-                                  <a href="#recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=44" class="btn btn-block btn-primary btn-lg">4</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Calculas Application" class="btn btn-block btn-primary btn-lg">Calculas Application...</a>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Inverse_Graphs_and_Log_Functions" class="btn btn-block btn-info btn-lg">Inverse Graphs and Log Functions</a>
+                                </td>
+                                <td>
+                                  <a href="#generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=24" class="btn btn-block btn-warning btn-lg">...</a>
+                                </td>
+                                <td>
+                                  <a href="#generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=34" class="btn btn-block btn-success btn-lg">...</a>
+                                </td>
+                                <td>
+                                  <a href="#generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=44" class="btn btn-block btn-primary btn-lg">4</a>
                                 </td>
                               </tr>
                             </table>
@@ -506,58 +506,58 @@ if (!isset($_SESSION['email'])) {
                               </tr>
                               <tr>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Momentum and Impulse" class="btn btn-block btn-info btn-lg">Momentum and impulse</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Momentum and Impulse" class="btn btn-block btn-info btn-lg">Momentum and impulse</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Work Energy and Power" class="btn btn-block btn-warning btn-lg">Work energy and power</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Work Energy and Power" class="btn btn-block btn-warning btn-lg">Work energy and power</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Chemical Equilibrium" class="btn btn-block btn-success btn-lg">Chemical equilibrium</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Chemical Equilibrium" class="btn btn-block btn-success btn-lg">Chemical equilibrium</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Optical Phenomena and Properties Of Matter" class="btn btn-block btn-primary btn-lg">Optical phenomena and properties of matter</a>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Vertical Projectile" class="btn btn-block btn-info btn-lg">Vertical projectile motion in one dimension</a>
-                                </td>
-                                <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Doppler Effect" class="btn btn-block btn-warning btn-lg">Doppler effect</a>
-                                </td>
-                                <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Acids and Bases" class="btn btn-block btn-success btn-lg">Acids and bases</a>
-                                </td>
-                                <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electrochemical Reactions" class="btn btn-block btn-primary btn-lg">Electrochemical reactions</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Optical Phenomena and Properties Of Matter" class="btn btn-block btn-primary btn-lg">Optical phenomena and properties of matter</a>
                                 </td>
                               </tr>
                               <tr>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Organic Chemistry" class="btn btn-block btn-info btn-lg">Organic Chemistry</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Vertical Projectile" class="btn btn-block btn-info btn-lg">Vertical projectile motion in one dimension</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Rate and Extent of  Reaction" class="btn btn-block btn-warning btn-lg">Rate and extent of reaction</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Doppler Effect" class="btn btn-block btn-warning btn-lg">Doppler effect</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electric Circuits" class="btn btn-block btn-success btn-lg">Electric circuits</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Acids and Bases" class="btn btn-block btn-success btn-lg">Acids and bases</a>
                                 </td>
                                 <td>
-                                  <a href="recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=The Chemical Industry" class="btn btn-block btn-primary btn-lg">The chemical industry</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electrochemical Reactions" class="btn btn-block btn-primary btn-lg">Electrochemical reactions</a>
                                 </td>
                               </tr>
                               <tr>
                                 <td>
-                                  <a href="#recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=14" class="btn btn-block btn-info btn-lg">a</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Organic Chemistry" class="btn btn-block btn-info btn-lg">Organic Chemistry</a>
                                 </td>
                                 <td>
-                                  <a href="#recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=24" class="btn btn-block btn-warning btn-lg">b</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Rate and Extent of  Reaction" class="btn btn-block btn-warning btn-lg">Rate and extent of reaction</a>
                                 </td>
                                 <td>
-                                  <a href="#recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=34" class="btn btn-block btn-success btn-lg">c</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=Electric Circuits" class="btn btn-block btn-success btn-lg">Electric circuits</a>
                                 </td>
                                 <td>
-                                  <a href="#recmodal.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=44" class="btn btn-block btn-primary btn-lg">d</a>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=The Chemical Industry" class="btn btn-block btn-primary btn-lg">The chemical industry</a>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=14" class="btn btn-block btn-info btn-lg">a</a>
+                                </td>
+                                <td>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=24" class="btn btn-block btn-warning btn-lg">b</a>
+                                </td>
+                                <td>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=34" class="btn btn-block btn-success btn-lg">c</a>
+                                </td>
+                                <td>
+                                  <a href="generateactivity.php?gra=<?= $grade ?>&sub=<?= $subjectId ?>&cha=44" class="btn btn-block btn-primary btn-lg">d</a>
                                 </td>
                               </tr>
                             </table>

@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
-    
+
 <?php
 session_start();
-
 if (!isset($_SESSION['email'])) {
   header("Location: ../common/login.php");
   exit();
@@ -37,7 +36,7 @@ if ($activity['TutorId'] != $tutorId) {
 }
 
 // Fetch questions
-$qstmt = $connect->prepare("SELECT QuestionText, OptionA, OptionB, OptionC, OptionD, CorrectAnswer FROM onlinequestions WHERE ActivityId = ?");
+$qstmt = $connect->prepare("SELECT Id, QuestionText, OptionA, OptionB, OptionC, OptionD, CorrectAnswer FROM onlinequestions WHERE ActivityId = ?");
 $qstmt->bind_param("i", $activityId);
 $qstmt->execute();
 $qresult = $qstmt->get_result();
@@ -51,18 +50,44 @@ $qstmt->close();
 
 <?php include("adminpartials/head.php"); ?>
 
+<style>
+  .question-tile {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .question-tile h4 {
+    margin-top: 0;
+    font-weight: 600;
+    color: #333;
+  }
+  .question-tile ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 10px;
+  }
+  .question-tile ul li {
+    margin-bottom: 6px;
+    color: #555;
+  }
+  .edit-btn {
+    align-self: flex-start;
+  }
+</style>
+
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <!-- Left side column. contains the logo and sidebar -->
-  <?php include("adminpartials/header.php") ?>;
-  <?php include("adminpartials/mainsidebar.php") ?>;
+  <?php include("adminpartials/header.php") ?>
+  <?php include("adminpartials/mainsidebar.php") ?>
 
-  <!-- Content Wrapper. Contains page content --->
   <div class="content-wrapper">
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
-
-    <!-- Main content table---------------------------------------------> 
     <section class="content">
       <div class="row">
         <div class="col-xs-12">
@@ -78,7 +103,6 @@ $qstmt->close();
               </small></p>
             </div>
 
-            <!-- /.box-header -->
             <div class="box-body">
                 <p><strong>Instructions:</strong></p>
                 <p><?php echo nl2br(htmlspecialchars($activity['Instructions'])); ?></p>
@@ -90,29 +114,31 @@ $qstmt->close();
                 <?php endif; ?>
 
                 <h4>Questions</h4>
-                <?php foreach ($questions as $index => $question): ?>
-                <div class="box box-primary" style="padding:15px; margin-bottom:15px;">
-                    <p><strong>Question <?php echo $index + 1; ?>:</strong> <?php echo htmlspecialchars($question['QuestionText']); ?></p>
-                    <ul>
-                        <li>A. <?php echo htmlspecialchars($question['OptionA']); ?></li>
-                        <li>B. <?php echo htmlspecialchars($question['OptionB']); ?></li>
-                        <li>C. <?php echo htmlspecialchars($question['OptionC']); ?></li>
-                        <li>D. <?php echo htmlspecialchars($question['OptionD']); ?></li>
-                    </ul>
+
+                <div class="row">
+                  <?php foreach ($questions as $index => $question): ?>
+                    <div class="col-lg-4 col-xs-12">
+                      <div class="question-tile">
+                        <h4>Question <?php echo $index + 1; ?></h4>
+                        <p><?php echo htmlspecialchars($question['QuestionText']); ?></p>
+                        <ul>
+                          <li>A. <?php echo htmlspecialchars($question['OptionA']); ?></li>
+                          <li>B. <?php echo htmlspecialchars($question['OptionB']); ?></li>
+                          <li>C. <?php echo htmlspecialchars($question['OptionC']); ?></li>
+                          <li>D. <?php echo htmlspecialchars($question['OptionD']); ?></li>
+                        </ul>
+                        <a href="editquestion.php?questionId=<?php echo $question['Id']; ?>" class="btn btn-sm btn-primary edit-btn">Edit Question</a>
+                      </div>
+                    </div>
+                  <?php endforeach; ?>
                 </div>
-                <?php endforeach; ?>
 
             </div>
-            <!-- /.box-body -->
           </div>
-          <!-- /.box -->
 
         </div>
-        <!-- /.col -->
       </div>
-      <!-- /.row -->
     </section>
-
   </div>
 
   <div class="control-sidebar-bg"></div>

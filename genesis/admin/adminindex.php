@@ -122,80 +122,80 @@ if (!isset($_SESSION['email'])) {
       </div>
       <!-- /.row -->
 <!-- -----------------------start here ----------------------  -  -->
-<div class="row">
-        <!-- Left col -->
-        <section class="col-lg-7 connectedSortable">
-          <!-- TO DO List -->
-          <div class="box box-primary">
-            <div class="box-header">
-              <i class="ion ion-clipboard"></i>
+    <div class="row">
+            <!-- Left col -->
+            <section class="col-lg-7 connectedSortable">
+              <!-- TO DO List -->
+              <div class="box box-primary">
+                <div class="box-header">
+                  <i class="ion ion-clipboard"></i>
 
-              <h3 class="box-title">To Do List</h3>
+                  <h3 class="box-title">To Do List</h3>
 
-              <div class="box-tools pull-right">
-                <ul class="pagination pagination-sm inline">
-                  <li><a href="#">&laquo;</a></li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li><a href="#">&raquo;</a></li>
-                </ul>
-              </div>
-            </div>
-            <!-- /.box-header -->
-            <?php
-
-            // Get the logged-in user's ID
-            $creatorId = $_SESSION['user_id']; 
-
-            // Fetch the tasks for the logged-in user from the database
-            $sql = "SELECT * FROM TodoList WHERE CreatorId = ? ORDER BY DueDate ASC";  // You can adjust the sorting as needed
-            $stmt = $connect->prepare($sql);
-            $stmt->bind_param("i", $creatorId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            ?>
-
-<div class="box-body">
-    <!-- See dist/js/pages/dashboard.js to activate the todoList plugin -->
-    <ul class="todo-list">
-        <?php
-        // Check if there are tasks for the logged-in user
-        if ($result->num_rows > 0) {
-            // Loop through the tasks and display them
-            while ($task = $result->fetch_assoc()) {
-                // Format the date and time
-                $dueDate = date('Y-m-d', strtotime($task['DueDate']));
-                $dueTime = date('H:i', strtotime($task['DueDate']));
-                ?>
-                <li>
-                    <!-- drag handle -->
-                    <span class="handle">
-                        <i class="fa fa-ellipsis-v"></i>
-                        <i class="fa fa-ellipsis-v"></i>
-                    </span>
-                    <!-- checkbox -->
-                    <input type="checkbox" value="" <?php if ($task['Status'] == 1) echo 'checked'; ?>>
-                    <!-- todo text -->
-                    <span class="text"><?php echo htmlspecialchars($task['TaskText']); ?></span>
-                    <!-- Emphasis label -->
-                    <small class="label label-info">
-                        <i class="fa fa-clock-o"></i> <?php echo $dueDate . ' ' . $dueTime; ?>
-                    </small>
-                    <!-- General tools such as edit or delete-->
-                    <div class="tools">
-                        <a href="updateTodo.php?todo_id=<?php echo $task['TodoId']; ?>" class="fa fa-edit"></a>
-                        <a href="deleteTodo.php?todo_id=<?php echo $task['TodoId']; ?>" class="fa fa-trash-o" onclick="return confirm('Are you sure you want to delete this task?');"></a>
-                    </div>
-                </li>
+                  <div class="box-tools pull-right">
+                    <ul class="pagination pagination-sm inline">
+                      <li><a href="#">&laquo;</a></li>
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">&raquo;</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <!-- /.box-header -->
                 <?php
+
+                // Get the logged-in user's ID
+                $creatorId = $_SESSION['user_id']; 
+
+                // Fetch the tasks for the logged-in user from the database
+                $sql = "SELECT * FROM TodoList WHERE CreatorId = ? ORDER BY DueDate ASC";  // You can adjust the sorting as needed
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("i", $creatorId);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                ?>
+
+    <div class="box-body">
+        <!-- See dist/js/pages/dashboard.js to activate the todoList plugin -->
+        <ul class="todo-list">
+            <?php
+            // Check if there are tasks for the logged-in user
+            if ($result->num_rows > 0) {
+                // Loop through the tasks and display them
+                while ($task = $result->fetch_assoc()) {
+                    // Format the date and time
+                    $dueDate = date('Y-m-d', strtotime($task['DueDate']));
+                    $dueTime = date('H:i', strtotime($task['DueDate']));
+                    ?>
+                    <li>
+                        <!-- drag handle -->
+                        <span class="handle">
+                            <i class="fa fa-ellipsis-v"></i>
+                            <i class="fa fa-ellipsis-v"></i>
+                        </span>
+                        <!-- checkbox -->
+                        <input type="checkbox" value="" <?php if ($task['Status'] == 1) echo 'checked'; ?>>
+                        <!-- todo text -->
+                        <span class="text"><?php echo htmlspecialchars($task['TaskText']); ?></span>
+                        <!-- Emphasis label -->
+                        <small class="label label-info">
+                            <i class="fa fa-clock-o"></i> <?php echo $dueDate . ' ' . $dueTime; ?>
+                        </small>
+                        <!-- General tools such as edit or delete-->
+                        <div class="tools">
+                            <a href="updateTodo.php?todo_id=<?php echo $task['TodoId']; ?>" class="fa fa-edit"></a>
+                            <a href="deleteTodo.php?todo_id=<?php echo $task['TodoId']; ?>" class="fa fa-trash-o" onclick="return confirm('Are you sure you want to delete this task?');"></a>
+                        </div>
+                    </li>
+                    <?php
+                }
+            } else {
+                echo '<li>No tasks found.</li>';
             }
-        } else {
-            echo '<li>No tasks found.</li>';
-        }
-        ?>
-    </ul>
-</div>
+            ?>
+        </ul>
+    </div>
 
             <!-- /.box-body -->
             <div class="box-footer clearfix no-border">
