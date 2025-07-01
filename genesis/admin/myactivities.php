@@ -68,7 +68,7 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                           <td>" . htmlspecialchars($row['Grade']) . "</td>
                           <td>" . htmlspecialchars($row['SubjectName']) . "</td>
                           <td>" . htmlspecialchars($row['DueDate']) . "</td>
-                          <td><a href='viewactivity.php?activityId=" . intval($row['Id']) . "' class='btn btn-primary btn-sm'>View</a></td>
+                          <td><a href='viewactivity.php?activityId=" . intval($row['Id']) . "' class='btn btn-block btn-primary'>View</a></td>
                         </tr>";
                 }
               }
