@@ -16,6 +16,9 @@ if (!isset($_SESSION['email'])) {
   <?php include("learnerpartials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+
     <section class="content-header">
       <h1>Learning Resources</h1>
       <p>Access curated study materials for Mathematics and Physical Sciences</p>
@@ -23,104 +26,113 @@ if (!isset($_SESSION['email'])) {
 
     <section class="content">
 
-      <!-- Category Tabs -->
-      <div class="nav-tabs-custom">
-        <ul class="nav nav-tabs">
-          <li class="active"><a href="#math" data-toggle="tab">Mathematics</a></li>
-          <li><a href="#science" data-toggle="tab">Physical Sciences</a></li>
-        </ul>
+      <div class="row">
+        <!-- MATHS -->
+        <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">Mathematics</h3>
+            </div>
+            <div class="box-body">
+              <div class="row">
 
-        <div class="tab-content">
-
-          <!-- Mathematics Tab -->
-          <div class="tab-pane active" id="math">
-            <div class="row">
-              <!-- Example Resource -->
-              <div class="col-md-4">
-                <div class="box box-primary">
-                  <div class="box-header with-border">
-                    <h3 class="box-title">Grade 11 Algebra Guide</h3>
-                  </div>
-                  <div class="box-body">
-                    <p>Download a comprehensive guide on Algebra basics and tips.</p>
-                    <a href="../resources/math-algebra-guide.pdf" target="_blank" class="btn btn-sm btn-primary">Download PDF</a>
+                <!-- Notes -->
+                <div class="col-md-4">
+                  <div class="box box-primary">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">Notes</h3>
+                    </div>
+                    <div class="box-body">
+                      <p>All Mathematics notes from Grade 10–12 in one place.</p>
+                      <a href="notes.php" class="btn btn-sm btn-primary">View Notes</a>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- Example Resource -->
-              <div class="col-md-4">
-                <div class="box box-info">
-                  <div class="box-header with-border">
-                    <h3 class="box-title">Functions Cheat Sheet</h3>
-                  </div>
-                  <div class="box-body">
-                    <p>Quick formulas and examples for understanding functions.</p>
-                    <a href="../resources/functions-cheatsheet.pdf" target="_blank" class="btn btn-sm btn-info">View Now</a>
+                <!-- Cheat Sheets -->
+                <div class="col-md-4">
+                  <div class="box box-info">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">Cheat Sheets</h3>
+                    </div>
+                    <div class="box-body">
+                      <p>Quick-reference formula sheets and summaries for Maths.</p>
+                      <a href="cheatsheets.php" class="btn btn-sm btn-info">View Cheat Sheets</a>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- Example Video Resource -->
-              <div class="col-md-4">
-                <div class="box box-success">
-                  <div class="box-header with-border">
-                    <h3 class="box-title">Video: Solving Quadratics</h3>
-                  </div>
-                  <div class="box-body">
-                    <p>Watch this YouTube video tutorial on solving quadratic equations.</p>
-                    <a href="https://www.youtube.com/watch?v=video_id" target="_blank" class="btn btn-sm btn-success">Watch Video</a>
+                <!-- Videos -->
+                <div class="col-md-4">
+                  <div class="box box-success">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">Videos</h3>
+                    </div>
+                    <div class="box-body">
+                      <p>Watch topic-focused tutorials and explanations for Maths.</p>
+                      <a href="videos.php" class="btn btn-sm btn-success">Watch Videos</a>
+                    </div>
                   </div>
                 </div>
+
               </div>
             </div>
           </div>
-
-          <!-- Physical Sciences Tab -->
-          <div class="tab-pane" id="science">
-            <div class="row">
-              <!-- Example Resource -->
-              <div class="col-md-4">
-                <div class="box box-warning">
-                  <div class="box-header with-border">
-                    <h3 class="box-title">Grade 10 Chemistry Basics</h3>
-                  </div>
-                  <div class="box-body">
-                    <p>Download notes on atoms, bonding, and chemical equations.</p>
-                    <a href="../resources/chemistry-basics.pdf" target="_blank" class="btn btn-sm btn-warning">Download PDF</a>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Example Resource -->
-              <div class="col-md-4">
-                <div class="box box-danger">
-                  <div class="box-header with-border">
-                    <h3 class="box-title">Physics Formulas</h3>
-                  </div>
-                  <div class="box-body">
-                    <p>All important Physics formulas in one place!</p>
-                    <a href="../resources/physics-formulas.pdf" target="_blank" class="btn btn-sm btn-danger">View PDF</a>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Example Video -->
-              <div class="col-md-4">
-                <div class="box box-success">
-                  <div class="box-header with-border">
-                    <h3 class="box-title">Video: Newton's Laws</h3>
-                  </div>
-                  <div class="box-body">
-                    <p>Watch a tutorial on Newton’s Laws of Motion.</p>
-                    <a href="https://www.youtube.com/watch?v=another_video" target="_blank" class="btn btn-sm btn-success">Watch Video</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
+
+        <!-- SCIENCES -->
+        <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">Physical Sciences</h3>
+            </div>
+            <div class="box-body">
+              <div class="row">
+
+                <!-- Notes -->
+                <div class="col-md-4">
+                  <div class="box box-warning">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">Notes</h3>
+                    </div>
+                    <div class="box-body">
+                      <p>All Physical Sciences notes organized per chapter.</p>
+                      <a href="notes.php" class="btn btn-sm btn-warning">View Notes</a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Cheat Sheets -->
+                <div class="col-md-4">
+                  <div class="box box-danger">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">Cheat Sheets</h3>
+                    </div>
+                    <div class="box-body">
+                      <p>Essential formulas and quick summaries for Physics & Chemistry.</p>
+                      <a href="sciences_cheatsheets.php" class="btn btn-sm btn-danger">View Cheat Sheets</a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Videos -->
+                <div class="col-md-4">
+                  <div class="box box-success">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">Videos</h3>
+                    </div>
+                    <div class="box-body">
+                      <p>Visual learning through topic-based science video tutorials.</p>
+                      <a href="sciences_videos.php" class="btn btn-sm btn-success">Watch Videos</a>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </section>
@@ -128,5 +140,16 @@ if (!isset($_SESSION['email'])) {
 
   <div class="control-sidebar-bg"></div>
 </div>
+
+<!-- Scripts -->
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<script src="bower_components/fastclick/lib/fastclick.js"></script>
+<script src="dist/js/adminlte.min.js"></script>
+<script src="dist/js/demo.js"></script>
+
 </body>
 </html>

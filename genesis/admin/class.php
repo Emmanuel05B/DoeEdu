@@ -212,8 +212,12 @@ if (!isset($_SESSION['email'])) {
 
       $activityName = $finalres['ActivityName'];
       $maxmarks = $finalres['MaxMarks'];
-      //$grade = $finalres['Grade'];    not needed
-      $subject = $finalres['SubjectId'];
+      $grade = $finalres['Grade'];   //directly from the database activities table
+      $subjectId = $finalres['SubjectId'];
+      
+
+      ///////////////////
+        //other I can get from the from the hidden input
   
      ?> 
     </section>
@@ -253,71 +257,95 @@ if (!isset($_SESSION['email'])) {
                       <?php
                       
                       if (!isset($_SESSION['learnerIds'])) {
-                        $_SESSION['learnerIds'] = []; // Initialize session array if it doesn't exist
+                        $_SESSION['learnerIds'] = []; // Initialize session  array if it doesn't exist
                     }
           
-                    // Check the status and render different HTML for each case
-                    if ($subject == 1) {
-                        echo '<h3>Grade 12 Mathematics Learners</h3><br>';
 
-                                $sql = "SELECT lt.*, ls.* 
-                                FROM learners AS lt
-                                JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                                WHERE lt.Grade = 12 AND lt.Math > 0 AND ls.SubjectId = 1
-                              AND ls.ContractExpiryDate > CURDATE()";    
+                     // Check the status and render different HTML for each case
+                        if ($subjectId == 1) {
 
-                    } else if ($subject == 2) {
+                           echo '<h3>Grade 10 Mathematics Learners</h3><br>';
 
-                        echo '<h3>Grade 12 Physical Sciences Learners</h3><br>';
-    
-                        $sql = "SELECT lt.*, ls.* 
-                        FROM learners AS lt
-                        JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                        WHERE lt.Grade = 12 AND lt.Physics > 0 AND ls.SubjectId = 2
-                        AND ls.ContractExpiryDate > CURDATE()";    
+                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users AS u ON lt.LearnerId = u.Id
+                            WHERE lt.Grade = $grade 
+                              AND lt.Math > 0 
+                              AND ls.SubjectId = 1
+                              AND ls.ContractExpiryDate > CURDATE()";  
+                      
 
-                    } else if ($subject == 3) {
-                        echo '<h3>Grade 11 Mathematics Learners</h3><br>';
-    
-                        $sql = "SELECT lt.*, ls.* 
-                                FROM learners AS lt
-                                JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                                WHERE lt.Grade = 11 AND lt.Math > 0 AND ls.SubjectId = 3
-                                AND ls.ContractExpiryDate > CURDATE()";    
+                        } else if ($subjectId == 2) {
 
-                    } else if ($subject == 4) {
-                        echo '<h3>Grade 11 Physical Sciences Learners</h3><br>';
-
-                        $sql = "SELECT lt.*, ls.* 
-                        FROM learners AS lt
-                        JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                        WHERE lt.Grade = 11 AND lt.Physics > 0 AND ls.SubjectId = 4
+                          echo '<h3>Grade 11 Mathematics Learners</h3><br>';
+        
+                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users AS u ON lt.LearnerId = u.Id
+                            WHERE lt.Grade = $grade 
+                              AND lt.Math > 0 
+                              AND ls.SubjectId = 2
                               AND ls.ContractExpiryDate > CURDATE()";    
 
 
-                    } else if ($subject == 5) {
-                        echo '<h3>Grade 10 Mathematics Learners</h3><br>';
+                        } else if ($subjectId == 3) {
+                             echo '<h3>Grade 12 Mathematics Learners</h3><br>';
 
-                        $sql = "SELECT lt.*, ls.* 
-                        FROM learners AS lt
-                        JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                        WHERE lt.Grade = 10 AND lt.Math > 0 AND ls.SubjectId = 5
-                        AND ls.ContractExpiryDate > CURDATE()";    
+                                    $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
+                                    FROM learners AS lt
+                                    JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                                    JOIN users AS u ON lt.LearnerId = u.Id
+                                    WHERE lt.Grade = $grade 
+                                      AND lt.Math > 0 
+                                      AND ls.SubjectId = 3
+                                      AND ls.ContractExpiryDate > CURDATE()";    
 
-      
-                    } else if ($subject == 6) {
-                        echo '<h3>Grade 10 Physical Sciences Learners</h3><br>';
-    
-                        $sql = "SELECT lt.*, ls.* 
-                        FROM learners AS lt
-                        JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                        WHERE lt.Grade = 10 AND lt.Physics > 0 AND ls.SubjectId = 6
-                        AND ls.ContractExpiryDate > CURDATE()";    
+                        } else if ($subjectId == 4) {
 
-                    } else {
-                        // Default case if none of the statuses match
-                        echo '<h1>Learners - Unknown Status</h1>';
-                    }
+                           echo '<h3>Grade 10 Physical Sciences Learners</h3><br>';
+        
+                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users AS u ON lt.LearnerId = u.Id
+                            WHERE lt.Grade = $grade 
+                              AND lt.Physics > 0 
+                              AND ls.SubjectId = 4
+                              AND ls.ContractExpiryDate > CURDATE()";  
+
+
+                        } else if ($subjectId == 5) {
+                           echo '<h3>Grade 11 Physical Sciences Learners</h3><br>';
+
+                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users AS u ON lt.LearnerId = u.Id
+                            WHERE lt.Grade = $grade 
+                              AND lt.Physics > 0 
+                              AND ls.SubjectId = 5
+                              AND ls.ContractExpiryDate > CURDATE()"; 
+
+         
+                        } else if ($subjectId == 6) {
+                             
+                            echo '<h3>Grade 12 Physical Sciences Learners</h3><br>';
+        
+                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users AS u ON lt.LearnerId = u.Id
+                            WHERE lt.Grade = $grade 
+                              AND lt.Physics > 0 
+                              AND ls.SubjectId = 6
+                              AND ls.ContractExpiryDate > CURDATE()";    
+
+                        } else {
+                            // Default case if none of the statuses match
+                            echo '<h1>Learners - Unknown Status</h1>';
+                        }
 
 
 
@@ -340,11 +368,24 @@ if (!isset($_SESSION['email'])) {
                                   <?php echo $final['Surname'] ?>
                                 </td>
                                 <td>
-                                  <select name="attendances[]">
-                                    <option value="present" selected>Present</option>
-                                    <option value="absent">Absent</option>
-                                    <option value="late">Late</option>
-                                  </select>
+                         
+                                  <select name="attendancereasons[]">
+                                  <option value="None" selected>None Provided</option>
+                                  <option value="No Access to Device">No Access to Device</option>
+                                  <option value="Data Issues">Data Issues</option>
+                                  <option value="Network Issues">Network Issues</option>
+                                  <option value="Device Malfunction">Device Malfunction</option>
+                                  <option value="Family Emergency">Family Emergency</option>
+                                  <option value="Illness">Illness</option>
+                                  <option value="Forgot the Session">Forgot the Session</option>
+                                  <option value="Personal Reasons">Personal Reasons</option>
+                                  <option value="Had Other Commitments">Had Other Commitments</option>
+                                  <option value="School Workload/Exam Preparation">School Workload/Exam Preparation</option>
+                                  <option value="Miscommunication About Time">Miscommunication About Time</option>
+                                  <option value="Shared Device Unavailable">Shared Device Unavailable</option>
+                                  <option value="Other">Other</option>
+
+                                </select>
                               </td>
                               <td>
                                   <select name="attendancereasons[]">
@@ -364,13 +405,23 @@ if (!isset($_SESSION['email'])) {
                                   </select>
                                 </td>
                                 <td>
+                  
                                   <select name="submissionreasons[]">
                                   <option value="None" selected>None Provided</option>
-                                  <option value="Other">Other</option>
                                   <option value="Data Issues">Data Issues</option>
+                                  <option value="No Access to Device">No Access to Device</option>
+                                  <option value="Forgot to Submit">Forgot to Submit</option>
+                                  <option value="Incomplete Work">Incomplete Work</option>
+                                  <option value="Did Not Understand the Work">Did Not Understand the Work</option>
                                   <option value="Did Not Write">Did Not Write</option>
-
-                                  </select>
+                                  <option value="Technical Issues">Technical Issues</option>
+                                  <option value="Family Emergency">Family Emergency</option>
+                                  <option value="Illness">Illness</option>
+                                  <option value="Too Much School Work">Too Much School Work</option>
+                                  <option value="Missed the Deadline">Missed the Deadline</option>
+                                  <option value="Miscommunication About Instructions">Miscommunication About Instructions</option>
+                                  <option value="Other">Other</option>
+                                </select>
                                 </td>
   
 

@@ -30,26 +30,6 @@ $graid = $_POST['graid'];
 $subject = $_POST['subid'];
 $chaptername = $_POST['chaid'];
 
-//$subid = $_POST['subid'];
-
-/*     skipped coz of line 57
-if ($subid == 1) {
-    $subject = "Mathematics12";
-} elseif ($subid == 2) {
-    $subject = "Physics12";
-} elseif ($subid == 3) {
-    $subject = "Mathematics11";
-} elseif ($subid == 4) {
-    $subject = "Physics11";
-} elseif ($subid == 5) {
-    $subject = "Mathematics10";
-} elseif ($subid == 6) {
-    $subject = "Physics10";
-}else {
-    $subject = "Unknown Subject";  /// Optional: for other subid values
-}
-*/
-
 $activityname = $_POST['activityname'];    
 $activitytotal = $_POST['activitytotal']; 
 
