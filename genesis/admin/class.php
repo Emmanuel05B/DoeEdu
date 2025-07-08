@@ -368,31 +368,29 @@ if (!isset($_SESSION['email'])) {
                                   <?php echo $final['Surname'] ?>
                                 </td>
                                 <td>
-                         
-                                  <select name="attendancereasons[]">
-                                  <option value="None" selected>None Provided</option>
-                                  <option value="No Access to Device">No Access to Device</option>
-                                  <option value="Data Issues">Data Issues</option>
-                                  <option value="Network Issues">Network Issues</option>
-                                  <option value="Device Malfunction">Device Malfunction</option>
-                                  <option value="Family Emergency">Family Emergency</option>
-                                  <option value="Illness">Illness</option>
-                                  <option value="Forgot the Session">Forgot the Session</option>
-                                  <option value="Personal Reasons">Personal Reasons</option>
-                                  <option value="Had Other Commitments">Had Other Commitments</option>
-                                  <option value="School Workload/Exam Preparation">School Workload/Exam Preparation</option>
-                                  <option value="Miscommunication About Time">Miscommunication About Time</option>
-                                  <option value="Shared Device Unavailable">Shared Device Unavailable</option>
-                                  <option value="Other">Other</option>
-
-                                </select>
+                                  <select name="attendances[]" class="form-control input-sm">
+                                  <option value="present" selected>Present</option>
+                                  <option value="absent">Absent</option>
+                                  <option value="late">Late</option>
+                                  </select>
+                                  
                               </td>
                               <td>
                                   <select name="attendancereasons[]">
                                     <option value="None" selected>None Provided</option>
-                                    <option value="Other">Other</option>
+                                    <option value="No Access to Device">No Access to Device</option>
                                     <option value="Data Issues">Data Issues</option>
-
+                                    <option value="Network Issues">Network Issues</option>
+                                    <option value="Device Malfunction">Device Malfunction</option>
+                                    <option value="Family Emergency">Family Emergency</option>
+                                    <option value="Illness">Illness</option>
+                                    <option value="Forgot the Session">Forgot the Session</option>
+                                    <option value="Personal Reasons">Personal Reasons</option>
+                                    <option value="Had Other Commitments">Had Other Commitments</option>
+                                    <option value="School Workload/Exam Preparation">School Workload/Exam Preparation</option>
+                                    <option value="Miscommunication About Time">Miscommunication About Time</option>
+                                    <option value="Shared Device Unavailable">Shared Device Unavailable</option>
+                                    <option value="Other">Other </option> 
                                   </select>
                               </td>
                                 <td> 

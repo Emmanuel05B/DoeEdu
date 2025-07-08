@@ -56,7 +56,7 @@ if (!isset($_SESSION['email'])) {
               <hr>
               <a href="feedback.php?tutor=lerato" class="btn btn-sm btn-info">Give Feedback</a>
               <a href="rate.php?tutor=lerato" class="btn btn-sm btn-warning">Rate Tutor</a>
-              <a href="booking.php?tutor=lerato" class="btn btn-sm btn-primary">Book Session</a>
+              <a href="booking.php?tutor=lerato&subject=Physical Sciences" class="btn btn-sm btn-primary">Book Session</a>
             </div>
           </div>
         </div>

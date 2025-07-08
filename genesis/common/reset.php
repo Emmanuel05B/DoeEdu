@@ -131,7 +131,7 @@ if (isset($_POST["Submit"])) {
                 text: 'Your password has been reset.',
                 confirmButtonText: 'OK'
             }).then(function() {
-                window.location = 'tlogin.php'; 
+                window.location = 'login.php'; 
             });
         </script>";
     } else {

@@ -10,6 +10,39 @@ if (!isset($_SESSION['email'])) {
 
 include('../partials/connect.php');
 include("tutorpartials/head.php");
+
+$tutorId = $_SESSION['user_id'];
+
+// Fetch pending sessions    //should be grade instead of Contact
+$pendingSQL = "
+    SELECT ts.*, u.Name, u.Contact 
+    FROM tutorsessions ts
+    JOIN users u ON ts.LearnerId = u.Id
+    WHERE ts.TutorId = ? AND ts.Status = 'Pending'
+    ORDER BY ts.SlotDateTime ASC
+";
+
+$pendingQuery = $connect->prepare($pendingSQL);
+
+if (!$pendingQuery) {
+    die("Prepare failed for pendingQuery: " . $connect->error);
+}
+
+$pendingQuery->bind_param("i", $tutorId);
+$pendingQuery->execute();
+$pendingResult = $pendingQuery->get_result();
+
+// Fetch accepted sessions
+$acceptedQuery = $connect->prepare("
+    SELECT ts.*, u.Name, u.Contact
+    FROM tutorsessions ts
+    JOIN users u ON ts.LearnerId = u.Id
+    WHERE ts.TutorId = ? AND ts.Status = 'Accepted' AND ts.SlotDateTime >= NOW()
+    ORDER BY ts.SlotDateTime ASC
+");
+$acceptedQuery->bind_param("i", $tutorId);
+$acceptedQuery->execute();
+$acceptedResult = $acceptedQuery->get_result();
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -20,8 +53,7 @@ include("tutorpartials/head.php");
 
   <div class="content-wrapper" style="background-color: #f7f9fc;">
     <section class="content-header">
-      <h1 style="color:#4a6fa5;">
-        Session Requests
+      <h1 style="color:#4a6fa5;">Session Requests
         <small>Manage session invites from learners</small>
       </h1>
       <ol class="breadcrumb">
@@ -32,6 +64,7 @@ include("tutorpartials/head.php");
 
     <section class="content">
 
+      <!-- Pending Requests -->
       <div class="box box-primary">
         <div class="box-header with-border" style="background-color:#a3bffa; color:#fff;">
           <h3 class="box-title">Pending Requests</h3>
@@ -52,22 +85,28 @@ include("tutorpartials/head.php");
               </tr>
             </thead>
             <tbody>
-              <!-- Sample row -->
-              <tr>
-                <td>Jane Dlamini</td>
-                <td>Mathematics</td>
-                <td>Grade 11</td>
-                <td>2025-06-25</td>
-                <td>15:00</td>
-                <td>One-on-One</td>
-                <td>Need help with algebra</td>
-                <td><span class="label label-warning">Pending</span></td>
-                <td>
-                  <button class="btn btn-xs btn-success"><i class="fa fa-check"></i> Accept</button>
-                  <button class="btn btn-xs btn-danger"><i class="fa fa-times"></i> Decline</button>
-                </td>
-              </tr>
-              <!-- More dynamic rows go here -->
+              <?php if ($pendingResult->num_rows > 0): ?>
+                <?php while ($row = $pendingResult->fetch_assoc()): 
+                  $dt = new DateTime($row['SlotDateTime']);
+                  ?>
+                  <tr>
+                    <td><?= htmlspecialchars($row['Name']) ?></td>
+                    <td><?= htmlspecialchars($row['Subject']) ?></td>
+                    <td><?= htmlspecialchars($row['Contact']) ?></td>
+                    <td><?= $dt->format('Y-m-d') ?></td>
+                    <td><?= $dt->format('H:i') ?></td>
+                    <td><?= htmlspecialchars($row['Type'] ?? 'One-on-One') ?></td>
+                    <td><?= htmlspecialchars($row['Notes']) ?></td>
+                    <td><span class="label label-warning">Pending</span></td>
+                    <td>
+                      <button class="btn btn-xs btn-success"><i class="fa fa-check"></i> Accept</button>
+                      <button class="btn btn-xs btn-danger"><i class="fa fa-times"></i> Decline</button>
+                    </td>
+                  </tr>
+                <?php endwhile; ?>
+              <?php else: ?>
+                <tr><td colspan="9" class="text-center">No pending requests found.</td></tr>
+              <?php endif; ?>
             </tbody>
           </table>
         </div>
@@ -92,16 +131,23 @@ include("tutorpartials/head.php");
               </tr>
             </thead>
             <tbody>
-              <!-- Example row -->
-              <tr>
-                <td>John Nkosi</td>
-                <td>Science</td>
-                <td>Grade 9</td>
-                <td>2025-06-24</td>
-                <td>10:00</td>
-                <td>Group</td>
-                <td>Exam prep session</td>
-              </tr>
+              <?php if ($acceptedResult->num_rows > 0): ?>
+                <?php while ($row = $acceptedResult->fetch_assoc()): 
+                  $dt = new DateTime($row['SlotDateTime']);
+                  ?>
+                  <tr>
+                    <td><?= htmlspecialchars($row['FullName']) ?></td>
+                    <td><?= htmlspecialchars($row['Subject']) ?></td>
+                    <td><?= htmlspecialchars($row['Grade']) ?></td>
+                    <td><?= $dt->format('Y-m-d') ?></td>
+                    <td><?= $dt->format('H:i') ?></td>
+                    <td><?= htmlspecialchars($row['Type'] ?? 'One-on-One') ?></td>
+                    <td><?= htmlspecialchars($row['Notes']) ?></td>
+                  </tr>
+                <?php endwhile; ?>
+              <?php else: ?>
+                <tr><td colspan="7" class="text-center">No upcoming sessions.</td></tr>
+              <?php endif; ?>
             </tbody>
           </table>
         </div>
@@ -110,8 +156,6 @@ include("tutorpartials/head.php");
     </section>
   </div>
 
-
-  
 </div>
 
 <script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>

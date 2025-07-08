@@ -95,12 +95,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $check->close();
 
       
-
       // If learner does not exist, insert learner data
-      if (!$learner_id) {
+     
         $total_fees = $maths + $physics; // Calculate total fees
 
-        // Adjust fees based on conditions
+        // Adjust fees based on conditions..
         if($total_fees == 900.00){
           $total_fees = 850.00;
         }else if($total_fees == 1500.00){
@@ -118,21 +117,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         //first insert in to the users, then to learner, then finsnces, then 
         $verificationToken = bin2hex(random_bytes(32));
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-        //
+        
+
+        //-------------------------------- insert into users table first------------------------------------
+
         $stmt = $connect->prepare("INSERT INTO users (Surname, Name, UserPassword, Gender, Contact, Email, 
         IsVerified, VerificationToken, RegistrationDate, UserType) 
-        VALUES (?, ?, ?, ?, ?, ?, 0, ?, Now(), 0)");
+        VALUES (?, ?, ?, ?, ?, ?, 0, ?, Now(), 2)");
 
-        $stmt->bind_param(
-        "ssssiss",
-        $learner_surname,
-        $learner_name,
-        $hashedPassword,
-        $LearnerTitle,
-        $learner_contactnumber,
-        $learner_email,
-        $verificationToken
-        );
+        $stmt->bind_param("ssssiss",
+        $learner_surname,$learner_name,$hashedPassword,$LearnerTitle,$learner_contactnumber,$learner_email,$verificationToken);
 
         if ($stmt->execute()) {
           $LearnerIDFromUsers = $connect->insert_id; // Get the learner ID after insertion
@@ -152,30 +146,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit;
         }
 
-        $stmt = $connect->prepare("INSERT INTO learner (LearnerId, Grade, RegistrationDate, LearnerKnockoffTime, 
-        Math, Physics, TotalFees, TotalPaid, TotalOwe, ParentTitle, ParentName, ParentSurname, ParentEmail, 
-        ParentContactNumber) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("iisdddddssssi",$LearnerIDFromUsers, $learner_grade, $learner_knockout_time, $maths, 
-        $physics, $total_fees, $total_paid, $total_owe, $parent_title, $parent_name, $parent_surname, 
-        $parent_email, $parent_contactnumber);
+        //---------------------------------insert into learners table secondly ------------------------------------
+        $stmt = $connect->prepare("INSERT INTO learners (
+            LearnerId, Grade, RegistrationDate, LearnerKnockoffTime, 
+            Math, Physics, TotalFees, TotalPaid, TotalOwe, 
+            ParentTitle, ParentName, ParentSurname, ParentEmail, 
+            ParentContactNumber
+        ) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        /*
+        if (!$stmt) {
+            die("Prepare failed: " . $connect->error);
+        }  */
+        $stmt->bind_param("isddddsssssss", 
+            $LearnerIDFromUsers, $learner_grade, $learner_knockout_time, $maths, 
+            $physics, $total_fees, $total_paid, $total_owe, $parent_title, $parent_name, $parent_surname, 
+            $parent_email, $parent_contactnumber);
 
         if ($stmt->execute()) {
           $learner_id = $connect->insert_id; // Get the learner ID after insertion
           $stmt->close();
 
-          /////////////////////////////////////////////
-          // Insert into finances table
+          //*************************** Insert into finances table************************** */
+          
           $total_fees = $maths + $physics; // Calculate total fees
           $total_paid = 0; // Set default value for now
 
+          //third table to insert into..... wait
           $stmt = $connect->prepare("INSERT INTO finances (LearnerId, Grade, TotalFees, TotalPaid, Math, Physics) VALUES (?, ?, ?, ?, ?, ?)");
           $stmt->bind_param("iiiddd", $learner_id, $learner_grade, $total_fees, $total_paid, $maths, $physics);
           $stmt->execute();
           $stmt->close();
 
-          /////////////////////////////////////////////
+          //************************************************************************************ */
 
-          // Insert subjects (Math and Physics)
+          //-------------------------// Insert subjects (Math and Physics)--------------------------------------
+          
           function calculateContractExpiry($fee, $registration_date) {
             $number_of_terms = 0;
 
@@ -214,11 +219,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Value of $subject_id for maths depends on $learner_grade
             if($learner_grade == 12){
-              $subject_id = 1;
-            } else if ($learner_grade == 11) {
               $subject_id = 3;
+            } else if ($learner_grade == 11) {
+              $subject_id = 2;
             }else if ($learner_grade == 10) {
-              $subject_id = 5;
+              $subject_id = 1;
             } else {
               echo '<h1>Grade does not exist</h1>';
             }
@@ -227,9 +232,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             list($contract_expiry_date, $status, $number_of_terms) = calculateContractExpiry($maths, $registration_date);
 
             // Insert into LearnersSubject table for maths
-            $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
-                                      VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt2->bind_param("iiiiiss", $learner_id, $subject_id, $mathsTarget, $mathsCurrent, $number_of_terms, $contract_expiry_date, $status);
+            $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, 
+            NumberOfTerms, ContractExpiryDate, Status) VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+            $stmt2->bind_param("iiiiiss", 
+            $learner_id, $subject_id, $mathsTarget, $mathsCurrent, $number_of_terms, $contract_expiry_date, $status);
             $stmt2->execute();
             $stmt2->close();
           }
@@ -239,11 +246,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Value of $subject_id for physics depends on $learner_grade
             if($learner_grade == 12){
-              $subject_id = 2;
-            } else if ($learner_grade == 11) {
-              $subject_id = 4;
-            }else if ($learner_grade == 10) {
               $subject_id = 6;
+            } else if ($learner_grade == 11) {
+              $subject_id = 5;
+            }else if ($learner_grade == 10) {
+              $subject_id = 4;
             } else {
               echo '<h1>Grade does not exist</h1>';
             }
@@ -252,17 +259,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             list($contract_expiry_date, $status, $number_of_terms) = calculateContractExpiry($physics, $registration_date);
 
             // Insert into LearnersSubject table for physics
-            $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, NumberOfTerms, ContractExpiryDate, Status) 
-                                      VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt2->bind_param("iiiiiss", $learner_id, $subject_id, $physicsTarget, $physicsCurrent, $number_of_terms, $contract_expiry_date, $status);
+            $stmt2 = $connect->prepare("INSERT INTO learnersubject (LearnerId, SubjectId, TargetLevel, CurrentLevel, 
+            NumberOfTerms, ContractExpiryDate, Status) VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+            $stmt2->bind_param("iiiiiss", 
+            $learner_id, $subject_id, $physicsTarget, $physicsCurrent, $number_of_terms, $contract_expiry_date, $status);
             $stmt2->execute();
             $stmt2->close();
           }
+          //-----------------------------------------------------------------------------------------------------
 
           $connect->commit(); // Commit the transaction
 
             // Send confirmation emails
-          sendEmailToParent($parent_email, $parent_name, $learner_name);
+          //sendEmailToParent($parent_email, $parent_name, $learner_name);
           sendEmailToLearner($learner_email, $learner_name, $verificationToken);
 
 
@@ -280,7 +290,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </script>";
           exit();
         }
-      }
+      
 
     } catch (Exception $e) {
       // Rollback on any error
@@ -301,7 +311,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 
-// Send email to parent
+/*/ Send email to parent
 function sendEmailToParent($parent_email, $parent_name, $learner_name) {
   $mail = new PHPMailer(true);
   try {
@@ -331,6 +341,7 @@ function sendEmailToParent($parent_email, $parent_name, $learner_name) {
       // You could log errors if needed
   }
 }
+*/
 
 // Send email to learner with verification link
 function sendEmailToLearner($learner_email, $learner_name, $verificationToken) {
@@ -354,7 +365,7 @@ function sendEmailToLearner($learner_email, $learner_name, $verificationToken) {
       <p>Dear $learner_name,</p>
       <p>Welcome to the Distributors of Education! You have been successfully registered.</p>
       <p>Please verify your email address to activate your account:</p>
-      <a href='http://localhost/verification.php?token=$verificationToken' style='background-color: #008CBA; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify Email</a>
+      <a href='http://localhost/DoeEdu/genesis/common/verification.php?token=$verificationToken' style='background-color: #008CBA; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify Email</a>
       <p>If you have any questions, feel free to contact us.</p>
       <br><p>Best regards,</p><p><strong>DoE Team</strong></p>";
 

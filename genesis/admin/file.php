@@ -43,139 +43,152 @@
 <body class="hold-transition skin-blue sidebar-mini">
 
 <?php
-session_start();
+    session_start();
 
-if (!isset($_SESSION['email'])) {
-    header("Location: ../common/login.php");
-    exit();
-}
-
-include("adminpartials/head.php");
-include("adminpartials/header.php");
-include("adminpartials/mainsidebar.php");
-
-include('../partials/connect.php');
-
-$parentId = isset($_GET['pid']) ? $_GET['pid'] : null;
-$learner_id = isset($_GET['lid']) ? $_GET['lid'] : null;
-
-$SubjectId = intval($_GET['val']); // Get the subject value, ensure it's an integer
-
-// Set the subject name based on SubjectId e
-$SubjectName = '';
-switch ($SubjectId) {
-    case 1:
-        $SubjectName = 'Mathematics';
-        break;
-    case 2:
-        $SubjectName = 'Physical Sciences';
-        break;
-    case 3:
-        $SubjectName = 'Mathematics';
-        break;
-    case 4:
-        $SubjectName = 'Physical Sciences';
-        break;
-    case 5:
-        $SubjectName = 'Mathematics';
-        break;
-    case 6:
-        $SubjectName = 'Physical Sciences';
-        break;
-    default:
-        echo '<h1>Learners - Unknown Subject</h1>';
+    if (!isset($_SESSION['email'])) {
+        header("Location: ../common/login.php");
         exit();
-}
-
-// Fetch learner details
-if ($parentId) {
-    $psql = "SELECT * FROM parents WHERE ParentId = $parentId";
-    $presults = $connect->query($psql);
-    $pfinal = $presults->fetch_assoc();
-}
-
-include('../admin/newshared.php');
-
-// SQL to fetch the activities and marks for the learner
-$activity_sql = "
-    SELECT 
-        lam.ActivityId, 
-        lam.MarksObtained,
-        a.ActivityName,  
-        a.MaxMarks,
-        a.ChapterName,
-        lam.DateAssigned
-    FROM learneractivitymarks lam
-    JOIN activities a ON lam.ActivityId = a.ActivityId
-    WHERE lam.LearnerId = ? AND a.SubjectId = ?
-    ORDER BY lam.DateAssigned ASC
-";
-
-$stmt = $connect->prepare($activity_sql);
-$stmt->bind_param('ii', $learner_id, $SubjectId); // Bind the learner_id to the query
-$stmt->execute();
-$result = $stmt->get_result();
-
-// SQL to fetch the attendance and submission reasons where learner did not attend or submit
-$attendance_submission_sql = "
-    SELECT 
-        lam.ActivityId, 
-        lam.Attendance, 
-        lam.AttendanceReason, 
-        lam.Submission, 
-        lam.SubmissionReason,
-        a.ChapterName,
-        a.ActivityName
-    FROM learneractivitymarks lam
-    JOIN activities a ON lam.ActivityId = a.ActivityId
-    WHERE lam.LearnerId = ? AND (lam.Attendance = 'absent' OR lam.Submission = 'No') 
-    AND a.SubjectId = ?  
-    ORDER BY lam.DateAssigned ASC
-";
-
-$stmt2 = $connect->prepare($attendance_submission_sql);
-$stmt2->bind_param('ii', $learner_id, $SubjectId); // Bind learner_id and SubjectId to the query
-$stmt2->execute();
-$attendance_submission_result = $stmt2->get_result();
-
-// Fetch the total number of activities for calculating percentage
-$total_activities_sql = "
-    SELECT COUNT(*) as total 
-    FROM learneractivitymarks lam
-    JOIN activities a ON lam.ActivityId = a.ActivityId
-    WHERE lam.LearnerId = ? AND a.SubjectId = ? 
-";
-$total_activities_stmt = $connect->prepare($total_activities_sql);
-$total_activities_stmt->bind_param('ii', $learner_id, $SubjectId); // Bind learner_id and SubjectId to the query
-$total_activities_stmt->execute();
-$total_activities_result = $total_activities_stmt->get_result();
-$total_activities = $total_activities_result->fetch_assoc()['total'];
-
-// Calculate missed attendance and submissions
-$missed_classes = 0;
-$missed_activities = 0;
-$stmt2->data_seek(0);  // Reset result pointer
-while ($row = $attendance_submission_result->fetch_assoc()) {
-    if ($row['Attendance'] == 'absent') {
-        $missed_classes++;
     }
-    if ($row['Submission'] == 'No') {
-        $missed_activities++;
+
+    include("adminpartials/head.php");
+    include("adminpartials/header.php");
+    include("adminpartials/mainsidebar.php");
+
+    include('../partials/connect.php');
+
+    //$parentId = isset($_GET['pid']) ? $_GET['pid'] : null;
+    $learner_id = isset($_GET['lid']) ? $_GET['lid'] : null;
+
+    $SubjectId = intval($_GET['val']); // Get the subject value, ensure it's an integer
+
+    // Set the subject name based on SubjectId e
+    $SubjectName = '';
+    switch ($SubjectId) {
+        case 1:
+            $SubjectName = 'Mathematics';
+            break;
+        case 2:
+            $SubjectName = 'Mathematics';
+            break;
+        case 3:
+            $SubjectName = 'Mathematics';
+            break;
+        case 4:
+            $SubjectName = 'Physical Sciences';
+            break;
+        case 5:
+            $SubjectName = 'Physical Sciences';
+            break;
+        case 6:
+            $SubjectName = 'Physical Sciences';
+            break;
+        default:
+            echo '<h1>Learners - Unknown Subject</h1>';
+            exit();
     }
-}
 
-// Calculate attendance and submission rates
-if ($total_activities > 0) {
-    $attendance_rate = (($total_activities - $missed_classes) / $total_activities) * 100;
-    $submission_rate = (($total_activities - $missed_activities) / $total_activities) * 100;
-} else {
-    $attendance_rate = 0;
-    $submission_rate = 0;
-}
+    // Fetch learner details for parent
+    if ($learner_id) {
+        $psql = "SELECT * FROM learners WHERE LearnerId = $learner_id";
+        $presults = $connect->query($psql);
+        $pfinal = $presults->fetch_assoc();
+    }
 
-// Prepare display variables
-$numabsent = $missed_classes;
-$submission_no_count = $missed_activities;
+    //include('../admin/newshared.php');
+    if ($learner_id) {
+        $sql = "SELECT * FROM users WHERE Id = $learner_id";  //with the updated database
+        $results = $connect->query($sql);
+        $final = $results->fetch_assoc();
+    }
+
+    $userId = $_SESSION['user_id']; // for teacher
+    $tsql = "SELECT * FROM users WHERE Id = $userId";
+    $tresults = $connect->query($tsql);
+    $tfinal = $tresults->fetch_assoc();
+
+    //include('../admin/newshared.php');
+
+
+    // SQL to fetch the activities and marks for the learner
+    $activity_sql = "
+        SELECT 
+            lam.ActivityId, 
+            lam.MarksObtained,
+            a.ActivityName,  
+            a.MaxMarks,
+            a.ChapterName,
+            lam.DateAssigned
+        FROM learneractivitymarks lam
+        JOIN activities a ON lam.ActivityId = a.ActivityId
+        WHERE lam.LearnerId = ? AND a.SubjectId = ?
+        ORDER BY lam.DateAssigned ASC
+    ";
+
+    $stmt = $connect->prepare($activity_sql);
+    $stmt->bind_param('ii', $learner_id, $SubjectId); // Bind the learner_id to the query
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // SQL to fetch the attendance and submission reasons where learner did not attend or submit
+    $attendance_submission_sql = "
+        SELECT 
+            lam.ActivityId, 
+            lam.Attendance, 
+            lam.AttendanceReason, 
+            lam.Submission, 
+            lam.SubmissionReason,
+            a.ChapterName,
+            a.ActivityName
+        FROM learneractivitymarks lam
+        JOIN activities a ON lam.ActivityId = a.ActivityId
+        WHERE lam.LearnerId = ? AND (lam.Attendance = 'absent' OR lam.Submission = 'No') 
+        AND a.SubjectId = ?  
+        ORDER BY lam.DateAssigned ASC
+    ";
+
+    $stmt2 = $connect->prepare($attendance_submission_sql);
+    $stmt2->bind_param('ii', $learner_id, $SubjectId); // Bind learner_id and SubjectId to the query
+    $stmt2->execute();
+    $attendance_submission_result = $stmt2->get_result();
+
+    // Fetch the total number of activities for calculating percentage
+    $total_activities_sql = "
+        SELECT COUNT(*) as total 
+        FROM learneractivitymarks lam
+        JOIN activities a ON lam.ActivityId = a.ActivityId
+        WHERE lam.LearnerId = ? AND a.SubjectId = ? 
+    ";
+    $total_activities_stmt = $connect->prepare($total_activities_sql);
+    $total_activities_stmt->bind_param('ii', $learner_id, $SubjectId); // Bind learner_id and SubjectId to the query
+    $total_activities_stmt->execute();
+    $total_activities_result = $total_activities_stmt->get_result();
+    $total_activities = $total_activities_result->fetch_assoc()['total'];
+
+    // Calculate missed attendance and submissions
+    $missed_classes = 0;
+    $missed_activities = 0;
+    $stmt2->data_seek(0);  // Reset result pointer
+    while ($row = $attendance_submission_result->fetch_assoc()) {
+        if ($row['Attendance'] == 'absent') {
+            $missed_classes++;
+        }
+        if ($row['Submission'] == 'No') {
+            $missed_activities++;
+        }
+    }
+
+    // Calculate attendance and submission rates
+    if ($total_activities > 0) {
+        $attendance_rate = (($total_activities - $missed_classes) / $total_activities) * 100;
+        $submission_rate = (($total_activities - $missed_activities) / $total_activities) * 100;
+    } else {
+        $attendance_rate = 0;
+        $submission_rate = 0;
+    }
+
+    // Prepare display variables
+    $numabsent = $missed_classes;
+    $submission_no_count = $missed_activities;
 ?>
 
 <div class="content-wrapper">
@@ -194,19 +207,18 @@ $submission_no_count = $missed_activities;
             <span style="display: block; text-align: center;">Subject: <?php echo $SubjectName; ?></span>
 
             <!-- Adding the image -->
-            <img src="images/doe.png" alt="Your Image" class="top-right-image">
+            <img src="images/westtt.png" alt="Image" class="top-right-image">
         </h2>
     </div>
 </div>
-
 
         <div class="row invoice-info">
             <div class="col-sm-4 invoice-col">
                 <b>Learner Details:</b><br>
                 <b>Name:</b> <?php echo $final['Name']; ?><br>
                 <b>Surname:</b> <?php echo $final['Surname']; ?><br>
-                <b>Grade:</b> <?php echo $final['Grade']; ?><br>
-                <b>Contact Number:</b> <?php echo $final['ContactNumber']; ?><br>
+                <b>Grade:</b> <?php echo $pfinal['Grade']; ?><br>
+                <b>Contact Number:</b> <?php echo $final['Contact']; ?><br>
                 <b>Email:</b> <?php echo $final['Email']; ?>
             </div>
             <div class="col-sm-4 invoice-col">
@@ -423,50 +435,50 @@ $submission_no_count = $missed_activities;
             </div><br>
 
 
-<div class="col-xs-6">
-    <p class="lead">Financial Information:</p>
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Total Fees</th>
-                    <th>Total Paid</th>
-                    <th>Total Owe</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                // SQL to fetch financial information
-                $sql = "SELECT 
-                            SUM(TotalFees) AS TotalFees,
-                            SUM(TotalPaid) AS TotalPaid,
-                            SUM(CASE WHEN TotalOwe > 0 THEN TotalOwe ELSE 0 END) AS TotalOwe
-                        FROM learners
-                        WHERE LearnerId = ?";
-                
-                // Prepare and execute the query
-                $stmt = $connect->prepare($sql);
-                $stmt->bind_param('i', $learner_id); // Bind the learner_id to the query
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $financial_info = $result->fetch_assoc();
-                
-                // Extract financial values
-                $TotalFees = isset($financial_info['TotalFees']) ? $financial_info['TotalFees'] : 0;
-                $TotalPaid = isset($financial_info['TotalPaid']) ? $financial_info['TotalPaid'] : 0;
-                $TotalOwe = isset($financial_info['TotalOwe']) ? $financial_info['TotalOwe'] : 0;
+            <div class="col-xs-6">
+                <p class="lead">Financial Information:</p>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Total Fees</th>
+                                <th>Total Paid</th>
+                                <th>Total Owe</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // SQL to fetch financial information
+                            $sql = "SELECT 
+                                        SUM(TotalFees) AS TotalFees,
+                                        SUM(TotalPaid) AS TotalPaid,
+                                        SUM(CASE WHEN TotalOwe > 0 THEN TotalOwe ELSE 0 END) AS TotalOwe
+                                    FROM learners
+                                    WHERE LearnerId = ?";
+                            
+                            // Prepare and execute the query
+                            $stmt = $connect->prepare($sql);
+                            $stmt->bind_param('i', $learner_id); // Bind the learner_id to the query
+                            $stmt->execute();
+                            $result = $stmt->get_result();
+                            $financial_info = $result->fetch_assoc();
+                            
+                            // Extract financial values
+                            $TotalFees = isset($financial_info['TotalFees']) ? $financial_info['TotalFees'] : 0;
+                            $TotalPaid = isset($financial_info['TotalPaid']) ? $financial_info['TotalPaid'] : 0;
+                            $TotalOwe = isset($financial_info['TotalOwe']) ? $financial_info['TotalOwe'] : 0;
 
-                // Display financial information in the table
-                echo "<tr>";
-                echo "<td><b>R " . number_format($TotalFees, 2) . "</b></td>";
-                echo "<td>R " . number_format($TotalPaid, 2) . "</td>";
-                echo "<td>R " . number_format($TotalOwe, 2) . "</td>";
-                echo "</tr>";
-                ?>
-            </tbody>
-        </table>
-    </div>
-</div>
+                            // Display financial information in the table
+                            echo "<tr>";
+                            echo "<td><b>R " . number_format($TotalFees, 2) . "</b></td>";
+                            echo "<td>R " . number_format($TotalPaid, 2) . "</td>";
+                            echo "<td>R " . number_format($TotalOwe, 2) . "</td>";
+                            echo "</tr>";
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
 
 

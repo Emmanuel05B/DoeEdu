@@ -251,7 +251,7 @@ if (!isset($_SESSION['email'])) {
                 <div class="form-group">
                 <input type="email" class="form-control" name="emailto" placeholder="Email to:">
                 </div>
-                <div class="form-group">
+                 <div class="form-group">
                   <input type="text" class="form-control" name="subject" placeholder="Subject">
                   </div>
                 <div>

@@ -8,12 +8,12 @@ if (!isset($_SESSION['email'])) {
 }
 ?>
 <?php include("learnerpartials/head.php"); ?>
-<?php include('../partials/connect.php'); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
   <?php include("learnerpartials/header.php"); ?>
   <?php include("learnerpartials/mainsidebar.php"); ?>
+  <?php include('../partials/connect.php'); ?>
 
   <div class="content-wrapper">
     <section class="content-header">
@@ -35,7 +35,9 @@ if (!isset($_SESSION['email'])) {
                 $learnerId = $_SESSION['user_id'];
                 $subject = "Mathematics";
 
-                // Get weekly availability for tutor
+                // Generate next 14 days' available time slots
+                $availableSlots = [];
+
                 $stmt = $connect->prepare("SELECT DayOfWeek, StartTime, EndTime FROM tutoravailability WHERE TutorId = ?");
                 $stmt->bind_param("i", $tutorId);
                 $stmt->execute();
@@ -46,26 +48,20 @@ if (!isset($_SESSION['email'])) {
                   $availability[$row['DayOfWeek']][] = [$row['StartTime'], $row['EndTime']];
                 }
 
-                // Get already booked slots for tutor in next 14 days
-                $stmt2 = $connect->prepare("SELECT SlotDateTime FROM tutorsessions WHERE TutorId = ? AND SlotDateTime BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 14 DAY)");
+                // Fetch already booked slots
+                $booked = [];
+                $stmt2 = $connect->prepare("SELECT SlotDateTime FROM tutorsessions WHERE TutorId = ? AND SlotDateTime >= NOW()");
                 $stmt2->bind_param("i", $tutorId);
                 $stmt2->execute();
                 $res2 = $stmt2->get_result();
-
-                $booked = [];
                 while ($r = $res2->fetch_assoc()) {
                   $booked[] = $r['SlotDateTime'];
                 }
 
-                // Generate available slots for next 14 days
-                $availableSlots = [];
                 $now = new DateTime();
-                $endLimit = (clone $now)->modify('+14 days');
-
-                for ($i = 0; $i <= 14; $i++) {
-                  $day = (clone $now)->modify("+$i days");
-                  if ($day > $endLimit) break;
-
+                for ($i = 0; $i < 14; $i++) {
+                  $day = clone $now;
+                  $day->modify("+$i days");
                   $dayName = $day->format('l');
 
                   if (isset($availability[$dayName])) {
@@ -74,9 +70,10 @@ if (!isset($_SESSION['email'])) {
                       $end = new DateTime($day->format('Y-m-d') . ' ' . $timeRange[1]);
 
                       while ($slot < $end) {
-                        $slotString = $slot->format('Y-m-d H:i:s');
+                        $slotCopy = clone $slot;
+                        $slotString = $slotCopy->format('Y-m-d H:i:s');
                         if (!in_array($slotString, $booked)) {
-                          $availableSlots[] = $slot->format('Y-m-d H:i');
+                          $availableSlots[] = $slotCopy->format('Y-m-d H:i');
                         }
                         $slot->modify('+1 hour');
                       }
@@ -88,8 +85,8 @@ if (!isset($_SESSION['email'])) {
                 <!-- Subject -->
                 <div class="form-group">
                   <label style="color:#3a3a72;">Subject</label>
-                  <input type="text" class="form-control input-sm" value="<?= htmlspecialchars($subject) ?>" readonly>
-                  <input type="hidden" name="subject" value="<?= htmlspecialchars($subject) ?>">
+                  <input type="text" class="form-control input-sm" value="<?= $subject ?>" readonly>
+                  <input type="hidden" name="subject" value="<?= $subject ?>">
                 </div>
 
                 <!-- Available Slots Dropdown -->
@@ -98,7 +95,7 @@ if (!isset($_SESSION['email'])) {
                   <select name="slot" class="form-control input-sm" required>
                     <option value="">-- Select an Available Slot --</option>
                     <?php foreach ($availableSlots as $slot): ?>
-                      <option value="<?= htmlspecialchars($slot) ?>"><?= date('l, d M Y H:i', strtotime($slot)) ?></option>
+                      <option value="<?= $slot ?>"><?= date('l, d M Y H:i', strtotime($slot)) ?></option>
                     <?php endforeach; ?>
                   </select>
                 </div>
@@ -146,7 +143,7 @@ if (!isset($_SESSION['email'])) {
                     <tr>
                       <td><?= $dt->format('Y-m-d') ?></td>
                       <td><?= $dt->format('H:i') ?></td>
-                      <td><?= htmlspecialchars($booking['Subject']) ?></td>
+                      <td><?= $booking['Subject'] ?></td>
                       <td>
                         <?php
                         $status = $booking['Status'];
@@ -163,7 +160,6 @@ if (!isset($_SESSION['email'])) {
             </div>
           </div>
         </div>
-
       </div>
     </section>
   </div>
