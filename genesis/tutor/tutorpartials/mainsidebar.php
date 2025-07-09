@@ -41,7 +41,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
 
         <!-- Learner Management -->
         <li><a href="classes1.php"><i class="fa fa-circle-o"></i> My Class</a></li>
-        <li><a href="attendancetracking.php"><i class="fa fa-circle-o"></i> Attendance x</a></li>
+        <li><a href="addsubjectnotice.php"><i class="fa fa-circle-o"></i> Add notices</a></li>
  
         <!-- Teaching & Content -->
         <li><a href="manageactivities.php"><i class="fa fa-circle-o"></i> Manage Activities</a></li>

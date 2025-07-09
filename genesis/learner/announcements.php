@@ -6,7 +6,9 @@ if (!isset($_SESSION['email'])) {
   header("Location: ../common/login.php");
   exit();
 }
+include('../partials/connect.php');
 ?>
+
 <?php include("learnerpartials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -16,9 +18,14 @@ if (!isset($_SESSION['email'])) {
   <?php include("learnerpartials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
+
     <section class="content-header">
       <h1>Announcements & News</h1>
       <p>Stay up to date with important updates, tips, and events from your Tutors and Directors.</p>
+      
+      <a href="noticepage.php" class="btn btn-info" style="margin-top: 10px;">
+        📢 View General Announcements
+      </a>
     </section>
 
     <section class="content">
@@ -35,23 +42,50 @@ if (!isset($_SESSION['email'])) {
           <h3 class="box-title">Latest Announcements</h3>
         </div>
         <div class="box-body">
-          <div class="post">
-            <h4><strong>🔔 Mid-Year Exam Tips</strong></h4>
-            <p>Posted by Tutor Lerato · 2025-06-17</p>
-            <p>Focus on past papers and practice problems from the Trigonometry and Forces chapters. Don’t forget to take breaks and rest well!</p>
-          </div>
-          <hr>
-          <div class="post">
-            <h4><strong>🧪 Science Revision Workshop</strong></h4>
-            <p>Posted by Director Mokoena · 2025-06-15</p>
-            <p>Join us this Saturday at 10AM in the virtual classroom. We'll revise key concepts for the Physical Sciences exam and take questions.</p>
-          </div>
-          <hr>
-          <div class="post">
-            <h4><strong>🎉 School Holiday Notice</strong></h4>
-            <p>Posted by Admin · 2025-06-12</p>
-            <p>Classes will pause between June 24–28. Use this time to rest and review your progress. Weekly check-ins will resume July 1.</p>
-          </div>
+
+        <?php
+              // For demo, hardcoding learner grade
+              $learnerGrade = '10';
+
+              $sql = "SELECT sn.Title, sn.Content, sn.SubjectName, sn.CreatedAt, u.Name, u.Surname 
+                      FROM subjectnotices sn
+                      LEFT JOIN users u ON sn.CreatedBy = u.Id
+                      WHERE sn.Grade = ?
+                      ORDER BY sn.CreatedAt DESC
+                      LIMIT 10";
+
+              if ($stmt = $connect->prepare($sql)) {
+                  $stmt->bind_param("s", $learnerGrade);
+                  $stmt->execute();
+                  $result = $stmt->get_result();
+
+                  if ($result->num_rows > 0) {
+                      while ($notice = $result->fetch_assoc()) {
+                          $posterName = htmlspecialchars($notice['Name'] . ' ' . $notice['Surname']);
+                          $title = htmlspecialchars($notice['Title']);
+                          $content = nl2br(htmlspecialchars($notice['Content']));
+                          $subjectName = htmlspecialchars($notice['SubjectName']);
+                          $createdAt = date('Y-m-d', strtotime($notice['CreatedAt']));
+
+                          echo <<<HTML
+                          <div class="post">
+                            <h4><strong>🔔 $title</strong> <small style="font-weight: normal; color: #555;">[$subjectName]</small></h4>
+                            <p>Posted by $posterName · $createdAt</p>
+                            <p>$content</p>
+                          </div>
+                          <hr>
+                          HTML;
+                      }
+                  } else {
+                      echo "<p>No announcements available at the moment.</p>";
+                  }
+                  $stmt->close();
+              } else {
+                  echo "<p>Error fetching announcements.</p>";
+              }
+          ?>
+
+
         </div>
       </div>
     </section>

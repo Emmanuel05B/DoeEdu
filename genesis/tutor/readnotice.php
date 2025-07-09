@@ -6,7 +6,7 @@ session_start();
 include('../partials/connect.php');
 ?>
 
-<?php include("adminpartials/head.php"); ?>
+<?php include("tutorpartials/head.php"); ?>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
@@ -18,7 +18,7 @@ include('../partials/connect.php');
   if (isset($_GET['id']) && !empty($_GET['id'])) {
     $messageNo = $_GET['id'];
     $stmt = $connect->prepare("SELECT NoticeNo FROM notices WHERE NoticeNo = ?");
-    $stmt->bind_param("i", $messageNo);
+    $stmt->bind_param("ii", $messageNo);
     $stmt->execute();
     $stmt->bind_result($Number);
     $stmt->fetch();
@@ -33,7 +33,7 @@ include('../partials/connect.php');
 
         $_SESSION['succes'] = '<span style="color: Green; font-weight: bold;">Message Read.</span>';
 
-        header('Location: adminindex.php');
+        header('Location: noticepage.php');
         
       }else{
         echo 'error. line 28';
@@ -48,7 +48,7 @@ include('../partials/connect.php');
 </div>
 
 
-    <?php include("adminpartials/queries.php") ;?>
+    <?php include("tutorpartials/queries.php") ;?>
     <script src="dist/js/demo.js"></script>
 
 
