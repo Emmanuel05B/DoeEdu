@@ -29,9 +29,9 @@ try {
         $stmt->bind_param("ssssi", $title, $content, $subjectName, $grade, $createdBy);
         $stmt->execute();
 
-        echo "<script>alert('Notice added successfully.'); window.location.href = 'addsubjectnotice.php';</script>";
+        echo "<script>alert('Notice added successfully.'); window.location.href = 'classes1.php';</script>";
     } else {
-        echo "<script>alert('Invalid request method.'); window.location.href = 'addsubjectnotice.php';</script>";
+        echo "<script>alert('Invalid request method.'); window.location.href = 'classes1.php';</script>";
     }
 } catch (mysqli_sql_exception $e) {
     echo "<script>alert('Database Error: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
