@@ -1,3 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Registering Tutor</title>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+
 <?php
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -22,28 +32,15 @@ $surname = trim($_POST['surname'] ?? '');
 $email = trim($_POST['email'] ?? '');
 $title = $_POST['tutortitle'] ?? '';
 $subjects = $_POST['subjects'] ?? [];
-
-
-// Cast contact to int and validate
 $contact = $_POST['contactnumber'] ?? '';
 
 
-echo $name;
-echo $surname;
-echo $email;
-echo $title;
-echo $contact;
-
-
-/*
-
 if (!$name || !$surname || !$email || !$contact || !$title || empty($subjects)) {
-    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-          <script>
+    echo "<script>
           Swal.fire({
               icon: 'error',
               title: 'Missing or Invalid Information',
-              text: 'Please fill in all required fields and select at least one subject with a valid contact number.',
+              text: 'Please fill in all required fields and select at least one subject.',
               confirmButtonText: 'Go Back'
           }).then(() => {
               window.history.back();
@@ -51,32 +48,27 @@ if (!$name || !$surname || !$email || !$contact || !$title || empty($subjects)) 
           </script>";
     exit();
 }
-*/
-// Default password (hashed)
-$defaultPassword = password_hash("12345", PASSWORD_DEFAULT);
-$userType = 1; // Tutor user type as integer
 
-// Begin transaction
+// Set required variables
+$hashedPassword = password_hash("12345", PASSWORD_DEFAULT);
+$verificationToken = bin2hex(random_bytes(16)); // Random 32-char token
+
 $connect->begin_transaction();
 
 try {
     // Insert into users table
-         $stmtUser = $connect->prepare("INSERT INTO users (Surname, Name, UserPassword, Gender, Contact, Email, 
-        IsVerified, VerificationToken, RegistrationDate, UserType) 
-        VALUES (?, ?, ?, ?, ?, ?, 0, ?, Now(), 1)");
+    $stmtUser = $connect->prepare("INSERT INTO users 
+        (Surname, Name, UserPassword, Gender, Contact, Email, IsVerified, VerificationToken, RegistrationDate, UserType) 
+        VALUES (?, ?, ?, ?, ?, ?, 0, ?, NOW(), 1)");
 
-        $stmtUser->bind_param("ssssiss",
-        $learner_surname,$learner_name,$hashedPassword,$LearnerTitle,$learner_contactnumber,$learner_email,$verificationToken);
-
+    $stmtUser->bind_param("ssssiss", $surname, $name, $hashedPassword, $title, $contact, $email, $verificationToken);
     $stmtUser->execute();
     $tutorId = $stmtUser->insert_id;
     $stmtUser->close();
 
-
-    
-
-    // Insert into tutors table (you can modify these fields as needed)
-    $stmtTutor = $connect->prepare("INSERT INTO tutors (TutorId, Bio, Qualifications, ExperienceYears, ProfilePicture, Availability) VALUES (?, '', '','', 0, '')");
+    // Insert into tutors table
+    $stmtTutor = $connect->prepare("INSERT INTO tutors (TutorId, Bio, Qualifications, ExperienceYears, ProfilePicture, Availability) 
+                                    VALUES (?, '', '', '', 0, '')");
     if (!$stmtTutor) {
         throw new Exception("Prepare failed: " . $connect->error);
     }
@@ -84,13 +76,13 @@ try {
     $stmtTutor->execute();
     $stmtTutor->close();
 
-    // Insert subjects into tutorsubject table
+    // Insert subjects into tutorsubject
     $stmtSubj = $connect->prepare("INSERT INTO tutorsubject (TutorId, SubjectId, Active) VALUES (?, ?, 1)");
     if (!$stmtSubj) {
         throw new Exception("Prepare failed: " . $connect->error);
     }
     foreach ($subjects as $subjId) {
-        $subjId = (int)$subjId; // sanitize to int
+        $subjId = (int)$subjId;
         $stmtSubj->bind_param("ii", $tutorId, $subjId);
         $stmtSubj->execute();
     }
@@ -98,8 +90,7 @@ try {
 
     $connect->commit();
 
-    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-          <script>
+    echo "<script>
           Swal.fire({
               icon: 'success',
               title: 'Tutor Registered',
@@ -112,8 +103,7 @@ try {
 
 } catch (Exception $e) {
     $connect->rollback();
-    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-          <script>
+    echo "<script>
           Swal.fire({
               icon: 'error',
               title: 'Registration Failed',
@@ -125,3 +115,6 @@ try {
           </script>";
 }
 ?>
+
+</body>
+</html>

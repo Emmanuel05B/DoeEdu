@@ -47,7 +47,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
           <li><a href="finances.php"><i class="fa fa-circle-o"></i> Finances</a></li>
 
           <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> Activity Manegement</a></li>
-          <li><a href="chartjs.php"><i class="fa fa-circle-o"></i> Activity Analysis</a></li>
+          <li><a href="overview.php"><i class="fa fa-circle-o"></i> Activity Analysis</a></li>
           <li><a href="logout.php"><i class="fa fa-circle-o"></i> Log out</a></li>          
           <li><a href="manegeprofiles.php"><i class="fa fa-circle-o"></i> Registrations</a></li>
 

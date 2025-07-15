@@ -42,7 +42,8 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                 <th>Grade</th>
                 <th>Subject</th>
                 <th>Due Date</th>
-                <th>Action</th>
+                <th>Click</th>
+                <th>Click</th>
               </tr>
             </thead>
             <tbody>
@@ -68,8 +69,8 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                           <td>" . htmlspecialchars($row['Grade']) . "</td>
                           <td>" . htmlspecialchars($row['SubjectName']) . "</td>
                           <td>" . htmlspecialchars($row['DueDate']) . "</td>
-                          <td><a href='viewactivity.php?activityId=" . intval($row['Id']) . "' class='btn btn-block btn-primary'>View</a></td>
-                        </tr>";
+                          <td><a href='viewactivity.php?activityId=" . intval($row['Id']) . "' class='btn btn-block btn-primary'>View/Edit</a></td>
+                          <td><a href='activityoverview.php?activityId=" . intval($row['Id']) . "' class='btn btn-block btn-primary'>Overview</a></td></tr>";
                 }
               }
               $stmt->close();
