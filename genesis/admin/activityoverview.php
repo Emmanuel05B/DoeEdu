@@ -108,13 +108,25 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
               <p><strong>Grade:</strong> <?= htmlspecialchars($activity['Grade']) ?></p>
               <p><strong>Topic:</strong> <?= htmlspecialchars($activity['Topic']) ?></p>
               <p><strong>Instructions:</strong> <?= nl2br(htmlspecialchars($activity['Instructions'])) ?></p>
+            <br>
             </div>
             <div class="col-md-4">
               <p><strong>Due Date:</strong> <?= date("F j, Y", strtotime($activity['DueDate'])) ?></p>
               <p><strong>Created At:</strong> <?= date("F j, Y", strtotime($activity['CreatedAt'])) ?></p>
               <p><strong>Total Marks:</strong> <?= $activity['TotalMarks'] ?></p>
-              <p><strong>Status:</strong> <span class="label label-success">Active</span></p>
-             
+              <p><strong>Status:</strong>
+              <?php
+                $now = new DateTime(); // current date and time
+                $dueDate = new DateTime($activity['DueDate']); // due date from DB
+
+                if ($now <= $dueDate) {
+                  echo '<span class="label label-success">Open/Available</span>';
+                } else {
+                  echo '<span class="label label-danger">Closed/Past Due</span>';
+                }
+              ?>
+</p>
+            <br>
             </div>
              <div class="col-md-4">
               <p><strong>Assigned Learners:</strong> <?= $totalAssigned ?></p>
@@ -151,7 +163,7 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
       <!-- Learner Table -->
       <div class="box box-primary">
         <div class="box-header with-border">
-          <h3 class="box-title"><i class="fa fa-users"></i> Learner Performance</h3>
+          <h3 class="box-title"><i class="fa fa-users"></i> Learner Performance Summary</h3>
         </div>
         <div class="box-body table-responsive">
           <table class="table table-bordered table-striped table-hover">

@@ -37,6 +37,7 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
           <table class="table table-bordered table-hover" id="activitiesTable" style="width:100%;">
             <thead style="background-color: #3c8dbc; color: white;">
               <tr>
+                <th>#</th>
                 <th>Title</th>
                 <th>Topic</th>
                 <th>Grade</th>
@@ -53,7 +54,7 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                 FROM onlineactivities oa
                 INNER JOIN subjects s ON oa.SubjectName = s.SubjectId
                 WHERE oa.TutorId = ?
-                ORDER BY oa.DueDate DESC
+                ORDER BY oa.Id DESC
               ");
               $stmt->bind_param("i", $tutorId);
               $stmt->execute();
@@ -64,6 +65,7 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
               } else {
                 while ($row = $result->fetch_assoc()) {
                   echo "<tr>
+                          <td>" . htmlspecialchars($row['Id']) . "</td>
                           <td>" . htmlspecialchars($row['Title']) . "</td>
                           <td>" . htmlspecialchars($row['Topic']) . "</td>
                           <td>" . htmlspecialchars($row['Grade']) . "</td>
