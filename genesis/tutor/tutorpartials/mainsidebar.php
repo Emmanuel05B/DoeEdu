@@ -45,6 +45,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
  
         <!-- Teaching & Content -->
         <li><a href="manageactivities.php"><i class="fa fa-circle-o"></i> Manage Activities</a></li>
+        <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> My Activities</a></li>
         <li><a href="managestudymaterials.php"><i class="fa fa-circle-o"></i> Manage Study Materials</a></li>
         <li><a href="Sessions.php"><i class="fa fa-circle-o"></i> Sessions</a></li>
         <li><a href="schedule.php"><i class="fa fa-circle-o"></i> Set Availability</a></li>

@@ -153,8 +153,8 @@ $results = $stmt->get_result();
 <script>
 $(document).ready(function() {
   $('#myModal').modal({
-    backdrop: false,
-    keyboard: false,
+    backdrop: true,
+    keyboard: true,
     show: true
   });
 

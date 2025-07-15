@@ -116,16 +116,22 @@ if (!isset($_SESSION['email'])) {
                         if(isset($_GET['id'])){
                           $learnerId = $_GET['id'];
 
-                          $sql = "
+                        
+                         $sql = "
                           SELECT 
-                              learners.*,
-                              parentlearner.ParentId
+                              learners.*, 
+                              users.Name, 
+                              users.Surname, 
+                              users.Email, 
+                              users.Contact,
+                              users.Gender
                           FROM 
                               learners
                           JOIN 
-                              parentlearner ON learners.LearnerId = parentlearner.LearnerId
+                              users ON learners.LearnerId = users.Id
                           WHERE 
                               learners.LearnerId = ?";
+
                               
                       $stmt = $connect->prepare($sql);
                       $stmt->bind_param("i", $learnerId); 
@@ -134,15 +140,7 @@ if (!isset($_SESSION['email'])) {
                       $results = $stmt->get_result();
                       $final = $results->fetch_assoc();
 
-                          /*
-                          $sql = "SELECT * FROM learner WHERE LearnerId = ?";
-                          $stmt = $connect->prepare($sql);
-                          $stmt->bind_param("i", $learnerId); 
-
-                          $stmt->execute();
-                          $results = $stmt->get_result();
-                          $final = $results->fetch_assoc();
-                          */
+                         
                         }else{
                           echo 'Invalid learner ID.'; 
                          }
@@ -175,10 +173,10 @@ if (!isset($_SESSION['email'])) {
                     <a href="tracklearnerprogress.php?id=<?php echo $final['LearnerId'] ?>&val=<?php echo $_GET['val'] ?>" class="btn btn-primary btn-block">Track Progress</a>
                   </li>
                   <li class="list-group-item">
-                  <a href="mcomposeparent.php?pid=<?php echo $final['ParentId'] ?>" class="btn btn-primary btn-block">Contact Parent</a>
+                  <a href="mcomposeparent.php?pid=<?php echo $final['LearnerId'] ?>" class="btn btn-primary btn-block">Contact Parent</a>
                   </li>
                   <li class="list-group-item">
-                    <a href="file.php?pid=<?php echo $final['ParentId'] ?>&lid=<?php echo $final['LearnerId'] ?>&val=<?php echo $_GET['val'] ?>" class="btn btn-primary btn-block">View Report</a>
+                    <a href="file.php?lid=<?php echo $final['LearnerId'] ?>&val=<?php echo $_GET['val'] ?>" class="btn btn-primary btn-block">View Report</a>
 
                   </li>
 
@@ -231,7 +229,7 @@ if (!isset($_SESSION['email'])) {
                       </div>
                       <div class="row mb-3">
                         <div class="col-3"><strong><p>Contact Number: </p></strong></div>
-                        <div class="col-9"><strong><p><?php echo $final['ContactNumber'] ?></p></strong></div>
+                        <div class="col-9"><strong><p><?php echo $final['Contact'] ?></p></strong></div>
                       </div>
                   </div>
 
@@ -365,7 +363,7 @@ if (!isset($_SESSION['email'])) {
     <div class="control-sidebar-bg"></div>
   </div>
 
-  <?php include("tutorpartials/queries.php"); ?>
+  <?php include("adminpartials/queries.php"); ?>
   <script src="dist/js/demo.js"></script>
 
 </body>

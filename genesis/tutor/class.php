@@ -201,7 +201,7 @@ if (!isset($_SESSION['email'])) {
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-     <?php
+      <?php
       include('../partials/connect.php');
 
       $activityid = intval($_GET['aid']);  // Ensure it's an integer
@@ -212,8 +212,12 @@ if (!isset($_SESSION['email'])) {
 
       $activityName = $finalres['ActivityName'];
       $maxmarks = $finalres['MaxMarks'];
-      //$grade = $finalres['Grade'];    not needed
-      $subject = $finalres['SubjectId'];
+      $grade = $finalres['Grade'];   //directly from the database activities table
+      $subjectId = $finalres['SubjectId'];
+      
+
+      ///////////////////
+        //other I can get from the from the hidden input
   
      ?> 
     </section>
@@ -225,9 +229,11 @@ if (!isset($_SESSION['email'])) {
           <!-- /.box -->
 
           <div class="box">
-            <div class="box-header">
-            <h3 class="box-title">Activity Name = <?php echo $activityName ?> and 
-            Total = <?php echo $maxmarks ?> <span style="color: red;">ddd</span>          
+            <div class="box-header text-center" style="padding: 20px 10px;">
+              <h3 class="box-title" style="font-weight: bold; font-size: 22px;">
+                Activity Name = <?php echo htmlspecialchars($activityName); ?> &nbsp; | &nbsp; 
+                Total = <?php echo htmlspecialchars($maxmarks); ?>
+              </h3>
             </div>
   
             <!-- /.box-header -->
@@ -249,78 +255,104 @@ if (!isset($_SESSION['email'])) {
                   </thead>
 
                   <tbody>
-                    <?php
-                    
-                    if (!isset($_SESSION['learnerIds'])) {
-                      $_SESSION['learnerIds'] = []; // Initialize session array if it doesn't exist
-                  }
+
+                      <?php
+                      
+                      if (!isset($_SESSION['learnerIds'])) {
+                        $_SESSION['learnerIds'] = []; // Initialize session  array if it doesn't exist
+                    }
+          
+
+                     // Check the status and render different HTML for each case
+                        if ($subjectId == 1) {
+
+                           echo '<h3>Grade 10 Mathematics Learners</h3><br>';
+
+                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users AS u ON lt.LearnerId = u.Id
+                            WHERE lt.Grade = $grade 
+                              AND lt.Math > 0 
+                              AND ls.SubjectId = 1
+                              AND ls.ContractExpiryDate > CURDATE()";  
+                      
+
+                        } else if ($subjectId == 2) {
+
+                          echo '<h3>Grade 11 Mathematics Learners</h3><br>';
+        
+                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users AS u ON lt.LearnerId = u.Id
+                            WHERE lt.Grade = $grade 
+                              AND lt.Math > 0 
+                              AND ls.SubjectId = 2
+                              AND ls.ContractExpiryDate > CURDATE()";    
+
+
+                        } else if ($subjectId == 3) {
+                             echo '<h3>Grade 12 Mathematics Learners</h3><br>';
+
+                                    $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
+                                    FROM learners AS lt
+                                    JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                                    JOIN users AS u ON lt.LearnerId = u.Id
+                                    WHERE lt.Grade = $grade 
+                                      AND lt.Math > 0 
+                                      AND ls.SubjectId = 3
+                                      AND ls.ContractExpiryDate > CURDATE()";    
+
+                        } else if ($subjectId == 4) {
+
+                           echo '<h3>Grade 10 Physical Sciences Learners</h3><br>';
+        
+                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users AS u ON lt.LearnerId = u.Id
+                            WHERE lt.Grade = $grade 
+                              AND lt.Physics > 0 
+                              AND ls.SubjectId = 4
+                              AND ls.ContractExpiryDate > CURDATE()";  
+
+
+                        } else if ($subjectId == 5) {
+                           echo '<h3>Grade 11 Physical Sciences Learners</h3><br>';
+
+                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users AS u ON lt.LearnerId = u.Id
+                            WHERE lt.Grade = $grade 
+                              AND lt.Physics > 0 
+                              AND ls.SubjectId = 5
+                              AND ls.ContractExpiryDate > CURDATE()"; 
+
          
-                   // Check the status and render different HTML for each case
-                   if ($subject == 1) {
-                       echo '<h3>Grade 12 Mathematics Learners</h3><br>';
+                        } else if ($subjectId == 6) {
+                             
+                            echo '<h3>Grade 12 Physical Sciences Learners</h3><br>';
+        
+                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
+                            FROM learners AS lt
+                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users AS u ON lt.LearnerId = u.Id
+                            WHERE lt.Grade = $grade 
+                              AND lt.Physics > 0 
+                              AND ls.SubjectId = 6
+                              AND ls.ContractExpiryDate > CURDATE()";    
 
-                               $sql = "SELECT lt.*, ls.* 
-                               FROM learners AS lt
-                               JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                               WHERE lt.Grade = 12 AND lt.Math > 0 AND ls.SubjectId = 1
-                            AND ls.ContractExpiryDate > CURDATE()";    
+                        } else {
+                            // Default case if none of the statuses match
+                            echo '<h1>Learners - Unknown Status</h1>';
+                        }
 
-                   } else if ($subject == 2) {
-
-                       echo '<h3>Grade 12 Physical Sciences Learners</h3><br>';
-   
-                       $sql = "SELECT lt.*, ls.* 
-                       FROM learners AS lt
-                       JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                       WHERE lt.Grade = 12 AND lt.Physics > 0 AND ls.SubjectId = 2
-                      AND ls.ContractExpiryDate > CURDATE()";    
-
-                   } else if ($subject == 3) {
-                       echo '<h3>Grade 11 Mathematics Learners</h3><br>';
-   
-                       $sql = "SELECT lt.*, ls.* 
-                               FROM learners AS lt
-                               JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                               WHERE lt.Grade = 11 AND lt.Math > 0 AND ls.SubjectId = 3
-                               AND ls.ContractExpiryDate > CURDATE()";    
-
-                   } else if ($subject == 4) {
-                       echo '<h3>Grade 11 Physical Sciences Learners</h3><br>';
-
-                       $sql = "SELECT lt.*, ls.* 
-                       FROM learners AS lt
-                       JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                       WHERE lt.Grade = 11 AND lt.Physics > 0 AND ls.SubjectId = 4
-                            AND ls.ContractExpiryDate > CURDATE()";    
-
-
-                   } else if ($subject == 5) {
-                       echo '<h3>Grade 10 Mathematics Learners</h3><br>';
-
-                       $sql = "SELECT lt.*, ls.* 
-                       FROM learners AS lt
-                       JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                       WHERE lt.Grade = 10 AND lt.Math > 0 AND ls.SubjectId = 5
-                       AND ls.ContractExpiryDate > CURDATE()";    
-
-    
-                   } else if ($subject == 6) {
-                       echo '<h3>Grade 10 Physical Sciences Learners</h3><br>';
-   
-                       $sql = "SELECT lt.*, ls.* 
-                       FROM learners AS lt
-                       JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                       WHERE lt.Grade = 10 AND lt.Physics > 0 AND ls.SubjectId = 6
-                       AND ls.ContractExpiryDate > CURDATE()";    
-
-                   } else {
-                       // Default case if none of the statuses match
-                       echo '<h1>Learners - Unknown Status</h1>';
-                   }
-
-
-
-                       $results = $connect->query($sql);   //save the list of these learners somewhere so you can use it in the classhandler/viewer
+                        $results = $connect->query($sql);   //save the list of these learners somewhere so you can use it in the classhandler/viewer
+                          
+              
+                      //save the list of these learners somewhere so you can use it in the classhandler/viewer
                         while($final = $results->fetch_assoc()) { 
                           // Store learner ID in session
                           $_SESSION['learnerIds'][] = $final['LearnerId']; // Add the LearnerId to the session array

@@ -115,7 +115,7 @@ try {
             confirmButtonText: "OK"
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "categ.php";
+                window.location.href = "classes1.php";
             }
         });
     </script>';
@@ -132,7 +132,7 @@ try {
             text: 'Please try again later.',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location = 'categ.php';
+            window.location = 'classes1.php';
         });
     </script>";
 }

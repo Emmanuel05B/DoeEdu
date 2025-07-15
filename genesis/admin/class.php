@@ -201,7 +201,7 @@ if (!isset($_SESSION['email'])) {
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-     <?php
+      <?php
       include('../partials/connect.php');
 
       $activityid = intval($_GET['aid']);  // Ensure it's an integer
@@ -229,31 +229,34 @@ if (!isset($_SESSION['email'])) {
           <!-- /.box -->
 
           <div class="box">
-            <div class="box-header">
-            <h3 class="box-title">Activity Name = <?php echo $activityName ?> and 
-            Total = <?php echo $maxmarks ?> <span style="color: red;">ddd</span>          
+            <div class="box-header text-center" style="padding: 20px 10px;">
+              <h3 class="box-title" style="font-weight: bold; font-size: 22px;">
+                Activity Name = <?php echo htmlspecialchars($activityName); ?> &nbsp; | &nbsp; 
+                Total = <?php echo htmlspecialchars($maxmarks); ?>
+              </h3>
             </div>
   
             <!-- /.box-header -->
             <div class="box-body">
               <form id="learnerForm" action="class.php" method="post">
-                <div class="table-responsive"> <!-- the magic!!!! -->
-                  <table id="example1" class="table table-bordered table-striped">
-                    <thead>
-                      <tr>
-                        <th>StNo.</th>
-                        <th>Name</th>
-                        <th>Surname</th>
-                        <th>Attendance</th>
-                        <th>Reason</th>
-                        <th>Enter Marks</th>
-                        <th>Submitted</th>
-                        <th>Reason</th>
-        
-                      </tr>
-                    </thead>
+                <div class="table-responsive">
+                <table id="example1" class="table table-bordered table-striped table-hover" style="width:100%; table-layout: fixed;">
+                  <thead style="background-color:#d1d9ff;">
+                    <tr>
+                      <th>StNo.</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>Attendance</th>
+                      <th>Reason</th>
+                      <th>Enter Marks</th>
+                      <th>Submitted</th>
+                      <th>Reason</th>
+       
+                    </tr>
+                  </thead>
 
-                    <tbody>
+                  <tbody>
+
                       <?php
                       
                       if (!isset($_SESSION['learnerIds'])) {
@@ -347,109 +350,95 @@ if (!isset($_SESSION['email'])) {
                             echo '<h1>Learners - Unknown Status</h1>';
                         }
 
-
-
                         $results = $connect->query($sql);   //save the list of these learners somewhere so you can use it in the classhandler/viewer
-                          while($final = $results->fetch_assoc()) { 
-                            // Store learner ID in session
-                            $_SESSION['learnerIds'][] = $final['LearnerId']; // Add the LearnerId to the session array
-                            ?>     
-                              <tr>
+                          
+              
+                      //save the list of these learners somewhere so you can use it in the classhandler/viewer
+                        while($final = $results->fetch_assoc()) { 
+                          // Store learner ID in session
+                          $_SESSION['learnerIds'][] = $final['LearnerId']; // Add the LearnerId to the session array
+                          ?>     
+                            <tr>
 
-                                <td>
-                                  <?php echo $final['LearnerId'] ?>
-                                </td>
-                                <td>
-                                  <?php echo $final['Name'] ?>
-                                  <input type="hidden" id="urlParams" name="learnerFakeids[]" value="<?php echo $final['LearnerId'] ?>">
-                                  <input type="hidden" id="urlParams" name="activityIds[]" value="<?php echo $finalres['ActivityId'] ?>">
-                                </td>
-                                <td>
-                                  <?php echo $final['Surname'] ?>
-                                </td>
-                                <td>
-                                  <select name="attendances[]" class="form-control input-sm">
+                              <td>
+                                <?php echo $final['LearnerId'] ?>
+                              </td>
+                              <td>
+                                <?php echo $final['Name'] ?>
+                                <input type="hidden" id="urlParams" name="learnerFakeids[]" value="<?php echo $final['LearnerId'] ?>">
+                                <input type="hidden" id="urlParams" name="activityIds[]" value="<?php echo $finalres['ActivityId'] ?>">
+                              </td>
+                              <td>
+                                <?php echo $final['Surname'] ?>
+                              </td>
+                              <td class="align-middle">
+                                <select name="attendances[]" class="form-control input-sm">
                                   <option value="present" selected>Present</option>
                                   <option value="absent">Absent</option>
                                   <option value="late">Late</option>
-                                  </select>
-                                  
-                              </td>
-                              <td>
-                                  <select name="attendancereasons[]">
-                                    <option value="None" selected>None Provided</option>
-                                    <option value="No Access to Device">No Access to Device</option>
-                                    <option value="Data Issues">Data Issues</option>
-                                    <option value="Network Issues">Network Issues</option>
-                                    <option value="Device Malfunction">Device Malfunction</option>
-                                    <option value="Family Emergency">Family Emergency</option>
-                                    <option value="Illness">Illness</option>
-                                    <option value="Forgot the Session">Forgot the Session</option>
-                                    <option value="Personal Reasons">Personal Reasons</option>
-                                    <option value="Had Other Commitments">Had Other Commitments</option>
-                                    <option value="School Workload/Exam Preparation">School Workload/Exam Preparation</option>
-                                    <option value="Miscommunication About Time">Miscommunication About Time</option>
-                                    <option value="Shared Device Unavailable">Shared Device Unavailable</option>
-                                    <option value="Other">Other </option> 
-                                  </select>
-                              </td>
-                                <td> 
-                                  <input type="number" name="marks[]" value="" placeholder="Marks" min="0", max="<?php echo $finalres['MaxMarks'] ?>" required>
-                                </td>
-                                <td>
-                                  <select name="submitted[]">
-                                    <option value="Yes" selected>Yes</option>
-                                    <option value="No">No</option>
-                                  </select>
-                                </td>
-                                <td>
-                  
-                                  <select name="submissionreasons[]">
-                                  <option value="None" selected>None Provided</option>
-                                  <option value="Data Issues">Data Issues</option>
-                                  <option value="No Access to Device">No Access to Device</option>
-                                  <option value="Forgot to Submit">Forgot to Submit</option>
-                                  <option value="Incomplete Work">Incomplete Work</option>
-                                  <option value="Did Not Understand the Work">Did Not Understand the Work</option>
-                                  <option value="Did Not Write">Did Not Write</option>
-                                  <option value="Technical Issues">Technical Issues</option>
-                                  <option value="Family Emergency">Family Emergency</option>
-                                  <option value="Illness">Illness</option>
-                                  <option value="Too Much School Work">Too Much School Work</option>
-                                  <option value="Missed the Deadline">Missed the Deadline</option>
-                                  <option value="Miscommunication About Instructions">Miscommunication About Instructions</option>
-                                  <option value="Other">Other</option>
                                 </select>
-                                </td>
-  
+                             </td>
+                             <td class="align-middle">
+                                <select name="attendancereasons[]" class="form-control input-sm">
+                                  <option value="None" selected>None Provided</option>
+                                  <option value="Other">Other</option>
+                                  <option value="Data Issues">Data Issues</option>
 
-                            </tr>
+                                </select>
+                             </td>
+                              <td class="align-middle"> 
+                                <input type="number" name="marks[]" class="form-control input-sm" value="" placeholder="Marks" min="0", max="<?php echo $finalres['MaxMarks'] ?>" required>
+                              </td>
+                          
+                              <td class="align-middle">
+                                <select name="submitted[]" class="form-control">
+                                  <option value="Yes" selected>Yes</option>
+                                  <option value="No">No</option>
+                                </select>
+                              </td>
+                         
+                              <td class="align-middle">
+                                <select name="submissionreasons[]" class="form-control input-sm">
+                                <option value="None" selected>None Provided</option>
+                                <option value="Other">Other</option>
+                                <option value="Data Issues">Data Issues</option>
+                                <option value="Did Not Write">Did Not Write</option>
 
-                      <?php } ?>
-                    </tbody>
+                                </select>
+                              </td>
+ 
 
-                    <tfoot>
-                      <tr>
-                        <th>StNo.</th>
-                        <th>Name</th>
-                        <th>Surname</th>
-                        <th>Attendance</th>
-                        <th>Reason</th>
-                        <th>Enter Marks</th>
-                        <th>Submitted</th>
-                        <th>Reason</th>
-                      </tr>
-                    </tfoot>
-                  </table>
+                          </tr>
+
+                    <?php } ?>
+                  </tbody>
+
+                  <tfoot style="background-color:#d1d9ff;">
+                    <tr>
+                      <th>StNo.</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>Attendance</th>
+                      <th>Reason</th>
+                      <th>Enter Marks</th>
+                      <th>Submitted</th>
+                      <th>Reason</th>
+                    </tr>
+                  </tfoot>
+                </table>
                 </div>
 
                 <!-- Submit button -->
-                <div class="button-container">
-                  <button type="submit" name="submit">Submit Learner Data</button>
-
-                </div><br>
-                <a href="feedback.php" class="btn btn-block btn-primary">Provide feedback to Parents</a>
-
+                 <div class="form-group mt-3 d-flex justify-content-between">
+                    <div class="button-container">
+                       <button type="submit" name="submit" class="btn btn-primary"><i class="fa fa-save" style="background-color:#556cd6; border:none;"></i> Submit Learner Data</button>
+                  
+                        <button type="reset" class="btn btn-default">
+                          <i class="fa fa-refresh"></i> Reset Form
+                        </button>
+                    </div><br>
+                 </div>
+                <a href="feedback.php" class="btn btn-block btn-primary"><i class="fa fa-commenting"></i> Provide feedback to Parents</a>
                
               </form>
             </div>
@@ -461,6 +450,8 @@ if (!isset($_SESSION['email'])) {
       </div>
       <!-- /.row -->
     </section>
+    
+
 
   </div>
 

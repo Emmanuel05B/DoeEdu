@@ -33,7 +33,7 @@ include('../partials/connect.php');
 
         $_SESSION['succes'] = '<span style="color: Green; font-weight: bold;">Message Read.</span>';
 
-        header('Location: noticepage.php');
+        header('Location: tutorindex.php');
         
       }else{
         echo 'error. line 28';

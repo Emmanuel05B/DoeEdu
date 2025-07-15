@@ -1,76 +1,72 @@
 <!DOCTYPE html>
 <html>
-
 <?php
 session_start();
-
 if (!isset($_SESSION['email'])) {
   header("Location: ../common/login.php");
   exit();
 }
 ?>
-
 <?php include("adminpartials/head.php"); ?>
-<style>
-  .button-container {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-  }
 
-  .button-container button {
-    padding: 10px 20px;
-  }
-</style>
 
 <body class="hold-transition skin-blue sidebar-mini">
-  <div class="wrapper">
-    <?php include("adminpartials/header.php"); ?>
-    <?php include("adminpartials/mainsidebar.php"); ?>
+<div class="wrapper">
+  <?php include("adminpartials/header.php"); ?>
+  <?php include("adminpartials/mainsidebar.php"); ?>
 
-    <div class="content-wrapper">
-      <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+  <div class="content-wrapper">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
 
-      <section class="content-header">
-        <?php
-        include('../partials/connect.php');
+    <section class="content-header">
+      <?php
+      include('../partials/connect.php');
 
-        $activityid = intval($_GET['aid']); // Ensure it's an integer
+      $activityid = intval($_GET['aid']);
+      $sql = "SELECT * FROM activities WHERE ActivityId = $activityid";
+      $results = $connect->query($sql);
+      $finalres = $results->fetch_assoc();
 
-        $sql = "SELECT * FROM activities WHERE ActivityId = $activityid";    
-        $results = $connect->query($sql);
-        $finalres = $results->fetch_assoc(); 
+      $activityName = $finalres['ActivityName'];
+      $maxmarks = $finalres['MaxMarks'];
+      $subject = $finalres['SubjectId'];
 
-        $activityName = $finalres['ActivityName'];
-        $maxmarks = $finalres['MaxMarks'];
-        $subject = $finalres['SubjectId'];
+//tocome back to below code.... i wonder if you  for grades
+      
+$learnerMarksQuery = "  
+  SELECT lt.LearnerId, lt.Grade, ls.*, u.Name, u.Surname,
+         lam.MarksObtained, lam.Attendance, lam.AttendanceReason, lam.Submission, lam.SubmissionReason
+  FROM learners AS lt
+  JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
+  JOIN users AS u ON lt.LearnerId = u.Id
+  LEFT JOIN learneractivitymarks AS lam ON lt.LearnerId = lam.LearnerId AND lam.ActivityId = $activityid
+  WHERE ls.SubjectId = $subject 
+    AND ls.Status = 'Active' 
+    AND ls.ContractExpiryDate > CURDATE()
+";
 
-        // Query to select marks for learners based on the activity ID
-        $learnerMarksQuery = "
-            SELECT lt.LearnerId, lt.Name, lt.Surname, lam.MarksObtained, lam.Attendance, lam.AttendanceReason, lam.Submission, lam.SubmissionReason
-            FROM learners AS lt
-            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-            LEFT JOIN learneractivitymarks AS lam ON lt.LearnerId = lam.LearnerId AND lam.ActivityId = $activityid
-            WHERE ls.SubjectId = $subject AND ls.Status = 'Active' AND lt.Grade IN (10, 11, 12)
-        ";
 
-        $results = $connect->query($learnerMarksQuery);
-        ?>
-      </section>
+      $results = $connect->query($learnerMarksQuery);
+      ?>
+    </section>
 
-      <section class="content">
-        <div class="row">
-          <div class="col-xs-12">
-            <div class="box">
-              <div class="box-header">
-                <h3 class="box-title">Activity Name = <?php echo $activityName ?> and Total = <?php echo $maxmarks ?>.</h3>
-              </div>
+    <section class="content">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="box box-primary">
+            <div class="box-header with-border" style="background-color:#a3bffa;">
+              <h3 class="box-title">
+                📋 Activity Overview:  
+                <span style="font-weight:normal;">"<?php echo $activityName ?>" | Max Marks: <?php echo $maxmarks ?></span>
+              </h3>
+            </div>
 
-              <div class="box-body">
-                <form id="learnerForm" action="class.php" method="post">
-                  <table id="example1" class="table table-bordered table-striped">
-                    <thead>
+            <div class="box-body">
+              <form id="learnerForm" action="class.php" method="post">
+                <div class="table-responsive">
+                  <table id="example1" class="table table-bordered table-hover">
+                    <thead style="background-color:#d6e0ff;">
                       <tr>
                         <th>StNo.</th>
                         <th>Name</th>
@@ -85,8 +81,7 @@ if (!isset($_SESSION['email'])) {
                       </tr>
                     </thead>
                     <tbody>
-                      <?php
-                      while($final = $results->fetch_assoc()) { ?>
+                      <?php while ($final = $results->fetch_assoc()) { ?>
                         <tr>
                           <td><?php echo $final['LearnerId'] ?></td>
                           <td>
@@ -94,23 +89,24 @@ if (!isset($_SESSION['email'])) {
                             <input type="hidden" name="learnerFakeids[]" value="<?php echo $final['LearnerId'] ?>">
                             <input type="hidden" name="activityIds[]" value="<?php echo $activityid ?>">
                           </td>
-                          
                           <td><?php echo $final['Surname'] ?></td>
-                          <td><?php echo $final['Attendance']?></td>
+                          <td><?php echo $final['Attendance'] ?></td>
                           <td><?php echo $final['AttendanceReason'] ?></td>
-                          <td><?php echo $final['MarksObtained'] ? $final['MarksObtained'] . ' / ' . $maxmarks : 'Not Graded'; ?></td>
+                          <td>
+                            <?php echo $final['MarksObtained'] !== null ? $final['MarksObtained'] . ' / ' . $maxmarks : '<span style="color:red;">Not Graded</span>'; ?>
+                          </td>
                           <td><?php echo $final['Submission'] ?></td>
                           <td><?php echo $final['SubmissionReason'] ?></td>
                           <td>
-                            <p><a href="editmarks.php?id=<?php echo $final['LearnerId'] ?>&max=<?php echo $maxmarks ?>" class="btn btn-block btn-primary">Edit</a></p>
+                            <a href="editmarks.php?id=<?php echo $final['LearnerId'] ?>&max=<?php echo $maxmarks ?>" class="btn btn-sm btn-primary">Edit</a>
                           </td>
                           <td>
-                            <p><a href="learnerprofile.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-block btn-primary">Open</a></p>
+                            <a href="learnerprofile.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-sm btn-info">Open</a>
                           </td>
                         </tr>
                       <?php } ?>
                     </tbody>
-                    <tfoot>
+                    <tfoot style="background-color:#d6e0ff;">
                       <tr>
                         <th>StNo.</th>
                         <th>Name</th>
@@ -125,35 +121,36 @@ if (!isset($_SESSION['email'])) {
                       </tr>
                     </tfoot>
                   </table>
+                </div>
 
-                  <div class="button-container">
-                    <button type="submit" name="submit">Submit Learner Data</button>
-                  </div><br>
-                  <a href="feedback.php" class="btn btn-block btn-primary">Provide feedback to Parents</a>
-                  <a href="classlist.php" class="btn btn-block btn-primary">Create Class List</a>
-                </form>
-              </div>
+                <div class="button-container">
+                  <button type="submit" name="submit" class="btn btn-success"><i class="fa fa-check-circle"></i> Submit Learner Data</button>
+                  <a href="feedback.php" class="btn btn-info"><i class="fa fa-commenting"></i> Provide Feedback to Parents</a>
+                  <a href="classlist.php" class="btn btn-warning"><i class="fa fa-users"></i> Create Class List</a>
+                </div>
+              </form>
             </div>
           </div>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   </div>
+</div>
 
-  <script src="bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-  <script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-  <script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
-  <script src="bower_components/fastclick/lib/fastclick.js"></script>
-  <script src="dist/js/adminlte.min.js"></script>
-  <script src="dist/js/demo.js"></script>
-
-  <script>
-    $(function () {
-      $('#example1').DataTable();
-    })
-  </script>
+<!-- Scripts -->
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<script src="bower_components/fastclick/lib/fastclick.js"></script>
+<script src="dist/js/adminlte.min.js"></script>
+<script src="dist/js/demo.js"></script>
+<script>
+  $(function () {
+    $('#example1').DataTable();
+  });
+</script>
 
 </body>
 </html>

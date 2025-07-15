@@ -6,7 +6,7 @@ if (!isset($_SESSION['email'])) {
   header("Location: ../common/login.php");
   exit();
 }
-include("adminpartials/head.php");
+include("tutorpartials/head.php");
 include('../partials/connect.php');
 
 // Get activity ID from URL
@@ -85,8 +85,8 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <?php include("adminpartials/header.php"); ?>
-  <?php include("adminpartials/mainsidebar.php"); ?>
+  <?php include("tutorpartials/header.php"); ?>
+  <?php include("tutorpartials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
     <section class="content-header">
@@ -214,8 +214,7 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
                     $scoreDisplay = "-";
                   }
 
-
-                         echo "<tr>
+                  echo "<tr>
                           <td>" . htmlspecialchars($learner['Name']) . "</td>
                           <td>" . htmlspecialchars($learner['Surname']) . "</td>
                           <td class='text-center'>$status</td>

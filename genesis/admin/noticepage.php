@@ -74,6 +74,10 @@ if (!isset($_SESSION['email'])) {
     .modal-content {
       box-shadow: 0 3px 9px rgba(0,0,0,0.3);
     }
+    .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.3); /* adjust opacity (0.0 to 1.0) */
+  }
+  
   </style>
 </head>
 <body>
@@ -142,8 +146,8 @@ $results = $connect->query($sql);
 <script>
 $(document).ready(function() {
   $('#myModal').modal({
-    backdrop: false,
-    keyboard: false,
+    backdrop: true,
+    keyboard: true,
     show: true
   });
 

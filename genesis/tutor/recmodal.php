@@ -69,8 +69,7 @@ if (!isset($_SESSION['email'])) {
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span></button>
+              
                 <h4 class="modal-title">Complete</h4><br>
 
                 <p><strong> Set up the Activivty or Generate an Online Activity </strong></p>
@@ -121,16 +120,13 @@ if (!isset($_SESSION['email'])) {
                     <a href="generateactivity.php?gra=<?php echo $grade ?>&sub=<?php echo $subject ?>&cha=<?php echo $chaptername ?>" class="btn btn-primary">
                         Generate Quiz Instead
                     </a>
-                    <a href="generateactivity.php?gra=<?php echo $grade ?>&sub=<?php echo $subject ?>&cha=<?php echo $chaptername ?>" class="btn btn-primary">
-                        View/Forward Quiz Instead
-                    </a>
                 </div>
 
                 <hr>
                 
 
                 <div style="text-align: center; margin-top: 20px;">
-                    <a href="categ.php" class="btn btn-primary">
+                    <a href="classes1.php" class="btn btn-primary">
                        Back
                     </a>
                 </div>
@@ -171,7 +167,7 @@ if (!isset($_SESSION['email'])) {
       $('.modal').on('click', function (e) {
           // Check if the click target is the modal backdrop
           if ($(e.target).is('.modal')) {
-              window.location.href = 'categ.php'; 
+              window.location.href = 'classes1.php'; 
           }
       });
   });

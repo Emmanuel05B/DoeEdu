@@ -9,6 +9,51 @@ if (!isset($_SESSION['email'])) {
 ?>
 <?php include("adminpartials/head.php"); ?>
 
+<!-- Styles -->
+<style>
+  .dashline {
+    border-top: 1px dashed #ccc;
+    margin: 15px 0;
+  }
+  .modal-header {
+    background-color: rgb(159, 176, 185);
+    color: white;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+  }
+  .modal-header h3 {
+    margin: 0;
+    color: blue;
+  }
+  .notice {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-left: 5px solid #3c8dbc;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  .notice:hover {
+    background-color: #eef5fb;
+  }
+  .notice.read {
+    background-color: #d9edf7;
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+  .close-notice {
+    float: right;
+    padding: 6px 12px;
+    color: white;
+    background-color: #3c8dbc;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .close-notice:hover {
+    background-color: #367fa9;
+  }
+</style>
+
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
   <?php include("adminpartials/header.php"); ?>
@@ -16,122 +61,166 @@ if (!isset($_SESSION['email'])) {
 
   <div class="content-wrapper">
     <section class="content-header">
-      <h1>Activity Overview</h1>
-      <small class="text-muted">Summary for: <strong>Algebra Quiz - Grade 10</strong></small>
+      <h1>Dashboard <small>Control panel</small></h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Dashboard</li>
+      </ol>
     </section>
 
     <section class="content">
-      <!-- Activity Details First -->
-      <div class="box box-info">
-        <div class="box-header with-border">
-          <h3 class="box-title">Activity Details</h3>
-        </div>
-        <div class="box-body">
-          <div class="row">
-            <div class="col-md-6">
-              <p><strong>Title:</strong> Algebra Quiz</p>
-              <p><strong>Grade:</strong> Grade 10</p>
-              <p><strong>Created By:</strong> Mr. Smith (Math Tutor)</p>
-              <p><strong>Instructions:</strong> Answer all 10 questions. Each question is worth 5 marks.</p>
-            </div>
-            <div class="col-md-6">
-              <p><strong>Due Date:</strong> July 15, 2025</p>
-              <p><strong>Submission Window:</strong> July 10 – July 15</p>
-              <p><strong>Total Marks:</strong> 50</p>
-              <p><strong>Status:</strong> <span class="label label-success">Active</span></p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <?php include('../partials/connect.php');
+      $sql = "SELECT COUNT(*) as count FROM learners";
+      $result = $connect->query($sql);
+      $row = $result->fetch_assoc(); ?>
 
-      <!-- Top Row Summary Cards -->
+      <!-- Stat Boxes -->
       <div class="row">
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box bg-aqua">
-            <span class="info-box-icon"><i class="fa fa-users"></i></span>
-            <div class="info-box-content">
-              <span class="info-box-text">Assigned</span>
-              <span class="info-box-number">50 learners</span>
+          <div class="col-lg-3 col-xs-6">
+            <div class="small-box bg-aqua">
+              <div class="inner"><h3>20</h3><p>Notifications</p></div>
+              <a href="noticepage.php">
+                <div class="icon"><i class="fa fa-bell-o"></i></div>
+              </a>
             </div>
           </div>
-        </div>
 
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box bg-green">
-            <span class="info-box-icon"><i class="fa fa-check-circle"></i></span>
-            <div class="info-box-content">
-              <span class="info-box-text">Completed</span>
-              <span class="info-box-number">42 learners</span>
+          <div class="col-lg-3 col-xs-6">
+            <div class="small-box bg-aqua">
+              <div class="inner"><h3>15</h3><p>New Message/s</p></div>
+              <a href="mmailbox.php">
+                <div class="icon"><i class="fa fa-envelope-o"></i></div>
+              </a>
             </div>
           </div>
-        </div>
 
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box bg-yellow">
-            <span class="info-box-icon"><i class="fa fa-clock-o"></i></span>
-            <div class="info-box-content">
-              <span class="info-box-text">Not Submitted</span>
-              <span class="info-box-number">8 learners</span>
+          <div class="col-lg-3 col-xs-6">
+            <div class="small-box bg-aqua">
+              <div class="inner"><h3>30</h3><p>Reports</p></div>
+              <a href="gradesreports.php">
+                <div class="icon"><i class="fa fa-files-o"></i></div>
+              </a>
             </div>
           </div>
-        </div>
 
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box bg-red">
-            <span class="info-box-icon"><i class="fa fa-percent"></i></span>
-            <div class="info-box-content">
-              <span class="info-box-text">Completion Rate</span>
-              <span class="info-box-number">84%</span>
+          <div class="col-lg-3 col-xs-6">
+            <div class="small-box bg-aqua">
+              <div class="inner"><h3><?php echo $row['count']; ?></h3><p>Learners Registered</p></div>
+              <a href="classes.php">
+                <div class="icon"><i class="ion ion-person"></i></div>
+              </a>
             </div>
           </div>
-        </div>
       </div>
 
-      <!-- Scores Row -->
+      <!-- Reserved Section (for deleted content) -->
       <div class="row">
-        <div class="col-md-4">
-          <div class="box box-solid box-primary">
-            <div class="box-header with-border">
-              <h3 class="box-title">Average Score</h3>
-            </div>
-            <div class="box-body text-center">
-              <h2 style="font-size: 38px; margin-top: 10px">64%</h2>
-              <p class="text-muted">Calculated from all completed submissions</p>
-            </div>
-          </div>
-        </div>
+     
+        <section class="col-lg-7 connectedSortable">
+          <!-- TO DO List -->
+          <div class="box box-primary">
+            <div class="box-header">
+              <i class="ion ion-clipboard"></i>
+              <h3 class="box-title">To Do List</h3>
 
-        <div class="col-md-4">
-          <div class="box box-solid box-success">
-            <div class="box-header with-border">
-              <h3 class="box-title">Highest Score</h3>
+              <div class="box-tools pull-right">
+                <ul class="pagination pagination-sm inline">
+                  <li><a href="#">&laquo;</a></li>
+                  <li><a href="#">1</a></li>
+                  <li><a href="#">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li><a href="#">&raquo;</a></li>
+                </ul>
+              </div>
             </div>
-            <div class="box-body text-center">
-              <h2 style="font-size: 38px; margin-top: 10px">98%</h2>
-              <p class="text-muted">Top-performing learner</p>
-            </div>
-          </div>
-        </div>
+            <!-- /.box-header -->
 
-        <div class="col-md-4">
-          <div class="box box-solid box-danger">
-            <div class="box-header with-border">
-              <h3 class="box-title">Lowest Score</h3>
+            <?php
+            // Get the logged-in user's ID
+            $creatorId = $_SESSION['user_id']; 
+
+            // Fetch the tasks for the logged-in user from the database
+            $sql = "SELECT * FROM TodoList WHERE CreatorId = ? ORDER BY DueDate ASC";  // You can adjust the sorting as needed
+            $stmt = $connect->prepare($sql);
+            $stmt->bind_param("i", $creatorId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            ?>
+
+            <div class="box-body">
+              <!-- See dist/js/pages/dashboard.js to activate the todoList plugin -->
+              <ul class="todo-list">
+                <?php
+                // Check if there are tasks for the logged-in user
+                if ($result->num_rows > 0) {
+                  // Loop through the tasks and display them
+                  while ($task = $result->fetch_assoc()) {
+                    // Format the date and time
+                    $dueDate = date('Y-m-d', strtotime($task['DueDate']));
+                    $dueTime = date('H:i', strtotime($task['DueDate']));
+                    ?>
+                    <li>
+                      <!-- drag handle -->
+                      <span class="handle">
+                        <i class="fa fa-ellipsis-v"></i>
+                        <i class="fa fa-ellipsis-v"></i>
+                      </span>
+                      <!-- checkbox -->
+                      <input type="checkbox" value="" <?php if ($task['Status'] == 1) echo 'checked'; ?>>
+                      <!-- todo text -->
+                      <span class="text"><?php echo htmlspecialchars($task['TaskText']); ?></span>
+                      <!-- Emphasis label -->
+                      <small class="label label-info">
+                        <i class="fa fa-clock-o"></i> <?php echo $dueDate . ' ' . $dueTime; ?>
+                      </small>
+                      <!-- General tools such as edit or delete -->
+                      <div class="tools">
+                        <a href="updateTodo.php?todo_id=<?php echo $task['TodoId']; ?>" class="fa fa-edit"></a>
+                        <a href="deleteTodo.php?todo_id=<?php echo $task['TodoId']; ?>" class="fa fa-trash-o" onclick="return confirm('Are you sure you want to delete this task?');"></a>
+                      </div>
+                    </li>
+                    <?php
+                  }
+                } else {
+                  echo '<li>No tasks found.</li>';
+                }
+                ?>
+              </ul>
             </div>
-            <div class="box-body text-center">
-              <h2 style="font-size: 38px; margin-top: 10px">22%</h2>
-              <p class="text-muted">Lowest-performing learner</p>
+            <!-- /.box-body -->
+
+            <div class="box-footer clearfix no-border">
+              <a href="todo.php" class="btn btn-block btn-primary"><i class="fa fa-plus"></i> Add item</a>
             </div>
           </div>
-        </div>
+    
+        </section>
+
+        <section class="col-lg-5 connectedSortable">
+          <!-- Quick Email Widget -->
+          <div class="box box-info">
+            <div class="box-header">
+              <i class="fa fa-envelope"></i>
+              <h3 class="box-title">Quick Email</h3>
+              <div class="pull-right box-tools">
+                <button type="button" class="btn btn-info btn-sm" data-widget="remove"><i class="fa fa-times"></i></button>
+              </div>
+            </div>
+            <div class="box-body">
+              <form action="quickmail.php" method="post">
+                <div class="form-group"><input type="email" class="form-control" name="emailto" placeholder="Email to:"></div>
+                <div class="form-group"><input type="text" class="form-control" name="subject" placeholder="Subject"></div>
+                <div>
+                  <textarea class="textarea" name="message" placeholder="Message" style="width: 100%; height: 125px; border: 1px solid #ddd;"></textarea>
+                </div>
+                <input type="submit" class="btn btn-primary" value="Submit" name="btnsend">
+              </form>
+            </div>
+          </div>
+
+        </section>
       </div>
 
-      <!-- Button to view full results -->
-      <div class="text-center" style="margin-bottom: 30px;">
-        <a href="viewsubmissions.php?activity_id=123" class="btn btn-primary btn-lg">
-          <i class="fa fa-eye"></i> View Individual Submissions
-        </a>
-      </div>
     </section>
   </div>
 
@@ -139,8 +228,61 @@ if (!isset($_SESSION['email'])) {
 </div>
 
 <!-- Scripts -->
-<script src="bower_components/jquery/dist/jquery.min.js"></script>
-<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="dist/js/adminlte.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $('#myModal').modal('show');
+  });
+
+  function markAsRead(element) {
+    const notice = element.closest('.notice');
+    notice.classList.add('read');
+  }
+</script>
+
+<!-- Notification Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a class="close" data-dismiss="modal" aria-label="Close">&times;</a>
+        <h3 class="modal-title" id="modalTitle">Notification Centre</h3>
+        <?php if (isset($_SESSION['succes'])) {
+          echo '<p>' . $_SESSION['succes'] . '</p>';
+          unset($_SESSION['succes']);
+        } ?>
+      </div>
+      <div class="modal-body">
+        <?php
+        $sql = "SELECT NoticeNo, Title, Content, Date, IsOpened FROM notices ORDER BY Date DESC";
+        $results = $connect->query($sql);
+        if ($results && $results->num_rows > 0):
+          while ($notice = $results->fetch_assoc()): ?>
+            <div class="notice <?= $notice['IsOpened'] ? 'read' : ''; ?>">
+              <p>
+                <strong style="color: blue;">Date:</strong> <?= date('Y-m-d', strtotime($notice['Date'])) ?>
+                <a href="readnotice.php?id=<?= $notice['NoticeNo'] ?>" class="close-notice" onclick="markAsRead(this)">Mark Read</a>
+              </p>
+              <p><strong style="color: blue;">Subject:</strong> <strong style="color: black;"><?= htmlspecialchars($notice['Title']) ?></strong></p>
+              <p><?= nl2br(htmlspecialchars($notice['Content'])) ?></p>
+            </div>
+            <hr class="dashline" />
+          <?php endwhile;
+        else: ?>
+          <p>No notices available.</p>
+        <?php endif; ?>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<?php include("adminpartials/queries.php"); ?>
+<script src="dist/js/demo.js"></script>
 </body>
 </html>

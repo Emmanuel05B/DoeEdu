@@ -2,19 +2,56 @@
 <html>
 <?php
 session_start();
-
 if (!isset($_SESSION['email'])) {
   header("Location: ../common/login.php");
   exit();
 }
-
-include('../partials/connect.php');
-include("tutorpartials/head.php");
 ?>
+<?php include("tutorpartials/head.php"); ?>
+
+<!-- Modal Styles -->
+<style>
+  .modal-header {
+    background-color: rgb(159, 176, 185);
+    color: white;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+  }
+  .modal-header h3 {
+    margin: 0;
+    color: blue;
+  }
+  .notice {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-left: 5px solid #3c8dbc;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  .notice:hover {
+    background-color: #eef5fb;
+  }
+  .notice.read {
+    background-color: #d9edf7;
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+  .close-notice {
+    float: right;
+    padding: 6px 12px;
+    color: white;
+    background-color: #3c8dbc;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .close-notice:hover {
+    background-color: #367fa9;
+  }
+</style>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-
   <?php include("tutorpartials/header.php"); ?>
   <?php include("tutorpartials/mainsidebar.php"); ?>
 
@@ -95,14 +132,14 @@ include("tutorpartials/head.php");
       </div>
 
       <div class="row">
+        
         <div class="col-md-7">
           <div class="box box-solid box-primary">
             <div class="box-header" style="background-color:#a3bffa; color:#2e3c82;">
-              <i class="fa fa-line-chart"></i>
               <h3 class="box-title">Learner Progress Overview</h3>
             </div>
             <div class="box-body" style="background-color:#d1d9ff;">
-              <canvas id="progressChart" style="width:100%; height:280px;"></canvas>
+
             </div>
           </div>
         </div>
@@ -152,44 +189,71 @@ include("tutorpartials/head.php");
       </div>
 
     </section>
+ 
   </div>
 
+  <div class="control-sidebar-bg"></div>
 </div>
 
-<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
-<script src="../bootstrap/js/bootstrap.min.js"></script>
-<script src="../dist/js/app.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Scripts -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 <script>
-  const ctx = document.getElementById('progressChart').getContext('2d');
-  const progressChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
-      datasets: [{
-        label: 'Average Score',
-        data: [75, 80, 78, 85, 90],
-        backgroundColor: 'rgba(163, 191, 250, 0.4)',
-        borderColor: '#556cd6',
-        borderWidth: 3,
-        pointBackgroundColor: '#556cd6',
-        fill: true,
-        tension: 0.3
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          min: 0,
-          max: 100,
-          ticks: { stepSize: 10 }
-        }
-      }
-    }
+  $(document).ready(function () {
+    $('#myModal').modal('show');
   });
+
+  function markAsRead(element) {
+    const notice = element.closest('.notice');
+    notice.classList.add('read');
+  }
 </script>
 
+<!-- Notification Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a class="close" data-dismiss="modal" aria-label="Close">&times;</a>
+        <h3 class="modal-title" id="modalTitle">Notification Centre</h3>
+        <?php if (isset($_SESSION['succes'])) {
+          echo '<p>' . $_SESSION['succes'] . '</p>';
+          unset($_SESSION['succes']);
+        } ?>
+      </div>
+      <div class="modal-body">
+        <?php
+        include("../partials/connect.php");
+        //$sql = "SELECT NoticeNo, Title, Content, Date, IsOpened FROM notices WHERE CreatedFor = 2 OR  CreatedFor = 12 ORDER BY Date DESC";
+        //$results = $connect->query($sql);  same as below
+        $sql = "SELECT NoticeNo, Title, Content, Date, IsOpened FROM notices WHERE CreatedFor IN (2, 12) 
+        ORDER BY Date DESC
+        LIMIT 30";
+        $results = $connect->query($sql);
+        if ($results && $results->num_rows > 0):
+          while ($notice = $results->fetch_assoc()): ?>
+            <div class="notice <?= $notice['IsOpened'] ? 'read' : ''; ?>">
+              <p>
+                <strong style="color: blue;">Date:</strong> <?= date('Y-m-d', strtotime($notice['Date'])) ?>
+                <a href="readnotice.php?id=<?= $notice['NoticeNo'] ?>" class="close-notice" onclick="markAsRead(this)">Mark Read</a>
+              </p>
+              <p><strong style="color: blue;">Subject:</strong> <strong style="color: black;"><?= htmlspecialchars($notice['Title']) ?></strong></p>
+              <p><?= nl2br(htmlspecialchars($notice['Content'])) ?></p>
+            </div>
+            <hr class="dashline" />
+          <?php endwhile;
+        else: ?>
+          <p>No notices available.</p>
+        <?php endif; ?>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<?php include("tutorpartials/queries.php"); ?>
 </body>
 </html>

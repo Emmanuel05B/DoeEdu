@@ -1,211 +1,193 @@
 <?php
-require '../../vendor/autoload.php';
-use Dompdf\Dompdf;
-use Dompdf\Options;
+    require '../../vendor/autoload.php';
+    use Dompdf\Dompdf;
+    use Dompdf\Options;
 
-session_start();
+    $imagePath = 'images/westtt.png'; // adjust if needed
+    $imageData = base64_encode(file_get_contents($imagePath));
+    $src = 'data:image/png;base64,' . $imageData;
 
-// Check if the user is logged in
-if (!isset($_SESSION['email'])) {
-    header("Location: ../common/login.php");
-    exit();
-}
+    session_start();
 
-include('../partials/connect.php');
-
-// Retrieve POST variables for parent and learner ID
-$parentId = isset($_POST['parentId']) ? $_POST['parentId'] : null;
-$learner_id = isset($_POST['learnerId']) ? $_POST['learnerId'] : null;
-$SubjectId = isset($_POST['subjectId']) ? intval($_POST['subjectId']) : null;
-
-// Fetch subject name based on SubjectId
-$SubjectName = '';
-switch ($SubjectId) {
-    case 1:
-        $SubjectName = 'Mathematics';
-        $grade = '12';
-        $tutor = 'Ms Matlaisane';
-        $name = 'Siphumelele';
-        $sur = 'Matlaisane';
-        $email = 'siphumelelematlaisane@gmail.com';
-
-        break;
-    case 2:
-        $SubjectName = 'Physical Sciences';
-        $grade = '12';
-        $tutor = 'Mr Mamogobo';
-        $name = 'Sydney';
-        $sur = 'Mamogobo';
-        $email = 'mamogobodsydney@gmail.com';
-
-        break;
-    case 3:
-        $SubjectName = 'Mathematics';
-        $grade = '11';
-        $tutor = 'Ms Malesela';
-        $name = 'Shirley';
-        $sur = 'Rakau';
-        $email = 'shirleytidimalo03@gmail.com';
-
-        break;
-    case 4:
-        $SubjectName = 'Physical Sciences';
-        $grade = '11';
-        $tutor = 'Mr Boshielo';
-        $name = 'Emmanuel';
-        $sur = 'Boshielo';
-        $email = 'emahlwele05@gmail.com';
-        break;
-    case 5:
-        $SubjectName = 'Mathematics';
-        $grade = '10';
-        $tutor = 'Ms Malesela';
-        $name = 'Shirley';
-        $sur = 'Rakau';
-        $email = 'shirleytidimalo03@gmail.com';
-        break;
-    case 6:
-        $SubjectName = 'Physical Sciences';
-        $grade = '10';
-        $tutor = 'Mr Boshielo';
-        $name = 'Emmanuel';
-        $sur = 'Boshielo';
-        $email = 'emahlwele05@gmail.com';
-        break;
-    default:
-        echo '<h1>Learners - Unknown Status</h1>';
+    // Check if the user is logged in
+    if (!isset($_SESSION['email'])) {
+        header("Location: ../common/login.php");
         exit();
-}
-
-// Fetch parent details from the database
-$psql = "SELECT * FROM parents WHERE ParentId = $parentId";
-$presults = $connect->query($psql);
-
-// Check if the query was successful
-if (!$presults) {
-    die('Error executing parent query: ' . $connect->error);
-}
-
-$pfinal = $presults->fetch_assoc();
-
-
-// Fetch learner details
-$learner_sql = "SELECT * FROM learners WHERE LearnerId = $learner_id";
-$learner_results = $connect->query($learner_sql);
-
-// Check if the query was successful
-if (!$learner_results) {
-    die('Error executing learner query: ' . $connect->error);
-}
-
-$final = $learner_results->fetch_assoc();
-
-/*/ Fetch teacher details.............unneeded
-$userId = $_SESSION['user_id']; // for teacher
-$tsql = "SELECT * FROM users WHERE Id = $userId";
-$tresults = $connect->query($tsql);
-$tfinal = $tresults->fetch_assoc();   */
-
-
-// Fetch learner activity marks
-$activity_sql = "
-    SELECT 
-        lam.ActivityId, 
-        lam.MarksObtained,
-        a.ActivityName,  
-        a.MaxMarks,
-        a.ChapterName,
-        lam.DateAssigned
-    FROM learneractivitymarks lam
-    JOIN activities a ON lam.ActivityId = a.ActivityId
-    WHERE lam.LearnerId = ? AND a.SubjectId = ?
-    ORDER BY lam.DateAssigned ASC
-";
-
-$stmt = $connect->prepare($activity_sql);
-$stmt->bind_param('ii', $learner_id, $SubjectId); // Bind the learner_id to the query
-$stmt->execute();
-$result = $stmt->get_result();
-
-// Check if the query was successful
-if (!$result) {
-    die('Error executing activity query: ' . $connect->error);
-}
-
-// Fetch the attendance and submission data for missed classes and activities
-$attendance_submission_sql = "
-    SELECT 
-        lam.ActivityId, 
-        lam.Attendance, 
-        lam.AttendanceReason, 
-        lam.Submission, 
-        lam.SubmissionReason,
-        a.ChapterName,
-        a.ActivityName
-    FROM learneractivitymarks lam
-    JOIN activities a ON lam.ActivityId = a.ActivityId
-    WHERE lam.LearnerId = ? AND (lam.Attendance = 'absent' OR lam.Submission = 'No') 
-    AND a.SubjectId = ?  
-    ORDER BY lam.DateAssigned ASC
-";
-
-$stmt2 = $connect->prepare($attendance_submission_sql);
-$stmt2->bind_param('ii', $learner_id, $SubjectId); // Bind learner_id and SubjectId to the query
-$stmt2->execute();
-$attendance_submission_result = $stmt2->get_result();
-
-// Check if the query was successful
-if (!$attendance_submission_result) {
-    die('Error executing attendance submission query: ' . $connect->error);
-}
-
-// Fetch total activities count for calculating percentage
-$total_activities_sql = "
-    SELECT COUNT(*) as total 
-    FROM learneractivitymarks lam
-    JOIN activities a ON lam.ActivityId = a.ActivityId
-    WHERE lam.LearnerId = ? AND a.SubjectId = ? 
-";
-$total_activities_stmt = $connect->prepare($total_activities_sql);
-$total_activities_stmt->bind_param('ii', $learner_id, $SubjectId);
-$total_activities_stmt->execute();
-$total_activities_result = $total_activities_stmt->get_result();
-
-// Check if the query was successful
-if (!$total_activities_result) {
-    die('Error executing total activities query: ' . $connect->error);
-}
-
-$total_activities = $total_activities_result->fetch_assoc()['total'];
-
-// Calculate missed attendance and submissions
-$missed_classes = 0;
-$missed_activities = 0;
-$stmt2->data_seek(0); // Reset result pointer
-while ($row = $attendance_submission_result->fetch_assoc()) {
-    if ($row['Attendance'] == 'absent') {
-        $missed_classes++;
     }
-    if ($row['Submission'] == 'No') {
-        $missed_activities++;
+
+    include('../partials/connect.php');
+
+
+    $learner_id = isset($_POST['learnerId']) ? $_POST['learnerId'] : null;
+    $SubjectId = isset($_POST['subjectId']) ? intval($_POST['subjectId']) : null;
+
+
+
+        $tutorEmail = $_SESSION['email'];
+
+        // Fetch tutor/user info
+        $tutorQuery = $connect->prepare("
+        SELECT u.Name, u.Surname, u.Email, u.Gender
+        FROM users u
+        WHERE u.Email = ?
+        ");
+        $tutorQuery->bind_param("s", $tutorEmail);
+        $tutorQuery->execute();
+        $tutorData = $tutorQuery->get_result()->fetch_assoc();
+        $tutorQuery->close();
+
+        $name = $tutorData['Name'];
+        $sur = $tutorData['Surname'];
+        $email = $tutorData['Email'];
+        $title = $tutorData['Gender'];
+
+
+        // Fetch subject + grade
+        $subjectQuery = $connect->prepare("
+        SELECT SubjectName, Grade 
+        FROM subjects 
+        WHERE SubjectId = ?
+        ");
+        $subjectQuery->bind_param("i", $SubjectId);
+        $subjectQuery->execute();
+        $subjectData = $subjectQuery->get_result()->fetch_assoc();
+        $subjectQuery->close();
+
+        $SubjectName = $subjectData['SubjectName'];
+        $grade = $subjectData['Grade'];
+
+
+
+
+    // Fetch learner details for parent
+
+        $psql = "SELECT * FROM learners WHERE LearnerId = $learner_id";
+        $presults = $connect->query($psql);
+
+        // Check if the query was successful
+        if (!$presults) {
+            die('Error executing parent query: ' . $connect->error);
+        }
+
+        $pfinal = $presults->fetch_assoc();
+
+
+    // Fetch learner details from users
+    $learner_sql = "SELECT * FROM users WHERE Id = $learner_id";
+    $learner_results = $connect->query($learner_sql);
+
+    // Check if the query was successful
+    if (!$learner_results) {
+        die('Error executing learner query: ' . $connect->error);
     }
-}
+    $final = $learner_results->fetch_assoc();
 
-// Calculate attendance and submission rates
-if ($total_activities > 0) {
-    $attendance_rate = (($total_activities - $missed_classes) / $total_activities) * 100;
-    $submission_rate = (($total_activities - $missed_activities) / $total_activities) * 100;
-} else {
-    $attendance_rate = 0;
-    $submission_rate = 0;
-}
+    /*/ Fetch teacher details.............unneeded
+    $userId = $_SESSION['user_id']; // for teacher
+    $tsql = "SELECT * FROM users WHERE Id = $userId";
+    $tresults = $connect->query($tsql);
+    $tfinal = $tresults->fetch_assoc();   */
 
-// Prepare display variables
-$numabsent = $missed_classes;
-$submission_no_count = $missed_activities;
 
-// Start capturing the HTML content
-ob_start();
+    // Fetch learner activity marks
+    $activity_sql = "
+        SELECT 
+            lam.ActivityId, 
+            lam.MarksObtained,
+            a.ActivityName,  
+            a.MaxMarks,
+            a.ChapterName,
+            lam.DateAssigned
+        FROM learneractivitymarks lam
+        JOIN activities a ON lam.ActivityId = a.ActivityId
+        WHERE lam.LearnerId = ? AND a.SubjectId = ?
+        ORDER BY lam.DateAssigned ASC
+    ";
+
+    $stmt = $connect->prepare($activity_sql);
+    $stmt->bind_param('ii', $learner_id, $SubjectId); // Bind the learner_id to the query
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Check if the query was successful
+    if (!$result) {
+        die('Error executing activity query: ' . $connect->error);
+    }
+
+    // Fetch the attendance and submission data for missed classes and activities
+    $attendance_submission_sql = "
+        SELECT 
+            lam.ActivityId, 
+            lam.Attendance, 
+            lam.AttendanceReason, 
+            lam.Submission, 
+            lam.SubmissionReason,
+            a.ChapterName,
+            a.ActivityName
+        FROM learneractivitymarks lam
+        JOIN activities a ON lam.ActivityId = a.ActivityId
+        WHERE lam.LearnerId = ? AND (lam.Attendance = 'absent' OR lam.Submission = 'No') 
+        AND a.SubjectId = ?  
+        ORDER BY lam.DateAssigned ASC
+    ";
+
+    $stmt2 = $connect->prepare($attendance_submission_sql);
+    $stmt2->bind_param('ii', $learner_id, $SubjectId); // Bind learner_id and SubjectId to the query
+    $stmt2->execute();
+    $attendance_submission_result = $stmt2->get_result();
+
+    // Check if the query was successful
+    if (!$attendance_submission_result) {
+        die('Error executing attendance submission query: ' . $connect->error);
+    }
+
+    // Fetch total activities count for calculating percentage
+    $total_activities_sql = "
+        SELECT COUNT(*) as total 
+        FROM learneractivitymarks lam
+        JOIN activities a ON lam.ActivityId = a.ActivityId
+        WHERE lam.LearnerId = ? AND a.SubjectId = ? 
+    ";
+    $total_activities_stmt = $connect->prepare($total_activities_sql);
+    $total_activities_stmt->bind_param('ii', $learner_id, $SubjectId);
+    $total_activities_stmt->execute();
+    $total_activities_result = $total_activities_stmt->get_result();
+
+    // Check if the query was successful
+    if (!$total_activities_result) {
+        die('Error executing total activities query: ' . $connect->error);
+    }
+
+    $total_activities = $total_activities_result->fetch_assoc()['total'];
+
+    // Calculate missed attendance and submissions
+    $missed_classes = 0;
+    $missed_activities = 0;
+    $stmt2->data_seek(0); // Reset result pointer
+    while ($row = $attendance_submission_result->fetch_assoc()) {
+        if ($row['Attendance'] == 'absent') {
+            $missed_classes++;
+        }
+        if ($row['Submission'] == 'No') {
+            $missed_activities++;
+        }
+    }
+
+    // Calculate attendance and submission rates
+    if ($total_activities > 0) {
+        $attendance_rate = (($total_activities - $missed_classes) / $total_activities) * 100;
+        $submission_rate = (($total_activities - $missed_activities) / $total_activities) * 100;
+    } else {
+        $attendance_rate = 0;
+        $submission_rate = 0;
+    }
+
+    // Prepare display variables
+    $numabsent = $missed_classes;
+    $submission_no_count = $missed_activities;
+
+    // Start capturing the HTML content
+    ob_start();
 ?>
 
 <!DOCTYPE html>
@@ -233,13 +215,14 @@ ob_start();
         th {
             background-color: #f2f2f2;
         }
-        .top-right-image {
+        .top-left-image {
+           
             position: absolute;
             top: 0;
-            right: 0;
-            max-height: 130px; /* Adjust the size of the image */
-            margin-top: 0px; /* Adjust the space from the top */
-            margin-right: 30px; /* Adjust the space from the right */
+            left: 0;
+            max-height: 160px; /* Keep image size */
+            margin-top: -70px; /* Space from top */
+            margin-left: 50px; /* Space from left */
         }
     </style>
 </head>
@@ -247,36 +230,40 @@ ob_start();
 <body>
 
         <div>
-                    <table class="table">
+            <table class="table">
                         <tbody>
                            
                             <tr>
+                                <td>
+                                     <div>
+                                        <!-- Adding the image -->
+                                      <img src="<?= $src ?>" alt="Image" class="top-left-image" />
+                                    </div>                            
+                                </td>
+
                                 <td>
                                     <div>
                                     <p><strong>Registration No:</strong> 2022/735117/07</p>
                                     <p><strong>Telephone:</strong> 081 461 8178</p>
                                     <p><strong>Email:</strong> <a href="mailto:thedistributorsofedu@gmail.com">thedistributorsofedu@gmail.com</a></p>
-                                    </div>                           
-                                </td>
-
-                                <td>
-                                    <div>
-                                        <!-- Adding the image -->
-                                      <img src="images/doe.png" alt="Your Image" class="top-right-image">
-                                    </div>                                 
+                                    </div>                             
                                 </td>
 
                             </tr>
 
                         </tbody>
-                    </table>
+            </table>
 
         </div><hr>
 
 
         <h4 style="display: block; text-align: center;"><?php echo $final['Name']; ?>'s Report </h4>
-        <p style="display: block; text-align: center;"><b>Subject: </b><?php echo $SubjectName; ?></p>
-        <small style="display: block; text-align: center;"><b>Generated on: </b><?php echo date('Y-m-d'); ?></small><hr><br>
+<div style="text-align: center;">
+  <span><b>Subject: </b><?php echo $SubjectName; ?></span>
+  &nbsp;&nbsp;&nbsp;&nbsp; <!-- adds some space -->
+  <span><b>Generated on: </b><?php echo date('Y-m-d'); ?></span>
+</div>
+<hr><br>
 
 
 

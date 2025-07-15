@@ -1,252 +1,177 @@
-<!DOCTYPE html>
-<html>
-
 <?php
 session_start();
-
 if (!isset($_SESSION['email'])) {
   header("Location: ../common/login.php");
   exit();
 }
 ?>
 
+<!DOCTYPE html>
+<html>
 <?php include("adminpartials/head.php"); ?>
-
-    <style>
-     .content {  /* for the white thingy */
-        background-color: white;
-        margin-top: 20px;
-        margin-left: 80px;
-        margin-right: 80px;
-     }
-     .centr {
-         text-align: center;     
-     }
-
-     table {
-        width: 100%;
-        border-collapse: collapse;
-     }
-     th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: center;
-     }
-     th {
-        background-color: #f2f2f2;
-     }
-     .button-container {
-        margin-top: 20px;
-        display: flex;
-        gap: 10px;
-        }
-     .button-container button {
-        padding: 10px 20px;
-     }
-        
-     td {
-        position: relative;
-     }
-
-    </style>
-
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include("adminpartials/header.php") ?>;
-  <!-- Left side column. contains the logo and sidebar -->
- <?php include("adminpartials/mainsidebar.php") ?>;
-  <!-- Content Wrapper. Contains page content ##start -->
+  <?php include("adminpartials/header.php"); ?>
+  <?php include("adminpartials/mainsidebar.php"); ?>
+
   <div class="content-wrapper">
-  <!-- Content Header (Page header) -->
+    <section class="content">
 
+      <?php
+      include('../partials/connect.php');
 
-
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
-
-
-                    
-        <!-- ./col 555555555555555555555-->
-  <section class="content">
-  <body>
-    <h1 style="text-align: center;">Activity Name</h1><br>
-
-    <?php
-     include('../partials/connect.php');
-
-     if(isset($_GET['id'])){
-        $learnerId = $_GET['id'];
-        $max = $_GET['max'];
+      if (isset($_GET['id'])) {
+        $learnerId = intval($_GET['id']);
+        $max = intval($_GET['max']);
 
         if (isset($_POST["update"])) {
-            // get form data     Attendance	Marks	Submitted	Reason
-            $learnerFakeid = $_POST['learnerFakeid'];
-            $activityId = $_POST['activityid'];   //activity nname.. you can pass it via hidden input from class
+          $learnerFakeid = $_POST['learnerFakeid'];
+          $activityId = $_POST['activityid'];
+          $Attendance = $_POST['attendance'];
+          $Marks = $_POST['marks'];
+          $Submitted = $_POST['submitted'];
+          $AttendanceReason = $_POST['attendancereason'];
+          $SubmissionReason = $_POST['submissionreason'];
 
-            $Attendance = $_POST['Attendance'];  
-            $Marks = $_POST['Marks'];  
-            $Submitted = $_POST['Submitted'];  
-            $Reason = $_POST['Reason'];  
+          $sql = "UPDATE learneractivitymarks 
+                  SET Attendance = ?, MarksObtained = ?, Submission = ?, AttendanceReason = ?, SubmissionReason = ? 
+                  WHERE LearnerId = ? AND ActivityId = ?";
+          $stmt = $connect->prepare($sql);
 
-            // we gonna need learn  LearnerId and  ActivityId
-            // Prepare the SQL statements
-            $sql = "UPDATE learneractivitymarks SET Attendance = ?, MarksObtained = ? , Submission = ?, Reason = ? WHERE LearnerId = ? AND ReportDate = CURDATE() AND ActivityId = ?";
-            $UpdateStmt = $connect->prepare($sql);
-            $UpdateStmt->bind_param("siissi", $Attendance, $Marks, $learnerFakeid, $Submitted, $Reason, $activityId);
-            $UpdateStmt->execute();
-            $UpdateStmt->close();
+          if ($stmt) {
+            $stmt->bind_param("sisssii", $Attendance, $Marks, $Submitted, $AttendanceReason, $SubmissionReason, $learnerFakeid, $activityId);
+            $stmt->execute();
+            $stmt->close();
 
-            $_SESSION['success'] = "Data updated successfully.";
-
+            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                  <script>
+                    Swal.fire({
+                      icon: "success",
+                      title: "Updated",
+                      text: "Learner data updated successfully.",
+                      confirmButtonText: "OK"
+                    }).then(() => {
+                      window.location.href = "editmarks.php?id=' . $learnerId . '&max=' . $max . '";
+                    });
+                  </script>';
+            exit();
+          } else {
             echo '<script>
-                Swal.fire({
-                    icon: "success",
-                    title: "Successfully Updated",
-                    text: "Data has been saved.",
-                    confirmButtonColor: "#3085d6",
-                    confirmButtonText: "OK"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                    window.location.href = "editmarks.php?id=' . $learnerId . '";
-                    }
-                });
-                </script>';
-                exit();
-
+                    alert("Prepare failed: ' . $connect->error . '");
+                  </script>';
+          }
         }
-        
-        $sql = "SELECT * FROM learners where LearnerId = $learnerId";
-        $result = $connect->query($sql);
-        
-        if ($result->num_rows > 0){
-            $row = $result->fetch_assoc();
 
-            $name = $row['Name'];
-            $surname = $row['Surname'];
-         
-            echo'<form id="rollCallForm" action="editmarks.php?id=' . $learnerId . '" method="post"> ';
-            echo'<fieldset> ';
-            echo'<table> ';
-            echo'<thead> ';
-            echo'<tr> ';
-            echo'<th>No</th> ';
-            echo'<th>Name</th> ';
-            echo'<th>Surname</th> ';
-            echo'<th>Attendance</th> ';
-            echo'<th>Reason </th> ';
-            echo'<th>Enter Marks </th> ';
-            echo'<th>Submitted </th> ';
-            echo'<th>Reason </th> ';
-            
-            echo'</tr> ';
-            echo'</thead> ';
-            echo'<tbody> ';
-            echo'<tr> ';
+        // Fetch learner details
+        $sql = "SELECT lt.*, u.Name, u.Surname 
+                FROM learners AS lt 
+                JOIN users AS u ON lt.LearnerId = u.Id 
+                WHERE lt.LearnerId = ?";
+        $stmt = $connect->prepare($sql);
+        $stmt->bind_param("i", $learnerId);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-            echo'<td> ';
-            echo'<label for="name_student1" style="font-weight: normal;">' . $learnerId . '</label> ';
-            echo'<input type="hidden" id="urlParams" name="learnerFakeid" value="' . $learnerId . '">';
-            echo'</td> ';
+        if ($result->num_rows > 0) {
+          $row = $result->fetch_assoc();
+          $name = $row['Name'];
+          $surname = $row['Surname'];
+          ?>
 
-            echo'<td><label for="name_student1" style="font-weight: normal;">' . $name . '</label></td> ';
+          <form method="post" action="editmarks.php?id=<?= $learnerId ?>&max=<?= $max ?>">
+            <input type="hidden" name="learnerFakeid" value="<?= $learnerId ?>">
+            <input type="hidden" name="activityid" value="<?= $learnerId ?>">
 
-            echo'<td> ';
-            echo'<label for="surname_student1" style="font-weight: normal;">' . $surname . '</label> ';
-            echo'<input type="hidden" id="urlParams" name="activity" value="LifeSkills"> ';
-            echo'</td> ';
+            <div class="box box-primary">
+               <h2 class="text-center">Edit Learner Marks</h2>
 
-            echo'<td> ';
-            echo'<select name="attendance"> ';
-            echo'<option value="present" selected>present</option>';
-            echo'<option value="absent">Absent</option>';
-            echo'<option value="late">Late</option>';
-            echo'</select> ';
-            echo'</td> ';
+              <div class="box-body table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>Attendance</th>
+                      <th>Attendance Reason</th>
+                      <th>Marks</th>
+                      <th>Submitted</th>
+                      <th>Submission Reason</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><?= $learnerId ?></td>
+                      <td><?= $name ?></td>
+                      <td><?= $surname ?></td>
+                      <td>
+                        <select name="attendance" class="form-control">
+                          <option value="Present">Present</option>
+                          <option value="Absent">Absent</option>
+                          <option value="Late">Late</option>
+                        </select>
+                      </td>
+                      <td>
+                        <select name="attendancereason" class="form-control">
+                          <option value="None">None Provided</option>
+                          <option value="Other">Other</option>
+                          <option value="Data Issues">Data Issues</option>
+                        </select>
+                      </td>
+                      <td>
+                        <input type="number" name="marks" min="0" max="<?= $max ?>" class="form-control" required>
+                      </td>
+                      <td>
+                        <select name="submitted" class="form-control">
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                        </select>
+                      </td>
+                      <td>
+                        <select name="submissionreason" class="form-control">
+                          <option value="None">None Provided</option>
+                          <option value="Other">Other</option>
+                          <option value="Data Issues">Data Issues</option>
+                          <option value="Did Not Write">Did Not Write</option>
+                        </select>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="box-footer text-center">
+                <button type="submit" name="update" class="btn btn-primary">Update</button>
+              </div>
+            </div>
+          </form>
 
-            echo'<td>';
-            echo'<select name="attendancereason">';
-            echo'<option value="None" selected>None Provided</option>';
-            echo'<option value="Other">Other</option>';
-            echo'<option value="Data Issues">Data Issues</option>';
-            echo'</select>';
-            echo'</td>';
-
-            echo'<td>';
-            echo'<input type="number" name="marks" value="" placeholder="Marks" min="0", max=' . $max . ' required>';
-            echo'</td>';
-
-            echo'<td>';
-            echo'<select name="submitted"> ';
-            echo'<option value="Yes" selected>Yes</option>';
-            echo'<option value="No">No</option>';
-            echo'</select> ';
-            echo'</td>';
-
-            echo'<td>';
-            echo'<select name="submissionreason">';
-            echo'<option value="None" selected>None Provided</option>';
-            echo'<option value="Other">Other</option>';
-            echo'<option value="Data Issues">Data Issues</option>';
-            echo'<option value="Did Not Write">Did Not Write</option>';
-            echo'</select>';
-            echo'</td>';
-            
-            echo'</tr> ';
-            echo'</tbody> ';
-            echo'</table> ';
-            echo'<div class="button-container"> ';
-            echo'<button type="Submit" name="update">Update Data</button> ';
-            echo'</div> ';
-            echo'</fieldset> ';
-            echo'</form>';
-           
-            
-        }else {
-            echo 'Learner not found';
+          <?php
+        } else {
+          echo "<div class='alert alert-danger'>Learner not found.</div>";
         }
-       
+        $stmt->close();
         $connect->close();
-
-     }else{
-        echo 'Invalid learner ID.'; 
-     }
-     
-    ?>
-     
-
-
-  </section>
-
-
-</div> <!-- /. ##start -->
-      
+      } else {
+        echo "<div class='alert alert-warning'>Invalid learner ID.</div>";
+      }
+      ?>
+    </section>
+  </div>
 
   <div class="control-sidebar-bg"></div>
 </div>
 
-<!-- jQuery 3 -->
+<!-- Scripts -->
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
-<!-- Bootstrap 3.3.7 -->
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<!-- DataTables -->
 <script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-<!-- SlimScroll -->
 <script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
-<!-- FastClick -->
 <script src="bower_components/fastclick/lib/fastclick.js"></script>
-<!-- AdminLTE App -->
 <script src="dist/js/adminlte.min.js"></script>
-<!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
 
-<script>
-  $(function () {
-    $('#example1').DataTable()
-  })
-</script>
 </body>
 </html>
-
