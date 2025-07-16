@@ -18,10 +18,10 @@ if (!isset($_SESSION['email'])) {
 
   <div class="content-wrapper">
     <section class="content-header">
-      <h1 class="text-center">Generate Activity</h1>
+      <h1 class="text-center">Generate Quiz</h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li><a href="#">Activities</a></li>
+        <li><a href="#">Quizzes</a></li>
         <li class="active">Generate</li>
       </ol>
     </section>
@@ -47,7 +47,7 @@ if (!isset($_SESSION['email'])) {
     <section class="content">
       <div class="box box-primary">
         <div class="box-header with-border text-center">
-          <h3 class="box-title">Activity Details</h3>
+          <h3 class="box-title">Quiz Details</h3>
         </div>
 
         <form action="saveactivity.php" method="POST" enctype="multipart/form-data">
@@ -75,7 +75,7 @@ if (!isset($_SESSION['email'])) {
               <div class="row">
                 <div class="col-sm-3">
                   <div class="form-group">
-                    <label for="activity_title">Activity Title</label>
+                    <label for="activity_title">Quiz Title</label>
                     <input type="text" class="form-control input-sm" id="activity_title" name="activity_title" placeholder="Enter activity title" required>
                   </div>
                 </div>

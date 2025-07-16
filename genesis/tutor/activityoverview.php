@@ -81,6 +81,10 @@ $completionRate = $totalAssigned > 0 ? round(($completed / $totalAssigned) * 100
 $averageScore = count($totalScores) > 0 ? round(array_sum($totalScores) / count($totalScores)) : 0;
 $highestScore = count($totalScores) > 0 ? max($totalScores) : 0;
 $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
+
+$now = new DateTime();
+$dueDate = new DateTime($activity['DueDate']);
+$isClosed = $now > $dueDate;
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -96,7 +100,7 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
 
     <section class="content">
 
-      <!-- Activity Details with stats -->
+      <!-- Activity Details -->
       <div class="box box-info">
         <div class="box-header with-border">
           <h3 class="box-title"><i class="fa fa-info-circle"></i> Activity Details</h3>
@@ -108,29 +112,24 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
               <p><strong>Grade:</strong> <?= htmlspecialchars($activity['Grade']) ?></p>
               <p><strong>Topic:</strong> <?= htmlspecialchars($activity['Topic']) ?></p>
               <p><strong>Instructions:</strong> <?= nl2br(htmlspecialchars($activity['Instructions'])) ?></p>
-            <br>
+              <br>
             </div>
             <div class="col-md-4">
               <p><strong>Due Date:</strong> <?= date("F j, Y", strtotime($activity['DueDate'])) ?></p>
               <p><strong>Created At:</strong> <?= date("F j, Y", strtotime($activity['CreatedAt'])) ?></p>
               <p><strong>Total Marks:</strong> <?= $activity['TotalMarks'] ?></p>
-              
               <p><strong>Status:</strong>
                 <?php
-                  $now = new DateTime(); // current date and time
-                  $dueDate = new DateTime($activity['DueDate']); // due date from DB
-
-                  if ($now <= $dueDate) {
-                    echo '<span class="label label-success">Open/Available</span>';
-                  } else {
+                  if ($isClosed) {
                     echo '<span class="label label-danger">Closed/Past Due</span>';
+                  } else {
+                    echo '<span class="label label-success">Open/Available</span>';
                   }
                 ?>
               </p>
-
-            <br>
+              <br>
             </div>
-             <div class="col-md-4">
+            <div class="col-md-4">
               <p><strong>Assigned Learners:</strong> <?= $totalAssigned ?></p>
               <p><strong>Completed:</strong> <?= $completed ?></p>
               <p><strong>Not Submitted:</strong> <?= $notSubmitted ?></p>
@@ -140,7 +139,7 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
         </div>
       </div>
 
-      <!-- Scores Overview -->
+      <!-- Score Boxes -->
       <div class="row" style="margin-bottom: 30px;">
         <div class="col-md-4">
           <div class="box box-solid box-primary text-center">
@@ -168,6 +167,21 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
           <h3 class="box-title"><i class="fa fa-users"></i> Learner Performance Summary</h3>
         </div>
         <div class="box-body table-responsive">
+          
+          <!-- Feedback Button -->
+          <?php if ($isClosed): ?>
+            <form id="feedbackForm" action="send_feedback.php" method="post">
+              <input type="hidden" name="activityId" value="<?= htmlspecialchars($activityId) ?>">
+              <button type="button" class="btn btn-danger" id="sendFeedbackBtn" style="margin-bottom: 15px;">
+                <i class="fa fa-envelope"></i> Send Feedback to Parents (Not Submitted)
+              </button>
+            </form>
+          <?php else: ?>
+            <div class="alert alert-warning" style="margin-bottom: 15px;">
+              <i class="fa fa-info-circle"></i> Feedback is only available after the due date has passed.
+            </div>
+          <?php endif; ?>
+
           <table class="table table-bordered table-striped table-hover">
             <thead style="background-color: #3c8dbc; color: white;">
               <tr>
@@ -218,14 +232,12 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
                           <td>" . htmlspecialchars($learner['Name']) . "</td>
                           <td>" . htmlspecialchars($learner['Surname']) . "</td>
                           <td class='text-center'>$status</td>
-                          <td class='text-center' <div style='font-weight: bold; color: #333;'>$correct / $answered</div></td>
-                          <td class='text-center'>
-                            $scoreDisplay
-                            </td>
+                          <td class='text-center'><div style='font-weight: bold; color: #333;'>$correct / $answered</div></td>
+                          <td class='text-center'>$scoreDisplay</td>
                         </tr>";
                 }
               } else {
-                echo "<tr><td colspan='4' class='text-center'>No learners assigned.</td></tr>";
+                echo "<tr><td colspan='5' class='text-center'>No learners assigned.</td></tr>";
               }
               ?>
             </tbody>
@@ -243,5 +255,23 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="dist/js/adminlte.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.getElementById('sendFeedbackBtn')?.addEventListener('click', function () {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will send feedback to the parents of all learners who did not submit the activity.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, send it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById('feedbackForm').submit();
+      }
+    });
+  });
+</script>
 </body>
 </html>

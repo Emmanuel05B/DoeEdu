@@ -56,35 +56,22 @@
 
     include('../partials/connect.php');
 
-    //$parentId = isset($_GET['pid']) ? $_GET['pid'] : null;
     $learner_id = isset($_GET['lid']) ? $_GET['lid'] : null;
 
     $SubjectId = intval($_GET['val']); // Get the subject value, ensure it's an integer
 
-    // Set the subject name based on SubjectId e
+   // Fetch subject name from DB
     $SubjectName = '';
-    switch ($SubjectId) {
-        case 1:
-            $SubjectName = 'Mathematics';
-            break;
-        case 2:
-            $SubjectName = 'Mathematics';
-            break;
-        case 3:
-            $SubjectName = 'Mathematics';
-            break;
-        case 4:
-            $SubjectName = 'Physical Sciences';
-            break;
-        case 5:
-            $SubjectName = 'Physical Sciences';
-            break;
-        case 6:
-            $SubjectName = 'Physical Sciences';
-            break;
-        default:
-            echo '<h1>Learners - Unknown Subject</h1>';
-            exit();
+    $subjectStmt = $connect->prepare("SELECT SubjectName FROM subjects WHERE SubjectId = ?");
+    $subjectStmt->bind_param("i", $SubjectId);
+    $subjectStmt->execute();
+    $subjectStmt->bind_result($SubjectName);
+    $subjectStmt->fetch();
+    $subjectStmt->close();
+
+    if (empty($SubjectName)) {
+        echo '<h1>Learners - Unknown Subject</h1>';
+        exit();
     }
 
     // Fetch learner details for parent
@@ -94,9 +81,9 @@
         $pfinal = $presults->fetch_assoc();
     }
 
-    //include('../admin/newshared.php');
+    //get basic learner details from users
     if ($learner_id) {
-        $sql = "SELECT * FROM users WHERE Id = $learner_id";  //with the updated database
+        $sql = "SELECT * FROM users WHERE Id = $learner_id"; 
         $results = $connect->query($sql);
         $final = $results->fetch_assoc();
     }
@@ -106,7 +93,27 @@
     $tresults = $connect->query($tsql);
     $tfinal = $tresults->fetch_assoc();
 
-    //include('../admin/newshared.php');
+    //Sql for the online quizzes
+    $sql3 = "
+    SELECT 
+        oa.Id AS ActivityId,
+        oa.Topic,
+        oa.Title,
+        oa.TotalMarks,
+        oa.DueDate,
+        COUNT(CASE WHEN la.SelectedAnswer = oq.CorrectAnswer THEN 1 END) AS MarksObtained
+    FROM onlineactivities oa
+    LEFT JOIN onlinequestions oq ON oq.ActivityId = oa.Id
+    LEFT JOIN learneranswers la ON la.QuestionId = oq.Id AND la.UserId = ?
+    WHERE oa.SubjectName = ? AND oa.DueDate < NOW()
+    GROUP BY oa.Id
+    ORDER BY oa.DueDate DESC
+    ";
+
+    $stmt3 = $connect->prepare($sql3);
+    $stmt3->bind_param("is", $learner_id, $SubjectId);
+    $stmt3->execute();
+    $result_quizzes = $stmt3->get_result();
 
 
     // SQL to fetch the activities and marks for the learner
@@ -212,6 +219,7 @@
     </div>
 </div>
 
+        <!-- Users detatails Table -->
         <div class="row invoice-info">
             <div class="col-sm-4 invoice-col">
                 <b>Learner Details:</b><br>
@@ -235,9 +243,9 @@
                 <b>Email:</b> <?php echo $pfinal['ParentEmail']; ?>
             </div>
         </div>
-
         <hr><br>
 
+        <!-- Attendance and submission tables Table -->
         <div class="row">
             <div class="col-xs-6">
                 <p class="lead">Attendance:</p>
@@ -273,6 +281,8 @@
         </div><br>
 
         <div class="row">
+
+            <!-- Combined physical Activities Table -->
             <div class="col-xs-6">
                 <p class="lead">Activities Scores:</p>
                 <div class="table-responsive">
@@ -306,6 +316,42 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Combined Online Quizzes Table -->
+            <div class="col-xs-6">
+                <p class="lead">Quizzes Scores:</p>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Quiz Name</th>
+                                <th>Marks</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($result_quizzes->num_rows > 0) {
+                                while ($activity = $result_quizzes->fetch_assoc()) {
+                                    $obtained = intval($activity['MarksObtained']);
+                                    $max = intval($activity['TotalMarks']);
+                                    $percentage = ($max > 0) ? ($obtained / $max) * 100 : 0;
+
+                                    echo "<tr>";
+                                    echo "<td><b>" . htmlspecialchars($activity['Topic']) . " <span style='color: blue;'>" . htmlspecialchars($activity['Title']) . "</span></b></td>";
+                                    echo "<td>" . $obtained . " / " . $max . "</td>";
+                                    echo "<td>" . number_format($percentage, 2) . "%</td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='3'>No quizzes found.</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
 
             <!-- Combined Attendance and Submission Reasons Table -->
             <div class="col-xs-6">
@@ -363,7 +409,7 @@
             </div><br>
 
 
-
+            <!-- Overall Performance Status: Table -->
             <div class="col-xs-6">
                 <p class="lead">Overall Performance Status:</p>
                 <div class="table-responsive">
@@ -435,6 +481,7 @@
             </div><br>
 
 
+            <!-- Financial Information: Table -->
             <div class="col-xs-6">
                 <p class="lead">Financial Information:</p>
                 <div class="table-responsive">
@@ -485,6 +532,7 @@
         </div><br>
 
 
+        
 
         
 

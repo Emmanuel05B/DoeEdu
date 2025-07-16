@@ -77,7 +77,7 @@ include('../partials/connect.php');
             <div class="box-body text-center">
                <a href="alllearner.php?subject=<?php echo $subjectId ?>&grade=<?php echo $grade ?>" class="btn btn-info btn-sm">Open Class</a>
                 <a href="chapters.php?subject=<?php echo $subjectId ?>&grade=<?php echo $grade ?>" class="btn btn-info btn-sm">Record Marks</a>
-                <a href="actychapters.php?subject=<?php echo $subjectId ?>&grade=<?php echo $grade ?>" class="btn btn-info btn-sm">Create Activity</a>
+                <a href="actychapters.php?subject=<?php echo $subjectId ?>&grade=<?php echo $grade ?>" class="btn btn-info btn-sm">Create Quiz</a>
                 <a href="managestudymaterials.php?subject=<?php echo $subjectId ?>&grade=<?php echo $grade ?>" class="btn btn-info btn-sm">Resources</a>
                 <a href="addsubjectnotice.php?s=<?php echo $subjectId ?>&g=<?php echo $grade ?>" class="btn btn-info btn-sm">Notices</a>
             </div>  
