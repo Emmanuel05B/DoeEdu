@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html>
 
-<?php include("adminpartials/head.php"); //affects the alert styling ?>  
+<?php include("adminpartials/head.php"); // affects the alert styling ?>  
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
 
@@ -22,38 +21,47 @@ include('../partials/connect.php');
 
 if (isset($_POST["updateby"])) {
 
-    //$teacherid = $_SESSION['user_id'];  //for logged-in teacher
-    // get form data
-    $newamount = $_POST['newamount'];  //get the amound paid to reduce the debt
+    // Get form data
+    $newamount = $_POST['newamount'];  // amount paid to reduce the debt
+    $learnerid = $_POST['learnerid']; // hidden input
 
-    $learnerid = $_POST['learnerid'];   //VIA HIDDEN
+    // Get current payment details
+    $sql = "SELECT * FROM learners WHERE LearnerId = ?";
+    $stmt = $connect->prepare($sql);
+    $stmt->bind_param("i", $learnerid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $final = $result->fetch_assoc();
+    $stmt->close();
 
-    
-/* The  idea is that everytime a leaner makes a payment..what ever amound he is paying should add up 
-with the existing amount that the learner has paid previously.
+    if (!$final) {
+        echo '<script>
+        Swal.fire({
+            icon: "error",
+            title: "Learner Not Found",
+            text: "The learner ID does not exist.",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK"
+        }).then(() => {
+            window.location.href = "finances.php";
+        });
+        </script>';
+        exit();
+    }
 
-totalpaid = new-amount + totalpaid... then update the totalpaid
+    $totalfees = $final['TotalFees'];   // get total fees
+    $totalpaid = $final['TotalPaid'];   // get total paid before the new payment
 
-totalowe = totalfees - totalpaid
+    // Calculate new totals
+    $totalpaid += $newamount;    
+    $totalowe = $totalfees - $totalpaid;      
 
-*/
-               
-    $sql = "SELECT * FROM learners WHERE LearnerId = $learnerid";
-    $results = $connect->query($sql);
-    $final = $results->fetch_assoc();
-
-    $totalfees = $final['TotalFees'];   //get total fees
-    $totalpaid = $final['TotalPaid'];   //get total paid before the new payment
-
-    $totalpaid = $newamount + $totalpaid;    //add the new pay to the existing totalpaid
-
-    $totalowe = $totalfees - $totalpaid;      //now i have total owe.
-    // Prepare the SQL statements       
-    $sql = "UPDATE learners SET TotalPaid = ?, TotalOwe = ? WHERE LearnerId = ?";
+    // Update with LastUpdated = NOW()
+    $sql = "UPDATE learners SET TotalPaid = ?, TotalOwe = ?, LastUpdated = NOW() WHERE LearnerId = ?";
     $UpdateStmt = $connect->prepare($sql);
     $UpdateStmt->bind_param("ddi", $totalpaid, $totalowe, $learnerid);
-    
-    // Execute the query
+
+    // Execute update
     if ($UpdateStmt->execute()) {
         echo '<script>
         Swal.fire({
@@ -62,10 +70,8 @@ totalowe = totalfees - totalpaid
             text: "The learner\'s payment information has been saved.",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "finances.php?id=' . $learnerid . '";
-            }
+        }).then(() => {
+            window.location.href = "finances.php?id=' . $learnerid . '";
         });
         </script>';
     } else {
@@ -76,15 +82,12 @@ totalowe = totalfees - totalpaid
             text: "Unable to update the payment record. Please try again.",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "finances.php?id=' . $learnerid . '";
-            }
+        }).then(() => {
+            window.location.href = "finances.php?id=' . $learnerid . '";
         });
         </script>';
     }
 
-    // Close the database connection
     $UpdateStmt->close();
     $connect->close();
     exit();

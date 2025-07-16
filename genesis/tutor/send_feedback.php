@@ -38,8 +38,9 @@ function sendEmailToParent($parent_email, $parent_name, $learner_name, $activity
     ";
 
     $mail->send();
+    
   } catch (Exception $e) {
-    // Log or handle errors if needed
+    // You may log this error
   }
 }
 
@@ -73,15 +74,14 @@ while ($row = $result->fetch_assoc()) {
 $stmt->close();
 
 if (empty($learnerIds)) {
-  echo "<script>
-    window.onload = function() {
+  echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+    <script>
       Swal.fire({
         icon: 'info',
         title: 'No learners found',
         text: 'There are no learners assigned to this subject.',
       }).then(() => { history.back(); });
-    };
-  </script>";
+    </script>";
   exit();
 }
 
@@ -106,12 +106,12 @@ if (!empty($notSubmittedIds)) {
   $placeholders = implode(',', array_fill(0, count($notSubmittedIds), '?'));
   $types = str_repeat('i', count($notSubmittedIds));
 
- $query = "
-  SELECT u.Name AS LearnerName, u.Surname AS LearnerSurname, l.ParentName, l.ParentSurname, l.ParentEmail
-  FROM users u
-  JOIN learners l ON u.Id = l.LearnerId
-  WHERE u.Id IN ($placeholders)
-";
+  $query = "
+    SELECT u.Name AS LearnerName, u.Surname AS LearnerSurname, l.ParentName, l.ParentSurname, l.ParentEmail
+    FROM users u
+    JOIN learners l ON u.Id = l.LearnerId
+    WHERE u.Id IN ($placeholders)
+  ";
 
   $stmt = $connect->prepare($query);
   $stmt->bind_param($types, ...$notSubmittedIds);
@@ -126,9 +126,15 @@ if (!empty($notSubmittedIds)) {
     sendEmailToParent($parentEmail, $parentName, $learnerName, $activityTitle);
   }
   $stmt->close();
+
+  // ✅ Update the LastFeedbackSent column with current timestamp
+  $updateStmt = $connect->prepare("UPDATE onlineactivities SET LastFeedbackSent = NOW() WHERE Id = ?");
+  $updateStmt->bind_param("i", $activityId);
+  $updateStmt->execute();
+  $updateStmt->close();
 }
 
-// Show success SweetAlert and return back
+// Show SweetAlert and return
 echo "
   <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
   <script>

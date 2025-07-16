@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-    
+
 <?php
 session_start();
 
@@ -8,28 +8,19 @@ if (!isset($_SESSION['email'])) {
   header("Location: ../common/login.php");
   exit();
 }
+
+include('../partials/connect.php');
+include("adminpartials/head.php");
 ?>
-<?php include("adminpartials/head.php"); ?>
-
-
-<style>
-
-</style>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <!-- Left side column. contains the logo and sidebar -->
-  <?php include("adminpartials/header.php") ?>;
-  <!-- Left side column. contains the logo and sidebar -->
- <?php include("adminpartials/mainsidebar.php") ?>;
+  <?php include("adminpartials/header.php"); ?>
+  <?php include("adminpartials/mainsidebar.php"); ?>
 
-  <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
-      <h1>
-        Finances Dev Environment 
-      </h1>
+      <h1>Finances Dev Environment</h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">Finances</li>
@@ -38,152 +29,126 @@ if (!isset($_SESSION['email'])) {
 
     <section class="content">
       <div class="row">
-
-          <?php 
-            $sql = "SELECT                
+        <?php 
+          $sql = "SELECT                
             SUM(TotalFees) AS TotalFees,
             SUM(TotalPaid) AS TotalPaid,
             SUM(CASE WHEN TotalOwe > 0 THEN TotalOwe ELSE 0 END) AS TotalOwe,
             SUM(CASE WHEN TotalOwe < 0 THEN TotalOwe ELSE 0 END) AS Owe
-
             FROM learners";
-            $results = $connect->query($sql);
-            $final = $results->fetch_assoc();
+          $results = $connect->query($sql);
+          $final = $results->fetch_assoc();
 
-            $TotalFees = $final['TotalFees'];
-            $TotalPaid = $final['TotalPaid'];
-            $TotalOwe = $final['TotalOwe'];
-            $Owe = (-1 * $final['Owe']);
+          $TotalFees = $final['TotalFees'];
+          $TotalPaid = $final['TotalPaid'];
+          $TotalOwe = $final['TotalOwe'];
+          $Owe = (-1 * $final['Owe']);
+        ?>
 
-          ?>
-
-          <!--  here  -->
-          <div class="col-md-3 col-sm-6 col-xs-12">
-              <div class="info-box">
-              <span class="info-box-icon bg-aqua"><i class="fa fa-balance-scale"></i></span>
-              <div class="info-box-content">
-                <span class="info-box-text">Total Paid by Learners</span><br>
-                <span class="info-box-number">R<?php echo $TotalPaid ?></span>
-              </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-aqua"><i class="fa fa-balance-scale"></i></span>
+            <div class="info-box-content">
+              <span class="info-box-text">Total Paid by Learners</span><br>
+              <span class="info-box-number">R<?php echo number_format($TotalPaid, 2); ?></span>
             </div>
           </div>
+        </div>
 
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <div class="info-box">
-              <span class="info-box-icon bg-yellow"><i class="fa fa-money"></i></span>
-              <div class="info-box-content">
-                <span class="info-box-text">Tot Amound Expexted</span><br>
-                <span class="info-box-number">R<?php echo $TotalFees ?></span>
-              </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-yellow"><i class="fa fa-money"></i></span>
+            <div class="info-box-content">
+              <span class="info-box-text">Total Amount Expected</span><br>
+              <span class="info-box-number">R<?php echo number_format($TotalFees, 2); ?></span>
             </div>
           </div>
+        </div>
 
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <div class="info-box">
-             <span class="info-box-icon bg-green"><i class="fa fa-dollar"></i></span>
-              <div class="info-box-content">
-                <span class="info-box-text">Amound Due to Us</span><br>
-                <span class="info-box-number">R<?php echo $TotalOwe ?></span>
-              </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-green"><i class="fa fa-dollar"></i></span>
+            <div class="info-box-content">
+              <span class="info-box-text">Amount Due to Us</span><br>
+              <span class="info-box-number">R<?php echo number_format($TotalOwe, 2); ?></span>
             </div>
           </div>
+        </div>
 
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <div class="info-box">
-              <span class="info-box-icon bg-red"><i class="fa fa-credit-card"></i></span>
-              <div class="info-box-content">
-                <span class="info-box-text">Amound we Owe</span><br>
-                <span class="info-box-number">R<?php echo $Owe ?></span>
-              </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-red"><i class="fa fa-credit-card"></i></span>
+            <div class="info-box-content">
+              <span class="info-box-text">Amount We Owe</span><br>
+              <span class="info-box-number">R<?php echo number_format($Owe, 2); ?></span>
             </div>
           </div>
-
+        </div>
       </div>
 
+      <!-- Status Links -->
       <div class="row">
         <div class="col-md-12">
-        
-            <div class="box-footer">
-              <div class="row">
-
-                <div class="col-sm-3 col-xs-6">
-                  <div class="description-block border-right">
-                    <a href="status.php?val=<?php echo 1 ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #17a2b8;">
+          <div class="box-footer">
+            <div class="row">
+              <div class="col-sm-3 col-xs-6">
+                <div class="description-block border-right">
+                  <a href="status.php?val=1" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #17a2b8;">
                     <div>
-                    <h5 class="description-header">Learners</h5>
-                    <span class="description-text">Active - Owing</span>
-                     </div>
-                    </a>
-                  </div>
-                  <!-- /.description-block -->
+                      <h5 class="description-header">Learners</h5>
+                      <span class="description-text">Active - Owing</span>
+                    </div>
+                  </a>
                 </div>
-                 <!-- /.col -->
-                 <div class="col-sm-3 col-xs-6">
-                  <div class="description-block border-right">
-                  <a href="status.php?val=<?php echo 3 ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #ffc107;">
-                  <div>
-                    <h5 class="description-header">Learners</h5>
-                    <span class="description-text">Not Active - Not Owing</span>
-                     </div>
-                    </a>
-                  </div>
-                  <!-- /.description-block -->
-                </div>
-
-                <div class="col-sm-3 col-xs-6">
-                  <div class="description-block border-right">
-                  <a href="status.php?val=<?php echo 2  ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #28a745;">
-                  <div>
-                    <h5 class="description-header">Learners</h5>
-                    <span class="description-text">Active - Not Owing</span>
-                     </div>
-                    </a>
-                  </div>
-                  <!-- /.description-block -->
-                </div>
-                <!-- /.col -->
-                <div class="col-sm-3 col-xs-6">
-                  <div class="description-block">
-                  <a href="status.php?val=<?php echo 4 ?>" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #dc3545;">
-                  <div>
-                    <h5 class="description-header">Learners</h5>
-                    <span class="description-text">Not Active - Owing</span>
-                     </div>
-                    </a>
-                  </div>
-                  <!-- /.description-block -->
-                </div>
-                <!-- /.col -->
-               
               </div>
-
+              <div class="col-sm-3 col-xs-6">
+                <div class="description-block border-right">
+                  <a href="status.php?val=3" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #ffc107;">
+                    <div>
+                      <h5 class="description-header">Learners</h5>
+                      <span class="description-text">Not Active - Not Owing</span>
+                    </div>
+                  </a>
+                </div>
+              </div>
+              <div class="col-sm-3 col-xs-6">
+                <div class="description-block border-right">
+                  <a href="status.php?val=2" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #28a745;">
+                    <div>
+                      <h5 class="description-header">Learners</h5>
+                      <span class="description-text">Active - Not Owing</span>
+                    </div>
+                  </a>
+                </div>
+              </div>
+              <div class="col-sm-3 col-xs-6">
+                <div class="description-block">
+                  <a href="status.php?val=4" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #dc3545;">
+                    <div>
+                      <h5 class="description-header">Learners</h5>
+                      <span class="description-text">Not Active - Owing</span>
+                    </div>
+                  </a>
+                </div>
+              </div>
             </div>
-            <!-- /.box-footer -->
+          </div>
         </div>
-        <!-- /.col -->
       </div>
 
-    </section>
-
-
-    <!-- Main content table--------------------h------------------------->
-    <section class="content">
-      <div class="row">
-        <div class="col-xs-12">
-          <!-- /.box -->
-
-          <div class="box">
-            <div class="box-header">
-              <h3 class="box-title">Learners.</h3>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body">
-
-              <div class="table-responsive"> <!-- the magic!!!! -->
-                <table id="example1" class="table table-bordered table-striped">
+      <!-- Learners Table -->
+      <section class="content">
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="box">
+              <div class="box-header">
+                <h3 class="box-title">Learners</h3>
+              </div>
+              <div class="box-body">
+                <div class="table-responsive">
+                  <table id="example1" class="table table-bordered table-striped">
                     <thead>
                       <tr>
-                        <th>StNo</th>
                         <th>Name</th>
                         <th>Surname</th>
                         <th>Grade</th>
@@ -192,13 +157,14 @@ if (!isset($_SESSION['email'])) {
                         <th>Total Fees</th>
                         <th>Total Paid</th>
                         <th>Total Owe</th>
-                        <th>Pay</th>
+                        <th>Last Paid</th>
+                        <th>Update By</th>
                       </tr>
                     </thead>
                     <tbody>
                       <?php
-                          $sql = "
-                            SELECT 
+                        $sql = "
+                          SELECT 
                             learners.LearnerId, 
                             users.Name, 
                             users.Surname, 
@@ -207,293 +173,89 @@ if (!isset($_SESSION['email'])) {
                             learners.Physics,
                             learners.TotalFees, 
                             learners.TotalPaid, 
-                            learners.TotalOwe
+                            learners.TotalOwe,
+                            learners.LastUpdated
                           FROM learners
                           JOIN users ON learners.LearnerId = users.Id
-                          ";
-                          $results = $connect->query($sql);
-                          while($final = $results->fetch_assoc()) { ?>
-                            <tr>
-                              <td><?php echo $final['LearnerId'] ?></td>
-                              <td><?php echo $final['Name'] ?></td>
-                              <td><?php echo $final['Surname'] ?></td>
-                              <td><?php echo $final['Grade'] ?></td>
-                              <td><?php echo $final['Math'] ?></td>
-                              <td><?php echo $final['Physics'] ?></td>
-                              <td><?php echo $final['TotalFees'] ?></td>
-                              <td><?php echo $final['TotalPaid'] ?></td>
-                              <td> <?php echo $final['TotalOwe'] ?></td>
-                              <td> 
-                                <form action="payhandler.php" method="POST" class="horizontal-container">
-                                  <input type="number" class="form-control2" id="newamount" name="newamount" min="-5000" max="5000" required>
-                                  <input type="hidden" name="learnerid" value="<?php echo $final['LearnerId']; ?>">                                                                        
-                                  <button type="submit" name="updateby" class="button btn btn-primary py-3 px-4">Update By</button>
-                                </form>
-                              </td>
-                            </tr>
-
+                        ";
+                        $results = $connect->query($sql);
+                        while($final = $results->fetch_assoc()) { ?>
+                          <tr>
+                            <td><?php echo htmlspecialchars($final['Name']); ?></td>
+                            <td><?php echo htmlspecialchars($final['Surname']); ?></td>
+                            <td><?php echo htmlspecialchars($final['Grade']); ?></td>
+                            <td><?php echo htmlspecialchars($final['Math']); ?></td>
+                            <td><?php echo htmlspecialchars($final['Physics']); ?></td>
+                            <td>R<?php echo number_format($final['TotalFees'], 2); ?></td>
+                            <td>R<?php echo number_format($final['TotalPaid'], 2); ?></td>
+                            <td>R<?php echo number_format($final['TotalOwe'], 2); ?></td>
+                            <td>
+                              <?php 
+                                if (!empty($final['LastUpdated'])) {
+                                  echo date('d M Y, H:i', strtotime($final['LastUpdated']));
+                                } else {
+                                  echo "Never";
+                                }
+                              ?>
+                            </td>
+                            <td>
+                              <form action="payhandler.php" method="POST" class="horizontal-container">
+                                <input type="number" class="form-control2" id="newamount" name="newamount" min="-5000" max="5000" required>
+                                <input type="hidden" name="learnerid" value="<?php echo htmlspecialchars($final['LearnerId']); ?>">                                                                        
+                                <button type="submit" name="updateby" class="btn btn-primary py-3 px-4">Pay</button>
+                              </form>
+                            </td>
+                          </tr>
                       <?php } ?>
                     </tbody>
-
                     <tfoot>
                       <tr>
-                      <th>StNo</th>
-                      <th>Name</th>
-                      <th>Surname</th>
-                      <th>Grade</th>
-                      <th>Math</th>
-                      <th>Physics</th>
-                      <th>Total Fees</th>
-                      <th>Total Paid</th>
-                      <th>Total Owe</th>
-                      <th>Pay</th>
-
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Grade</th>
+                        <th>Math</th>
+                        <th>Physics</th>
+                        <th>Total Fees</th>
+                        <th>Total Paid</th>
+                        <th>Total Owe</th>
+                        <th>Last Paid</th>
+                        <th>Update By</th>
                       </tr>
                     </tfoot>
-                </table>
+                  </table>
+                </div>
+                <a href="mailparent.php" class="btn btn-block btn-primary">Mail Parents <i class="fa fa-arrow-circle-right"></i></a>
               </div>
-              <a href="mailparent.php" class="btn btn-block btn-primary">Mail Parents<i class="fa fa-arrow-circle-right"></i></a>
             </div>
-            <!-- /.box-body -->
           </div>
-          <!-- /.box -->
         </div>
-        <!-- /.col -->
-      </div>
-      <!-- /.row -->
+      </section>
     </section>
-    <!-- /.content -->
-
   </div>
-
 
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
-    <!-- Create the tabs -->
-    <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
-      <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
-      <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
-    </ul>
-    <!-- Tab panes -->
-    <div class="tab-content">
-      <!-- Home tab content -->
-      <div class="tab-pane" id="control-sidebar-home-tab">
-        <h3 class="control-sidebar-heading">Recent Activity</h3>
-        <ul class="control-sidebar-menu">
-          <li>
-            <a href="javascript:void(0)">
-              <i class="menu-icon fa fa-birthday-cake bg-red"></i>
-
-              <div class="menu-info">
-                <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
-
-                <p>Will be 23 on April 24th</p>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="javascript:void(0)">
-              <i class="menu-icon fa fa-user bg-yellow"></i>
-
-              <div class="menu-info">
-                <h4 class="control-sidebar-subheading">Frodo Updated His Profile</h4>
-
-                <p>New phone +1(800)555-1234</p>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="javascript:void(0)">
-              <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
-
-              <div class="menu-info">
-                <h4 class="control-sidebar-subheading">Nora Joined Mailing List</h4>
-
-                <p>nora@example.com</p>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="javascript:void(0)">
-              <i class="menu-icon fa fa-file-code-o bg-green"></i>
-
-              <div class="menu-info">
-                <h4 class="control-sidebar-subheading">Cron Job 254 Executed</h4>
-
-                <p>Execution time 5 seconds</p>
-              </div>
-            </a>
-          </li>
-        </ul>
-        <!-- /.control-sidebar-menu -->
-
-        <h3 class="control-sidebar-heading">Tasks Progress</h3>
-        <ul class="control-sidebar-menu">
-          <li>
-            <a href="javascript:void(0)">
-              <h4 class="control-sidebar-subheading">
-                Custom Template Design
-                <span class="label label-danger pull-right">70%</span>
-              </h4>
-
-              <div class="progress progress-xxs">
-                <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="javascript:void(0)">
-              <h4 class="control-sidebar-subheading">
-                Update Resume
-                <span class="label label-success pull-right">95%</span>
-              </h4>
-
-              <div class="progress progress-xxs">
-                <div class="progress-bar progress-bar-success" style="width: 95%"></div>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="javascript:void(0)">
-              <h4 class="control-sidebar-subheading">
-                Laravel Integration
-                <span class="label label-warning pull-right">50%</span>
-              </h4>
-
-              <div class="progress progress-xxs">
-                <div class="progress-bar progress-bar-warning" style="width: 50%"></div>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="javascript:void(0)">
-              <h4 class="control-sidebar-subheading">
-                Back End Framework
-                <span class="label label-primary pull-right">68%</span>
-              </h4>
-
-              <div class="progress progress-xxs">
-                <div class="progress-bar progress-bar-primary" style="width: 68%"></div>
-              </div>
-            </a>
-          </li>
-        </ul>
-        <!-- /.control-sidebar-menu -->
-
-      </div>
-      <!-- /.tab-pane -->
-      <!-- Stats tab content -->
-      <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
-      <!-- /.tab-pane -->
-      <!-- Settings tab content -->
-      <div class="tab-pane" id="control-sidebar-settings-tab">
-        <form method="post">
-          <h3 class="control-sidebar-heading">General Settings</h3>
-
-          <div class="form-group">
-            <label class="control-sidebar-subheading">
-              Report panel usage
-              <input type="checkbox" class="pull-right" checked>
-            </label>
-
-            <p>
-              Some information about this general settings option
-            </p>
-          </div>
-          <!-- /.form-group -->
-
-          <div class="form-group">
-            <label class="control-sidebar-subheading">
-              Allow mail redirect
-              <input type="checkbox" class="pull-right" checked>
-            </label>
-
-            <p>
-              Other sets of options are available
-            </p>
-          </div>
-          <!-- /.form-group -->
-
-          <div class="form-group">
-            <label class="control-sidebar-subheading">
-              Expose author name in posts
-              <input type="checkbox" class="pull-right" checked>
-            </label>
-
-            <p>
-              Allow the user to show his name in blog posts
-            </p>
-          </div>
-          <!-- /.form-group -->
-
-          <h3 class="control-sidebar-heading">Chat Settings</h3>
-
-          <div class="form-group">
-            <label class="control-sidebar-subheading">
-              Show me as online
-              <input type="checkbox" class="pull-right" checked>
-            </label>
-          </div>
-          <!-- /.form-group -->
-
-          <div class="form-group">
-            <label class="control-sidebar-subheading">
-              Turn off notifications
-              <input type="checkbox" class="pull-right">
-            </label>
-          </div>
-          <!-- /.form-group -->
-
-          <div class="form-group">
-            <label class="control-sidebar-subheading">
-              Delete chat history
-              <a href="javascript:void(0)" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
-            </label>
-          </div>
-          <!-- /.form-group -->
-        </form>
-      </div>
-      <!-- /.tab-pane -->
-    </div>
+    <!-- Tabs omitted for brevity - keep your existing code here -->
+    <!-- ... -->
   </aside>
   <div class="control-sidebar-bg"></div>
 </div>
-<!-- ./wrapper -->
 
-<!-- jQuery 3 -->
+<!-- Scripts -->
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
-<!-- Bootstrap 3.3.7 -->
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<!-- DataTables -->
 <script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-<!-- SlimScroll -->
 <script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
-<!-- FastClick -->
 <script src="bower_components/fastclick/lib/fastclick.js"></script>
-<!-- AdminLTE App -->
 <script src="dist/js/adminlte.min.js"></script>
-<!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
-<!-- Sparkline -->
-<script src="bower_components/jquery-sparkline/dist/jquery.sparkline.min.js"></script>
-<!-- jvectormap  -->
-<script src="plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-<script src="plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-<!-- ChartJS -->
-<script src="bower_components/chart.js/Chart.js"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="dist/js/pages/dashboard2.js"></script>
-
-
-<!-- page script -->
 
 <script>
   $(function () {
-    $('#example1').DataTable()
-  })
+    $('#example1').DataTable();
+  });
 </script>
-
 
 </body>
 </html>
