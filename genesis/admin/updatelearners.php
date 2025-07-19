@@ -8,27 +8,31 @@ if (!isset($_SESSION['email'])) {
 include("../partials/connect.php");
 include("adminpartials/head.php");
 
-// Get Tutor ID from URL
-$tutorId = isset($_GET['id']) ? intval($_GET['id']) : 0;
-if ($tutorId === 0) {
+// Get Learner ID from URL
+$LearnerId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if ($LearnerId === 0) {
   echo "<script>alert('Invalid tutor ID'); window.location.href='managetutors.php';</script>";
   exit();
 }
 
 // Fetch tutor personal and professional info
-$tutor = [];
+$Learner = [];
 $stmt = $connect->prepare("
-  SELECT u.Name, u.Surname, u.Email, u.Contact, u.Gender,
-         t.Bio, t.Qualifications, t.ExperienceYears, t.Availability
+  SELECT 
+    u.Name, u.Surname, u.Email, u.Contact, u.Gender,
+    t.Bio, t.Qualifications, t.ExperienceYears, t.Availability,
+    l.ParentName, l.ParentSurname, l.ParentEmail, l.ParentContactNumber
   FROM users u
   LEFT JOIN tutors t ON u.Id = t.TutorId
+  LEFT JOIN learners l ON u.Id = l.LearnerId
   WHERE u.Id = ?
   LIMIT 1
 ");
-$stmt->bind_param("i", $tutorId);
+
+$stmt->bind_param("i", $LearnerId);
 $stmt->execute();
 $result = $stmt->get_result();
-$tutor = $result->fetch_assoc();
+$Learner = $result->fetch_assoc();
 
 // Fetch all subjects
 $allSubjects = [];
@@ -42,8 +46,8 @@ $stmtAll->close();
 
 // Fetch registered subject IDs
 $registeredIds = [];
-$stmtReg = $connect->prepare("SELECT SubjectId FROM tutorsubject WHERE TutorId = ?");
-$stmtReg->bind_param("i", $tutorId);
+$stmtReg = $connect->prepare("SELECT SubjectId FROM learnersubject WHERE LearnerId = ?");
+$stmtReg->bind_param("i", $LearnerId);
 $stmtReg->execute();
 $resReg = $stmtReg->get_result();
 while ($row = $resReg->fetch_assoc()) {
@@ -60,17 +64,15 @@ $stmtReg->close();
 
   <div class="content-wrapper">
     <section class="content-header">
-      <h1>Update Tutor Details <small>Manage tutor profile information</small></h1>
+      <h1>Update Learner Details <small>Manage Learner profile information</small></h1>
       <ol class="breadcrumb">
         <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Update Tutor</li>
+        <li class="active">Update Learner</li>
       </ol>
     </section>
   <?php $LearnerId = isset($_GET['id']) ? intval($_GET['id']) : 0; ?>
 
     
-
-
     <section class="content">
       <div class="row">
         <div class="col-md-12">
@@ -91,19 +93,36 @@ $stmtReg->close();
                   <div class="row">
                     <div class="form-group col-md-3">
                       <label for="firstname">First Name</label>
-                      <input type="text" class="form-control" id="firstname" name="firstname" value="<?php echo htmlspecialchars($tutor['Name']); ?>" required>
+                      <input type="text" class="form-control" id="firstname" name="firstname" value="<?php echo htmlspecialchars($Learner['Name']); ?>" required>
                     </div>
                     <div class="form-group col-md-3">
                       <label for="surname">Surname</label>
-                      <input type="text" class="form-control" id="surname" name="surname" value="<?php echo htmlspecialchars($tutor['Surname']); ?>" required>
+                      <input type="text" class="form-control" id="surname" name="surname" value="<?php echo htmlspecialchars($Learner['Surname']); ?>" required>
                     </div>
                     <div class="form-group col-md-3">
                       <label for="email">Email</label>
-                      <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($tutor['Email']); ?>" required>
+                      <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($Learner['Email']); ?>" required>
                     </div>
                     <div class="form-group col-md-3">
                       <label for="contactnumber">Contact Number</label>
-                      <input type="tel" class="form-control" id="contactnumber" name="contactnumber" value="<?php echo htmlspecialchars($tutor['Contact']); ?>" pattern="[0-9]{10}" maxlength="10" required>
+                      <input type="tel" class="form-control" id="contactnumber" name="contactnumber" value="<?php echo htmlspecialchars($Learner['Contact']); ?>" pattern="[0-9]{10}" maxlength="10" required>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                      <label for="parentfirstname">Parent First Name</label>
+                      <input type="text" class="form-control" id="parentfirstname" name="parentfirstname" value="<?php echo htmlspecialchars($Learner['ParentName']); ?>" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                      <label for="parentsurname">Parent Surname</label>
+                      <input type="text" class="form-control" id="parentsurname" name="parentsurname" value="<?php echo htmlspecialchars($Learner['ParentSurname']); ?>" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                      <label for="parentemail">Parent Email</label>
+                      <input type="email" class="form-control" id="parentemail" name="parentemail" value="<?php echo htmlspecialchars($Learner['ParentEmail']); ?>" required>
+                    </div>
+                    <div class="form-group col-md-3">
+                      <label for="parentcontactnumber">Parent Contact Number</label>
+                      <input type="tel" class="form-control" id="parentcontactnumber" name="parentcontactnumber" value="<?php echo htmlspecialchars($Learner['ParentContactNumber']); ?>" pattern="[0-9]{10}" maxlength="10" required>
                     </div>
                   </div>
                 </fieldset>
