@@ -66,6 +66,10 @@ $stmtReg->close();
         <li class="active">Update Tutor</li>
       </ol>
     </section>
+  <?php $tutorId = isset($_GET['id']) ? intval($_GET['id']) : 0; ?>
+
+    
+
 
     <section class="content">
       <div class="row">
@@ -105,35 +109,34 @@ $stmtReg->close();
                 </fieldset>
 
                 <!-- Professional Details - READONLY with form-control-plaintext -->
-                <!-- Professional Details - READONLY with form-control-plaintext -->
-<fieldset style="border:1px solid #ddd; padding:15px; margin-bottom:20px;">
-  <legend><strong>Professional Details (Read-Only)</strong></legend>
-  <div class="row">
-    <!-- Bio -->
-    <div class="form-group col-md-4">
-      <label for="bio">Short Bio</label>
-      <textarea class="form-control" id="bio" rows="5" readonly style="background:#f5f5f5; cursor:not-allowed;"><?php echo htmlspecialchars($tutor['Bio']); ?></textarea>
-    </div>
+                <fieldset style="border:1px solid #ddd; padding:15px; margin-bottom:20px;">
+                <legend><strong>Professional Details (Read-Only)</strong></legend>
+                <div class="row">
+                    <!-- Bio -->
+                    <div class="form-group col-md-5">
+                    <label for="bio">Short Bio</label>
+                    <textarea class="form-control" id="bio" rows="5" readonly style="background:#f5f5f5; cursor:not-allowed;"><?php echo htmlspecialchars($tutor['Bio']); ?></textarea>
+                    </div>
 
-    <!-- Qualifications -->
-    <div class="form-group col-md-4">
-      <label for="qualifications">Qualifications</label>
-      <textarea class="form-control" id="qualifications" rows="5" readonly style="background:#f5f5f5; cursor:not-allowed;"><?php echo htmlspecialchars($tutor['Qualifications']); ?></textarea>
-    </div>
+                    <!-- Qualifications -->
+                    <div class="form-group col-md-5">
+                    <label for="qualifications">Qualifications</label>
+                    <textarea class="form-control" id="qualifications" rows="5" readonly style="background:#f5f5f5; cursor:not-allowed;"><?php echo htmlspecialchars($tutor['Qualifications']); ?></textarea>
+                    </div>
 
-    <!-- Experience and Availability (right side) -->
-    <div class="form-group col-md-4">
-      <div class="form-group">
-        <label for="experience_years">Years of Experience</label>
-        <input type="text" class="form-control form-control-plaintext" id="experience_years" value="<?php echo htmlspecialchars($tutor['ExperienceYears']); ?>" readonly style="background:#f5f5f5; cursor:not-allowed;">
-      </div>
-      <div class="form-group">
-        <label for="availability">Availability</label>
-        <input type="text" class="form-control form-control-plaintext" id="availability" value="<?php echo htmlspecialchars($tutor['Availability']); ?>" readonly style="background:#f5f5f5; cursor:not-allowed;">
-      </div>
-    </div>
-  </div>
-</fieldset>
+                    <!-- Experience and Availability (right side) -->
+                    <div class="form-group col-md-2">
+                    <div class="form-group">
+                        <label for="experience_years">Years of Experience</label>
+                        <input type="text" class="form-control form-control-plaintext" id="experience_years" value="<?php echo htmlspecialchars($tutor['ExperienceYears']); ?>" readonly style="background:#f5f5f5; cursor:not-allowed;">
+                    </div>
+                    <div class="form-group">
+                        <label for="availability">Availability</label>
+                        <input type="text" class="form-control form-control-plaintext" id="availability" value="<?php echo htmlspecialchars($tutor['Availability']); ?>" readonly style="background:#f5f5f5; cursor:not-allowed;">
+                    </div>
+                    </div>
+                </div>
+                </fieldset>
 
 
                 <!-- Manage Tutor Subjects -->
@@ -163,6 +166,7 @@ $stmtReg->close();
               <div class="box-footer text-center" style="margin-top:15px;">
                 <button type="submit" name="update_details" class="btn btn-lg btn-primary"><i class="fa fa-save"></i> Update Details & Subjects</button>
               </div>
+              
             </form>
           </div>
         </div>
