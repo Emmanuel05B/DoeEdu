@@ -80,8 +80,9 @@ if ($learnerId) {
                         <div class="col-md-4">
                             <div class="box box-primary">
                                 <div class="box-header with-border text-center">
-                                    <img src="<?= $tutor['ProfilePicture'] ? '../' . htmlspecialchars($tutor['ProfilePicture']) : '../assets/defaults/user.png' ?>" 
-                                         alt="Tutor Picture" class="img-circle" width="80" height="80">
+                                    <img src="<?= $tutor['ProfilePicture'] ? '../uploads/' . htmlspecialchars($tutor['ProfilePicture']) : '../uploads/doe.jpg' ?>" 
+
+                                         alt="Tutor Picture" class="img-circle" width="90" height="80">
                                     <h3 class="box-title" style="margin-top:10px;">
                                         <?= htmlspecialchars($tutor['Gender']) . ' ' . htmlspecialchars($tutor['Surname']) ?>
                                     </h3>

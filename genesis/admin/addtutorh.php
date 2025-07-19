@@ -68,7 +68,7 @@ try {
 
     // Insert into tutors table
     $stmtTutor = $connect->prepare("INSERT INTO tutors (TutorId, Bio, Qualifications, ExperienceYears, ProfilePicture, Availability) 
-                                    VALUES (?, '', '', '', 0, '')");
+                                    VALUES (?, '', '', '', '', '')");
     if (!$stmtTutor) {
         throw new Exception("Prepare failed: " . $connect->error);
     }
