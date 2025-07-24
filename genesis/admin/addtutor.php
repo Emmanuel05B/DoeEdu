@@ -153,5 +153,7 @@ if (!isset($_SESSION['email'])) {
     });
   });
 </script>
+
+<script src="dist/js/demo.js"></script>   <!-- White MainSidebar -->
 </body>
 </html>

@@ -10,7 +10,7 @@ if (!isset($_SESSION['email'])) {
 include('../partials/connect.php');
 include("adminpartials/head.php");
 
-// Get all tutors in the system
+// Get all tutors in the system...to come back to pull based on groups
 $tutors = [];
 
 $sql = "
@@ -41,10 +41,30 @@ if ($result) {
     <?php include("adminpartials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
-        <section class="content-header">
-            <h1>All Tutors</h1>
-            <small>View, update, or manage all registered tutors in the system.</small>
-        </section>
+ 
+          <section class="content-header">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                <div>
+                <h3>All Tutors</h3>
+                <small>View, update, or manage all registered tutors in the system.</small>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                
+                <a href="classes.php" 
+                    class="btn btn-primary" 
+                    style="height: fit-content;">
+                    Open Classes
+                </a>
+
+                <a href="assigntutorclass.php" 
+                    class="btn btn-primary" 
+                    style="height: fit-content;">
+                    Assign Tutors to Classes
+                </a>
+                </div>
+            </div>
+            </section>
 
         <section class="content">
             <div class="row">
@@ -91,5 +111,11 @@ if ($result) {
 
     <div class="control-sidebar-bg"></div>
 </div>
+<!-- Scripts copy them, responsible for my white mainsidebar-->   
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/fastclick/lib/fastclick.js"></script>
+<script src="dist/js/adminlte.min.js"></script>
+<script src="dist/js/demo.js"></script>
 </body>
 </html>

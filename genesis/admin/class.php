@@ -214,6 +214,8 @@ if (!isset($_SESSION['email'])) {
       $maxmarks = $finalres['MaxMarks'];
       $grade = $finalres['Grade'];   //directly from the database activities table
       $subjectId = $finalres['SubjectId'];
+      $group = $finalres['GroupName'];
+
       
 
       ///////////////////
@@ -267,83 +269,114 @@ if (!isset($_SESSION['email'])) {
                      // Check the status and render different HTML for each case
                         if ($subjectId == 1) {
 
-                           echo '<h3>Grade 10 Mathematics Learners</h3><br>';
+                          echo "<h3>Grade 10 Mathematics Group-{$group} Learners</h3><br>";
 
-                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
-                            FROM learners AS lt
-                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                            JOIN users AS u ON lt.LearnerId = u.Id
-                            WHERE lt.Grade = $grade 
-                              AND lt.Math > 0 
-                              AND ls.SubjectId = 1
-                              AND ls.ContractExpiryDate > CURDATE()";  
+                                $sql = "
+                                    SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
+                                    FROM learners lt
+                                    JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
+                                    JOIN users u ON lt.LearnerId = u.Id
+                                    JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
+                                    JOIN classes c ON lc.ClassID = c.ClassID
+                                    WHERE lt.Grade = $grade
+                                      AND lt.Math > 0
+                                      AND ls.SubjectId = 1
+                                      AND ls.ContractExpiryDate > CURDATE()
+                                      AND c.GroupName = '$group'
+                                  ";
                       
 
                         } else if ($subjectId == 2) {
 
-                          echo '<h3>Grade 11 Mathematics Learners</h3><br>';
-        
-                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
-                            FROM learners AS lt
-                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                            JOIN users AS u ON lt.LearnerId = u.Id
-                            WHERE lt.Grade = $grade 
-                              AND lt.Math > 0 
-                              AND ls.SubjectId = 2
-                              AND ls.ContractExpiryDate > CURDATE()";    
+                          echo "<h3>Grade 11 Mathematics Group-{$group} Learners</h3><br>";
+
+                                $sql = "
+                                    SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
+                                    FROM learners lt
+                                    JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
+                                    JOIN users u ON lt.LearnerId = u.Id
+                                    JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
+                                    JOIN classes c ON lc.ClassID = c.ClassID
+                                    WHERE lt.Grade = $grade
+                                      AND lt.Math > 0
+                                      AND ls.SubjectId = 2
+                                      AND ls.ContractExpiryDate > CURDATE()
+                                      AND c.GroupName = '$group'
+                                  ";  
 
 
                         } else if ($subjectId == 3) {
-                             echo '<h3>Grade 12 Mathematics Learners</h3><br>';
 
-                                    $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
-                                    FROM learners AS lt
-                                    JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                                    JOIN users AS u ON lt.LearnerId = u.Id
-                                    WHERE lt.Grade = $grade 
-                                      AND lt.Math > 0 
+                          echo "<h3>Grade 12 Mathematics Group-{$group} Learners</h3><br>";
+
+                                  $sql = "
+                                    SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
+                                    FROM learners lt
+                                    JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
+                                    JOIN users u ON lt.LearnerId = u.Id
+                                    JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
+                                    JOIN classes c ON lc.ClassID = c.ClassID
+                                    WHERE lt.Grade = $grade
+                                      AND lt.Math > 0
                                       AND ls.SubjectId = 3
-                                      AND ls.ContractExpiryDate > CURDATE()";    
+                                      AND ls.ContractExpiryDate > CURDATE()
+                                      AND c.GroupName = '$group'
+                                  ";
 
                         } else if ($subjectId == 4) {
 
-                           echo '<h3>Grade 10 Physical Sciences Learners</h3><br>';
+                           echo "<h3>Grade 10 Physical Sciences Group-{$group} Learners</h3><br>";
         
-                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
-                            FROM learners AS lt
-                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                            JOIN users AS u ON lt.LearnerId = u.Id
-                            WHERE lt.Grade = $grade 
-                              AND lt.Physics > 0 
+                            $sql = "
+                            SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
+                            FROM learners lt
+                            JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users u ON lt.LearnerId = u.Id
+                            JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
+                            JOIN classes c ON lc.ClassID = c.ClassID
+                            WHERE lt.Grade = $grade
+                              AND lt.Physics > 0
                               AND ls.SubjectId = 4
-                              AND ls.ContractExpiryDate > CURDATE()";  
+                              AND ls.ContractExpiryDate > CURDATE()
+                              AND c.GroupName = '$group'
+                        ";
 
 
                         } else if ($subjectId == 5) {
-                           echo '<h3>Grade 11 Physical Sciences Learners</h3><br>';
+                            echo "<h3>Grade 11 Physical Sciences Group-{$group} Learners</h3><br>";
 
-                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
-                            FROM learners AS lt
-                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                            JOIN users AS u ON lt.LearnerId = u.Id
-                            WHERE lt.Grade = $grade 
-                              AND lt.Physics > 0 
+                            $sql = "
+                            SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
+                            FROM learners lt
+                            JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users u ON lt.LearnerId = u.Id
+                            JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
+                            JOIN classes c ON lc.ClassID = c.ClassID
+                            WHERE lt.Grade = $grade
+                              AND lt.Physics > 0
                               AND ls.SubjectId = 5
-                              AND ls.ContractExpiryDate > CURDATE()"; 
+                              AND ls.ContractExpiryDate > CURDATE()
+                              AND c.GroupName = '$group'
+                        ";
 
          
                         } else if ($subjectId == 6) {
                              
-                            echo '<h3>Grade 12 Physical Sciences Learners</h3><br>';
+                             echo "<h3>Grade 12 Physical Sciences Group-{$group} Learners</h3><br>";
         
-                            $sql = "SELECT lt.*, ls.*, u.Name, u.Surname
-                            FROM learners AS lt
-                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                            JOIN users AS u ON lt.LearnerId = u.Id
-                            WHERE lt.Grade = $grade 
-                              AND lt.Physics > 0 
+                            $sql = "
+                            SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
+                            FROM learners lt
+                            JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
+                            JOIN users u ON lt.LearnerId = u.Id
+                            JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
+                            JOIN classes c ON lc.ClassID = c.ClassID
+                            WHERE lt.Grade = $grade
+                              AND lt.Physics > 0
                               AND ls.SubjectId = 6
-                              AND ls.ContractExpiryDate > CURDATE()";    
+                              AND ls.ContractExpiryDate > CURDATE()
+                              AND c.GroupName = '$group'
+                        ";
 
                         } else {
                             // Default case if none of the statuses match

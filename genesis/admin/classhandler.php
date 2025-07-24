@@ -31,20 +31,30 @@ if (!isset($_SESSION['email'])) {
       $activityName = $finalres['ActivityName'];
       $maxmarks = $finalres['MaxMarks'];
       $subject = $finalres['SubjectId'];
+      $grade = $finalres['Grade'];
+      $group = $finalres['GroupName'];
 
 //tocome back to below code.... i wonder if you  for grades
       
-$learnerMarksQuery = "  
-  SELECT lt.LearnerId, lt.Grade, ls.*, u.Name, u.Surname,
-         lam.MarksObtained, lam.Attendance, lam.AttendanceReason, lam.Submission, lam.SubmissionReason
-  FROM learners AS lt
-  JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-  JOIN users AS u ON lt.LearnerId = u.Id
-  LEFT JOIN learneractivitymarks AS lam ON lt.LearnerId = lam.LearnerId AND lam.ActivityId = $activityid
-  WHERE ls.SubjectId = $subject 
-    AND ls.Status = 'Active' 
+$learnerMarksQuery = "
+  SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName,
+         lam.MarksObtained, lam.Attendance, lam.AttendanceReason, 
+         lam.Submission, lam.SubmissionReason
+  FROM learners lt
+  JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
+  JOIN users u ON lt.LearnerId = u.Id
+  JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
+  JOIN classes c ON lc.ClassID = c.ClassID
+  LEFT JOIN learneractivitymarks lam 
+    ON lt.LearnerId = lam.LearnerId AND lam.ActivityId = $activityid
+  WHERE lt.Grade = $grade
+    AND lt.Math > 0
+    AND ls.SubjectId = $subject
+    AND ls.Status = 'Active'
     AND ls.ContractExpiryDate > CURDATE()
+    AND c.GroupName = '$group'
 ";
+
 
 
       $results = $connect->query($learnerMarksQuery);
@@ -124,7 +134,6 @@ $learnerMarksQuery = "
                 </div>
 
                 <div class="button-container">
-                  <button type="submit" name="submit" class="btn btn-success"><i class="fa fa-check-circle"></i> Submit Learner Data</button>
                   <a href="feedback.php" class="btn btn-info"><i class="fa fa-commenting"></i> Provide Feedback to Parents</a>
                   <a href="classlist.php" class="btn btn-warning"><i class="fa fa-users"></i> Create Class List</a>
                 </div>

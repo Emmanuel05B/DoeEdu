@@ -11,7 +11,7 @@ if (!isset($_SESSION['email'])) {
 include('../partials/connect.php');
 
 $tutorId = $_SESSION['user_id']; // Logged-in tutor id
-
+ 
 ?>
 
 <?php include("tutorpartials/head.php"); ?>
@@ -49,6 +49,7 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
             </thead>
             <tbody>
               <?php
+              //need to get the group as well  to come bacck
               $stmt = $connect->prepare("
                 SELECT oa.Id, oa.Title, oa.Topic, oa.Grade, s.SubjectName, oa.DueDate
                 FROM onlineactivities oa

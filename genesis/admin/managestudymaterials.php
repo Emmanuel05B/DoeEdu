@@ -181,8 +181,8 @@ include("adminpartials/head.php");
 
 </div>
 
-<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
-<script src="../bootstrap/js/bootstrap.min.js"></script>
-<script src="../dist/js/app.min.js"></script>
+
+<script src="dist/js/demo.js"></script>   <!-- White MainSidebar -->
+
 </body>
 </html>

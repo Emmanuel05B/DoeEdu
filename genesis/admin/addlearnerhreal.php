@@ -28,8 +28,6 @@ require '../../vendor/autoload.php';
 // Initialize error handling f
 $errors = [];
 
-$userId = $_SESSION['user_id'];
-
 // Handle form submission for parent details
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Learner info from POST
@@ -241,68 +239,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $learner_id, $subject_id, $mathsTarget, $mathsCurrent, $number_of_terms, $contract_expiry_date, $status);
             $stmt2->execute();
             $stmt2->close();
-
-            // --------------------- CLASS ASSIGNMENT LOGIC -----------------------
-
-            $maxLearnersPerClass = 15;
-
-            // First, try to find an existing available class
-            $stmtClass = $connect->prepare("SELECT ClassID, CurrentLearnerCount FROM classes 
-              WHERE SubjectID = ? AND Grade = ? AND Status != 'Full' ORDER BY CreatedAt ASC LIMIT 1");
-
-            $stmtClass->bind_param("ii", $subject_id, $learner_grade);
-            $stmtClass->execute();
-            $result = $stmtClass->get_result();
-
-            if ($result->num_rows > 0) {
-                $class = $result->fetch_assoc();
-                $classId = $class['ClassID'];
-                $currentCount = $class['CurrentLearnerCount'] + 1;
-
-                // Update class with new count and possibly status
-                $status = ($currentCount >= $maxLearnersPerClass) ? 'Full' : 'Not Full';
-                $update = $connect->prepare("UPDATE classes SET CurrentLearnerCount = ?, Status = ? WHERE ClassID = ?");
-                $update->bind_param("isi", $currentCount, $status, $classId);
-                $update->execute();
-                $update->close();
-
-            } else {
-                // No available(Not Full) class — create a new one
-                $groupQuery = $connect->prepare("SELECT GroupName FROM classes 
-                    WHERE SubjectID = ? AND Grade = ? ORDER BY GroupName DESC LIMIT 1");
-                $groupQuery->bind_param("ii", $subject_id, $learner_grade);
-                $groupQuery->execute();
-                $groupResult = $groupQuery->get_result();
-                
-                if ($groupResult->num_rows > 0) {
-                    $lastGroupName = $groupResult->fetch_assoc()['GroupName'];
-                    $newGroupName = chr(ord($lastGroupName) + 1); // A → B → C, etc.
-                } else {
-                    $newGroupName = 'A'; // First class
-                }
-
-                $status = 'Not Full';
-                $currentCount = 1;
-                $tutorId = 25; // Optional: fetch based on subject-grade-tutor link if you want
-
-                $insertClass = $connect->prepare("INSERT INTO classes 
-                  (SubjectID, Grade, GroupName, CurrentLearnerCount, TutorID, Status, CreatedAt)
-                  VALUES (?, ?, ?, ?, ?, ?, NOW())");
-
-                $insertClass->bind_param("iisiss", $subject_id, $learner_grade, $newGroupName, $currentCount, $tutorId, $status);
-                $insertClass->execute();
-                $classId = $connect->insert_id;
-                $insertClass->close();
-            }
-
-            $stmtClass->close();
-
-            // ---------- Link learner to this class ----------
-            $assign = $connect->prepare("INSERT INTO learnerclasses (LearnerID, ClassID, AssignedAt) VALUES (?, ?, NOW())");
-            $assign->bind_param("ii", $learner_id, $classId);
-            $assign->execute();
-            $assign->close();
-
           }
 
           // For Physics
@@ -330,71 +266,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $learner_id, $subject_id, $physicsTarget, $physicsCurrent, $number_of_terms, $contract_expiry_date, $status);
             $stmt2->execute();
             $stmt2->close();
-
-
-            // --------------------- CLASS ASSIGNMENT LOGIC -----------------------
-
-            $maxLearnersPerClass = 15;
-
-            // First, try to find an existing available class
-            $stmtClass = $connect->prepare("SELECT ClassID, CurrentLearnerCount FROM classes 
-              WHERE SubjectID = ? AND Grade = ? AND Status != 'Full' ORDER BY CreatedAt ASC LIMIT 1");
-
-            $stmtClass->bind_param("ii", $subject_id, $learner_grade);
-            $stmtClass->execute();
-            $result = $stmtClass->get_result();
-
-            if ($result->num_rows > 0) {
-                $class = $result->fetch_assoc();
-                $classId = $class['ClassID'];
-                $currentCount = $class['CurrentLearnerCount'] + 1;
-
-                // Update class with new count and possibly status
-                $status = ($currentCount >= $maxLearnersPerClass) ? 'Full' : 'Not Full';
-                $update = $connect->prepare("UPDATE classes SET CurrentLearnerCount = ?, Status = ? WHERE ClassID = ?");
-                $update->bind_param("isi", $currentCount, $status, $classId);
-                $update->execute();
-                $update->close();
-
-            } else {
-                // No available class — create a new one
-                $groupQuery = $connect->prepare("SELECT GroupName FROM classes 
-                    WHERE SubjectID = ? AND Grade = ? ORDER BY GroupName DESC LIMIT 1");
-                $groupQuery->bind_param("ii", $subject_id, $learner_grade);
-                $groupQuery->execute();
-                $groupResult = $groupQuery->get_result();
-                
-                if ($groupResult->num_rows > 0) {
-                    $lastGroupName = $groupResult->fetch_assoc()['GroupName'];
-                    $newGroupName = chr(ord($lastGroupName) + 1); // A → B → C, etc.
-                } else {
-                    $newGroupName = 'A'; // First class
-                }
-
-                $status = 'Not Full';
-                $currentCount = 1;
-                $tutorId = 25; // Optional: fetch based on subject-grade-tutor link if you want
-
-                $insertClass = $connect->prepare("INSERT INTO classes 
-                  (SubjectID, Grade, GroupName, CurrentLearnerCount, TutorID, Status, CreatedAt)
-                  VALUES (?, ?, ?, ?, ?, ?, NOW())");
-
-                $insertClass->bind_param("iisiss", $subject_id, $learner_grade, $newGroupName, $currentCount, $tutorId, $status);
-                $insertClass->execute();
-                $classId = $connect->insert_id;
-                $insertClass->close();
-            }
-
-            $stmtClass->close();
-
-            // ---------- Link learner to this class ----------
-            $assign = $connect->prepare("INSERT INTO learnerclasses (LearnerID, ClassID, AssignedAt) VALUES (?, ?, NOW())");
-            $assign->bind_param("ii", $learner_id, $classId);
-            $assign->execute();
-            $assign->close();
-
-
-
           }
           //-----------------------------------------------------------------------------------------------------
 
@@ -402,7 +273,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Send confirmation emails
           //sendEmailToParent($parent_email, $parent_name, $learner_name);
-          //sendEmailToLearner($learner_email, $learner_name, $verificationToken);
+          sendEmailToLearner($learner_email, $learner_name, $verificationToken);
 
 
         } else {
@@ -437,6 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   }
 }
+
 
 
 /*/ Send email to parent
@@ -528,11 +400,10 @@ function sendEmailToLearner($learner_email, $learner_name, $verificationToken) {
   }
 }
 
-
-
 ?>
 
 <div class="wrapper"></div>
 
 </body>
 </html>
+

@@ -65,6 +65,7 @@ if (!isset($_SESSION['email'])) {
               <div class="col-sm-4">
                 <strong>Chapter:</strong> <?php echo $_GET['cha']; ?>
                 <input type="hidden" name="chapter" value="<?php echo $_GET['cha']; ?>">
+                <input type="hidden" name="group" value="<?php echo $_GET['group']; ?>">
               </div>
             </div>
 
@@ -366,12 +367,14 @@ if (!isset($_SESSION['email'])) {
 <!-- FastClick -->
 <script src="bower_components/fastclick/lib/fastclick.js"></script>
 
-<!-- AdminLTE for demo purposes -->
-<script src="dist/js/demo.js"></script>
 <!-- AdminLTE scripts -->
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="dist/js/adminlte.min.js"></script>
+
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+
+<script src="dist/js/demo.js"></script>
 
 
 

@@ -90,16 +90,24 @@ try {
 
     $connect->commit();
 
-    echo "<script>
-          Swal.fire({
-              icon: 'success',
-              title: 'Tutor Registered',
-              text: 'Tutor has been successfully added.',
-              confirmButtonText: 'OK'
-          }).then(() => {
-              window.location.href = 'viewtutors.php';
-          });
-          </script>";
+          echo "<script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Tutor Registered',
+                text: 'Tutor has been successfully added.',
+                showDenyButton: true,
+                
+                confirmButtonText: 'Assign to Class Now!',
+                denyButtonText: 'Ok, Back'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'assigntutorclass.php';
+                } else if (result.isDenied) {
+                    window.history.back();
+                }
+            });
+            </script>";
+
 
 } catch (Exception $e) {
     $connect->rollback();

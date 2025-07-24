@@ -61,6 +61,8 @@ if (!isset($_SESSION['email'])) {
         $grade = $_GET['gra'];
         $subject = $_GET['sub'];
         $chaptername = $_GET['cha'];
+        $group = $_GET['group'];
+
     ?>
             
 
@@ -97,6 +99,7 @@ if (!isset($_SESSION['email'])) {
                             <input type="hidden" id="urlParams" name="graid" value="<?php echo $grade ?>">
                             <input type="hidden" id="urlParams" name="subid" value="<?php echo $subject ?>">
                             <input type="hidden" id="urlParams" name="chaid" value="<?php echo $chaptername ?>">
+                            <input type="hidden" id="urlParams" name="group" value="<?php echo $group ?>">
 
                         </tr>
                        

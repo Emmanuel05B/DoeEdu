@@ -31,6 +31,7 @@ $tutorId = $_SESSION['user_id']; // your session should store user id here
 $grade    = $_POST['grade'] ?? '';
 $subject  = $_POST['subject'] ?? '';
 $chapter  = $_POST['chapter'] ?? '';
+$group  = $_POST['group'] ?? '';
 $title    = $_POST['activity_title'] ?? '';
 $dueDate  = $_POST['due_date'] ?? '';
 $dueTime  = $_POST['due_time'] ?? '';
@@ -65,15 +66,14 @@ $connect->begin_transaction();
 
 try {
     // Prepare insert into onlineactivities
-    $stmt = $connect->prepare("INSERT INTO onlineactivities (TutorId, SubjectName, Grade, Topic, Title, Instructions, TotalMarks, DueDate, CreatedAt, ImagePath) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $connect->prepare("INSERT INTO onlineactivities (TutorId, SubjectName, Grade, Topic, Title, Instructions, TotalMarks, DueDate, CreatedAt, ImagePath, GroupName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     if (!$stmt) {
         throw new Exception("Prepare failed: (" . $connect->errno . ") " . $connect->error);
     }
 
     // Bind parameters
-    // Types: i=int, s=string
     $dueDateTime = $dueDate . ' ' . ($dueTime ?? '00:00:00'); // combine date and time if you want datetime, adjust if DueDate column is DATE only
-    $stmt->bind_param("isisssisss", $tutorId, $subject, $grade, $chapter, $title, $instructions, $totalMarks, $dueDateTime, $createdAt, $imagePath);
+    $stmt->bind_param("isisssissss", $tutorId, $subject, $grade, $chapter, $title, $instructions, $totalMarks, $dueDateTime, $createdAt, $imagePath, $group);
 
     if (!$stmt->execute()) {
         throw new Exception("Execute failed: (" . $stmt->errno . ") " . $stmt->error);

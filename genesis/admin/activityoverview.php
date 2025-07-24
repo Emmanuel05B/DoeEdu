@@ -9,15 +9,16 @@ if (!isset($_SESSION['email'])) {
 include("adminpartials/head.php");
 include('../partials/connect.php');
 
-// Get activity ID from URL
+// Get activity ID
 if (!isset($_GET['activityId'])) {
   echo "<h3 class='text-center text-danger'>No activity selected.</h3>";
   exit();
 }
 $activityId = intval($_GET['activityId']);
 
-// Get activity details
-$actStmt = $connect->prepare("SELECT Title, Grade, Topic, Instructions, DueDate, CreatedAt, TotalMarks, SubjectName FROM onlineactivities WHERE Id = ?");
+// Get activity details including last feedback date
+$actStmt = $connect->prepare("SELECT Title, Grade, Topic, Instructions, DueDate, CreatedAt, TotalMarks, SubjectName, LastFeedbackSent, GroupName
+FROM onlineactivities WHERE Id = ?");
 $actStmt->bind_param("i", $activityId);
 $actStmt->execute();
 $activity = $actStmt->get_result()->fetch_assoc();
@@ -25,19 +26,34 @@ $actStmt->close();
 
 $subjectId = $activity['SubjectName'];
 $grade = $activity['Grade'];
+$last_feedback_date = $activity['LastFeedbackSent'];
+$group = $activity['GroupName'];
 
-// Get learner IDs assigned to this subject
+// Get learner IDs..... we have to update this part to get them by group also
 $learnerIds = [];
-$learnerStmt = $connect->prepare("SELECT LearnerId FROM learnersubject WHERE SubjectId = ?");
-$learnerStmt->bind_param("i", $subjectId);
+
+
+$learnerStmt = $connect->prepare("
+  SELECT DISTINCT lt.LearnerId
+  FROM learners lt
+  JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
+  JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
+  JOIN classes c ON lc.ClassID = c.ClassID
+  WHERE lt.Grade = ? AND ls.SubjectId = ? AND c.GroupName = ? AND ls.ContractExpiryDate > CURDATE()
+");
+$learnerStmt->bind_param("iis", $grade, $subjectId, $group);
 $learnerStmt->execute();
+
 $result = $learnerStmt->get_result();
+$learnerIds = [];
+
 while ($row = $result->fetch_assoc()) {
   $learnerIds[] = $row['LearnerId'];
 }
 $learnerStmt->close();
 
 $totalAssigned = count($learnerIds);
+
 
 // Get learner details
 if (!empty($learnerIds)) {
@@ -51,28 +67,24 @@ if (!empty($learnerIds)) {
   $learners = false;
 }
 
-// Score calculations
+// Score calculation
 $completed = 0;
 $totalScores = [];
-
 foreach ($learnerIds as $userId) {
   $answerStmt = $connect->prepare("SELECT oq.CorrectAnswer, la.SelectedAnswer FROM learneranswers la JOIN onlinequestions oq ON la.QuestionId = oq.Id WHERE la.UserId = ? AND la.ActivityId = ?");
   $answerStmt->bind_param("ii", $userId, $activityId);
   $answerStmt->execute();
   $answers = $answerStmt->get_result();
-
   $correct = 0;
   $total = 0;
   while ($row = $answers->fetch_assoc()) {
     $total++;
     if ($row['SelectedAnswer'] === $row['CorrectAnswer']) $correct++;
   }
-
   if ($total > 0) {
     $completed++;
     $totalScores[] = round(($correct / $total) * 100);
   }
-
   $answerStmt->close();
 }
 
@@ -81,6 +93,10 @@ $completionRate = $totalAssigned > 0 ? round(($completed / $totalAssigned) * 100
 $averageScore = count($totalScores) > 0 ? round(array_sum($totalScores) / count($totalScores)) : 0;
 $highestScore = count($totalScores) > 0 ? max($totalScores) : 0;
 $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
+
+$now = new DateTime();
+$dueDate = new DateTime($activity['DueDate']);
+$isClosed = $now > $dueDate;
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -95,8 +111,7 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
     </section>
 
     <section class="content">
-
-      <!-- Activity Details with stats -->
+      <!-- Activity Info Box -->
       <div class="box box-info">
         <div class="box-header with-border">
           <h3 class="box-title"><i class="fa fa-info-circle"></i> Activity Details</h3>
@@ -108,29 +123,19 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
               <p><strong>Grade:</strong> <?= htmlspecialchars($activity['Grade']) ?></p>
               <p><strong>Topic:</strong> <?= htmlspecialchars($activity['Topic']) ?></p>
               <p><strong>Instructions:</strong> <?= nl2br(htmlspecialchars($activity['Instructions'])) ?></p>
-            <br>
             </div>
             <div class="col-md-4">
               <p><strong>Due Date:</strong> <?= date("F j, Y", strtotime($activity['DueDate'])) ?></p>
               <p><strong>Created At:</strong> <?= date("F j, Y", strtotime($activity['CreatedAt'])) ?></p>
               <p><strong>Total Marks:</strong> <?= $activity['TotalMarks'] ?></p>
-              
               <p><strong>Status:</strong>
-                <?php
-                  $now = new DateTime(); // current date and time
-                  $dueDate = new DateTime($activity['DueDate']); // due date from DB
-
-                  if ($now <= $dueDate) {
-                    echo '<span class="label label-success">Open/Available</span>';
-                  } else {
-                    echo '<span class="label label-danger">Closed/Past Due</span>';
-                  }
+                <?= $isClosed
+                  ? '<span class="label label-danger">Closed/Past Due</span>'
+                  : '<span class="label label-success">Open/Available</span>';
                 ?>
               </p>
-
-            <br>
             </div>
-             <div class="col-md-4">
+            <div class="col-md-4">
               <p><strong>Assigned Learners:</strong> <?= $totalAssigned ?></p>
               <p><strong>Completed:</strong> <?= $completed ?></p>
               <p><strong>Not Submitted:</strong> <?= $notSubmitted ?></p>
@@ -140,7 +145,7 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
         </div>
       </div>
 
-      <!-- Scores Overview -->
+      <!-- Score Cards -->
       <div class="row" style="margin-bottom: 30px;">
         <div class="col-md-4">
           <div class="box box-solid box-primary text-center">
@@ -162,12 +167,43 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
         </div>
       </div>
 
-      <!-- Learner Table -->
+      <!-- Learner Table + Feedback -->
       <div class="box box-primary">
         <div class="box-header with-border">
           <h3 class="box-title"><i class="fa fa-users"></i> Learner Performance Summary</h3>
         </div>
         <div class="box-body table-responsive">
+
+          <!-- Feedback section -->
+          <?php if ($isClosed): ?>
+            <form id="feedbackForm" action="send_feedback.php" method="post">
+              <input type="hidden" name="activityId" value="<?= $activityId ?>">
+              <div class="row">
+                <div class="col-md-6">
+                  <button type="button" class="btn btn-danger" id="sendFeedbackBtn" style="margin-bottom: 15px;">
+                    <i class="fa fa-envelope"></i> Send Feedback to Parents (Not Submitted)
+                  </button>
+                </div>
+                <div class="col-md-6 text-right" style="padding-top: 10px;">
+                  <?php if (!empty($last_feedback_date)): ?>
+                    <div style="color: #555;">
+                      <i class="fa fa-calendar"></i> Last feedback sent on:
+                      <strong><?= date('d M Y, H:i', strtotime($last_feedback_date)) ?></strong>
+                    </div>
+                  <?php else: ?>
+                    <div style="color: #777;">
+                      <i class="fa fa-info-circle"></i> No feedback has been sent yet.
+                    </div>
+                  <?php endif; ?>
+                </div>
+              </div>
+            </form>
+          <?php else: ?>
+            <div class="alert alert-warning">
+              <i class="fa fa-info-circle"></i> Feedback is only available after the due date has passed.
+            </div>
+          <?php endif; ?>
+
           <table class="table table-bordered table-striped table-hover">
             <thead style="background-color: #3c8dbc; color: white;">
               <tr>
@@ -201,36 +237,26 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
                   }
                   $scoreStmt->close();
 
-                  if ($answered > 0) {
-                    $status = "<span class='badge bg-green'>Completed</span>";
-                    $scorePercent = round(($correct / $answered) * 100);
-                    $scoreDisplay = "<div class='progress' style='height: 18px; margin-bottom: 0;'>
-                                      <div class='progress-bar progress-bar-success' role='progressbar' style='width: $scorePercent%;'>
-                                        $scorePercent%
-                                      </div>
-                                     </div>";
-                  } else {
-                    $status = "<span class='badge bg-warning'>Not Submitted</span>";
-                    $scoreDisplay = "-";
-                  }
+                  $status = $answered > 0 ? "<span class='badge bg-green'>Completed</span>" : "<span class='badge bg-warning'>Not Submitted</span>";
+                  $scoreDisplay = $answered > 0
+                    ? "<div class='progress' style='height: 18px; margin-bottom: 0;'><div class='progress-bar progress-bar-success' role='progressbar' style='width: " . round(($correct / $answered) * 100) . "%;'>" . round(($correct / $answered) * 100) . "%</div></div>"
+                    : "-";
 
-
-                         echo "<tr>
+                  echo "<tr>
                           <td>" . htmlspecialchars($learner['Name']) . "</td>
                           <td>" . htmlspecialchars($learner['Surname']) . "</td>
                           <td class='text-center'>$status</td>
-                          <td class='text-center' <div style='font-weight: bold; color: #333;'>$correct / $answered</div></td>
-                          <td class='text-center'>
-                            $scoreDisplay
-                            </td>
+                          <td class='text-center'><div style='font-weight: bold;'>$correct / $answered</div></td>
+                          <td class='text-center'>$scoreDisplay</td>
                         </tr>";
                 }
               } else {
-                echo "<tr><td colspan='4' class='text-center'>No learners assigned.</td></tr>";
+                echo "<tr><td colspan='5' class='text-center'>No learners assigned.</td></tr>";
               }
               ?>
             </tbody>
           </table>
+
         </div>
       </div>
 
@@ -244,5 +270,24 @@ $lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="dist/js/adminlte.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.getElementById('sendFeedbackBtn')?.addEventListener('click', function () {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will send feedback to the parents of all learners who did not submit the activity.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, send it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.disabled = true; // Disable button after click to avoid duplicates
+        document.getElementById('feedbackForm').submit();
+      }
+    });
+  });
+</script>
 </body>
 </html>

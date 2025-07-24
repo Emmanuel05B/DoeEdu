@@ -37,11 +37,12 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
           <table class="table table-bordered table-hover" id="activitiesTable" style="width:100%;">
             <thead style="background-color: #3c8dbc; color: white;">
               <tr>
-                <th>#</th>
+                
                 <th>Title</th>
                 <th>Topic</th>
                 <th>Grade</th>
                 <th>Subject</th>
+                <th>Group</th>
                 <th>Due Date</th>
                 <th>Click</th>
                 <th>Click</th>
@@ -65,10 +66,10 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
               } else {
                 while ($row = $result->fetch_assoc()) {
                   echo "<tr>
-                          <td>" . htmlspecialchars($row['Id']) . "</td>
                           <td>" . htmlspecialchars($row['Title']) . "</td>
                           <td>" . htmlspecialchars($row['Topic']) . "</td>
                           <td>" . htmlspecialchars($row['Grade']) . "</td>
+                          <td>" . htmlspecialchars($row['SubjectName']) . "</td>
                           <td>" . htmlspecialchars($row['SubjectName']) . "</td>
                           <td>" . htmlspecialchars($row['DueDate']) . "</td>
                           <td><a href='viewactivity.php?activityId=" . intval($row['Id']) . "' class='btn btn-block btn-primary'>View/Edit</a></td>
@@ -93,6 +94,7 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
 <script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <script src="dist/js/adminlte.min.js"></script>
+<script src="dist/js/demo.js"></script><!-- white mainsidebar -->
 
 <script>
   $(function () {
@@ -103,6 +105,7 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
     });
   });
 </script>
+
 
 </body>
 </html>
