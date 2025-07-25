@@ -42,21 +42,32 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
 
               <i class="fa fa-envelope-o"></i>
-              <span class="label label-success">EEEEE</span>
+              <span class="label label-success">25</span>
             </a>
             <ul class="dropdown-menu">
-              <li class="header">You have EEEEE messages</li>
+              <li class="header">You have 25 messages</li>
               <li>
                 <!-- inner menu: contains the actual data -->
                 <ul class="menu">
 
                 <?php
                   
-                  $sql = "SELECT * FROM users";  //comeback for condition
+                 // $sql = "SELECT * FROM tutors";  //comeback for condition
+                  $sql = "
+                    SELECT 
+                        t.TutorId, u.Name, u.Surname, u.Email, u.Contact, u.Gender, t.Availability, t.ProfilePicture, 
+                        GROUP_CONCAT(DISTINCT s.SubjectName SEPARATOR ', ') AS Subjects
+                    FROM tutors t
+                    JOIN users u ON t.TutorId = u.Id
+                    LEFT JOIN tutorsubject ts ON t.TutorId = ts.TutorId
+                    LEFT JOIN subjects s ON ts.SubjectId = s.SubjectId
+                    GROUP BY t.TutorId
+                ";
                   $results = $connect->query($sql);
                   while($final = $results->fetch_assoc()) { ?>
 
                     <?php 
+                    /*
                     $currentTime = time();
                     $recievedtime = strtotime($final['CreatedAt']);
                     $timepast = $currentTime - $recievedtime;
@@ -78,17 +89,17 @@
                     } else {
                         $_SESSION['elapsed'] = $inMonths . ' month/s'; 
                     }
-                    
+                    */
                     ?>
 
                   <li><!-- start message -->
-                    <a href="mread-mail.php?id=<?php echo $final['No'];?>">
+                    <a href="mread-mail.php?id=<?php echo $final['Email'];?>">
                       <div class="pull-left">
-                        <!-- <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">-->
-                        <img class="img-circle" >
+                        <img src="<?= !empty($tutor['ProfilePicture']) ? '' . htmlspecialchars($tutor['ProfilePicture']) : '../uploads/doe.jpg' ?>"class="img-circle" alt="User Image">
+
                       </div>
                       <h4>
-                        <?php echo $final['SenderName'];?> <!--sender Name -->
+                        <?php echo $final['Name'];?> <!--sender Name -->
                    
                         <?php
                         if (isset($_SESSION['elapsed'])) {
@@ -99,7 +110,7 @@
             
 
                       </h4>
-                      <p><?php echo $final['Subject'];?></p>  <!--message/title -->
+                      <p><?php echo $final['Surname'];?></p>  <!--message/title -->
                     </a>
                   </li>
                   <!-- end message -->
@@ -125,7 +136,7 @@
 
 
           <li class="dropdown notifications-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <a href="noticepage.php" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-bell-o"></i>
               <span class="label label-warning"><?php echo $noticesrow['countnotices'];?></span>
             </a>
@@ -134,7 +145,6 @@
               <li>
                 <!-- inner menu: contains the actual data -->
                 <ul class="menu">
-
                 <?php
                   
                   $sql = "SELECT * FROM users";  //comeback for condition
@@ -149,7 +159,7 @@
                   <?php } ?>
                 </ul>
               </li>
-              <li class="footer"><a href="#">View all</a></li>
+              <li class="footer"><a href="noticepage.php">View all</a></li>
             </ul>
           </li>
           <!-- Tasks: style can be found in dropdown.less -->
@@ -204,6 +214,31 @@
       </div>
     </nav>
   </header>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark" style="display: none;">
     <!-- Create the tabs -->

@@ -114,6 +114,7 @@ if ($resultSubjects) {
                     <div class="bubble-container">
                       <a href="addlearners.php" style="color: #1a73e8;" class="bubble">Register Learner</a>
                       <a href="addtutor.php" style="color: #1a73e8;" class="bubble">Register Tutor</a>
+                      <a href="manage_inviterequests.php" style="color: #1a73e8;" class="bubble">Requests</a>
                     </div>
                   </div>
                 </div>

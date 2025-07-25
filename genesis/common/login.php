@@ -289,6 +289,9 @@ if(isset($_POST['login'])){
           <button type="submit" class="loginbtn" name="login">Login</button>
           <label><input type="checkbox" checked="checked" name="remember"> Remember me</label>
         </div>
+        <div style="text-align:center; margin: 15px 0; font-size: 13px;">
+          Don't have an account? <a href="request_invite.php" style="color:#007bff; text-decoration:none;">Request an Invite</a>
+        </div>
 
         <div class="container" style="background-color:#f1f1f1">
           <button type="button" class="cancelbtn">Cancel</button>
