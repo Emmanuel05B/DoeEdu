@@ -65,7 +65,7 @@ if (!isset($_SESSION['email'])) {
     $header = "";
 
     if ($subjectId == 1) {
-        $header = "Grade 10 Mathematics Learners";
+        $header = "Grade 10 Mathematics,  Group-{$group} Learners";
         $sql = "
             SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
             FROM learners lt
@@ -80,7 +80,7 @@ if (!isset($_SESSION['email'])) {
               AND c.GroupName = '$group'
         ";
     } else if ($subjectId == 2) {
-        $header = "Grade 11 Mathematics Learners";
+        $header = "Grade 11 Mathematics, Group-{$group} Learners";
         $sql = "
             SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
             FROM learners lt
@@ -95,7 +95,7 @@ if (!isset($_SESSION['email'])) {
               AND c.GroupName = '$group'
         ";
     } else if ($subjectId == 3) {
-        $header = "Grade 12 Mathematics Learners";
+        $header = "Grade 12 Mathematics, Group-{$group} Learners";
         $sql = "
             SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
             FROM learners lt
@@ -110,7 +110,7 @@ if (!isset($_SESSION['email'])) {
               AND c.GroupName = '$group'
         ";
     } else if ($subjectId == 4) {
-        $header = "Grade 10 Physical Sciences Learners";
+        $header = "Grade 10 Physical Sciences, Group-{$group} Learners";
         $sql = "
             SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
             FROM learners lt
@@ -125,7 +125,7 @@ if (!isset($_SESSION['email'])) {
               AND c.GroupName = '$group'
         ";
     } else if ($subjectId == 5) {
-        $header = "Grade 11 Physical Sciences Learners";
+        $header = "Grade 11 Physical Sciences, Group-{$group} Learners";
         $sql = "
             SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
             FROM learners lt
@@ -140,7 +140,7 @@ if (!isset($_SESSION['email'])) {
               AND c.GroupName = '$group'
         ";
     } else if ($subjectId == 6) {
-        $header = "Grade 12 Physical Sciences Learners";
+        $header = "Grade 12 Physical Sciences, Group-{$group} Learners";
         $sql = "
             SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
             FROM learners lt

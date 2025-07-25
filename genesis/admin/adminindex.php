@@ -16,7 +16,7 @@ if (!isset($_SESSION['email'])) {
     margin: 15px 0;
   }
   .modal-header {
-    background-color: rgb(159, 176, 185);
+    background-color: rgba(166, 220, 248, 1);
     color: white;
     padding: 20px;
     border-bottom: 1px solid #eee;
@@ -35,22 +35,20 @@ if (!isset($_SESSION['email'])) {
   .notice:hover {
     background-color: #eef5fb;
   }
-  .notice.read {
-    background-color: #d9edf7;
-    text-decoration: line-through;
-    opacity: 0.7;
+  .modal-footer {
+    padding: 15px 20px;
+    background-color: #6cbedfff;
+    text-align: right;
+    border-top: 1px solid #ddd;
   }
-  .close-notice {
-    float: right;
-    padding: 6px 12px;
-    color: white;
-    background-color: #3c8dbc;
-    border-radius: 3px;
-    font-size: 12px;
-    cursor: pointer;
+  .modal-body p {
+    margin-bottom: 5px;
   }
-  .close-notice:hover {
-    background-color: #367fa9;
+  .modal-content {
+    box-shadow: 0 3px 9px rgba(0,0,0,0.3);
+  }
+  .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.3);
   }
 </style>
 
@@ -60,6 +58,7 @@ if (!isset($_SESSION['email'])) {
     <?php include("adminpartials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
+      <!-- cover section (untouched) -->
       <section class="content-header">
         <h1>Dashboard <small>Control panel</small></h1>
         <ol class="breadcrumb">
@@ -76,41 +75,63 @@ if (!isset($_SESSION['email'])) {
 
         <!-- Stat Boxes -->
         <div class="row">
-            <div class="col-lg-3 col-xs-6">
-              <div class="small-box bg-aqua">
-                <div class="inner"><h3>20</h3><p>Notifications</p></div>
-                <a href="noticepage.php">
-                  <div class="icon"><i class="fa fa-bell-o"></i></div>
-                </a>
+          <div class="col-lg-3 col-xs-6">
+            <div class="small-box" style="background-color: #7bd3f6ff;">
+              <div class="inner">
+                <h3><?= 25 ?></h3>
+                <p>Pending Registrations</p>
               </div>
+              <a href="pendingregistrations.php">
+                <div class="icon" style="font-size: 50px; top: 10px;">
+                  <i class="fa fa-user-plus"></i>
+                </div>
+              </a>
             </div>
+          </div>
 
-            <div class="col-lg-3 col-xs-6">
-              <div class="small-box bg-aqua">
-                <div class="inner"><h3>15</h3><p>New Message/s</p></div>
-                <a href="mmailbox.php">
-                  <div class="icon"><i class="fa fa-envelope-o"></i></div>
-                </a>
+          <div class="col-lg-3 col-xs-6">
+            <div class="small-box" style="background-color: #a0e7a0;">
+              <div class="inner">
+                <h3><?= 55 ?></h3>
+                <p>Resource Uploads</p>
               </div>
+              <a href="resources.php">
+                <div class="icon" style="font-size: 50px; top: 10px;">
+                  <i class="fa fa-upload"></i>
+                </div>
+              </a>
             </div>
+          </div>
 
-            <div class="col-lg-3 col-xs-6">
-              <div class="small-box bg-aqua">
-                <div class="inner"><h3>30</h3><p>Reports</p></div>
-                <a href="gradesreports.php">
-                  <div class="icon"><i class="fa fa-files-o"></i></div>
-                </a>
+          <div class="col-lg-3 col-xs-6">
+            <div class="small-box" style="background-color: #c9b6f2;">
+              <div class="inner">
+                <h3><?= 55 ?></h3>
+                <p>Learner/Tutor Performances</p>
               </div>
+              <a href="overview.php">
+                <div class="icon" style="font-size: 50px; top: 10px;">
+                  <i class="fa fa-line-chart"></i>
+                </div>
+              </a>
             </div>
+          </div>
 
-            <div class="col-lg-3 col-xs-6">
-              <div class="small-box bg-aqua">
-                <div class="inner"><h3><?php echo $row['count']; ?></h3><p>Learners Registered</p></div>
-                <a href="classes.php">
-                  <div class="icon"><i class="ion ion-person"></i></div>
-                </a>
+
+          <div class="col-lg-3 col-xs-6">
+            <div class="small-box" style="background-color: #b2ebf2;"> <!-- light aqua -->
+              <div class="inner">
+                <h3><?php echo $row['count']; ?></h3>
+                <p>Learners Registered</p>
               </div>
+              <a href="classes.php">
+                <div class="icon" style="font-size: 50px; top: 10px;">
+                  <i class="ion ion-person"></i>
+                </div>
+              </a>
             </div>
+          </div>
+
         </div>
 
         <div class="row">
@@ -231,55 +252,70 @@ if (!isset($_SESSION['email'])) {
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
-  $(document).ready(function () {
-    $('#myModal').modal('show');
-  });
+  <?php
+  include('../partials/connect.php');
+  $userId = $_SESSION['user_id'];
 
-  function markAsRead(element) {
-    const notice = element.closest('.notice');
-    notice.classList.add('read');
-  }
-</script>
+  // Load user data
+  $usql = "SELECT * FROM users WHERE Id = ?";
+  $stmtUser = $connect->prepare($usql);
+  $stmtUser->bind_param("i", $userId);
+  $stmtUser->execute();
+  $resultUser = $stmtUser->get_result();
+  $userData = $resultUser->fetch_assoc();
+  $stmtUser->close();
 
-<!-- Notification Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <a class="close" data-dismiss="modal" aria-label="Close">&times;</a>
-        <h3 class="modal-title" id="modalTitle">Notification Centre</h3>
-        <?php if (isset($_SESSION['succes'])) {
-          echo '<p>' . $_SESSION['succes'] . '</p>';
-          unset($_SESSION['succes']);
-        } ?>
-      </div>
-      <div class="modal-body">
-        <?php
-        $sql = "SELECT NoticeNo, Title, Content, Date, IsOpened FROM notices ORDER BY Date DESC";
-        $results = $connect->query($sql);
-        if ($results && $results->num_rows > 0):
-          while ($notice = $results->fetch_assoc()): ?>
-            <div class="notice <?= $notice['IsOpened'] ? 'read' : ''; ?>">
-              <p>
-                <strong style="color: blue;">Date:</strong> <?= date('Y-m-d', strtotime($notice['Date'])) ?>
-                <a href="readnotice.php?id=<?= $notice['NoticeNo'] ?>" class="close-notice" onclick="markAsRead(this)">Mark Read</a>
-              </p>
-              <p><strong style="color: blue;">Subject:</strong> <strong style="color: black;"><?= htmlspecialchars($notice['Title']) ?></strong></p>
-              <p><?= nl2br(htmlspecialchars($notice['Content'])) ?></p>
-            </div>
-            <hr class="dashline" />
-          <?php endwhile;
-        else: ?>
-          <p>No notices available.</p>
-        <?php endif; ?>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-default" data-dismiss="modal">Close</button>
+  // Fetch notices
+  $sql = "SELECT NoticeNo, Title, Content, Date FROM notices WHERE ExpiryDate >= CURDATE() ORDER BY Date DESC";
+  $results = $connect->query($sql);
+  ?>
+
+  <!-- Only show modal the first time -->
+  <?php if (!isset($_SESSION['seen_notification'])): ?>
+    <script>
+      $(document).ready(function () {
+        $('#myModal').modal('show');
+      });
+    </script>
+    <?php $_SESSION['seen_notification'] = true; ?>
+  <?php endif; ?>
+
+  <!-- Notification Modal -->
+  <div class="modal fade" id="myModal" role="dialog" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <a href="adminindex.php" class="close" data-dismiss="modal" onclick="closeModal()">&times;</a>
+          <h3 class="modal-title" id="modalTitle">Notification Centre (for now, will be about user registrations or deactivations)</h3>
+          <?php
+          if (isset($_SESSION['succes'])) {
+            echo '<p>' . $_SESSION['succes'] . '</p>';
+            unset($_SESSION['succes']);
+          }
+          ?>
+        </div>
+
+        <div class="modal-body">
+          <?php if ($results && $results->num_rows > 0): ?>
+            <?php while ($notice = $results->fetch_assoc()): ?>
+              <div class="notice" data-id="<?php echo $notice['NoticeNo']; ?>">
+                <p><strong style="color: blue;">Date:</strong> <?php echo date('Y-m-d', strtotime($notice['Date'])); ?></p>
+                <p><strong style="color: blue;">Subject:</strong> <strong style="color: black;"><?php echo htmlspecialchars($notice['Title']); ?></strong></p>
+                <p><?php echo nl2br(htmlspecialchars($notice['Content'])); ?></p>
+              </div>
+              <hr class="dashline" />
+            <?php endwhile; ?>
+          <?php else: ?>
+            <p>No notices available.</p>
+          <?php endif; ?>
+        </div>
+
+        <div class="modal-footer">
+          <a href="adminindex.php" class="close" data-dismiss="modal" onclick="closeModal()" class="btn btn-default">Close</a>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
 <?php include("adminpartials/queries.php"); ?>
 <script src="dist/js/demo.js"></script>

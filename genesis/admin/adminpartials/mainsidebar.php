@@ -41,14 +41,12 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
           <li><a href="admin.php"><i class="fa fa-circle-o"></i> Administration</a></li>          
           <li><a href="classes.php"><i class="fa fa-circle-o"></i> Classes</a></li>
           <li><a href="tutors.php"><i class="fa fa-circle-o"></i> Tutors</a></li>
-          <li><a href="noticepage.php"><i class="fa fa-circle-o"></i> Notices</a></li>
           <li><a href="admin_create_notice.php"><i class="fa fa-circle-o"></i> Create Notices</a></li>
 
 
           <li><a href="finances.php"><i class="fa fa-circle-o"></i> Finances</a></li>
 
           <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> Activity Manegement</a></li>
-          <li><a href="overview.php"><i class="fa fa-circle-o"></i> Activity Analysis</a></li>
           <li><a href="logout.php"><i class="fa fa-circle-o"></i> Log out</a></li>          
           <li><a href="manegeprofiles.php"><i class="fa fa-circle-o"></i> Registrations</a></li>
 
