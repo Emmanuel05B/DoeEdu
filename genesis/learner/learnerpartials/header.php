@@ -42,10 +42,10 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
 
               <i class="fa fa-envelope-o"></i>
-              <span class="label label-success">EEEEE</span>
+              <span class="label label-success">13</span>
             </a>
             <ul class="dropdown-menu">
-              <li class="header">You have EEEEE messages</li>
+              <li class="header">You have 13 messages</li>
               <li>
                 <!-- inner menu: contains the actual data -->
                 <ul class="menu">
