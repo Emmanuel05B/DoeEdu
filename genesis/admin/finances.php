@@ -86,7 +86,7 @@ include("adminpartials/head.php");
         </div>
       </div>
 
-      <!-- Status Links -->
+      <!-- Status Links  -->
       <div class="row">
         <div class="col-md-12">
           <div class="box-footer">

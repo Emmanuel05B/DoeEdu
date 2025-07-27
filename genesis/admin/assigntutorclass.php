@@ -21,7 +21,7 @@ include('../partials/connect.php');
 
     <section class="content">
       <div class="row">
-        <!-- Form Column -->
+        <!-- Form Column  -->
         <div class="col-md-5">
           <div class="box box-primary">
             <div class="box-body">

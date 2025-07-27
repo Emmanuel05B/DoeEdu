@@ -19,7 +19,7 @@ if (!isset($_SESSION['email'])) {
   <!-- Content Header (Page header) -->
 
 
-        <!-- ./col 555555555555555555555-->
+        <!-- ./col 55555555555555555555-->
   <section class="content">
   <body>
 

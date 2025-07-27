@@ -17,8 +17,6 @@ if (!isset($_SESSION['email'])) {
 <div class="wrapper">
 
   <?php include("adminpartials/header.php") ?>;
-
-  <!-- Left side column. contains the logo and sidebar -->
  
  <?php include("adminpartials/mainsidebar.php") ?>;
 
@@ -27,9 +25,7 @@ if (!isset($_SESSION['email'])) {
     <!-- Content Header (Page header) -->
     
         
-        <!-- ./col -->
-     
-        <!-- ./col -->
+  
       </div>
       
   <!-- /.control-sidebar -->
