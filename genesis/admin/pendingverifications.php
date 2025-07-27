@@ -22,11 +22,16 @@ $requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserTy
 
     <section class="content">
       <div class="box box-info">
-        <div class="box-header with-border">
-          <h3 class="box-title">Unverified Learners</h3>
+        <div class="box-header with-border d-flex justify-content-between align-items-center" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 class="box-title">Unverified Learners</h3>
+        <a href="#" id="sendAllBtn" class="btn btn-warning btn-sm">
+            Send Reminder to All
+        </a>
         </div>
+
         <div class="box-body">
           <div class="table-responsive">
+            
             <table id="inviteTable" class="table table-bordered table-striped">
               <thead style="background-color:#d1d9ff;">
                 <tr>
@@ -79,6 +84,28 @@ $requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserTy
 <script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <script src="dist/js/adminlte.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.getElementById("sendAllBtn").addEventListener("click", function(e) {
+    e.preventDefault(); // Prevent link from following
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will send a reminder email to ALL unverified learners!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, send them!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = "send_all_reminders.php";
+      }
+    });
+  });
+</script>
+
 
 <script>
   $(function () {
