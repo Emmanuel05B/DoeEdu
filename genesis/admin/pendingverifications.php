@@ -7,19 +7,7 @@ if (!isset($_SESSION['email'])) {
 include("adminpartials/head.php");
 include('../partials/connect.php');
 
-// Handle delete
-if (isset($_GET['delete_id'])) {
-    $delete_id = intval($_GET['delete_id']);
-    $stmt = $connect->prepare("DELETE FROM inviterequests WHERE id = ?");
-    $stmt->bind_param("i", $delete_id);
-    $stmt->execute();
-    $stmt->close();
-    $_SESSION['success_message'] = "Invite request deleted successfully.";
-    header('Location: manage_inviterequests.php');
-    exit;
-}
-
-$requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DESC");
+$requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserType = '2'");
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -29,13 +17,13 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
 
   <div class="content-wrapper">
     <section class="content-header">
-      <h1>Manage Pending Verificationd</h1>
+      <h1>Manage Pending Verifications</h1>
     </section>
 
     <section class="content">
       <div class="box box-info">
         <div class="box-header with-border">
-          <h3 class="box-title">Invite Requests</h3>
+          <h3 class="box-title">Unverified Learners</h3>
         </div>
         <div class="box-body">
           <div class="table-responsive">
@@ -45,8 +33,7 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
                   <th>Name</th>
                   <th>Surname</th>
                   <th>Email</th>
-                  <th>Message</th>
-                  <th>Requested At</th>
+                  <th>Registered At</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -54,26 +41,13 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
               <tbody>
                 <?php while ($req = $requests->fetch_assoc()): ?>
                   <tr>
-                    <td><?= htmlspecialchars($req['name']) ?></td>
-                    <td><?= htmlspecialchars($req['surname']) ?></td>
-                    <td><?= htmlspecialchars($req['email']) ?></td>
-                    <td style="white-space: pre-wrap;"><?= htmlspecialchars($req['message']) ?></td>
-                    <td><?= htmlspecialchars($req['created_at']) ?></td>
+                    <td><?= htmlspecialchars($req['Name']) ?></td>
+                    <td><?= htmlspecialchars($req['Surname']) ?></td>
+                    <td><?= htmlspecialchars($req['Email']) ?></td>
+                    <td><?= htmlspecialchars($req['RegistrationDate']) ?></td>
+                    <td><span class="label label-warning">Not Verified</span></td>
                     <td>
-                      <?php if ($req['IsAccepted']): ?>
-                        <span class="label label-success">Accepted</span>
-                      <?php else: ?>
-                        <span class="label label-default">Pending</span>
-                      <?php endif; ?>
-                    </td>
-                    <td>
-                      <?php if (!$req['IsAccepted']): ?>
-                        <a href="send_invite.php?id=<?= $req['id'] ?>"
-                           class="btn btn-success btn-xs swal-send">Send Invite</a>
-                      <?php endif; ?>
-                      <button class="btn btn-danger btn-xs swal-delete"
-                              data-id="<?= $req['id'] ?>"
-                              data-name="<?= htmlspecialchars($req['name']) ?>">Delete</button>
+                      <a href="send_reminder.php?id=<?= $req['Id'] ?>" class="btn btn-primary btn-xs">Send Reminder</a>
                     </td>
                   </tr>
                 <?php endwhile; ?>
@@ -83,8 +57,7 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
                   <th>Name</th>
                   <th>Surname</th>
                   <th>Email</th>
-                  <th>Message</th>
-                  <th>Requested At</th>
+                  <th>Registered At</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -107,7 +80,6 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
 <script src="dist/js/adminlte.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
 <script>
   $(function () {
     $('#inviteTable').DataTable({
@@ -118,26 +90,6 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
       "autoWidth": false
     });
 
-    // Delete with SweetAlert
-    $('.swal-delete').on('click', function () {
-      const id = $(this).data('id');
-      const name = $(this).data('name');
-      Swal.fire({
-        title: 'Are you sure?',
-        text: `Delete request from ${name}?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#aaa',
-        confirmButtonText: 'Yes, delete it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = `manage_inviterequests.php?delete_id=${id}`;
-        }
-      });
-    });
-
-    // Success alert (after redirect)
     <?php if (isset($_SESSION['success_message'])): ?>
       Swal.fire({
         icon: 'success',
