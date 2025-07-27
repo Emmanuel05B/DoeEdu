@@ -23,23 +23,24 @@ if (!isset($_SESSION['email'])) {
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-    <?php
-      include('../partials/connect.php');
-
-    ?> 
+       <h1>Class List <small>Learners</small></h1>
+        <ol class="breadcrumb">
+          <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+          <li class="active">Class List</li>
+        </ol>
+    <?php include('../partials/connect.php'); ?> 
     </section>
+
 
     <!-- Main content table---------------------------------------------> 
     <section class="content">
+
       <div class="row">
         <div class="col-xs-12">
           <!-- /.box -->
 
           <div class="box">
- 
-            <div class="box-header">
-              
-            </div>
+
             <!-- /.box-header -->
             <div class="box-body">
                 <div class="table-responsive"> <!-- the magic!!!! -->
@@ -159,7 +160,7 @@ if (!isset($_SESSION['email'])) {
     }
 
     if (!empty($header)) {
-        echo "<h3>$header</h3><br>";
+        echo "<h4>$header</h4><br>";
     }
 
     $results = $connect->query($sql);

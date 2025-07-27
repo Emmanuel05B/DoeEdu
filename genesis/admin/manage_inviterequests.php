@@ -29,9 +29,13 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
 
   <div class="content-wrapper">
     <section class="content-header">
-      <h1>Manage Invite Requests</h1>
+      <h1>Manage Invite Requests  <small>...</small></h1>
+        <ol class="breadcrumb">
+          <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+          <li class="active">Administration</li>
+        </ol>
     </section>
-
+ 
     <section class="content">
       <div class="box box-info">
         <div class="box-header with-border">

@@ -17,11 +17,14 @@ include('../partials/connect.php');
   <div class="content-wrapper">
     
     <section class="content-header">
-      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-        <div>
-          <h3>My Classe(s)</h3>
-          <p class="text-muted">Below are the classes you've created or assigned.</p>
-        </div>
+
+          <h1>My Classe(s) <small>Below are the classes you've been assigned.</small></h1>
+          <ol class="breadcrumb">
+            <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Classes</li>
+          </ol>
+
+       <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
 
         <div style="display: flex; gap: 10px; margin-top: 30px;">
           

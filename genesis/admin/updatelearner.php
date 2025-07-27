@@ -15,9 +15,16 @@ if (!isset($_SESSION['email'])) {
   <?php include("adminpartials/mainsidebar.php") ?>
 
   <div class="content-wrapper">
+
     <section class="content-header">
       <?php include('../partials/connect.php'); ?> 
-    </section>
+
+      <h1>Update Learner Details <small>Manage learner profile information</small></h1>
+      <ol class="breadcrumb">
+        <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Update Learner</li>
+      </ol>
+    </section><br>
 
     <section class="content">
       <div class="row">

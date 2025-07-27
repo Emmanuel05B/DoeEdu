@@ -65,12 +65,10 @@ $stmtReg->close();
         <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">Update Tutor</li>
       </ol>
-    </section>
+    </section><br>
   <?php $tutorId = isset($_GET['id']) ? intval($_GET['id']) : 0; ?>
 
-    
-
-
+ 
     <section class="content">
       <div class="row">
         <div class="col-md-12">

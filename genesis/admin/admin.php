@@ -11,7 +11,7 @@ if (!isset($_SESSION['email'])) {
 include('../partials/connect.php');
 include("adminpartials/head.php");
 
-// Fetch all tutors
+// Fetch all tutors 
 $tutors = [];
 $sqlTutors = "
     SELECT 
@@ -87,79 +87,79 @@ if ($resultSubjects) {
     <?php include("adminpartials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
-      <section class="content">
+   
         <section class="content-header">
           <h1>
             Administration
             <small>Admin</small>
           </h1>
           <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
             <li class="active">Administration</li>
           </ol><br>
-        </section><br>
-
-        <div class="row">
-          <div class="col-md-12"> 
-            <div class="nav-tabs-custom">
-              <ul class="nav nav-tabs">
-                <li class="active"><a href="#add" data-toggle="tab">Add Users</a></li>
-                <li><a href="#update" data-toggle="tab">Update Users</a></li>
-                <li><a href="#disable" data-toggle="tab">Disable Users</a></li>
-              </ul>
-              <div class="tab-content">
-                <div class="active tab-pane" id="add">
-                  <div class="profile-personal-info">
-                    <h4>Register</h4>
-                    <div class="bubble-container">
-                      <a href="addlearners.php" style="color: #1a73e8;" class="bubble">Register Learner</a>
-                      <a href="addtutor.php" style="color: #1a73e8;" class="bubble">Register Tutor</a>
-                      <a href="manage_inviterequests.php" style="color: #1a73e8;" class="bubble">Requests</a>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="tab-pane" id="update">
-                  <div class="profile-personal-info">
-                    <h4 class="text-primary mb-4">Tutors</h4>
-                    <div class="bubble-container">
-                      <?php if (empty($tutors)): ?>
-                        <span>No tutors found</span>
-                      <?php else: ?>
-                        <?php foreach ($tutors as $tutor): ?>
-                          <a href="updatetutors.php?id=<?= urlencode($tutor['TutorId']) ?>" class="bubble">
-                            <?= htmlspecialchars($tutor['Name'] . ' ' . $tutor['Surname']) ?>
-                          </a>
-                        <?php endforeach; ?>
-                      <?php endif; ?>
+        </section>
+        <section class="content">
+          <div class="row">
+            <div class="col-md-12"> 
+              <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                  <li class="active"><a href="#add" data-toggle="tab">Add Users</a></li>
+                  <li><a href="#update" data-toggle="tab">Update Users</a></li>
+                  <li><a href="#disable" data-toggle="tab">Disable Users</a></li>
+                </ul>
+                <div class="tab-content">
+                  <div class="active tab-pane" id="add">
+                    <div class="profile-personal-info">
+                      <h4>Register</h4>
+                      <div class="bubble-container">
+                        <a href="addlearners.php" style="color: #1a73e8;" class="bubble">Register Learner</a>
+                        <a href="addtutor.php" style="color: #1a73e8;" class="bubble">Register Tutor</a>
+                        <a href="manage_inviterequests.php" style="color: #1a73e8;" class="bubble">Requests</a>
+                      </div>
                     </div>
                   </div>
 
-                  <div class="profile-personal-info">
-                    <h4 class="text-primary mb-4">Learners</h4>
-                    <div class="bubble-container">
-                      <?php if (empty($subjects)): ?>
-                        <span>No subjects found</span>
-                      <?php else: ?>
-                        <?php foreach ($subjects as $subject): ?>
-                          <a href="updatelearner.php?id=<?= urlencode($subject['SubjectId']) ?>" class="bubble">
-                            <?= htmlspecialchars($subject['SubjectName']) ?>
-                          </a>
-                        <?php endforeach; ?>
-                      <?php endif; ?>
+                  <div class="tab-pane" id="update">
+                    <div class="profile-personal-info">
+                      <h4 class="text-primary mb-4">Tutors</h4>
+                      <div class="bubble-container">
+                        <?php if (empty($tutors)): ?>
+                          <span>No tutors found</span>
+                        <?php else: ?>
+                          <?php foreach ($tutors as $tutor): ?>
+                            <a href="updatetutors.php?id=<?= urlencode($tutor['TutorId']) ?>" class="bubble">
+                              <?= htmlspecialchars($tutor['Name'] . ' ' . $tutor['Surname']) ?>
+                            </a>
+                          <?php endforeach; ?>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+
+                    <div class="profile-personal-info">
+                      <h4 class="text-primary mb-4">Learners</h4>
+                      <div class="bubble-container">
+                        <?php if (empty($subjects)): ?>
+                          <span>No subjects found</span>
+                        <?php else: ?>
+                          <?php foreach ($subjects as $subject): ?>
+                            <a href="updatelearner.php?id=<?= urlencode($subject['SubjectId']) ?>" class="bubble">
+                              <?= htmlspecialchars($subject['SubjectName']) ?>
+                            </a>
+                          <?php endforeach; ?>
+                        <?php endif; ?>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div class="tab-pane" id="disable">
-                  <!-- Your disable tab content here -->
+                  <div class="tab-pane" id="disable">
+                    <!-- Your disable tab content here -->
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-      </section>
     </div>
 
     <div class="control-sidebar-bg"></div>

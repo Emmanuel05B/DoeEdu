@@ -12,12 +12,23 @@ if (!isset($_SESSION['email'])) {
   <?php include("adminpartials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
+
+        <section class="content-header">
+          <h1>
+            Learner Registration
+            <small>Form</small>
+          </h1>
+          <ol class="breadcrumb">
+            <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Administration</li>
+          </ol><br>
+        </section>
     <section class="content">
       <div class="row">
         <div class="col-xs-12">
           <div class="box">
             
-            <h3 class="box-title" style="text-align: center;">Learner Registration Form</h3>
+            <h3 class="box-title" style="text-align: center;"></h3>
            
             <div class="box-body">
               <form action="addlearnerh.php" method="post">

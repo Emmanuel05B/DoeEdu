@@ -43,11 +43,13 @@ if ($result) {
     <div class="content-wrapper">
  
           <section class="content-header">
+
+          <h1>All Tutors <small>View, update, or manage all registered tutors in the system.</small></h1>
+          <ol class="breadcrumb">
+            <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Classes</li>
+          </ol>
             <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                <div>
-                <h3>All Tutors</h3>
-                <small>View, update, or manage all registered tutors in the system.</small>
-                </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 30px;">
                 

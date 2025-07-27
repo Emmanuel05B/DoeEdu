@@ -22,6 +22,13 @@ if (!isset($_SESSION['email'])) {
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>Select a Chapter <small>Chapters</small></h1>
+      <ol class="breadcrumb">
+        <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Chapters</li>
+      </ol>
+    </section>
 
         <?php
         $subjectId = intval($_GET['subject']);  // Subject ID
@@ -33,7 +40,6 @@ if (!isset($_SESSION['email'])) {
         ?>
             <!-- Grade 10 Mathematics Control panel HTML goes here -->
                  <section class="content">
-                    <h2> Grade 10 Mathematics <small>Control panel</small> </h2>
 
                     <div class="row">
                         <div class="col-md-12">
@@ -41,7 +47,7 @@ if (!isset($_SESSION['email'])) {
                             <div class="box-header">
                             <i class="fa fa-edit"></i>
 
-                            <h3 class="box-title">Chapters</h3>
+                            <h3 class="box-title">Grade 10 Mathematics</h3>
                             </div>
                             <div class="box-body pad table-responsive">
                             <p>Select chapter</p>
@@ -124,7 +130,6 @@ if (!isset($_SESSION['email'])) {
         ?>
             <!-- Grade 10 Physical Sciences Control panel HTML goes here -->
                   <section class="content">
-                      <h2> Grade 10 Physical Sciences <small>Control panel</small> </h2>
 
                       <div class="row">
                         <div class="col-md-12">
@@ -132,7 +137,7 @@ if (!isset($_SESSION['email'])) {
                             <div class="box-header">
                               <i class="fa fa-edit"></i>
 
-                              <h3 class="box-title">Chapters</h3>
+                              <h3 class="box-title">Grade 10 Physical Sciences</h3>
                             </div>
                             <div class="box-body pad table-responsive">
                               <p>Select chapter</p>
@@ -215,7 +220,6 @@ if (!isset($_SESSION['email'])) {
         ?>
             <!-- Grade 11 Mathematics Control panel HTML goes here -->
                 <section class="content">
-                  <h2> Grade 11 Mathematics <small>Control panel</small> </h2>
 
                   <div class="row">
                     <div class="col-md-12">
@@ -223,7 +227,7 @@ if (!isset($_SESSION['email'])) {
                         <div class="box-header">
                           <i class="fa fa-edit"></i>
 
-                          <h3 class="box-title">Chapters</h3>
+                          <h3 class="box-title">Grade 11 Mathematics</h3>
                         </div>
                         <div class="box-body pad table-responsive">
                           <p>Select chapter</p>
@@ -306,7 +310,6 @@ if (!isset($_SESSION['email'])) {
         ?>
             <!-- Grade 11 Physical Sciences Control panel HTML goes here -->
                   <section class="content">
-                    <h2> Grade 11 Physical Sciences <small>Control panel</small> </h2>
 
                     <div class="row">
                       <div class="col-md-12">
@@ -314,7 +317,7 @@ if (!isset($_SESSION['email'])) {
                           <div class="box-header">
                             <i class="fa fa-edit"></i>
 
-                            <h3 class="box-title">Chapters</h3>
+                            <h3 class="box-title">Grade 11 Physical Sciences</h3>
                           </div>
                           <div class="box-body pad table-responsive">
                             <p>Select chapter</p>
@@ -396,7 +399,6 @@ if (!isset($_SESSION['email'])) {
         ?>
             <!-- Grade 12 Mathematics Control panel HTML goes here -->
                   <section class="content">
-                    <h2> Grade 12 Mathematics <small>Control panel</small> </h2>
 
                     <div class="row">
                       <div class="col-md-12">
@@ -404,7 +406,7 @@ if (!isset($_SESSION['email'])) {
                           <div class="box-header">
                             <i class="fa fa-edit"></i>
 
-                            <h3 class="box-title">Chapters</h3>
+                            <h3 class="box-title">Grade 12 Mathematics</h3>
                           </div>
                           <div class="box-body pad table-responsive">
                             <p>Select chapter</p>
@@ -486,7 +488,6 @@ if (!isset($_SESSION['email'])) {
         ?>
             <!-- Grade 12 Physical Sciences Control panel HTML goes here -->
                   <section class="content">
-                    <h2> Grade 12 Physical Sciences <small>Control panel</small> </h2>
 
                     <div class="row">
                       <div class="col-md-12">
@@ -494,7 +495,7 @@ if (!isset($_SESSION['email'])) {
                           <div class="box-header">
                             <i class="fa fa-edit"></i>
 
-                            <h3 class="box-title">Chapters</h3>
+                            <h3 class="box-title">Grade 12 Physical Sciences</h3>
                           </div>
                           <div class="box-body pad table-responsive">
                             <p>Select chapter</p>

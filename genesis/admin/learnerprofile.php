@@ -148,6 +148,14 @@ if (!isset($_SESSION['email'])) {
                         
                         ?>
 
+      <section class="content-header">
+        <h1>Learner Profile  <small>...</small></h1>
+        <ol class="breadcrumb">
+          <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+          <li class="active">Learner Profile</li>
+        </ol>
+      </section>
+
       <!-- Main content -->
       <section class="content">
 
