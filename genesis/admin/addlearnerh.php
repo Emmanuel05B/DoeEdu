@@ -82,17 +82,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $check->execute();
       $check->store_result();
       if ($check->num_rows > 0) {
-          echo "<script>
-          Swal.fire({
-              icon: 'error',
-              title: 'Learner Exists',
-              text: 'A learner with this email already exists.',
-              confirmButtonText: 'Go Back'
-          }).then(() => {
-              window.location = 'addlearners.php'; 
-          });
-          </script>";
-          exit;
+         
+          echo "<!DOCTYPE html>
+            <html>
+            <head>
+                <title>Learner Exists</title>
+                <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+            </head>
+            <body>
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Learner Exists',
+                    text: 'A learner with this email already exists.',
+                    confirmButtonText: 'Go Back'
+                }).then(() => {
+                    window.location = 'addlearners.php'; 
+                });
+            </script>
+            </body>
+            </html>";
+            exit;
       }
       $check->close();
 
@@ -402,7 +412,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Send confirmation emails
           //sendEmailToParent($parent_email, $parent_name, $learner_name);
-          //sendEmailToLearner($learner_email, $learner_name, $verificationToken);
+          sendEmailToLearner($learner_email, $learner_name, $verificationToken);
 
 
         } else {
@@ -498,20 +508,31 @@ function sendEmailToLearner($learner_email, $learner_name, $verificationToken) {
       <br><p>Best regards,</p><p><strong>DoE Team</strong></p>";
 
       if ($mail->send()) {
-        echo '<script>
-                Swal.fire({
-                    icon: "success",
-                    title: "Registration Successful",
-                    text: "Emails sent to both parent and learner.",
-                    confirmButtonColor: "#3085d6",
-                    confirmButtonText: "OK"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "addlearners.php";
-                    }
-                });
-              </script>';
-        exit;
+
+        echo '<!DOCTYPE html>
+          <html>
+          <head>
+            <title>Success</title>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+          </head>
+          <body>
+          <script>
+            Swal.fire({
+                icon: "success",
+                title: "Registration Successful",
+                text: "Emails sent to both parent and learner.",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "addlearners.php";
+                }
+            });
+          </script>
+          </body>
+          </html>';
+          exit;
+
       }
 
   } catch (Exception $e) {
