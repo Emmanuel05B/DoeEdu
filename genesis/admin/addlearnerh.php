@@ -417,33 +417,60 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         } else {
           $connect->rollback();
-          echo "<script>
-                  Swal.fire({
-                      icon: 'error',
-                      title: 'Registration Failed',
-                      text: 'Learner data could not be inserted.',
-                      confirmButtonText: 'OK'
-                  }).then(function() {
-                      window.location = 'addlearners.php'; 
-                  });
-                </script>";
-          exit();
+          echo '<!DOCTYPE html>
+            <html>
+            <head>
+              <title>Registration Failed</title>
+              <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            </head>
+            <body>
+            <script>
+              Swal.fire({
+                  icon: "error",
+                  title: "Registration Failed",
+                  text: "Learner data could not be inserted.",
+                  confirmButtonColor: "#d33",
+                  confirmButtonText: "OK"
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      window.location.href = "addlearners.php";
+                  }
+              });
+            </script>
+            </body>
+            </html>';
+            exit();
+
         }
       
 
     } catch (Exception $e) {
       // Rollback on any error
       $connect->rollback();
-      echo "<script>
+
+          echo '<!DOCTYPE html>
+            <html>
+            <head>
+              <title>Registration Failed</title>
+              <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            </head>
+            <body>
+            <script>
               Swal.fire({
-                  icon: 'error',
-                  title: 'Registration Failed',
-                  text: 'An error occurred during registration. " . $e->getMessage() . "',
-                  confirmButtonText: 'OK'
-              }).then(function() {
-                  window.location = 'addlearners.php'; 
+                  icon: "error",
+                  title: "Registration Failed",
+                  text: "An error occurred during registration. ' . addslashes($e->getMessage()) . '",
+                  confirmButtonColor: "#d33",
+                  confirmButtonText: "OK"
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      window.location.href = "addlearners.php";
+                  }
               });
-            </script>";
+            </script>
+            </body>
+            </html>';
+
     }
   }
 }
@@ -531,21 +558,37 @@ function sendEmailToLearner($learner_email, $learner_name, $verificationToken) {
           </script>
           </body>
           </html>';
+
           exit;
 
       }
 
   } catch (Exception $e) {
-      echo "<script>
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Email Send Failed',
-                  text: 'There was an issue sending the email to learner.',
-                  confirmButtonText: 'OK'
-              }).then(function() {
-                  window.location = 'addlearners.php'; 
+
+    echo '<!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <title>Email Send Failed</title>
+          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      </head>
+      <body>
+          <script>
+              document.addEventListener("DOMContentLoaded", function () {
+                  Swal.fire({
+                      icon: "error",
+                      title: "Email Send Failed",
+                      text: "There was an issue sending the email to learner.",
+                      confirmButtonText: "OK"
+                  }).then(function () {
+                      window.location.href = "addlearners.php";
+                  });
               });
-          </script>";
+          </script>
+      </body>
+      </html>';
+      exit;
+
   }
 }
 
