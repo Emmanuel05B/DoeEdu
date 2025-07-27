@@ -21,7 +21,7 @@ if (!isset($_SESSION['email'])) {
           <ol class="breadcrumb">
             <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
             <li class="active">Administration</li>
-          </ol><br>
+          </ol>
         </section>
     <section class="content">
       <div class="row">

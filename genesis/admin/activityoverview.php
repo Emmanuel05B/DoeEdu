@@ -106,8 +106,12 @@ $isClosed = $now > $dueDate;
 
   <div class="content-wrapper">
     <section class="content-header">
-      <h1>Activity Overview</h1>
-      <small class="text-muted">Summary for: <strong><?= htmlspecialchars($activity['Title']) ?> - Grade <?= $grade ?></strong></small>
+      <h1>Activity Overview<small class="text-muted">Summary for: <strong><?= htmlspecialchars($activity['Title']) ?> - Grade <?= $grade ?></strong></small></h1>
+      <ol class="breadcrumb">
+        <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Study Resources</li>
+      </ol>
+      
     </section>
 
     <section class="content">

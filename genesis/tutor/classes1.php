@@ -17,13 +17,11 @@ include('../partials/connect.php');
   <div class="content-wrapper">
     
     <section class="content-header">
-      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-        <div>
-          <h3>My Classe(s)</h3>
-          <p class="text-muted">Below are the classes you've created or assigned.</p>
-        </div>
- 
-      </div>
+       <h1>My Classe(s) <small>Below are the classes you've been assigned.</small></h1>
+          <ol class="breadcrumb">
+            <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Classes</li>
+          </ol>
     </section>
 
     <section class="content">
@@ -67,6 +65,7 @@ include('../partials/connect.php');
               <a href="actychapters.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Create Quiz</a>
               <a href="managestudymaterials.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Resources</a>
               <a href="alllearner.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Open Class</a>
+              <a href="addsubjectnotice.php?s=<?php echo $subjectId ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm">Notices</a>
             </div>
           </div>
         </div>
