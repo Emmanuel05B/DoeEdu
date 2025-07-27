@@ -1,207 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #e8eff1;
+      margin: 0;
+      padding: 0;
+    }
+
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-box {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      width: 70%;
+      max-width: 500px;
+      display: flex;
+      overflow: hidden;
+      flex-direction: row;
+    }
+
+    .image-column {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-column img {
+      width: 200px;
+      height: auto;
+      max-height: 200px;
+      object-fit: contain;
+    }
+
+    .form-column {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .form-column h2 {
+      text-align: center;
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .container {
+      padding: 8px 0;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 12px;
+      background-color: #f9f9f9;
+      box-sizing: border-box;
+    }
+
+    input[type="text"]:focus, input[type="password"]:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    .loginbtn {
+      width: 100%;
+      padding: 10px;
+      background-color: #0056b3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .loginbtn:hover {
+      background-color: #8eadcfff;
+    }
+
+    .cancelbtn:hover {
+      background-color: #c4c4c4;
+    }
+
+    .psw {
+      float: right;
+      font-size: 13px;
+    }
+
+    .error-message {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+  </style>
+</head>
+<body>
 
 <?php
 session_start();
-include('../partials/connect.php'); // adjust path to your DB connection
 
-$errors = [];
-$success = '';
+if(isset($_POST['login'])){
+    include('../partials/connect.php');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $surname = trim($_POST['surname'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $message = trim($_POST['message'] ?? '');
+    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+    $password = trim($_POST['password']);
 
-    // Validate inputs
-    if (empty($name)) {
-        $errors[] = "Name is required.";
-    }
-    if (empty($surname)) {
-        $errors[] = "Surname is required.";
-    }
+    $errors = [];
+
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "A valid Email is required.";
+        $errors[] = '<span class="error-message">Invalid Email Address.</span>';
     }
-    if (empty($_POST['agree'])) {
-        $errors[] = "You must agree to the Rules and Payment Terms before submitting.";
+    if (empty($password)) {
+        $errors[] = '<span class="error-message">Password is required.</span>';
     }
 
     if (empty($errors)) {
-        $sql = "INSERT INTO inviterequests (name, surname, email, message) VALUES (?, ?, ?, ?)";
+        $sql = "SELECT Id, Email, UserPassword, UserType FROM users WHERE Email = ?";
+
         if ($stmt = $connect->prepare($sql)) {
-            $stmt->bind_param("ssss", $name, $surname, $email, $message);
-            if ($stmt->execute()) {
-                $success = "Your invite request has been submitted. We will contact you soon!";
-                $name = $surname = $email = $message = '';
-            } else {
-                $errors[] = "Database error. Please try again later.";
-            }
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $user = $result->fetch_assoc();
             $stmt->close();
+
+            if (!empty($user)) {
+                if (password_verify($password, $user['UserPassword'])) {
+                    $_SESSION['user_id'] = $user['Id'];
+                    $_SESSION['UserType'] = $user['UserType'];
+                    $_SESSION['email'] = $user['Email'];
+
+                    switch ($user['UserType']) {
+                        case 0: // Admin
+                            header('Location: ../admin/adminindex.php');
+                            break;
+                        case 1: // Tutor
+                            header('Location: ../tutor/tutorindex.php');
+                            break;
+                        case 2: // Learner
+                            header('Location: ../learner/noticepage.php');
+                            break;
+                        default:
+                            $_SESSION['error_message'] = '<span class="error-message">Invalid user role.</span>';
+                            header('Location: login.php');
+                            break;
+                    }
+                    exit;
+                } else {
+                    $_SESSION['error_message'] = '<span class="error-message">Invalid password.</span>';
+                    header('Location: login.php');
+                    exit;
+                }
+            } else {
+                $_SESSION['error_message'] = '<span class="error-message">Email does not exist.</span>';
+                header('Location: login.php');
+                exit;
+            }
         } else {
-            $errors[] = "Database error. Please try again later.";
+            $_SESSION['error_message'] = '<span class="error-message">System error. Please try again later.</span>';
+            header('Location: login.php');
+            exit;
         }
+    } else {
+        $_SESSION['error_message'] = implode('<br>', $errors);
+        header('Location: login.php');
+        exit;
     }
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Request an Invite</title>
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #e8eff1;
-    margin: 0; padding: 0;
-  }
-  .container {
-    max-width: 450px;
-    margin: 50px auto;
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-  }
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-  }
-  label {
-    font-weight: bold;
-    display: block;
-    margin: 15px 0 5px;
-  }
-  input[type="text"],
-  input[type="email"],
-  textarea {
-    width: 100%;
-    padding: 8px;
-    font-size: 14px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-  }
-  textarea {
-    resize: vertical;
-    min-height: 80px;
-  }
-  button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px;
-    margin-top: 20px;
-    width: 100%;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  button:hover {
-    background-color: #0056b3;
-  }
-  .message {
-    text-align: center;
-    margin-top: 15px;
-    font-weight: bold;
-  }
-  .error {
-    color: red;
-  }
-  .success {
-    color: green;
-  }
-  a.back-link {
-    display: block;
-    text-align: center;
-    margin-top: 25px;
-    color: #007bff;
-    text-decoration: none;
-  }
-  a.back-link:hover {
-    text-decoration: underline;
-  }
 
-  .name-surname-row {
-    display: flex;
-    gap: 10px;
-  }
-  .name-surname-row > div {
-    flex: 1;
-  }
+<!-- Login Container -->
+<div class="login-container">
+  <div class="login-box">
+  <div class="form-column">
 
-  .info-section {
-    margin-top: 20px;
-    font-size: 14px;
-  }
-  .info-section p {
-    margin: 0 0 10px;
-  }
-  .info-section a {
-    color: #007bff;
-    text-decoration: none;
-  }
-  .info-section a:hover {
-    text-decoration: underline;
-  }
-  .checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-    font-weight: normal;
-  }
-</style>
-</head>
-<body>
-
-<div class="container">
-  <h2>Request an Invite</h2>
-
-  <?php if ($errors): ?>
-    <div class="message error">
-      <?php echo implode('<br>', $errors); ?>
+    <div class="image-column">
+      <img src="../admin/images/westtt.png" alt="Login Image">
     </div>
-  <?php elseif ($success): ?>
-    <div class="message success"><?php echo $success; ?></div>
-  <?php endif; ?>
+    
+      <h2>Login</h2>
 
-  <form action="request_invite.php" method="post" novalidate>
-    <div class="name-surname-row">
-      <div>
-        <label for="name">Name *</label>
-        <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($name ?? ''); ?>" required />
-      </div>
-      <div>
-        <label for="surname">Surname *</label>
-        <input type="text" id="surname" name="surname" value="<?php echo htmlspecialchars($surname ?? ''); ?>" required />
-      </div>
+      <?php
+      if (isset($_SESSION['error_message'])) {
+          echo $_SESSION['error_message'];
+          unset($_SESSION['error_message']);
+      }
+      ?>
+
+      <!-- Login Form -->
+      <form action="login.php" method="post">
+        <div class="container">
+          <label for="email"><b>Email</b></label>
+          <input type="text" placeholder="Enter Email" id="email" name="email" required>
+        </div>
+
+        <div class="container">
+          <label for="password"><b>Password</b></label>
+          <input type="password" placeholder="Enter Password" id="password" name="password" required>
+        </div>
+
+        <div class="container">
+          <button type="submit" class="loginbtn" name="login">Login</button>
+          <label><input type="checkbox" checked="checked" name="remember"> Remember me</label>
+        </div>
+        <div style="text-align:center; margin: 15px 0; font-size: 13px;">
+          Don't have an account? <a href="request_invite.php" style="color:#007bff; text-decoration:none;">Request an Invite</a>
+        </div>
+
+        <div class="container" style="background-color:#f1f1f1">
+          <button type="button" class="cancelbtn">Cancel</button>
+          <span class="psw">Reset <a href="forgotpassword.php">password?</a></span>
+        </div>
+      </form>
     </div>
-
-    <label for="email">Email *</label>
-    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email ?? ''); ?>" required />
-
-    <label for="message">Message (optional)</label>
-    <textarea id="message" name="message"><?php echo htmlspecialchars($message ?? ''); ?></textarea>
-
-    <div class="info-section">
-      <p>
-        📘 Please read our 
-        <a href="rules.php" target="_blank">Rules & T&Cs</a> and 
-        <a href="pricing.php" target="_blank">Fees & Payment Info</a> before requesting an invite.
-      </p>
-      <label class="checkbox-label">
-        <input type="checkbox" name="agree" required />
-        I have read and agree to the Rules, T&Cs, and Payment Policy.
-      </label>
-    </div>
-
-    <button type="submit">Submit Request</button>
-  </form>
-
-  <a href="login.php" class="back-link">Back to Login</a>
+  </div>
 </div>
 
 </body>

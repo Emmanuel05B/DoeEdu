@@ -29,7 +29,7 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
 
   <div class="content-wrapper">
     <section class="content-header">
-      <h1>Manage Invite Requests</h1>
+      <h1>Manage Pending Verificationd</h1>
     </section>
 
     <section class="content">

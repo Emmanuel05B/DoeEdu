@@ -97,7 +97,7 @@ if ($result) {
                                     <hr>
                                     <div class="btn-group">
                                         <a href="updatetutors.php?id=<?= $tutor['TutorId'] ?>" class="btn btn-sm btn-info">View / Update</a>
-                                        <a href="performance.php?id=<?= $tutor['TutorId'] ?>" class="btn btn-sm btn-success">View Performance</a>
+                                        <a href="overview.php?id=<?= $tutor['TutorId'] ?>" class="btn btn-sm btn-success">View Performance</a>
                                         <a href="mailto:<?= $tutor['Email'] ?>" class="btn btn-sm btn-primary">Contact</a>
                                     </div>
                                 </div>

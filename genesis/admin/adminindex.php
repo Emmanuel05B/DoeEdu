@@ -68,20 +68,40 @@ if (!isset($_SESSION['email'])) {
       </section>
 
       <section class="content">
-        <?php include('../partials/connect.php');
-        $sql = "SELECT COUNT(*) as count FROM learners";
+        <?php 
+        include('../partials/connect.php');
+        $sql = "SELECT COUNT(*) as count FROM users WHERE IsVerified = 1 AND UserType = '2'";
         $result = $connect->query($sql);
-        $row = $result->fetch_assoc(); ?>
+        $row = $result->fetch_assoc(); 
+
+
+        $requests = $connect->query("SELECT COUNT(*) as countinvites FROM inviterequests");
+        if ($requests) {
+            $rowinvites = $requests->fetch_assoc();
+            $inviteRequests = $rowinvites['countinvites'];
+        } else {
+            $inviteRequests = 0; // or handle error
+        }
+
+        $verify = $connect->query("SELECT COUNT(*) as countusers FROM users WHERE IsVerified = 0 AND UserType = '2' ");
+        if ($verify) {
+            $rowverify = $verify->fetch_assoc();
+            $users = $rowverify['countusers'];
+        } else {
+            $users = 0; // or handle error
+        }
+        
+        ?>
 
         <!-- Stat Boxes -->
         <div class="row">
           <div class="col-lg-3 col-xs-6">
             <div class="small-box" style="background-color: #7bd3f6ff;">
               <div class="inner">
-                <h3><?= 25 ?></h3>
-                <p>Pending Registrations</p>
+                <h3><?= $users ?></h3>
+                <p>Pending Verification</p>
               </div>
-              <a href="pendingregistrations.php">
+              <a href="pendingverifications.php">
                 <div class="icon" style="font-size: 50px; top: 10px;">
                   <i class="fa fa-user-plus"></i>
                 </div>
@@ -90,33 +110,18 @@ if (!isset($_SESSION['email'])) {
           </div>
 
           <div class="col-lg-3 col-xs-6">
-            <div class="small-box" style="background-color: #a0e7a0;">
-              <div class="inner">
-                <h3><?= 55 ?></h3>
-                <p>Resource Uploads</p>
-              </div>
-              <a href="resources.php">
-                <div class="icon" style="font-size: 50px; top: 10px;">
-                  <i class="fa fa-upload"></i>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-xs-6">
             <div class="small-box" style="background-color: #c9b6f2;">
               <div class="inner">
-                <h3><?= 55 ?></h3>
-                <p>Learner/Tutor Performances</p>
+                <h3><?= $inviteRequests ?></h3>
+                <p>Invite Requests</p>
               </div>
-              <a href="overview.php">
+              <a href="manage_inviterequests.php">
                 <div class="icon" style="font-size: 50px; top: 10px;">
-                  <i class="fa fa-line-chart"></i>
+                  <i class="fa fa-envelope-open"></i>
                 </div>
               </a>
             </div>
           </div>
-
 
           <div class="col-lg-3 col-xs-6">
             <div class="small-box" style="background-color: #b2ebf2;"> <!-- light aqua -->
@@ -131,6 +136,21 @@ if (!isset($_SESSION['email'])) {
               </a>
             </div>
           </div>
+
+          <div class="col-lg-3 col-xs-6">
+            <div class="small-box" style="background-color: #dd90d3ff;">
+              <div class="inner">
+                <h3><?= 55 ?></h3>
+                <p>Resource Uploads</p>
+              </div>
+              <a href="resources.php">
+                <div class="icon" style="font-size: 50px; top: 10px;">
+                  <i class="fa fa-upload"></i>
+                </div>
+              </a>
+            </div>
+          </div>
+
 
         </div>
 
