@@ -1,3 +1,5 @@
+
+
 <aside class="main-sidebar">
 <?php
  include('../partials/connect.php');
@@ -10,6 +12,7 @@ $Principalresults = $connect->query($usql);
 $Principalresultsfinal = $Principalresults->fetch_assoc();  
 
 ?>
+
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
       <!-- Sidebar user panel -->
@@ -48,7 +51,6 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
 
           <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> Activity Manegement</a></li>
           <li><a href="logout.php"><i class="fa fa-circle-o"></i> Log out</a></li>          
-          <li><a href="manegeprofiles.php"><i class="fa fa-circle-o"></i> Registrations</a></li>
 
         </li>
         
@@ -56,4 +58,5 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
 
     </section>
     <!-- /.sidebar -->
+
   </aside>

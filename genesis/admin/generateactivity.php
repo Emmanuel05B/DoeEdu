@@ -18,12 +18,11 @@ if (!isset($_SESSION['email'])) {
 
   <div class="content-wrapper">
     <section class="content-header">
-      <h1 class="text-center">Generate Quiz</h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li><a href="#">Quizzes</a></li>
-        <li class="active">Generate</li>
-      </ol>
+        <h1>Generate Quiz </h1>
+        <ol class="breadcrumb">
+          <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+          <li class="active">Quizzes</li>
+        </ol>
     </section>
 
      <?php

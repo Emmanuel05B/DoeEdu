@@ -88,11 +88,19 @@ $qstmt->close();
   <?php include("adminpartials/mainsidebar.php") ?>
 
   <div class="content-wrapper">
+    <section class="content-header">
+       <h1>Edit Activity <small>List of all questions for this activities</small></h1>
+        <ol class="breadcrumb">
+          <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+          <li class="active">Questions</li>
+        </ol>
+    </section>
+    
     <section class="content">
-      <div class="row">
+      <div class="row" >
         <div class="col-xs-12">
 
-          <div class="box">
+          <div class="box box-primary">
             <div class="box-header">
               <h3 class="box-title"><?php echo htmlspecialchars($activity['Title']); ?></h3>
               <p><small>

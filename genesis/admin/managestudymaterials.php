@@ -20,23 +20,20 @@ include("adminpartials/head.php");
 
   <div class="content-wrapper" style="background-color: #f7f9fc;">
     <section class="content-header">
-      <h1 style="color:#4a6fa5;">
-        Study Resources
-        <small>Upload and manage learning materials</small>
-      </h1>
+      <h1>Study Resources<small>Upload and manage learning materials</small></h1>
       <ol class="breadcrumb">
-        <li><a href="tutor_dashboard.php"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">Study Resources</li>
       </ol>
     </section>
 
     <section class="content">
       <!-- Upload Resource -->
-      <div class="box box-success">
-        <div class="box-header with-border" style="background-color:#b2d8b2; color:#355e35;">
+      <div class="box box-primary">
+        <div class="box-header with-border" style="background-color:#3399cc;">
           <h3 class="box-title">Upload New Resource</h3>
         </div>
-        <div class="box-body" style="background-color:#eaf4e4;">
+        <div class="box-body"style="background-color:#f0f8ff;">
           <form action="upload_resource.php" method="POST" enctype="multipart/form-data">
             <div class="row">
               <?php
@@ -124,7 +121,7 @@ include("adminpartials/head.php");
               </div>
 
               <div class="col-md-12 text-right">
-                <button type="submit" class="btn btn-success"><i class="fa fa-upload"></i> Upload Resource</button>
+                <button type="submit" class="btn btn-primary"><i class="fa fa-upload"></i> Upload Resource</button>
               </div>
             </div>
           </form>
@@ -132,7 +129,7 @@ include("adminpartials/head.php");
       </div>
 
       <!-- Uploaded Resources -->
-      <div class="box box-info">
+      <div class="box">
         <div class="box-header with-border" style="background-color:#9f86d1; color:#fff;">
           <h3 class="box-title">Your Uploaded Resources</h3>
         </div>
@@ -182,7 +179,12 @@ include("adminpartials/head.php");
 </div>
 
 
-<script src="dist/js/demo.js"></script>   <!-- White MainSidebar -->
-
+<!-- Scripts -->
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="dist/js/adminlte.min.js"></script>
+<script src="dist/js/demo.js"></script><!-- white mainsidebar -->
 </body>
 </html>

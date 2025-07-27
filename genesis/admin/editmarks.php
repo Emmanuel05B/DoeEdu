@@ -17,8 +17,14 @@ if (!isset($_SESSION['email'])) {
   <?php include("adminpartials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
+     <section class="content-header">
+       <h1>Edit <small>Learner</small></h1>
+        <ol class="breadcrumb">
+          <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+          <li class="active">Learner</li>
+        </ol>
+      </section>
     <section class="content">
-
       <?php
       include('../partials/connect.php');
 
@@ -85,7 +91,7 @@ if (!isset($_SESSION['email'])) {
             <input type="hidden" name="activityid" value="<?= $learnerId ?>">
 
             <div class="box box-primary">
-               <h2 class="text-center">Edit Learner Marks</h2>
+               <h3 class="text-center">Edit Learner Marks</h3>
 
               <div class="box-body table-responsive">
                 <table class="table table-bordered">

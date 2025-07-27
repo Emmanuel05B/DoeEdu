@@ -20,9 +20,9 @@ include("adminpartials/head.php");
 
   <div class="content-wrapper">
     <section class="content-header">
-      <h1>Finances Dev Environment</h1>
+      <h1>Finances</h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">Finances</li>
       </ol>
     </section>
@@ -137,7 +137,6 @@ include("adminpartials/head.php");
       </div>
 
       <!-- Learners Table -->
-      <section class="content">
         <div class="row">
           <div class="col-xs-12">
             <div class="box">
@@ -229,8 +228,8 @@ include("adminpartials/head.php");
             </div>
           </div>
         </div>
-      </section>
     </section>
+
   </div>
 
   <!-- Control Sidebar -->

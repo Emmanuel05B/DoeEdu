@@ -201,6 +201,12 @@ if (!isset($_SESSION['email'])) {
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
+      <h1>Class List <small>Learners</small></h1>
+        <ol class="breadcrumb">
+          <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+          <li class="active">Class List</li>
+        </ol>
+
       <?php
       include('../partials/connect.php');
 
@@ -216,11 +222,7 @@ if (!isset($_SESSION['email'])) {
       $subjectId = $finalres['SubjectId'];
       $group = $finalres['GroupName'];
 
-      
 
-      ///////////////////
-        //other I can get from the from the hidden input
-  
      ?> 
     </section>
 
@@ -229,13 +231,12 @@ if (!isset($_SESSION['email'])) {
       <div class="row">
         <div class="col-xs-12">
           <!-- /.box -->
-
           <div class="box">
-            <div class="box-header text-center" style="padding: 20px 10px;">
-              <h3 class="box-title" style="font-weight: bold; font-size: 22px;">
+            <div class="box-header text-center">
+              <h4 class="box-title" style="font-weight: bold; font-size: 22px;">
                 Activity Name = <?php echo htmlspecialchars($activityName); ?> &nbsp; | &nbsp; 
                 Total = <?php echo htmlspecialchars($maxmarks); ?>
-              </h3>
+              </h4>
             </div>
   
             <!-- /.box-header -->
@@ -265,11 +266,10 @@ if (!isset($_SESSION['email'])) {
                         $_SESSION['learnerIds'] = []; // Initialize session  array if it doesn't exist
                     }
           
-
                      // Check the status and render different HTML for each case
                         if ($subjectId == 1) {
 
-                          echo "<h3>Grade 10 Mathematics Group-{$group} Learners</h3><br>";
+                          echo "<h4>Grade 10 Mathematics Group-{$group} Learners</h4><br>";
 
                                 $sql = "
                                     SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
@@ -288,7 +288,7 @@ if (!isset($_SESSION['email'])) {
 
                         } else if ($subjectId == 2) {
 
-                          echo "<h3>Grade 11 Mathematics Group-{$group} Learners</h3><br>";
+                          echo "<h4>Grade 11 Mathematics Group-{$group} Learners</h4><br>";
 
                                 $sql = "
                                     SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
@@ -307,7 +307,7 @@ if (!isset($_SESSION['email'])) {
 
                         } else if ($subjectId == 3) {
 
-                          echo "<h3>Grade 12 Mathematics Group-{$group} Learners</h3><br>";
+                          echo "<h4>Grade 12 Mathematics Group-{$group} Learners</h4><br>";
 
                                   $sql = "
                                     SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
@@ -325,7 +325,7 @@ if (!isset($_SESSION['email'])) {
 
                         } else if ($subjectId == 4) {
 
-                           echo "<h3>Grade 10 Physical Sciences Group-{$group} Learners</h3><br>";
+                           echo "<h4>Grade 10 Physical Sciences Group-{$group} Learners</h4><br>";
         
                             $sql = "
                             SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
@@ -343,7 +343,7 @@ if (!isset($_SESSION['email'])) {
 
 
                         } else if ($subjectId == 5) {
-                            echo "<h3>Grade 11 Physical Sciences Group-{$group} Learners</h3><br>";
+                            echo "<h4>Grade 11 Physical Sciences Group-{$group} Learners</h4><br>";
 
                             $sql = "
                             SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
@@ -362,7 +362,7 @@ if (!isset($_SESSION['email'])) {
          
                         } else if ($subjectId == 6) {
                              
-                             echo "<h3>Grade 12 Physical Sciences Group-{$group} Learners</h3><br>";
+                             echo "<h4>Grade 12 Physical Sciences Group-{$group} Learners</h4><br>";
         
                             $sql = "
                             SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName

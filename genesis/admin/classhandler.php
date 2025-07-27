@@ -20,6 +20,13 @@ if (!isset($_SESSION['email'])) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
 
     <section class="content-header">
+
+     <h1>Class List <small>Learners</small></h1>
+        <ol class="breadcrumb">
+          <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+          <li class="active">Class List</li>
+        </ol>
+
       <?php
       include('../partials/connect.php');
 
@@ -34,28 +41,26 @@ if (!isset($_SESSION['email'])) {
       $grade = $finalres['Grade'];
       $group = $finalres['GroupName'];
 
-//tocome back to below code.... i wonder if you  for grades
-      
-$learnerMarksQuery = "
-  SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName,
-         lam.MarksObtained, lam.Attendance, lam.AttendanceReason, 
-         lam.Submission, lam.SubmissionReason
-  FROM learners lt
-  JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
-  JOIN users u ON lt.LearnerId = u.Id
-  JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
-  JOIN classes c ON lc.ClassID = c.ClassID
-  LEFT JOIN learneractivitymarks lam 
-    ON lt.LearnerId = lam.LearnerId AND lam.ActivityId = $activityid
-  WHERE lt.Grade = $grade
-    AND lt.Math > 0
-    AND ls.SubjectId = $subject
-    AND ls.Status = 'Active'
-    AND ls.ContractExpiryDate > CURDATE()
-    AND c.GroupName = '$group'
-";
-
-
+      //tocome back to below code.... i wonder if you  for grades
+            
+      $learnerMarksQuery = "
+        SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName,
+              lam.MarksObtained, lam.Attendance, lam.AttendanceReason, 
+              lam.Submission, lam.SubmissionReason
+        FROM learners lt
+        JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
+        JOIN users u ON lt.LearnerId = u.Id
+        JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
+        JOIN classes c ON lc.ClassID = c.ClassID
+        LEFT JOIN learneractivitymarks lam 
+          ON lt.LearnerId = lam.LearnerId AND lam.ActivityId = $activityid
+        WHERE lt.Grade = $grade
+          AND lt.Math > 0
+          AND ls.SubjectId = $subject
+          AND ls.Status = 'Active'
+          AND ls.ContractExpiryDate > CURDATE()
+          AND c.GroupName = '$group'
+      ";
 
       $results = $connect->query($learnerMarksQuery);
       ?>

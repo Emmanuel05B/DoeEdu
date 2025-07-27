@@ -99,13 +99,17 @@ $stmt->close();
 <?php include("adminpartials/mainsidebar.php"); ?>
 
 <div class="content-wrapper">
+
     <section class="content-header">
-        <h1>Edit Question</h1>
-        <small>Update question details</small>
+       <h1>Edit Question <small>Update question details</small></h1>
+        <ol class="breadcrumb">
+          <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+          <li class="active">Details</li>
+        </ol>
     </section>
 
     <section class="content">
-        <div class="box box-primary" style="max-width:700px; margin:auto;">
+        <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title">Question ID: <?php echo $question['Id']; ?></h3>
             </div>
@@ -122,24 +126,36 @@ $stmt->close();
                         <textarea name="QuestionText" id="QuestionText" class="form-control" required rows="4"><?php echo htmlspecialchars($question['QuestionText']); ?></textarea>
                     </div>
 
-                    <div class="form-group">
-                        <label for="OptionA">Option A</label>
-                        <input type="text" name="OptionA" id="OptionA" class="form-control" required value="<?php echo htmlspecialchars($question['OptionA']); ?>">
-                    </div>
+                   <div class="row">
+                        <!-- Left side: Option A and B -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="OptionA">Option A</label>
+                                <input type="text" name="OptionA" id="OptionA" class="form-control" required 
+                                    value="<?php echo htmlspecialchars($question['OptionA']); ?>">
+                            </div>
 
-                    <div class="form-group">
-                        <label for="OptionB">Option B</label>
-                        <input type="text" name="OptionB" id="OptionB" class="form-control" required value="<?php echo htmlspecialchars($question['OptionB']); ?>">
-                    </div>
+                            <div class="form-group">
+                                <label for="OptionB">Option B</label>
+                                <input type="text" name="OptionB" id="OptionB" class="form-control" required 
+                                    value="<?php echo htmlspecialchars($question['OptionB']); ?>">
+                            </div>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="OptionC">Option C</label>
-                        <input type="text" name="OptionC" id="OptionC" class="form-control" required value="<?php echo htmlspecialchars($question['OptionC']); ?>">
-                    </div>
+                        <!-- Right side: Option C and D -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="OptionC">Option C</label>
+                                <input type="text" name="OptionC" id="OptionC" class="form-control" required 
+                                    value="<?php echo htmlspecialchars($question['OptionC']); ?>">
+                            </div>
 
-                    <div class="form-group">
-                        <label for="OptionD">Option D</label>
-                        <input type="text" name="OptionD" id="OptionD" class="form-control" required value="<?php echo htmlspecialchars($question['OptionD']); ?>">
+                            <div class="form-group">
+                                <label for="OptionD">Option D</label>
+                                <input type="text" name="OptionD" id="OptionD" class="form-control" required 
+                                    value="<?php echo htmlspecialchars($question['OptionD']); ?>">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -169,6 +185,8 @@ $stmt->close();
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="dist/js/adminlte.min.js"></script>
+<script src="dist/js/demo.js"></script>
+
 
 <?php if ($success): ?>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

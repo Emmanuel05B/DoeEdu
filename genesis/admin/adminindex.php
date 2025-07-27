@@ -58,7 +58,7 @@ if (!isset($_SESSION['email'])) {
     <?php include("adminpartials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
-      <!-- cover section (untouched) -->
+      <!-- cover section (untouched)-->
       <section class="content-header">
         <h1>Dashboard <small>Control panel</small></h1>
         <ol class="breadcrumb">

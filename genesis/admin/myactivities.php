@@ -24,16 +24,19 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
 
   <div class="content-wrapper">
     <section class="content-header">
-      <h1>My Activities</h1>
-      <small>List of all your created activities</small>
+       <h1>My Activities <small>List of all your created activities</small></h1>
+        <ol class="breadcrumb">
+          <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+          <li class="active">Activities</li>
+        </ol>
     </section>
 
     <section class="content">
-      <div class="box">
+      <div class="box box-primary">
         <div class="box-header">
           <h3 class="box-title">Activities List</h3>
         </div>
-        <div class="box-body table-responsive no-padding">
+        <div class="box-body table-responsive">
           <table class="table table-bordered table-hover" id="activitiesTable" style="width:100%;">
             <thead style="background-color: #3c8dbc; color: white;">
               <tr>
