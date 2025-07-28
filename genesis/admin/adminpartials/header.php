@@ -1,5 +1,5 @@
-<?php
-                include('../partials/connect.php');
+            <?php
+                include('../../partials/connect.php');
 
                 $userId = $_SESSION['user_id'];  //for looged in teacher
 
@@ -8,13 +8,13 @@
                 $Teacherresults = $connect->query($usql);
                 $Teacherresultsfinal = $Teacherresults->fetch_assoc();  
 
-/*
+               /*
                 $sql = "SELECT COUNT(*) as count FROM notices WHERE IsOpened = 0";
                 // Execute the query
                 $result = $connect->query($sql);
                 $messagesrow = $result->fetch_assoc();
                */
-    ?>
+            ?>
 
 <header class="main-header">
     <!-- Logo -->
@@ -123,7 +123,6 @@
           </li>
           <!-- Notifications: style can be found in dropdown.less -->
 
-
           <?php
 
                 $sql = "SELECT COUNT(*) as countnotices FROM users";
@@ -132,8 +131,6 @@
                 $noticesrow = $result->fetch_assoc();
                
           ?>
-
-
 
           <li class="dropdown notifications-menu">
             <a href="noticepage.php" class="dropdown-toggle" data-toggle="dropdown">
@@ -169,42 +166,9 @@
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <img src="dist/img/avatar5.png" class="user-image" alt="User Image">
-            
               <span class="hidden-xs"><?php echo $Teacherresultsfinal['Surname'] ?></span>
             </a>
-            <ul class="dropdown-menu">
-              <!-- User image -->
-              <li class="user-header">
-                <img src="dist/img/avatar5.png" class="img-circle" alt="User Image">
 
-                <p>
-                <?php echo $Teacherresultsfinal['Name'] ?> <?php echo $Teacherresultsfinal['Surname'] ?>
-                  
-                </p>
-              </li>
-              <!-- Menu Body -->
-              <li class="user-body">
-                <div class="row">
-                  <div class="col-xs-4 text-center">
-                    <a href="#">Followers</a>
-                  </div>
-                  
-                  <div class="col-xs-4 text-center">
-                    <a href="#">Collegues</a>
-                  </div>
-                </div>
-                <!-- /.row -->
-              </li>
-              <!-- Menu Footer-->
-              <li class="user-footer">
-                <div class="pull-left">
-                  <a href="#" class="btn btn-default btn-flat">Profile</a>
-                </div>
-                <div class="pull-right">
-                  <a href="../common/logout.php" class="btn btn-default btn-flat">Sign out</a>
-                </div>
-              </li>
-            </ul>
           </li>
           <!-- Control Sidebar Toggle Button -->
           <li>

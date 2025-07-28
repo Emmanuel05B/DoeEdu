@@ -2,7 +2,7 @@
 
 <aside class="main-sidebar">
 <?php
- include('../partials/connect.php');
+ include('../../partials/connect.php');
 $userId = $_SESSION['user_id'];  //for looged in teacher
 
 $sql = "SELECT Surname FROM users WHERE Id =  $userId";
@@ -18,7 +18,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
       <!-- Sidebar user panel -->
       <div class="user-panel">
         <div class="pull-left image">
-          <img src="dist/img/avatar5.png" class="img-circle" alt="User Image">
+          <img src="../dist/img/avatar5.png" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
           <p>Mr <?php echo $Principalresultsfinal['Surname'] ?></p>
@@ -44,6 +44,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
           <li><a href="admin.php"><i class="fa fa-circle-o"></i> Administration</a></li>          
           <li><a href="classes.php"><i class="fa fa-circle-o"></i> Classes</a></li>
           <li><a href="tutors.php"><i class="fa fa-circle-o"></i> Tutors</a></li>
+          <li><a href="resources.php"><i class="fa fa-circle-o"></i> Resources</a></li>
           <li><a href="admin_create_notice.php"><i class="fa fa-circle-o"></i> Create Notices</a></li>
 
 

@@ -217,7 +217,7 @@ if(isset($_POST['login'])){
 
                     switch ($user['UserType']) {
                         case 0: // Admin
-                            header('Location: ../admin/adminindex.php');
+                            header('Location: ../admin/pages/adminindex.php');
                             break;
                         case 1: // Tutor
                             header('Location: ../tutor/tutorindex.php');
