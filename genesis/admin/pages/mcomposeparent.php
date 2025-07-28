@@ -4,23 +4,21 @@
 session_start();
 
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
   exit();
 }
 ?>
 
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include("../adminpartials/header.php") ?>;
-  <!-- Left side column. contains the logo and sidebar -->
- 
- <?php include("../adminpartials/mainsidebar.php") ?>; 
+  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
- <?php
-                include('../../partials/connect.php');
+            <?php
+               include(__DIR__ . "/../../partials/connect.php");
 
                 $parentid = $_GET['pid'];  //for message number
               //  $email = $_SESSION['email'];  //for logged-in teacher
@@ -131,8 +129,8 @@ if (!isset($_SESSION['email'])) {
 </div>
 <!-- ./wrapper -->
 
-<?php include("../adminpartials/queries.php"); ?>
-  <script src="../dist/js/demo.js"></script>
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<script src="../../common/dist/js/demo.js"></script> 
 <!-- jQuery 3 -->
 <!-- Bootstrap 3.3.7 -->
 <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>

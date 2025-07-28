@@ -1,11 +1,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
   exit();
 }
-include("../adminpartials/head.php");
-include('../../partials/connect.php');
+include(__DIR__ . "/../../common/partials/head.php"); 
+include(__DIR__ . "/../../partials/connect.php");
 
 // Handle delete
 if (isset($_GET['delete_id'])) {
@@ -24,8 +24,8 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <?php include("../adminpartials/header.php") ?>
-  <?php include("../adminpartials/mainsidebar.php") ?>
+   <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+   <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
     <section class="content-header">
@@ -65,7 +65,7 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
                     <td><?= htmlspecialchars($req['created_at']) ?></td>
                     <td>
                       <?php if ($req['IsAccepted']): ?>
-                        <span class="label label-success">Accepted</span>
+                        <span class="label label-success">Recieved</span>
                       <?php else: ?>
                         <span class="label label-default">Pending</span>
                       <?php endif; ?>
@@ -111,9 +111,8 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
 <script src="../dist/js/adminlte.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<?php include(__DIR__ . "/../adminpartials/queries.php"); ?>
-<script src="../dist/js/demo.js"></script>
-
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<script src="../../common/dist/js/demo.js"></script> 
 
 <script>
   $(function () {

@@ -46,15 +46,16 @@
     session_start();
 
     if (!isset($_SESSION['email'])) {
-        header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
         exit();
     }
 
-    include("../adminpartials/head.php");
-    include("../adminpartials/header.php");
-    include("../adminpartials/mainsidebar.php");
+    include(__DIR__ . "/../../common/partials/head.php"); 
+    include(__DIR__ . "/../../common/partials/header.php"); 
+    include(__DIR__ . "/../../common/partials/mainsidebar.php");
 
-    include('../../partials/connect.php');
+    include(__DIR__ . "/../../partials/connect.php");
+
 
     //$parentId = isset($_GET['pid']) ? $_GET['pid'] : null;
     $learner_id = isset($_GET['lid']) ? $_GET['lid'] : null;
@@ -207,7 +208,7 @@
             <span style="display: block; text-align: center;">Subject: <?php echo $SubjectName; ?></span>
 
             <!-- Adding the image -->
-            <img src="images/westtt.png" alt="Image" class="top-right-image">
+            <img src="../images/westtt.png" alt="Image" class="top-right-image">
         </h2>
     </div>
 </div>
@@ -509,6 +510,8 @@
 <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="../bower_components/fastclick/lib/fastclick.js"></script>
 <script src="../dist/js/adminlte.min.js"></script>
-<script src="../dist/js/demo.js"></script>
+
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<script src="../../common/dist/js/demo.js"></script> 
 </body>
 </html>

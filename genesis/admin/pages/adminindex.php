@@ -4,12 +4,12 @@
 <?php
   session_start();
   if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
     exit();
   }
 ?>
 
-<?php include(__DIR__ . "/../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <!-- Styles -->
 <style>
@@ -56,8 +56,8 @@
 
 <body class="hold-transition skin-blue sidebar-mini">
   <div class="wrapper">
-    <?php include(__DIR__ . "/../adminpartials/header.php"); ?>
-    <?php include(__DIR__ . "/../adminpartials/mainsidebar.php"); ?>
+    <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+    <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
       <!-- cover section (untouched)-->
@@ -339,7 +339,7 @@
     </div>
   </div>
 
-<?php include(__DIR__ . "/../adminpartials/queries.php"); ?>
-<script src="../dist/js/demo.js"></script>
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<script src="../../common/dist/js/demo.js"></script>
 </body>
 </html>

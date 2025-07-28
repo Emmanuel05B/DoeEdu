@@ -5,23 +5,19 @@
 session_start();
 
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+  header("Location: ../../common/pages/login.php");
   exit();
 }
 ?>
 
-
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include("../adminpartials/header.php") ?>;
-
-  <!-- Left side column. contains the logo and sidebar -->
- 
- <?php include("../adminpartials/mainsidebar.php") ?>;
+  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -30,7 +26,7 @@ if (!isset($_SESSION['email'])) {
         
         <!-- ./here -->
      
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -43,8 +39,6 @@ if (!isset($_SESSION['email'])) {
     * {
       box-sizing: border-box;
     }
-
-
 
     /* Full-width input fields */
     input[type=text], input[type=password] {
@@ -110,9 +104,8 @@ if (!isset($_SESSION['email'])) {
 <body>
 <?php   
 
+include(__DIR__ . "/../../partials/connect.php");
 
-  include('../../partials/connect.php');
-    
   if(isset($_POST['update']))
   {
     $new = $_POST['updatelearner'];
@@ -204,9 +197,8 @@ if (!isset($_SESSION['email'])) {
 </div>
 <!-- ./wrapper -->
 
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<script src="../../common/dist/js/demo.js"></script> 
 
-
-<?php include("../adminpartials/queries.php") ?>;
-<script src="../dist/js/demo.js"></script>
 </body>
 </html>

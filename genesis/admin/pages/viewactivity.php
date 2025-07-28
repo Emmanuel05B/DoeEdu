@@ -4,11 +4,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+  header("Location: ../../common/pages/login.php");
   exit();
 }
 
-include('../../partials/connect.php');
+include(__DIR__ . "/../../partials/connect.php");
 
 // Validate activityId from GET
 if (!isset($_GET['activityId']) || !is_numeric($_GET['activityId'])) {
@@ -48,7 +48,7 @@ while ($row = $qresult->fetch_assoc()) {
 $qstmt->close();
 ?>
 
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <style>
   .question-tile {
@@ -84,8 +84,8 @@ $qstmt->close();
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <?php include("../adminpartials/header.php") ?>
-  <?php include("../adminpartials/mainsidebar.php") ?>
+  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
     <section class="content-header">

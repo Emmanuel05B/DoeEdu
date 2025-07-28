@@ -4,28 +4,25 @@
 session_start();
 
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+  header("Location: ../../common/pages/login.php");
   exit();
 }
 ?>
 
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); 
+?>
   
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-
-<?php include("../adminpartials/header.php") ?>;
-  <!-- Left side column.. contains the logo and sidebar -->
- 
- <?php include("../adminpartials/mainsidebar.php") ?>;  
- 
+  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
 
   <?php
-  include('../../partials/connect.php');
+  include(__DIR__ . "/../../partials/connect.php");
   $messageNo = $_GET['id'];  //for message number
 
   $sql = "SELECT * FROM messages WHERE No = $messageNo" ;
@@ -121,9 +118,7 @@ if (!isset($_SESSION['email'])) {
   <div class="control-sidebar-bg"></div>
 </div>
 <!-- ./wrapper -->
- 
-<?php include("../adminpartials/queries.php"); ?>
-  <script src="../dist/js/demo.js"></script>
+
 
 <!-- jQuery 3 -->
 <script src="../bower_components/jquery/dist/jquery.min.js"></script>
@@ -136,6 +131,8 @@ if (!isset($_SESSION['email'])) {
 <!-- AdminLTE App -->
 <script src="../dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
-<script src="../dist/js/demo.js"></script>
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<script src="../../common/dist/js/demo.js"></script> 
+
 </body>
 </html>

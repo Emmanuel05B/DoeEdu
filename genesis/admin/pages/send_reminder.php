@@ -1,11 +1,12 @@
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/login.php");
+  header("Location: ../../common/pages/login.php");
     exit();
 }
 
-include('../../partials/connect.php');
+include(__DIR__ . "/../../partials/connect.php");
+
 require __DIR__ . '/../../../vendor/autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailer;

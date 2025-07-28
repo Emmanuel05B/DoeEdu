@@ -3,10 +3,10 @@
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
   exit();
 }
-include('../../partials/connect.php');
+include(__DIR__ . "/../../partials/connect.php");
 
 $userId = $_SESSION['user_id'];
 $success = '';
@@ -36,15 +36,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php");  ?>
 <!-- SweetAlert2 CDN --> 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include("../adminpartials/header.php"); ?>
-  <?php include("../adminpartials/mainsidebar.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
     <section class="content-header">
@@ -117,7 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="../bower_components/jquery/dist/jquery.min.js"></script>
 <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="../dist/js/adminlte.min.js"></script>
-<script src="../dist/js/demo.js"></script>
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<script src="../../common/dist/js/demo.js"></script>
 
 <?php if ($success): ?>
   <script>

@@ -12,12 +12,11 @@ session_start();
 
 // Redirect if session 'email' is not set (user not logged in)
 if (!isset($_SESSION['email'])) {
-  header("Location: ../common/login.php");
+    header("Location: ../../common/pages/login.php");
   exit();
 }
-
-include('../../partials/connect.php');
-include("../adminpartials/head.php");
+include(__DIR__ . "/../../common/partials/head.php"); 
+include(__DIR__ . "/../../partials/connect.php");
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;

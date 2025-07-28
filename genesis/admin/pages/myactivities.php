@@ -4,23 +4,23 @@
 session_start();
 
 if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/login.php");
+  header("Location: ../../common/pages/login.php");
     exit();
 }
 
-include('../../partials/connect.php');
+include(__DIR__ . "/../../partials/connect.php");
 
 $tutorId = $_SESSION['user_id']; // Logged-in tutor id
 
 ?>
 
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include("../adminpartials/header.php"); ?>
-  <?php include("../adminpartials/mainsidebar.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
     <section class="content-header">
@@ -109,7 +109,8 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
   });
 </script>
 
-<?php include(__DIR__ . "/../adminpartials/queries.php"); ?>
-<script src="../dist/js/demo.js"></script>
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<script src="../../common/dist/js/demo.js"></script> 
+
 </body>
 </html>

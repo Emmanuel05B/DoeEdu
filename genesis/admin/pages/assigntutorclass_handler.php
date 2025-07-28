@@ -7,7 +7,7 @@
 </head>
 <body>
 <?php
-include('../../partials/connect.php');
+include(__DIR__ . "/../../partials/connect.php");
 
 $tutorId = intval($_POST['tutorId']);
 $classId = intval($_POST['classId']);

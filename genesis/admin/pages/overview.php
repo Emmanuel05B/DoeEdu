@@ -4,17 +4,17 @@
 session_start();
 
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+  header("Location: ../../common/pages/login.php");
   exit();
 }
 ?>
 
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
   <div class="wrapper">
-    <?php include("../adminpartials/header.php"); ?>
-    <?php include("../adminpartials/mainsidebar.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
       <section class="content">
@@ -116,7 +116,7 @@ if (!isset($_SESSION['email'])) {
   <!-- AdminLTE App -->
   <script src="../dist/js/adminlte.min.js"></script>
   <!-- AdminLTE demo purposes -->
-  <script src="../dist/js/demo.js"></script>
+  <script src="../../common/dist/js/demo.js"></script> 
 
   <script>
     $(function () {

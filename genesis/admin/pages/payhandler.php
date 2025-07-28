@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 
-<?php include("../adminpartials/head.php"); // affects the alert styling ?>  
+<?php include(__DIR__ . "/../../common/partials/head.php"); 
+ // affects the alert styling 
+ ?>  
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
 
@@ -13,11 +15,11 @@ session_start(); // Start the session
 
 // Check if the session variable is set
 if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/login.php");
+  header("Location: ../../common/pages/login.php");
     exit();
 }
 
-include('../../partials/connect.php'); 
+include(__DIR__ . "/../../partials/connect.php");
 
 if (isset($_POST["updateby"])) {
 

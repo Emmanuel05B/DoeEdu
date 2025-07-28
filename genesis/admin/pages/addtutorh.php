@@ -15,11 +15,11 @@ error_reporting(E_ALL);
 
 session_start();
 if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
     exit();
 }
 
-include('../../partials/connect.php');
+include(__DIR__ . "/../../partials/connect.php");
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: addtutor.php");

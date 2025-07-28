@@ -2,18 +2,17 @@
 session_start();
 
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
   exit();
 }    
 ?>
 
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <!-- Left side column. contains the logo and sidebar -->
-  <?php include("../adminpartials/header.php"); ?>
-  <!-- Left side column. contains the logo and sidebar -->
-  <?php include("../adminpartials/mainsidebar.php"); ?>
+
+ <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
   <!-- Content Wrapper. Contains page content ---> 
   <div class="content-wrapper">
@@ -46,8 +45,8 @@ if (!isset($_SESSION['email'])) {
 
                 <tbody>
                 <?php
-                include('../../partials/connect.php');
-      
+                include(__DIR__ . "/../../partials/connect.php");
+
     
                     echo '<h3>Owing Learners</h3><br>';
 
@@ -118,7 +117,7 @@ if (!isset($_SESSION['email'])) {
 <script src="../bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 <script src="../bower_components/fastclick/lib/fastclick.js"></script>
 <script src="../dist/js/adminlte.min.js"></script>
-<script src="../dist/js/demo.js"></script>
+<script src="../../common/dist/js/demo.js"></script> 
 <script>
   $(function () {
     $('#example1').DataTable();

@@ -4,19 +4,19 @@
 session_start();
 
 if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
     exit();
 }
 
-include('../../partials/connect.php');
-include("../adminpartials/head.php");
+include(__DIR__ . "/../../common/partials/head.php"); 
+include(__DIR__ . "/../../partials/connect.php");
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include("../adminpartials/header.php"); ?>
-  <?php include("../adminpartials/mainsidebar.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper" style="background-color: #f7f9fc;">
     <section class="content-header">
@@ -185,6 +185,5 @@ include("../adminpartials/head.php");
 <script src="../bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="../bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <script src="../dist/js/adminlte.min.js"></script>
-<script src="../dist/js/demo.js"></script><!-- white mainsidebar -->
-</body>
+<script src="../../common/dist/js/demo.js"></script> </body>
 </html>

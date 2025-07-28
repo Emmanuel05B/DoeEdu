@@ -1,6 +1,6 @@
 <?php
 
-include('../../partials/connect.php');
+include(__DIR__ . "/../../partials/connect.php");
 
 
 if ($learner_id) {

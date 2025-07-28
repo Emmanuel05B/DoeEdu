@@ -1,10 +1,10 @@
 <?php
 session_start();
-include('../../partials/connect.php');
+include(__DIR__ . "/../../partials/connect.php");
 
 // Check if user is logged in
 if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/login.php");
+  header("Location: ../../common/pages/login.php");
     exit();
 }
 

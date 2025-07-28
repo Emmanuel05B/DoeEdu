@@ -1,15 +1,16 @@
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
   exit();
 }
 ?>
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); 
+ ?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <?php include("../adminpartials/header.php"); ?>
-  <?php include("../adminpartials/mainsidebar.php"); ?>
+   <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
       <section class="content-header">
@@ -160,6 +161,6 @@ if (!isset($_SESSION['email'])) {
   });
 </script>
 
-<script src="../dist/js/demo.js"></script>   <!-- White MainSidebar -->
+<script src="../../common/dist/js/demo.js"></script> 
 </body>
 </html>

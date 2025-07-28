@@ -1,16 +1,16 @@
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/login.php");
+  header("Location: ../../common/pages/login.php");
     exit();
 }
 
-include('../../partials/connect.php');
+include(__DIR__ . "/../../partials/connect.php");
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Load Composer's autoloader (adjust path as needed)
+// Load Composer's autoloader
 require __DIR__ . '/../../../vendor/autoload.php';
 
 if (!isset($_GET['id'])) {
@@ -49,16 +49,26 @@ $insertStmt = $connect->prepare("INSERT INTO invitetokens (InviteRequestId, Toke
 $insertStmt->bind_param("isss", $invite_id, $token, $request['email'], $expiresAt);
 
 if (!$insertStmt->execute()) {
-    echo "<script>
+    echo '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body>
+        <script>
             Swal.fire({
-                icon: 'error',
-                title: 'Token Creation Failed',
-                text: 'Could not create invite token.',
-                confirmButtonText: 'OK'
+                icon: "error",
+                title: "Token Creation Failed",
+                text: "Could not create invite token.",
+                confirmButtonText: "OK"
             }).then(() => {
-                window.location.href = 'manage_inviterequests.php';
+                window.location.href = "manage_inviterequests.php";
             });
-          </script>";
+        </script>
+    </body>
+    </html>';
     exit;
 }
 $insertStmt->close();
@@ -70,7 +80,7 @@ function sendInviteEmail($learner_email, $learner_name, $token) {
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'thedistributorsofedu@gmail.com';
-        $mail->Password = 'bxuxtebkzbibtvej';
+        $mail->Password = 'bxuxtebkzbibtvej'; // Consider moving this to a secure config
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port = 465;
 
@@ -100,33 +110,54 @@ function sendInviteEmail($learner_email, $learner_name, $token) {
 }
 
 if (sendInviteEmail($request['email'], $request['name'], $token)) {
-    // Mark as accepted
+    // Mark as accepted/recieved
     $updateStmt = $connect->prepare("UPDATE inviterequests SET IsAccepted = 1 WHERE id = ?");
     $updateStmt->bind_param("i", $invite_id);
     $updateStmt->execute();
     $updateStmt->close();
 
-    echo "<script>
+    echo '
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Invite Sent</title>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body>
+        <script>
             Swal.fire({
-                icon: 'success',
-                title: 'Invite Sent',
-                text: 'An invitation link has been sent to {$request['email']}.',
-                confirmButtonText: 'OK'
+                icon: "success",
+                title: "Invite Sent",
+                text: "An invitation link has been sent to ' . htmlspecialchars($request["email"]) . '",
+                confirmButtonText: "OK"
             }).then(() => {
-                window.location.href = 'manage_inviterequests.php';
+                window.location.href = "manage_inviterequests.php";
             });
-          </script>";
+        </script>
+    </body>
+    </html>';
     exit;
 } else {
-    echo "<script>
+    echo '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body>
+        <script>
             Swal.fire({
-                icon: 'error',
-                title: 'Email Sending Failed',
-                text: 'There was an issue sending the invite email.',
-                confirmButtonText: 'OK'
+                icon: "error",
+                title: "Email Sending Failed",
+                text: "There was an issue sending the invite email.",
+                confirmButtonText: "OK"
             }).then(() => {
-                window.location.href = 'manage_inviterequests.php';
+                window.location.href = "manage_inviterequests.php";
             });
-          </script>";
+        </script>
+    </body>
+    </html>';
     exit;
 }

@@ -3,11 +3,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
   exit();
 }
-include("../adminpartials/head.php");
-include('../../partials/connect.php');
+include(__DIR__ . "/../../common/partials/head.php"); 
+include(__DIR__ . "/../../partials/connect.php");
 
 // Get activity ID
 if (!isset($_GET['activityId'])) {
@@ -101,9 +101,10 @@ $isClosed = $now > $dueDate;
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <?php include("../adminpartials/header.php"); ?>
-  <?php include("../adminpartials/mainsidebar.php"); ?>
-
+ 
+  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
+  
   <div class="content-wrapper">
     <section class="content-header">
       <h1>Activity Overview<small class="text-muted">Summary for: <strong><?= htmlspecialchars($activity['Title']) ?> - Grade <?= $grade ?></strong></small></h1>
@@ -299,7 +300,9 @@ $isClosed = $now > $dueDate;
   });
 </script>
 
-<?php include(__DIR__ . "/../adminpartials/queries.php"); ?>
-<script src="../dist/js/demo.js"></script>
+
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<script src="../../common/dist/js/demo.js"></script>
+
 </body>
 </html>

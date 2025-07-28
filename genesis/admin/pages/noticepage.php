@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+  header("Location: ../../common/pages/login.php");
   exit();
 }
 ?>
@@ -63,7 +63,7 @@ if (!isset($_SESSION['email'])) {
 <body>
 
 <?php
-include('../../partials/connect.php');
+include(__DIR__ . "/../../partials/connect.php");
 $userId = $_SESSION['user_id'];
 
 $usql = "SELECT * FROM users WHERE Id = ?";

@@ -4,22 +4,19 @@
 session_start();
 
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
   exit();
 }
 ?>
 
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include("../adminpartials/header.php") ?>;
-  <!-- Left side column. contains the logo and sidebar -->
- 
- <?php include("../adminpartials/mainsidebar.php") ?>; 
 
- 
+  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
 
   <!-- Content Wrapper. Contains page content -->
@@ -50,9 +47,6 @@ if (!isset($_SESSION['email'])) {
         </div>
 
 
-
-
-
       <form action="messagehandler.php" method="post" >  <!--  form -->
         <!-- /.col -->
         <div class="col-md-9">
@@ -71,9 +65,7 @@ if (!isset($_SESSION['email'])) {
                                 <select id="sendto" name="reciverid" class="form-control">
 
                                   <?php
-                                  include('../../partials/connect.php');
-
-
+                                  include(__DIR__ . "/../../partials/connect.php");
                                 
                                   $sql = "SELECT ParentId FROM parentlearner";  
 
@@ -178,8 +170,8 @@ if (!isset($_SESSION['email'])) {
 </div>
 <!-- ./wrapper -->
 
-<?php include("../adminpartials/queries.php"); ?>
-  <script src="../dist/js/demo.js"></script>
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<script src="../../common/dist/js/demo.js"></script> 
 
  
 <!-- jQuery 3 -->

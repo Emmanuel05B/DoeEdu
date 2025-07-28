@@ -4,12 +4,12 @@
 session_start();
 
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
   exit();
 }
 ?>
 
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <style>
     .profile-personal-info {
@@ -98,18 +98,15 @@ if (!isset($_SESSION['email'])) {
 <body class="hold-transition skin-blue sidebar-mini">
   <div class="wrapper">
 
-    <!-- Left side column. contains the logo and sidebar -->
-    <?php include("../adminpartials/header.php"); ?>
+    <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+    <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
-    <!-- Left side column. contains the logo and sidebar -->
-    <?php include("../adminpartials/mainsidebar.php"); ?>
-    <!-- /.sidebar -->
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
 
                       <?php
-                        include('../../partials/connect.php');
+                        include(__DIR__ . "/../../partials/connect.php");
 
                         $statusValue = intval($_GET['val']); // Get the subject value, ensure it's an integer
 
@@ -371,8 +368,8 @@ if (!isset($_SESSION['email'])) {
     <div class="control-sidebar-bg"></div>
   </div>
 
-  <?php include("../adminpartials/queries.php"); ?>
-  <script src="../dist/js/demo.js"></script>
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<script src="../../common/dist/js/demo.js"></script> 
 
 </body>
 </html>

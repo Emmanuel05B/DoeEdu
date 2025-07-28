@@ -5,20 +5,19 @@
 session_start();
 
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
   exit();
 }
 ?>
 
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
    
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
   <!-- Left side column. contains the logo and sidebar -->
-  <?php include("../adminpartials/header.php") ?>;
-  <!-- Left side column. contains the logo and sidebar -->
-  <?php include("../adminpartials/mainsidebar.php") ?>;
+  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
   <!-- Content Wrapper. Contains page content --->
   <div class="content-wrapper">
@@ -26,7 +25,8 @@ if (!isset($_SESSION['email'])) {
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
 
   <?php
-     include('../../partials/connect.php'); 
+
+    include(__DIR__ . "/../../partials/connect.php");
 
      if (isset($_POST["submit"])) {
 
@@ -694,7 +694,7 @@ if (!isset($_SESSION['email'])) {
 <!-- AdminLTE App -->
 <script src="../dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
-<script src="../dist/js/demo.js"></script>
+<script src="../../common/dist/js/demo.js"></script> 
 
 <script>
   $(function () {

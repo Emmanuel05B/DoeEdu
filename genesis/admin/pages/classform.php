@@ -7,11 +7,11 @@ session_start();
 
 // Check if the user is logged in
 if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
     exit();
 }
 
-include('../../partials/connect.php');
+include(__DIR__ . "/../../partials/connect.php");
 
 // Start capturing the HTML content
 ob_start();

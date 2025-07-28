@@ -2,17 +2,17 @@
 session_start();
 
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+  header("Location: ../../common/pages/login.php");
   exit();
 }    
 ?>
 
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include("../adminpartials/header.php"); ?>
-  <?php include("../adminpartials/mainsidebar.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
   <!-- Content Wrapper. Contains page content ---> 
   <div class="content-wrapper">
@@ -185,7 +185,7 @@ if (!isset($_SESSION['email'])) {
 <script src="../bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 <script src="../bower_components/fastclick/lib/fastclick.js"></script>
 <script src="../dist/js/adminlte.min.js"></script>
-<script src="../dist/js/demo.js"></script>
+<script src="../../common/dist/js/demo.js"></script> 
 <script>
   $(function () {
     $('#example1').DataTable();

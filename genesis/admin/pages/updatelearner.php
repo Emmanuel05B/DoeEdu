@@ -3,21 +3,21 @@
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/login.php");
+  header("Location: ../../common/pages/login.php");
   exit();
 }
 ?>
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <?php include("../adminpartials/header.php") ?>
-  <?php include("../adminpartials/mainsidebar.php") ?>
+  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
 
     <section class="content-header">
-      <?php include('../../partials/connect.php'); ?> 
+      <?php include(__DIR__ . "/../../partials/connect.php"); ?> 
 
       <h1>Update Learner Details <small>Manage learner profile information</small></h1>
       <ol class="breadcrumb">
@@ -138,7 +138,7 @@ if (!isset($_SESSION['email'])) {
 <script src="../bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 <script src="../bower_components/fastclick/lib/fastclick.js"></script>
 <script src="../dist/js/adminlte.min.js"></script>
-<script src="../dist/js/demo.js"></script>
+<script src="../../common/dist/js/demo.js"></script> 
 
 <!-- Enable DataTable features (search, sort, pagination) -->
 <script>

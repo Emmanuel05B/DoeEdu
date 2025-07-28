@@ -1,11 +1,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/login.php");
+    header("Location: ../../common/pages/login.php");
     exit();
 }
 
-include('../../partials/connect.php');
+include(__DIR__ . "/../../partials/connect.php");
 
 $tutorId = $_SESSION['user_id'];
 
@@ -90,13 +90,13 @@ $question = $result->fetch_assoc();
 $stmt->close();
 ?>
 
-<?php include("../adminpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-<?php include("../adminpartials/header.php"); ?>
-<?php include("../adminpartials/mainsidebar.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
 
 <div class="content-wrapper">
 
@@ -185,7 +185,7 @@ $stmt->close();
 <script src="../bower_components/jquery/dist/jquery.min.js"></script>
 <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="../dist/js/adminlte.min.js"></script>
-<script src="../dist/js/demo.js"></script>
+<script src="../../common/dist/js/demo.js"></script> 
 
 
 <?php if ($success): ?>
