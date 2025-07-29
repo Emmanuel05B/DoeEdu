@@ -70,7 +70,7 @@ include(__DIR__ . "/../../common/partials/head.php");
                     <input type="file" name="resource_file" class="form-control" required>
                   </div>
 
-                  <div class="col-md-12 text-right">
+                  <div class="col-md-12 text-right" style="margin-top: 20px;">
                     <button type="submit" class="btn btn-primary"><i class="fa fa-cloud-upload"></i> Upload Resource</button>
                   </div>
                 </div>
@@ -79,41 +79,56 @@ include(__DIR__ . "/../../common/partials/head.php");
           </div>
         </div>
 
-        <!-- Assign Resource to Class - Right Side -->
+        <!-- Bulk Assign Resources to Class - Right Side -->
         <div class="col-md-6">
           <div class="box box-info" style="border-top: 3px solid #00c0ef;">
             <div class="box-header with-border" style="background-color:#d9f0fb;">
-              <h3 class="box-title" style="color:#0073b7;"><i class="fa fa-link"></i> Assign Existing Resource to Class/Group</h3>
+              <h3 class="box-title" style="color:#0073b7;"><i class="fa fa-tasks"></i> Bulk Assign Resources to Class/Group</h3>
             </div>
             <div class="box-body" style="background-color:#ffffff;">
               <form action="assign_resource.php" method="POST">
-                <div class="row">
-
-                  <div class="col-md-12 form-group">
-                    <label for="resourceId">Select Resource</label>
-                    <select name="resourceId" id="resourceId" class="form-control" required>
-                      <option value="">-- Select a Resource --</option>
-                      <!-- Populate with uploaded resources (id + title) -->
-                    </select>
+                <div class="form-group">
+                  <label>Select Resources</label>
+                  <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px; background-color: #f9f9f9;">
+                    <div class="checkbox">
+                      <label><input type="checkbox" name="resourceIds[]" value="1"> Newton’s Laws Summary.pdf — Grade 12, Physical Science</label>
+                    </div>
+                    <div class="checkbox">
+                      <label><input type="checkbox" name="resourceIds[]" value="2"> Energy Conversion Slide.ppt — Grade 10, Physical Science</label>
+                    </div>
+                    <div class="checkbox">
+                      <label><input type="checkbox" name="resourceIds[]" value="3"> Photosynthesis Video.mp4 — Grade 9, Life Sciences</label>
+                    </div>
+                    <!-- Dynamically render more checkboxes -->
                   </div>
+                </div>
 
-                  <div class="col-md-12 form-group">
-                    <label for="classId">Select Class/Group</label>
+                <div class="form-group row" style="margin-top: 15px;">
+                  <div class="col-xs-8">
                     <select name="classId" id="classId" class="form-control" required>
                       <option value="">-- Select a Class/Group --</option>
-                      <!-- Populate with tutor's classes/groups -->
+                      <option value="A">Grade 12 - Physical Science</option>
+                      <option value="B">Grade 9 - Life Sciences</option>
+                      <option value="C">Grade 10 - Chemistry Club</option>
                     </select>
                   </div>
-
-                  <div class="col-md-12 text-right">
-                    <button type="submit" class="btn btn-info"><i class="fa fa-check"></i> Assign Resource</button>
+                  <div class="col-xs-4" >
+                    <button type="submit" class="btn btn-info btn-block" style="margin-top: 0px;">
+                      <i class="fa fa-check"></i> Assign Selected
+                    </button>
                   </div>
-
                 </div>
+
               </form>
             </div>
           </div>
         </div>
+
+
+
+
+
+
       </div>
 
       <!-- Uploaded Resources -->
@@ -130,17 +145,96 @@ include(__DIR__ . "/../../common/partials/head.php");
                   <th>Type</th>
                   <th>Subject</th>
                   <th>Grade</th>
+                  <th style="width:130px;">Actions</th>
                   <th>Uploaded At</th>
-                  <th style="width:120px;">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <!-- Resources will populate from PHP -->
+                <!-- Dummy Resource 1 -->
+                <tr>
+                  <td>Newton’s Laws Summary</td>
+                  <td>PDF</td>
+                  <td>Physical Science</td>
+                  <td>Grade 10</td>
+                  <td>
+                    <a href="../uploads/resources/newton_laws.pdf" class="btn btn-xs btn-primary" title="Download" download>
+                      <i class="fa fa-download"></i>
+                    </a>
+                    <a href="delete_resource.php?id=1" class="btn btn-xs btn-danger" title="Delete" onclick="return confirm('Delete this resource?')">
+                      <i class="fa fa-trash"></i>
+                    </a>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown" title="Assign Resource">
+                        <i class="fa fa-link"></i> Assign <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a href="#">Grade 10 - Group A</a></li>
+                        <li><a href="#">Grade 10 - Group B</a></li>
+                      </ul>
+                    </div>
+                  </td>
+                  <td>2025-07-28 14:25</td>
+
+                </tr>
+
+                <!-- Dummy Resource 2 -->
+                <tr>
+                  <td>Cell Structure Diagram</td>
+                  <td>Image</td>
+                  <td>Life Sciences</td>
+                  <td>Grade 11</td>
+                  <td>
+                    <a href="../uploads/resources/cell_structure.jpg" class="btn btn-xs btn-primary" title="Download" download>
+                      <i class="fa fa-download"></i>
+                    </a>
+                    <a href="delete_resource.php?id=2" class="btn btn-xs btn-danger" title="Delete" onclick="return confirm('Delete this resource?')">
+                      <i class="fa fa-trash"></i>
+                    </a>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown" title="Assign Resource">
+                        <i class="fa fa-link"></i> Assign <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a href="#">Grade 11 - Group B</a></li>
+                        <li><a href="#">Grade 11 - Group C</a></li>
+                      </ul>
+                    </div>
+                  </td>
+                  <td>2025-07-27 11:05</td>
+
+                </tr>
+                <!-- Dummy Resource 3 -->
+                <tr>
+                  <td>Trigonometry Notes</td>
+                  <td>Slides</td>
+                  <td>Mathematics</td>
+                  <td>Grade 12</td>
+                  <td>
+                    <a href="../uploads/resources/trigonometry_slides.pptx" class="btn btn-xs btn-primary" title="Download" download>
+                      <i class="fa fa-download"></i>
+                    </a>
+                    <a href="delete_resource.php?id=3" class="btn btn-xs btn-danger" title="Delete" onclick="return confirm('Delete this resource?')">
+                      <i class="fa fa-trash"></i>
+                    </a>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown" title="Assign Resource">
+                        <i class="fa fa-link"></i> Assign <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a href="#">Grade 12 - Group A</a></li>
+                        <li><a href="#">Grade 12 - Group D</a></li>
+                      </ul>
+                    </div>
+                  </td>
+                  <td>2025-07-25 08:40</td>
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
+
+
 
 
     </section>
