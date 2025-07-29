@@ -1,30 +1,19 @@
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
+  header("Location: ../../common/pages/login.php");
   exit();
 }
 include(__DIR__ . "/../../common/partials/head.php"); 
 include(__DIR__ . "/../../partials/connect.php");
 
-$requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserType = '2'");
-?>
+$requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserType = '2'"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-
   <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
   <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
-
-
-<!-- temp ergthyjtu hjytuu jytjkuy  -->
-
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-<script src="../../common/dist/js/demo.js"></script> 
-
-<!-- temp   fghrtyjtuk kykliliu luo lo-->
-
 
   <div class="content-wrapper">
     <section class="content-header">

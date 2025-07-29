@@ -122,26 +122,23 @@ include(__DIR__ . "/../../common/partials/head.php");
           <h3 class="box-title" style="color:#605ca8;"><i class="fa fa-folder-open"></i> Your Uploaded Resources</h3>
         </div>
         <div class="box-body" style="background-color:#ffffff;">
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover" id="resourceTable">
-              <thead style="background-color:#e6e0fa; color:#333;">
-                <tr>
-                  <th>Title</th>
-                  <th>Type</th>
-                  <th>Subject</th>
-                  <th>Grade</th>
-                  <th>Uploaded At</th>
-                  <th style="width:120px;">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Resources will populate from PHP -->
-              </tbody>
-            </table>
-          </div>
+          <table class="table table-bordered table-hover" id="resourceTable">
+            <thead style="background-color:#e6e0fa; color:#333;">
+              <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Subject</th>
+                <th>Grade</th>
+                <th>Uploaded At</th>
+                <th style="width:120px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Resources will populate from PHP -->
+            </tbody>
+          </table>
         </div>
       </div>
-
 
     </section>
 

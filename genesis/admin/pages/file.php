@@ -41,7 +41,7 @@
 </head>
 
 <body class="hold-transition skin-blue sidebar-mini">
-
+ 
 <?php
     session_start();
 
@@ -49,15 +49,12 @@
     header("Location: ../../common/pages/login.php");
         exit();
     }
-
     include(__DIR__ . "/../../common/partials/head.php"); 
     include(__DIR__ . "/../../common/partials/header.php"); 
     include(__DIR__ . "/../../common/partials/mainsidebar.php");
 
     include(__DIR__ . "/../../partials/connect.php");
 
-
-    //$parentId = isset($_GET['pid']) ? $_GET['pid'] : null;
     $learner_id = isset($_GET['lid']) ? $_GET['lid'] : null;
 
     $SubjectId = intval($_GET['val']); // Get the subject value, ensure it's an integer

@@ -78,7 +78,7 @@ if ($resultSubjects) {
     border-color: #007bff;
     color: #007bff;
   }
-</style>
+</style> 
 
 <body class="hold-transition skin-blue sidebar-mini">
   <div class="wrapper">

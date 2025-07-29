@@ -17,7 +17,6 @@
 
     include(__DIR__ . "/../../partials/connect.php");
 
-
     $learner_id = isset($_POST['learnerId']) ? $_POST['learnerId'] : null;
     $SubjectId = isset($_POST['subjectId']) ? intval($_POST['subjectId']) : null;
 
@@ -638,7 +637,6 @@
         </table>
         
     </div><br>
-
 
 
 </body>

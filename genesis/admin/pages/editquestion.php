@@ -155,7 +155,7 @@ $stmt->close();
                                 <input type="text" name="OptionD" id="OptionD" class="form-control" required 
                                     value="<?php echo htmlspecialchars($question['OptionD']); ?>">
                             </div>
-                        </div>
+                        </div> 
                     </div>
 
                     <div class="form-group">

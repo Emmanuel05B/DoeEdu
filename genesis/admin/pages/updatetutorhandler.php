@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_details'])) {
     header("Location: updatetutors.php?id={$tutorId}");
     exit();
 }
-?>
+?> 
 
 <!DOCTYPE html>
 <html lang="en">
