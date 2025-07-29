@@ -70,10 +70,25 @@ include(__DIR__ . "/../../common/partials/head.php");
                     <input type="file" name="resource_file" class="form-control" required>
                   </div>
 
-                  <div class="col-md-12 text-right" style="margin-top: 20px;">
+                  <div class="col-md-6 form-group">
+                    <label for="visibility">Visibility</label>
+                    <select name="visibility" class="form-control" required>
+                      <option value="private">Private (Only assigned classes)</option>
+                      <option value="public">Public (All learners can access)</option>
+                    </select>
+                  </div>
+
+                  <!-- Description -->
+                  <div class="col-md-6 form-group">
+                    <label for="description">Description / Notes (Optional)</label>
+                    <textarea name="description" class="form-control" rows="2" placeholder="Brief info about the resource"></textarea>
+                  </div>
+
+                </div>
+                
+                  <div class="col-md-12 text-right" style="margin-top: 10px;">
                     <button type="submit" class="btn btn-primary"><i class="fa fa-cloud-upload"></i> Upload Resource</button>
                   </div>
-                </div>
               </form>
             </div>
           </div>
@@ -83,23 +98,59 @@ include(__DIR__ . "/../../common/partials/head.php");
         <div class="col-md-6">
           <div class="box box-info" style="border-top: 3px solid #00c0ef;">
             <div class="box-header with-border" style="background-color:#d9f0fb;">
-              <h3 class="box-title" style="color:#0073b7;"><i class="fa fa-tasks"></i> Bulk Assign Resources to Class/Group</h3>
+              <h3 class="box-title" style="color:#0073b7;">
+                <i class="fa fa-tasks"></i> Bulk Assign Resources to Class/Group
+              </h3>
             </div>
             <div class="box-body" style="background-color:#ffffff;">
               <form action="assign_resource.php" method="POST">
                 <div class="form-group">
                   <label>Select Resources</label>
-                  <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px; background-color: #f9f9f9;">
-                    <div class="checkbox">
-                      <label><input type="checkbox" name="resourceIds[]" value="1"> Newton’s Laws Summary.pdf — Grade 12, Physical Science</label>
-                    </div>
-                    <div class="checkbox">
-                      <label><input type="checkbox" name="resourceIds[]" value="2"> Energy Conversion Slide.ppt — Grade 10, Physical Science</label>
-                    </div>
-                    <div class="checkbox">
-                      <label><input type="checkbox" name="resourceIds[]" value="3"> Photosynthesis Video.mp4 — Grade 9, Life Sciences</label>
-                    </div>
-                    <!-- Dynamically render more checkboxes -->
+                  <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9;">
+                    <table class="table table-striped" style="margin-bottom: 0;">
+                      <thead>
+                        <tr>
+                          <th style="width: 40px;"></th> <!-- checkbox column -->
+                          <th>Title</th>
+                          <th>Grade</th>
+                          <th>Subject</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><input type="checkbox" name="resourceIds[]" value="1"></td>
+                          <td>Newton’s Laws Summary.pdf</td>
+                          <td>Grade 12</td>
+                          <td>Physical Science</td>
+                        </tr>
+                        <tr>
+                          <td><input type="checkbox" name="resourceIds[]" value="2"></td>
+                          <td>Energy Conversion Slide.ppt</td>
+                          <td>Grade 10</td>
+                          <td>Physical Science</td>
+                        </tr>
+                        <tr>
+                          <td><input type="checkbox" name="resourceIds[]" value="3"></td>
+                          <td>Photosynthesis Video.mp4</td>
+                          <td>Grade 9</td>
+                          <td>Life Sciences</td>
+                        </tr>
+                        <tr>
+                          <td><input type="checkbox" name="resourceIds[]" value="2"></td>
+                          <td>Energy Conversion Slide.ppt</td>
+                          <td>Grade 10</td>
+                          <td>Physical Science</td>
+                        </tr>
+                        <tr>
+                          <td><input type="checkbox" name="resourceIds[]" value="3"></td>
+                          <td>Photosynthesis Video.mp4</td>
+                          <td>Grade 9</td>
+                          <td>Life Sciences</td>
+                        </tr>
+                        
+                        <!-- Add more rows dynamically -->
+                      </tbody>
+                    </table>
                   </div>
                 </div>
 
@@ -112,22 +163,16 @@ include(__DIR__ . "/../../common/partials/head.php");
                       <option value="C">Grade 10 - Chemistry Club</option>
                     </select>
                   </div>
-                  <div class="col-xs-4" >
-                    <button type="submit" class="btn btn-info btn-block" style="margin-top: 0px;">
+                  <div class="col-xs-4">
+                    <button type="submit" class="btn btn-info btn-block" style="margin-top: 0;">
                       <i class="fa fa-check"></i> Assign Selected
                     </button>
                   </div>
                 </div>
-
               </form>
             </div>
           </div>
         </div>
-
-
-
-
-
 
       </div>
 
