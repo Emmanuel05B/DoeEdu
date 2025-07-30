@@ -1,0 +1,127 @@
+ALTER TABLE employees
+RENAME TO staff;     renaming a table
+
+SELECT 
+    Learner.*,
+    User.*,
+    Report.*
+FROM 
+    Report
+JOIN 
+    Learner ON Report.learner_id = Learner.learner_id
+JOIN 
+    User ON Report.user_id = User.user_id;
+
+ALTER Table ......
+Change Column  old  new Datatype
+
+ALTER Table ......
+Add Column ...... Datatype
+
+ALTER Table ......
+DROP Column .......
+
+DROP TABLE table_name;
+
+
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        System.out.println("Question 1");
+        testBookPrinting();
+
+        System.out.println("Question 2");
+        testCountOccurencesOfWord();
+    }
+
+    private static void testBookPrinting() {
+        System.out.println("Answer should be 25: " + (BookPrinting(100, 2) == 25));
+        System.out.println("Answer should be 26: " + (BookPrinting(101, 2) == 26));
+        System.out.println("Answer should be 25: " + (BookPrinting(200, 4) == 25));
+        System.out.println("Answer should be 0: " + (BookPrinting(0, 2) == 0));
+        System.out.println("Answer should be 1: " + (BookPrinting(1, 1) == 1));
+    }
+
+    private static void testCountOccurencesOfWord() {
+        Map<String, Integer> answer1 = CountOccurencesOfWord(new String[]{"Toy", "Play", "Car", "Toy", "Doll", "Car"});
+        Map<String, Integer> answer1Comparer = new HashMap<String, Integer>() {{
+            put("Toy", 2);
+            put("Play", 1);
+            put("Car", 2);
+            put("Doll", 1);
+        }};
+        System.out.println(answer1.equals(answer1Comparer) ? "Correct" : "Incorrect");
+
+        Map<String, Integer> answer2 = CountOccurencesOfWord(new String[]{"Toy", "Play", "Car", "Truck", "Doll", "Blocks"});
+        Map<String, Integer> answer2Comparer = new HashMap<String, Integer>() {{
+            put("Toy", 1);
+            put("Play", 1);
+            put("Car", 1);
+            put("Truck", 1);
+            put("Doll", 1);
+            put("Blocks", 1);
+        }};
+        System.out.println(answer2.equals(answer2Comparer) ? "Correct" : "Incorrect");
+
+        Map<String, Integer> answer3 = CountOccurencesOfWord(new String[0]);
+        Map<String, Integer> answer3Comparer = null;
+        System.out.println(answer3 == answer3Comparer ? "Correct" : "Incorrect");
+
+        Map<String, Integer> answer4 = CountOccurencesOfWord(new String[]{"Toy", "Play", "Car", "Toy", "Doll", "Car", "Toy"});
+        Map<String, Integer> answer4Comparer = new HashMap<String, Integer>() {{
+            put("Toy", 3);
+            put("Play", 1);
+            put("Car", 2);
+            put("Doll", 1);
+        }};
+        System.out.println(answer4.equals(answer4Comparer) ? "Correct" : "Incorrect");
+    }
+
+    /**
+     * Question 1
+     * Given the total number of pages in a book and the number of pages that can be printed on a single sheet of paper,
+     * calculate how many sheets of paper are needed to print the entire book. Assume that each sheet of paper can be
+     * printed on both sides.
+     */
+    public static int BookPrinting(int totalPages, int pagesPerSheet) {
+        //int numsheets  ;
+
+
+       return 0;
+    }
+
+    /**
+     * Question 2
+     * Given an array of words, write a function that returns a Map of words and their counts.
+     * If the input collection contains nothing, return null.
+     * Example:
+     * ["John", "Dave", "Sally", "John"] =>  { "John": 2, "Dave": 1, "Sally": 1 }
+     */
+    public static Map<String, Integer> CountOccurencesOfWord(String[] data) {
+        // Exit early if the data is null or empty
+        if (data == null || data.length == 0) {
+            return null;
+        }
+
+        // Get count of each word
+        Map<String, Integer> wordMemory = new HashMap<>();
+
+        for (String word : data) {
+            var num = wordMemory.get(word);
+            if (num > 0) {
+                wordMemory.put(word, (num + 1));
+            } else {
+                wordMemory.put(word, 1);
+            }
+            wordMemory.put(word, wordMemory.getOrDefault(word, 0) + 1);
+        }
+
+        return wordMemory;
+    }
+}
+
+

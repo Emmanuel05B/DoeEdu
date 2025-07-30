@@ -44,7 +44,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
           <li><a href="admin.php"><i class="fa fa-circle-o"></i> Administration</a></li>          
           <li><a href="classes.php"><i class="fa fa-circle-o"></i> Classes</a></li>
           <li><a href="tutors.php"><i class="fa fa-circle-o"></i> Tutors</a></li>
-          <li><a href="resources.php"><i class="fa fa-circle-o"></i> Resources</a></li>
+          <li><a href="studyresources.php"><i class="fa fa-circle-o"></i> Resources</a></li>
           <li><a href="admin_create_notice.php"><i class="fa fa-circle-o"></i> Create Notices</a></li>
 
 
