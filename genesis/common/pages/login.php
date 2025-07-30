@@ -150,7 +150,7 @@ if(isset($_POST['login'])){
                             header('Location: ../tutor/tutorindex.php');
                             break;
                         case 2: // Learner
-                            header('Location: ../learner/noticepage.php');
+                            header('Location: ../learner/learnerindex.php');
                             break;
                         default:
                             $_SESSION['error_message'] = '<span class="error-message">Invalid user role.</span>';

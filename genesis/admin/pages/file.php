@@ -50,8 +50,8 @@
         exit();
     }
     include(__DIR__ . "/../../common/partials/head.php"); 
-    include(__DIR__ . "/../../common/partials/header.php"); 
-    include(__DIR__ . "/../../common/partials/mainsidebar.php");
+    include(__DIR__ . "/../partials/header.php"); 
+    include(__DIR__ . "/../partials/mainsidebar.php");
 
     include(__DIR__ . "/../../partials/connect.php");
 

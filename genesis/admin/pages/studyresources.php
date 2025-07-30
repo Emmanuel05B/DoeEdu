@@ -8,6 +8,7 @@
     }
     include(__DIR__ . "/../../common/partials/head.php");
     include(__DIR__ . "/../../partials/connect.php");
+    
 
     // Assume tutor id for demo, replace with actual logged-in tutor ID in real
     $tutorId = 2;
@@ -60,8 +61,8 @@
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
-  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
+  <?php include(__DIR__ . "/../partials/header.php"); ?>
+  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>

@@ -16,8 +16,8 @@ if (!isset($_SESSION['email'])) {
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
   <!-- Left side column. contains the logo and sidebar -->
-  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
-  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
+  <?php include(__DIR__ . "/../partials/header.php"); ?>
+  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <!-- Content Wrapper. Contains page content --->
   <div class="content-wrapper">

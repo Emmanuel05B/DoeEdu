@@ -1,185 +1,155 @@
 <!DOCTYPE html>
 <html>
+
 <?php
 session_start();
 
 if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
-    exit();
+  header("Location: ../../common/pages/login.php");
+  exit();
 }
-
-include(__DIR__ . "/../../common/partials/head.php"); 
-include(__DIR__ . "/../../partials/connect.php");
 ?>
+
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include(__DIR__ . "/../../common/partials/header.php"); ?>
-  <?php include(__DIR__ . "/../../common/partials/mainsidebar.php"); ?>
+  <?php include(__DIR__ . "/../partials/header.php"); ?>
+  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
-  <div class="content-wrapper" style="background-color: #f7f9fc;">
+  <!-- Content Wrapper -->
+  <div class="content-wrapper">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+
     <section class="content-header">
-      <h1>Study Resources<small>Upload and manage learning materials</small></h1>
+      <h1>Grade 11 Mathematics <small>Study Resources</small></h1>
       <ol class="breadcrumb">
         <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">Study Resources</li>
       </ol>
     </section>
 
+    <!-- Main Content -->
     <section class="content">
-      <!-- Upload Resource -->
-      <div class="box box-primary">
-        <div class="box-header with-border" style="background-color:#3399cc;">
-          <h3 class="box-title">Upload New Resource</h3>
-        </div>
-        <div class="box-body"style="background-color:#f0f8ff;">
-          <form action="upload_resource.php" method="POST" enctype="multipart/form-data">
-            <div class="row">
-              <?php
-              $userId = $_SESSION['user_id'];
-              $stmt = $connect->prepare("SELECT DISTINCT SubjectId FROM directorsubjects WHERE DirectorId = ?");
-              $stmt->bind_param("i", $userId);
-              $stmt->execute();
-              $result = $stmt->get_result();
+      <div class="row">
+        <div class="col-xs-12">
 
-              $subjectGradePairs = [];
-              function getSubjectDetails($subjectId) {
-                  $grade = null;
-                  $subjectName = null;
-                  if ($subjectId == 1 || $subjectId == 4) $grade = 10;
-                  elseif ($subjectId == 2 || $subjectId == 5) $grade = 11;
-                  elseif ($subjectId == 3 || $subjectId == 6) $grade = 12;
+          <div class="box box-primary">
+            <div class="box-header">
+              <h3 class="box-title">Available Resources</h3>
+            </div>
 
-                  if (in_array($subjectId, [1, 2, 3])) {
-                      $subjectName = "Mathematics";
-                  } elseif (in_array($subjectId, [4, 5, 6])) {
-                      $subjectName = "Physical Sciences";
-                  }
+            <div class="box-body">
+              <div class="row">
 
-                  return ['grade' => $grade, 'subjectName' => $subjectName];
-              }
+                <!-- Resource Card 1 -->
+                <div class="col-md-4">
+                  <div class="box box-widget widget-user" style="border-top: 3px solid #3c8dbc;">
+                    <div class="box-body" style="background-color: #f9f9f9;">
+                      <h4 class="text-primary">Notes</h4>
+                      <p><strong>Type:</strong> PDF Documents</p>
+                      <p><strong>Total:</strong> 20</p>
+                      <a href="pdfs.php" class="btn btn-sm btn-primary pull-right">
+                        <i class="fa fa-view"></i> View/Open
+                      </a>
+                    </div>
+                  </div>
+                </div>
 
-              while ($row = $result->fetch_assoc()) {
-                  $subjectId = $row['SubjectId'];
-                  $details = getSubjectDetails($subjectId);
-                  $subjectGradePairs[] = [
-                      'subjectId' => $subjectId,
-                      'subjectName' => $details['subjectName'],
-                      'grade' => $details['grade']
-                  ];
-              }
+                <!-- Resource Card 2 -->
+                <div class="col-md-4">
+                  <div class="box box-widget widget-user" style="border-top: 3px solid #3c8dbc;">
+                    <div class="box-body" style="background-color: #f9f9f9;">
+                      <h4 class="text-primary">Powerpoint Slides</h4>
+                      <p><strong>Type:</strong> Slides</p>
+                      <p><strong>Total:</strong> 23</p>
+                      <a href="slides.php" class="btn btn-sm btn-primary pull-right">
+                        <i class="fa fa-view"></i> View/Open
+                      </a>
+                    </div>
+                  </div>
+                </div>
 
-              $uniqueSubjects = [];
-              $uniqueGrades = [];
+                <!-- Resource Card 3 -->
+                <div class="col-md-4">
+                  <div class="box box-widget widget-user" style="border-top: 3px solid #3c8dbc;">
+                    <div class="box-body" style="background-color: #f9f9f9;">
+                      <h4 class="text-primary">Videos</h4>
+                      <p><strong>Type:</strong> Video</p>
+                      <p><strong>Total:</strong> 15</p>
+                      <a href="vids.php" class="btn btn-sm btn-primary pull-right">
+                        <i class="fa fa-open"></i> View/Open
+                      </a>
+                    </div>
+                  </div>
+                </div>
 
-              foreach ($subjectGradePairs as $pair) {
-                  $uniqueSubjects[$pair['subjectName']] = true;
-                  $uniqueGrades["Grade " . $pair['grade']] = true;
-              }
-              ?>
+                <!-- Add more resource cards here -->
 
-              <div class="col-md-4 form-group">
-                <label>Title</label>
-                <input type="text" name="title" class="form-control" placeholder="E.g. Newton’s Laws Summary" required>
               </div>
+              <div class="row">
 
-              <div class="col-md-4 form-group">
-                <label>Subject</label>
-                <select name="subject" class="form-control" required>
-                  <option value="">Select Subject</option>
-                  <?php foreach (array_keys($uniqueSubjects) as $subject): ?>
-                    <option value="<?php echo $subject; ?>"><?php echo $subject; ?></option>
-                  <?php endforeach; ?>
-                </select>
-              </div>
+                <!-- Resource Card 4 -->
+                <div class="col-md-4">
+                  <div class="box box-widget widget-user" style="border-top: 3px solid #3c8dbc;">
+                    <div class="box-body" style="background-color: #f9f9f9;">
+                      <h4 class="text-primary">Audio</h4>
+                      <p><strong>Type:</strong> Audio</p>
+                      <p><strong>Total:</strong> 5</p>
+                      <a href="audio.php" class="btn btn-sm btn-primary pull-right">
+                        <i class="fa fa-view"></i> View/Open
+                      </a>
+                    </div>
+                  </div>
+                </div>
 
-              <div class="col-md-4 form-group">
-                <label>Grade</label>
-                <select name="grade" class="form-control" required>
-                  <option value="">Select Grade</option>
-                  <?php foreach (array_keys($uniqueGrades) as $grade): ?>
-                    <option value="<?php echo $grade; ?>"><?php echo $grade; ?></option>
-                  <?php endforeach; ?>
-                </select>
-              </div>
+                <!-- Resource Card 5 -->
+                <div class="col-md-4">
+                  <div class="box box-widget widget-user" style="border-top: 3px solid #3c8dbc;">
+                    <div class="box-body" style="background-color: #f9f9f9;">
+                      <h4 class="text-primary">Images</h4>
+                      <p><strong>Type:</strong> Image</p>
+                      <p><strong>Total:</strong> 10</p>
+                      <a href="images.php" class="btn btn-sm btn-primary pull-right">
+                        <i class="fa fa-open"></i> View/Open
+                      </a>
+                    </div>
+                  </div>
+                </div>
 
-              <div class="col-md-4 form-group">
-                <label>Type of Resource</label>
-                <select name="resource_type" class="form-control" required>
-                  <option value="">Select Type</option>
-                  <option value="PDF">PDF Document</option>
-                  <option value="Image">Image</option>
-                  <option value="Slides">Slides (e.g. PPT)</option>
-                  <option value="Video">Video</option>
-                </select>
-              </div>
+                <!-- Resource Card 3 -->
+                <div class="col-md-4">
+                  <div class="box box-widget widget-user" style="border-top: 3px solid #3c8dbc;">
+                    <div class="box-body" style="background-color: #f9f9f9;">
+                      <h4 class="text-primary">Documents</h4>
+                      <p><strong>Type:</strong> Docs</p>
+                      <p><strong>Total:</strong> 30</p>
+                      <a href="#" class="btn btn-sm btn-primary pull-right">
+                        <i class="fa fa-open"></i> View/Open
+                      </a>
+                    </div>
+                  </div>
+                </div>
 
-              <div class="col-md-8 form-group">
-                <label>Choose File</label>
-                <input type="file" name="resource_file" class="form-control" required>
-              </div>
+                <!-- Add more resource cards here -->
 
-              <div class="col-md-12 text-right">
-                <button type="submit" class="btn btn-primary"><i class="fa fa-upload"></i> Upload Resource</button>
               </div>
             </div>
-          </form>
-        </div>
-      </div>
+          </div>
 
-      <!-- Uploaded Resources -->
-      <div class="box">
-        <div class="box-header with-border" style="background-color:#9f86d1; color:#fff;">
-          <h3 class="box-title">Your Uploaded Resources</h3>
-        </div>
-        <div class="box-body" style="background-color:#f3edff;">
-          <table class="table table-hover table-bordered">
-            <thead style="background-color:#e0d4fc;">
-              <tr>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Subject</th>
-                <th>Grade</th>
-                <th>Uploaded At</th>
-                <th style="width:120px;">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php
-              $stmt = $connect->prepare("SELECT * FROM resources WHERE UploadedBy = ? ORDER BY UploadedAt DESC");
-              $stmt->bind_param("i", $userId);
-              $stmt->execute();
-              $result = $stmt->get_result();
-              while ($row = $result->fetch_assoc()):
-              ?>
-              <tr>
-                <td><?php echo htmlspecialchars($row['Title']); ?></td>
-                <td><?php echo htmlspecialchars($row['Type']); ?></td>
-                <td><?php echo htmlspecialchars($row['Subject']); ?></td>
-                <td><?php echo htmlspecialchars($row['Grade']); ?></td>
-                <td><?php echo htmlspecialchars($row['UploadedAt']); ?></td>
-                <td>
-                  <a href="../uploads/resources/<?php echo urlencode($row['FilePath']); ?>" class="btn btn-xs btn-primary" title="Download" download>
-                    <i class="fa fa-download"></i>
-                  </a>
-                  <a href="delete_resource.php?id=<?php echo $row['Id']; ?>" class="btn btn-xs btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this resource?')">
-                    <i class="fa fa-trash"></i>
-                  </a>
-                </td>
-              </tr>
-              <?php endwhile; ?>
-            </tbody>
-          </table>
         </div>
       </div>
     </section>
+
   </div>
 
+  <div class="control-sidebar-bg"></div>
 </div>
 
-
-<!-- Scripts -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
+
+</body>
 </html>
