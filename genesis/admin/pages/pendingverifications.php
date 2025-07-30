@@ -79,11 +79,8 @@ $requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserTy
 
 <!-- JS Libraries -->
 
-<script src="../bower_components/jquery/dist/jquery.min.js"></script>
-<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="../bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="../bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-<script src="../dist/js/adminlte.min.js"></script>
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -129,10 +126,6 @@ $requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserTy
     <?php endif; ?>
   });
 </script>
-
-
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-<script src="../../common/dist/js/demo.js"></script> 
 
 </body>
 </html>

@@ -69,7 +69,6 @@ include(__DIR__ . "/../../partials/connect.php");
 
 
   <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-  <script src="../../common/dist/js/demo.js"></script> 
 
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>

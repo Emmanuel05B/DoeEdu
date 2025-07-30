@@ -104,15 +104,10 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
 </div>
 
 <!-- JS Libraries -->
-<script src="../bower_components/jquery/dist/jquery.min.js"></script>
-<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="../bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="../bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-<script src="../dist/js/adminlte.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-<script src="../../common/dist/js/demo.js"></script> 
 
 <script>
   $(function () {

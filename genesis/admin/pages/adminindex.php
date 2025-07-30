@@ -340,6 +340,5 @@
   </div>
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-<script src="../../common/dist/js/demo.js"></script>
 </body>
 </html>

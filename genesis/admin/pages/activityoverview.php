@@ -271,14 +271,6 @@ $isClosed = $now > $dueDate;
   <div class="control-sidebar-bg"></div>
 </div>
 
-<!-- Scripts -->
- <!-- Scripts -->
-<script src="../bower_components/jquery/dist/jquery.min.js"></script>
-<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="../bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="../bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-<script src="../dist/js/adminlte.min.js"></script>
-
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -302,7 +294,6 @@ $isClosed = $now > $dueDate;
 
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-<script src="../../common/dist/js/demo.js"></script>
 
 </body>
 </html>

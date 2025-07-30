@@ -106,17 +106,8 @@ if (!isset($_SESSION['email'])) {
   </div>
 
   <!-- jQuery 3 -->
-  <script src="../bower_components/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap 3.3.7 -->
-  <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-  <!-- ChartJS CDN for v2.9.4 -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
-  <!-- FastClick -->
-  <script src="../bower_components/fastclick/lib/fastclick.js"></script>
-  <!-- AdminLTE App -->
-  <script src="../dist/js/adminlte.min.js"></script>
-  <!-- AdminLTE demo purposes -->
-  <script src="../../common/dist/js/demo.js"></script> 
+  <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+
 
   <script>
     $(function () {
