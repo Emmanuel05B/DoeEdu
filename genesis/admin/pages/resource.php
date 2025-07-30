@@ -1,59 +1,250 @@
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
-  exit();
-}
-include(__DIR__ . "/../../common/partials/head.php");
-include(__DIR__ . "/../../partials/connect.php");
 
-// Assume tutor id for demo, replace with actual logged-in tutor ID in real
-$tutorId = 2;
+    include(__DIR__ . "/../../partials/connect.php");
 
-// Fetch tutor's assigned classes info for dropdowns
-$subjectGradeOptions = [];
-$stmt = $connect->prepare("
-  SELECT c.ClassID, s.SubjectName, c.Grade, c.GroupName
-  FROM classes c
-  JOIN subjects s ON c.SubjectID = s.SubjectId
-  WHERE c.TutorID = ?
-  ORDER BY c.Grade, s.SubjectName, c.GroupName
-");
-$stmt->bind_param("i", $tutorId);
-$stmt->execute();
-$subjectGradeOptions = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
+    // Handle the POST upload request here
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $title = trim($_POST['title'] ?? '');
+        $classId = trim($_POST['classId'] ?? '');
+        $visibility = trim($_POST['visibility'] ?? 'private');
+        $description = trim($_POST['description'] ?? '');
+        $uploadedBy = $_SESSION['user_id'] ?? null;
 
-// Fetch all resources matching tutor's assigned subjects & grades
-$uploadedResources = [];
-$stmt = $connect->prepare("
-  SELECT r.ResourceID, r.Title, r.ResourceType, r.Grade, s.SubjectName, r.UploadedAt
-  FROM resources r
-  JOIN subjects s ON r.SubjectID = s.SubjectID
-  WHERE EXISTS (
-    SELECT 1 FROM classes c
-    WHERE c.TutorID = ? AND c.Grade = r.Grade AND c.SubjectID = r.SubjectID
-  )
-  ORDER BY r.UploadedAt DESC
-");
-$stmt->bind_param("i", $tutorId);
-$stmt->execute();
-$uploadedResources = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
+        $file = $_FILES['resource_file'];
+        $uploadDir = '../../uploads/resources/';
 
-// Fetch tutor's assigned classes again for assigning resources dropdown (same as above, but separate variable)
-$assignedClasses = [];
-$stmt = $connect->prepare("
-  SELECT c.ClassID, CONCAT('Grade ', c.Grade, ' - ', c.GroupName, ' (', s.SubjectName, ')') AS label
-  FROM classes c
-  JOIN subjects s ON c.SubjectID = s.SubjectId
-  WHERE c.TutorID = ?
-  ORDER BY c.Grade, c.GroupName
-");
-$stmt->bind_param("i", $tutorId);
-$stmt->execute();
-$assignedClasses = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
+        $mimeType = $file['type'];
+        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+        // Determine resource type based on MIME or extension
+        switch (true) {
+            case str_contains($mimeType, 'image'):
+                $resourceType = 'image';
+                break;
+            case str_contains($mimeType, 'video'):
+                $resourceType = 'video';
+                break;
+            case str_contains($mimeType, 'audio'):
+                $resourceType = 'audio';
+                break;
+            case in_array($extension, ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx']):
+                $resourceType = 'document';
+                break;
+            case in_array($extension, ['zip', 'rar', '7z']):
+                $resourceType = 'compressed';
+                break;
+            case in_array($extension, ['txt', 'csv']):
+                $resourceType = 'text';
+                break;
+            case $extension === 'pdf':
+                $resourceType = 'pdf';
+                break;
+            default:
+                $resourceType = 'other';
+                break;
+        }
+
+        $allowedTypes = [
+            // ... same array as before ...
+            'application/pdf',
+            'image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'video/mp4', 'video/x-msvideo', 'video/quicktime', 'video/x-matroska', 'video/webm',
+            'application/zip', 'application/x-zip-compressed', 'multipart/x-zip', 'application/x-compressed',
+            'text/plain', 'text/csv',
+            'application/x-rar-compressed', 'application/x-7z-compressed',
+            'audio/mpeg', 'audio/wav', 'audio/mp4', 'audio/x-m4a', 'audio/ogg'
+        ];
+
+        // Validation
+        if (!$title || !$classId || !$resourceType || !$uploadedBy) {
+            echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Missing Fields',
+                    text: 'Please fill all required fields.',
+                }).then(() => {
+                    window.location = 'studyresources.php';
+                });
+            </script>";
+            exit();
+        }
+
+        if (!in_array($file['type'], $allowedTypes)) {
+            echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Unsupported file type',
+                    text: 'File type {$file['type']} is not allowed.',
+                }).then(() => {
+                    window.location = 'studyresources.php';
+                });
+            </script>";
+            exit();
+        }
+
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Upload error',
+                    text: 'Error code: {$file['error']}',
+                }).then(() => {
+                    window.location = 'studyresources.php';
+                });
+            </script>";
+            exit();
+        }
+
+        // Make sure upload folder exists
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $fileName = basename($file['name']);
+        $uniqueFileName = uniqid() . "_" . preg_replace("/[^a-zA-Z0-9\.\-_]/", "_", $fileName);
+        $targetPath = $uploadDir . $uniqueFileName;
+
+        // Get SubjectID and Grade from ClassID
+        $classQuery = "SELECT SubjectID, Grade FROM classes WHERE ClassID = ?";
+        $classStmt = $connect->prepare($classQuery);
+        $classStmt->bind_param("i", $classId);
+        $classStmt->execute();
+        $classResult = $classStmt->get_result();
+
+        if ($classResult->num_rows === 0) {
+            echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid class selected',
+                }).then(() => {
+                    window.location = 'studyresources.php';
+                });
+            </script>";
+            exit();
+        }
+
+        $classRow = $classResult->fetch_assoc();
+        $subjectId = $classRow['SubjectID'];
+        $grade = $classRow['Grade'];
+
+        // Move file
+        if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+            echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Upload failed',
+                    text: 'Could not save uploaded file.',
+                }).then(() => {
+                    window.location = 'studyresources.php';
+                });
+            </script>";
+            exit();
+        }
+
+        // Insert into `resources`
+        $insertSql = "INSERT INTO resources 
+            (Title, FilePath, ResourceType, SubjectID, Grade, Description, Visibility, UploadedBy) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $stmt = $connect->prepare($insertSql);
+        $stmt->bind_param("sssisssi", 
+            $title,
+            $uniqueFileName,
+            $resourceType,
+            $subjectId,
+            $grade,
+            $description,
+            $visibility,
+            $uploadedBy
+        );
+
+        if ($stmt->execute()) {
+            echo "<script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Resource uploaded!',
+                }).then(() => {
+                    window.location = 'studyresources.php';
+                });
+            </script>";
+        } else {
+            echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Database error',
+                    text: 'Could not save resource info.',
+                }).then(() => {
+                    window.location = 'studyresources.php';
+                });
+            </script>";
+        }
+        exit(); // Important: stop here so the rest of the page doesn't run after POST
+    }
+?>
+
+
+<?php
+    session_start();
+    if (!isset($_SESSION['email'])) {
+      header("Location: ../../common/pages/login.php");
+      exit();
+    }
+    include(__DIR__ . "/../../common/partials/head.php");
+    include(__DIR__ . "/../../partials/connect.php");
+
+    // Assume tutor id for demo, replace with actual logged-in tutor ID in real
+    $tutorId = 2;
+
+    // Fetch tutor's assigned classes info for dropdowns
+    $subjectGradeOptions = [];
+    $stmt = $connect->prepare("
+      SELECT c.ClassID, s.SubjectName, c.Grade, c.GroupName
+      FROM classes c
+      JOIN subjects s ON c.SubjectID = s.SubjectId
+      WHERE c.TutorID = ?
+      ORDER BY c.Grade, s.SubjectName, c.GroupName
+    ");
+    $stmt->bind_param("i", $tutorId);
+    $stmt->execute();
+    $subjectGradeOptions = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    // Fetch all resources matching tutor's assigned subjects & grades
+    $uploadedResources = [];
+    $stmt = $connect->prepare("
+      SELECT r.ResourceID, r.Title, r.FilePath, r.ResourceType, r.Grade, s.SubjectName, r.UploadedAt
+      FROM resources r
+      JOIN subjects s ON r.SubjectID = s.SubjectID
+      WHERE EXISTS (
+        SELECT 1 FROM classes c
+        WHERE c.TutorID = ? AND c.Grade = r.Grade AND c.SubjectID = r.SubjectID
+      )
+      ORDER BY r.UploadedAt DESC
+    ");
+    $stmt->bind_param("i", $tutorId);
+    $stmt->execute();
+    $uploadedResources = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    // Fetch tutor's assigned classes again for assigning resources dropdown (same as above, but separate variable)
+    $assignedClasses = [];
+    $stmt = $connect->prepare("
+      SELECT c.ClassID, CONCAT('Grade ', c.Grade, ' - ', c.GroupName, ' (', s.SubjectName, ')') AS label
+      FROM classes c
+      JOIN subjects s ON c.SubjectID = s.SubjectId
+      WHERE c.TutorID = ?
+      ORDER BY c.Grade, c.GroupName
+    ");
+    $stmt->bind_param("i", $tutorId);
+    $stmt->execute();
+    $assignedClasses = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -83,7 +274,8 @@ $stmt->close();
               <h3 class="box-title" style="color:#3c8dbc;"><i class="fa fa-upload"></i> Upload New Resource</h3>
             </div>
             <div class="box-body" style="background-color:#ffffff;">
-              <form action="upload_resource.php" method="POST" enctype="multipart/form-data">
+              <form action="studyresources.php" method="POST" enctype="multipart/form-data">
+
                 <div class="row">
 
                   <!-- Title -->
@@ -206,6 +398,7 @@ $stmt->close();
               <thead style="background-color:#e6e0fa; color:#333;">
                 <tr>
                   <th>Title</th>
+                  <th>Preview</th>
                   <th>Type</th>
                   <th>Subject</th>
                   <th>Grade</th>
@@ -217,11 +410,42 @@ $stmt->close();
                 <?php foreach ($uploadedResources as $res): ?>
                   <tr>
                     <td><?= htmlspecialchars($res['Title']) ?></td>
+                    <td>
+                      <?php
+                      // Base URL path to uploads folder (adjust if your project URL changes)
+                      $baseUploadsUrl = '/DoeEdu/genesis/uploads/resources/';
+                      // Inside your foreach loop for each resource -->
+
+                      $fileName = $res['FilePath'] ?? '';  // filename stored in DB
+                      $fileUrl = $baseUploadsUrl . urlencode($fileName); // Proper URL to file
+
+                      $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                      if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                          echo '<a href="' . $fileUrl . '" target="_blank" title="View Image">';
+                          echo '<img src="' . $fileUrl . '" style="max-width:80px; max-height:60px; border-radius:4px;" alt="Preview">';
+                          echo '</a>';
+                      } elseif ($ext === 'pdf') {
+                          echo '<a href="' . $fileUrl . '" target="_blank" title="View PDF">';
+                          echo '<i class="fa fa-file-pdf-o" style="font-size:24px; color:#d9534f;"></i></a>';
+                      } elseif (in_array($ext, ['mp4', 'webm', 'ogg'])) {
+                          echo '<a href="' . $fileUrl . '" target="_blank" title="View Video">';
+                          echo '<i class="fa fa-file-video-o" style="font-size:24px; color:#5bc0de;"></i></a>';
+                      } elseif (in_array($ext, ['mp3', 'wav', 'm4a'])) {
+                          echo '<a href="' . $fileUrl . '" target="_blank" title="Listen Audio">';
+                          echo '<i class="fa fa-file-audio-o" style="font-size:24px; color:#f0ad4e;"></i></a>';
+                      } else {
+                          echo '<a href="' . $fileUrl . '" target="_blank" title="Download File">';
+                          echo '<i class="fa fa-file-o" style="font-size:24px; color:#777;"></i></a>';
+                      }
+                      ?>
+
+                    </td>
                     <td><?= htmlspecialchars($res['ResourceType']) ?></td>
                     <td><?= htmlspecialchars($res['SubjectName']) ?></td>
                     <td>Grade <?= htmlspecialchars($res['Grade']) ?></td>
                     <td>
-                      <a href="../uploads/resources/<?= urlencode($res['Title']) ?>" class="btn btn-xs btn-primary" title="Download" download>
+                      <a href="<?= $filePath ?>" class="btn btn-xs btn-primary" title="Download" download>
                         <i class="fa fa-download"></i>
                       </a>
                       <button class="btn btn-xs btn-danger delete-resource-btn" data-id="<?= htmlspecialchars($res['ResourceID']) ?>" title="Delete">
@@ -248,6 +472,7 @@ $stmt->close();
           </div>
         </div>
       </div>
+
 
     </section>
 
