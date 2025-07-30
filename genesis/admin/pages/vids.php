@@ -69,6 +69,12 @@ include(__DIR__ . "/../../common/partials/queries.php"); // assume this contains
                         <source src="<?php echo '/DoeEdu/genesis/uploads/resources/' . $videoPath; ?>" type="video/mp4">
                         Your browser does not support the video tag.
                       </video>
+
+                      <a href="<?php echo '/DoeEdu/genesis/uploads/resources/' . $videoPath; ?>" 
+                        download="<?php echo 'DOE_' . $videoPath; ?>" 
+                        class="btn btn-sm btn-success pull-right" style="margin-top: 10px;">
+                        <i class="fa fa-download"></i> Download
+                      </a>
                     </div>
                   </div>
                 </div>
