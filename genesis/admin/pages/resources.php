@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html> 
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
@@ -7,6 +5,77 @@ if (!isset($_SESSION['email'])) {
   exit();
 }
 include(__DIR__ . "/../../common/partials/head.php");
+include(__DIR__ . "/../../partials/connect.php");
+
+// Get logged-in tutor ID and assigned classes info
+//for now well assume that tutor id = 2.
+$tutorId = 2;
+
+// Fetch distinct Subject & Grade combos the tutor is assigned to (for dropdown)
+$subjectGradeOptions = [];
+$stmt = $connect->prepare("
+  SELECT DISTINCT c.ClassID, s.SubjectName, c.Grade, c.GroupName
+  FROM classes c
+  JOIN subjects s ON c.SubjectID = s.SubjectId
+  WHERE c.TutorID = ?
+  ORDER BY c.Grade, s.SubjectName, c.GroupName
+");
+$stmt->bind_param("i", $tutorId);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+  $subjectGradeOptions[] = $row;
+}
+$stmt->close();
+
+
+// Fetch tutor's uploaded resources for bulk assign and resource list
+$uploadedResources = [];
+$stmt = $connect->prepare("
+SELECT 
+  r.ResourceID, 
+  r.Title, 
+  r.ResourceType, 
+  r.Grade, 
+  s.SubjectName,
+  r.UploadedAt
+FROM 
+  resources r
+JOIN 
+  subjects s ON r.SubjectID = s.SubjectID
+WHERE 
+  r.UploadedBy = ?
+ORDER BY 
+  r.UploadedAt DESC;
+
+");
+$stmt->bind_param("i", $tutorId);
+$stmt->execute();
+$res = $stmt->get_result();
+while ($row = $res->fetch_assoc()) {
+  $uploadedResources[] = $row;
+}
+$stmt->close();
+
+
+
+
+// Fetch tutor's assigned classes (for assigning resources)
+$assignedClasses = [];
+$stmt = $connect->prepare("
+  SELECT c.ClassID, CONCAT('Grade ', c.Grade, ' - ', c.GroupName, ' (', s.SubjectName, ')') AS label
+  FROM classes c
+  JOIN subjects s ON c.SubjectID = s.SubjectId
+  WHERE c.TutorID = ?
+  ORDER BY c.Grade, c.GroupName
+");
+$stmt->bind_param("i", $tutorId);
+$stmt->execute();
+$res = $stmt->get_result();
+while ($row = $res->fetch_assoc()) {
+  $assignedClasses[] = $row;
+}
+$stmt->close();
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -27,7 +96,7 @@ include(__DIR__ . "/../../common/partials/head.php");
     </section>
 
     <section class="content">
-      
+
       <div class="row">
         <!-- Upload Resource - Left Side -->
         <div class="col-md-6">
@@ -39,21 +108,26 @@ include(__DIR__ . "/../../common/partials/head.php");
               <form action="upload_resource.php" method="POST" enctype="multipart/form-data">
                 <div class="row">
 
-                  <!-- Title and Subject & Grade side by side -->
+                  <!-- Title -->
                   <div class="col-md-6 form-group">
                     <label for="title">Title</label>
                     <input type="text" name="title" class="form-control" placeholder="E.g. Newton’s Laws Summary" required>
                   </div>
 
+                  <!-- Subject & Grade -->
                   <div class="col-md-6 form-group">
                     <label for="subject_grade">Subject & Grade</label>
-                    <select name="subject_grade" class="form-control" required>
+                    <select name="classId" class="form-control" required>
                       <option value="">Select Subject & Grade</option>
-                      <!-- Options from PHP will populate here -->
+                      <?php foreach ($subjectGradeOptions as $option): ?>
+                        <option value="<?= htmlspecialchars($option['ClassID']) ?>">
+                          Grade <?= htmlspecialchars($option['Grade']) ?> - Group <?= htmlspecialchars($option['GroupName']) ?> (<?= htmlspecialchars($option['SubjectName']) ?>)
+                        </option>
+                      <?php endforeach; ?>
                     </select>
                   </div>
 
-                  <!-- Type of Resource and Choose File side by side -->
+                  <!-- Type of Resource -->
                   <div class="col-md-6 form-group">
                     <label for="resource_type">Type of Resource</label>
                     <select name="resource_type" class="form-control" required>
@@ -65,11 +139,13 @@ include(__DIR__ . "/../../common/partials/head.php");
                     </select>
                   </div>
 
+                  <!-- File Upload -->
                   <div class="col-md-6 form-group">
                     <label for="resource_file">Choose File</label>
                     <input type="file" name="resource_file" class="form-control" required>
                   </div>
 
+                  <!-- Visibility -->
                   <div class="col-md-6 form-group">
                     <label for="visibility">Visibility</label>
                     <select name="visibility" class="form-control" required>
@@ -85,10 +161,10 @@ include(__DIR__ . "/../../common/partials/head.php");
                   </div>
 
                 </div>
-                
-                  <div class="col-md-12 text-right" style="margin-top: 10px;">
-                    <button type="submit" class="btn btn-primary"><i class="fa fa-cloud-upload"></i> Upload Resource</button>
-                  </div>
+
+                <div class="col-md-12 text-right" style="margin-top: 10px;">
+                  <button type="submit" class="btn btn-primary"><i class="fa fa-cloud-upload"></i> Upload Resource</button>
+                </div>
               </form>
             </div>
           </div>
@@ -117,38 +193,14 @@ include(__DIR__ . "/../../common/partials/head.php");
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td><input type="checkbox" name="resourceIds[]" value="1"></td>
-                          <td>Newton’s Laws Summary.pdf</td>
-                          <td>Grade 12</td>
-                          <td>Physical Science</td>
-                        </tr>
-                        <tr>
-                          <td><input type="checkbox" name="resourceIds[]" value="2"></td>
-                          <td>Energy Conversion Slide.ppt</td>
-                          <td>Grade 10</td>
-                          <td>Physical Science</td>
-                        </tr>
-                        <tr>
-                          <td><input type="checkbox" name="resourceIds[]" value="3"></td>
-                          <td>Photosynthesis Video.mp4</td>
-                          <td>Grade 9</td>
-                          <td>Life Sciences</td>
-                        </tr>
-                        <tr>
-                          <td><input type="checkbox" name="resourceIds[]" value="2"></td>
-                          <td>Energy Conversion Slide.ppt</td>
-                          <td>Grade 10</td>
-                          <td>Physical Science</td>
-                        </tr>
-                        <tr>
-                          <td><input type="checkbox" name="resourceIds[]" value="3"></td>
-                          <td>Photosynthesis Video.mp4</td>
-                          <td>Grade 9</td>
-                          <td>Life Sciences</td>
-                        </tr>
-                        
-                        <!-- Add more rows dynamically -->
+                        <?php foreach ($uploadedResources as $res): ?>
+                          <tr>
+                            <td><input type="checkbox" name="resourceIds[]" value="<?= htmlspecialchars($res['Id']) ?>"></td>
+                            <td><?= htmlspecialchars($res['Title']) ?></td>
+                            <td>Grade <?= htmlspecialchars($res['Grade']) ?></td>
+                            <td><?= htmlspecialchars($res['SubjectName']) ?></td>
+                          </tr>
+                        <?php endforeach; ?>
                       </tbody>
                     </table>
                   </div>
@@ -158,9 +210,11 @@ include(__DIR__ . "/../../common/partials/head.php");
                   <div class="col-xs-8">
                     <select name="classId" id="classId" class="form-control" required>
                       <option value="">-- Select a Class/Group --</option>
-                      <option value="A">Grade 12 - Physical Science</option>
-                      <option value="B">Grade 9 - Life Sciences</option>
-                      <option value="C">Grade 10 - Chemistry Club</option>
+                      <?php foreach ($assignedClasses as $class): ?>
+                        <option value="<?= htmlspecialchars($class['ClassID']) ?>">
+                          <?= htmlspecialchars($class['label']) ?>
+                        </option>
+                      <?php endforeach; ?>
                     </select>
                   </div>
                   <div class="col-xs-4">
@@ -173,10 +227,9 @@ include(__DIR__ . "/../../common/partials/head.php");
             </div>
           </div>
         </div>
-
       </div>
 
-      <!-- Uploaded Resources -->
+      <!-- Uploaded Resources Table -->
       <div class="box box-solid" style="border-top: 3px solid #605ca8;">
         <div class="box-header with-border" style="background-color:#f3edff;">
           <h3 class="box-title" style="color:#605ca8;"><i class="fa fa-folder-open"></i> Your Uploaded Resources</h3>
@@ -195,92 +248,40 @@ include(__DIR__ . "/../../common/partials/head.php");
                 </tr>
               </thead>
               <tbody>
-                <!-- Dummy Resource 1 -->
-                <tr>
-                  <td>Newton’s Laws Summary</td>
-                  <td>PDF</td>
-                  <td>Physical Science</td>
-                  <td>Grade 10</td>
-                  <td>
-                    <a href="../uploads/resources/newton_laws.pdf" class="btn btn-xs btn-primary" title="Download" download>
-                      <i class="fa fa-download"></i>
-                    </a>
-                    <a href="delete_resource.php?id=1" class="btn btn-xs btn-danger" title="Delete" onclick="return confirm('Delete this resource?')">
-                      <i class="fa fa-trash"></i>
-                    </a>
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown" title="Assign Resource">
-                        <i class="fa fa-link"></i> Assign <span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li><a href="#">Grade 10 - Group A</a></li>
-                        <li><a href="#">Grade 10 - Group B</a></li>
-                      </ul>
-                    </div>
-                  </td>
-                  <td>2025-07-28 14:25</td>
-
-                </tr>
-
-                <!-- Dummy Resource 2 -->
-                <tr>
-                  <td>Cell Structure Diagram</td>
-                  <td>Image</td>
-                  <td>Life Sciences</td>
-                  <td>Grade 11</td>
-                  <td>
-                    <a href="../uploads/resources/cell_structure.jpg" class="btn btn-xs btn-primary" title="Download" download>
-                      <i class="fa fa-download"></i>
-                    </a>
-                    <a href="delete_resource.php?id=2" class="btn btn-xs btn-danger" title="Delete" onclick="return confirm('Delete this resource?')">
-                      <i class="fa fa-trash"></i>
-                    </a>
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown" title="Assign Resource">
-                        <i class="fa fa-link"></i> Assign <span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li><a href="#">Grade 11 - Group B</a></li>
-                        <li><a href="#">Grade 11 - Group C</a></li>
-                      </ul>
-                    </div>
-                  </td>
-                  <td>2025-07-27 11:05</td>
-
-                </tr>
-                <!-- Dummy Resource 3 -->
-                <tr>
-                  <td>Trigonometry Notes</td>
-                  <td>Slides</td>
-                  <td>Mathematics</td>
-                  <td>Grade 12</td>
-                  <td>
-                    <a href="../uploads/resources/trigonometry_slides.pptx" class="btn btn-xs btn-primary" title="Download" download>
-                      <i class="fa fa-download"></i>
-                    </a>
-                    <a href="delete_resource.php?id=3" class="btn btn-xs btn-danger" title="Delete" onclick="return confirm('Delete this resource?')">
-                      <i class="fa fa-trash"></i>
-                    </a>
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown" title="Assign Resource">
-                        <i class="fa fa-link"></i> Assign <span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li><a href="#">Grade 12 - Group A</a></li>
-                        <li><a href="#">Grade 12 - Group D</a></li>
-                      </ul>
-                    </div>
-                  </td>
-                  <td>2025-07-25 08:40</td>
-                </tr>
+                <?php foreach ($uploadedResources as $res): ?>
+                  <tr>
+                    <td><?= htmlspecialchars($res['Title']) ?></td>
+                    <td><?= htmlspecialchars($res['ResourceType']) ?></td>
+                    <td><?= htmlspecialchars($res['SubjectName']) ?></td>
+                    <td>Grade <?= htmlspecialchars($res['Grade']) ?></td>
+                    <td>
+                      <a href="../uploads/resources/<?= urlencode($res['Title']) ?>" class="btn btn-xs btn-primary" title="Download" download>
+                        <i class="fa fa-download"></i>
+                      </a>
+                      <a href="delete_resource.php?id=<?= htmlspecialchars($res['Id']) ?>" class="btn btn-xs btn-danger" title="Delete" onclick="return confirm('Delete this resource?')">
+                        <i class="fa fa-trash"></i>
+                      </a>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown" title="Assign Resource">
+                          <i class="fa fa-link"></i> Assign <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                          <?php foreach ($assignedClasses as $class): ?>
+                            <li><a href="assign_resource_single.php?resourceId=<?= htmlspecialchars($res['Id']) ?>&classId=<?= htmlspecialchars($class['ClassID']) ?>">
+                              <?= htmlspecialchars($class['label']) ?>
+                            </a></li>
+                          <?php endforeach; ?>
+                        </ul>
+                      </div>
+                    </td>
+                    <td><?= htmlspecialchars($res['UploadedAt'] ?? 'Unknown') ?></td>
+                  </tr>
+                <?php endforeach; ?>
               </tbody>
             </table>
           </div>
         </div>
       </div>
-
-
-
 
     </section>
 
@@ -290,7 +291,6 @@ include(__DIR__ . "/../../common/partials/head.php");
 </div>
 
 <!-- Scripts -->
-
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
 <script>
