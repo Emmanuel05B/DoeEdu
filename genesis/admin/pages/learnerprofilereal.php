@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html>
 <?php
@@ -13,89 +11,6 @@ if (!isset($_SESSION['email'])) {
 
 <?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
-<style>
-    .profile-personal-info {
-      border-bottom: 2px solid #007bff;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      padding-left: 15px;
-    }
-
-    .profile-personal-info h4 {
-      font-size: 24px;
-      font-weight: bold;
-      color: #007bff;
-      margin-bottom: 15px;
-    }
-
-    .profile-personal-info .row {
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-    }
-
-    .profile-personal-info .col-3 {
-      flex: 0 0 25%;
-      max-width: 25%;
-      font-weight: bold;
-      color: #333;
-      font-size: 16px;
-      padding-left: 0;
-    }
-
-    .profile-personal-info .col-9 {
-      flex: 0 0 75%;
-      max-width: 75%;
-      font-size: 16px;
-      color: #007bff;
-      padding-right: 0;
-    }
-
-    .profile-personal-info .col-9 p,
-    .profile-personal-info .col-3 p {
-      margin: 0;
-    }
-
-    hr {
-      border: none;
-      border-top: 2px solid #007bff;
-      margin: 20px 0;
-    }
-
-    .bubble-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-  }
-
-  .bubble {
-      border: 2px solid #add8e6; 
-      padding: 10px 20px;
-      border-radius: 50px; 
-      text-align: center;
-  }
-
-  .bubble:hover {
-      border-color: #007bff; 
-      color: #007bff; 
-  }
-
-
-  .profile-personal-info {
-      border-bottom: 2px solid #007bff;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      padding-left: 30px; /* Added padding to shift content right */
-  }
-
-  .profile-personal-info .row {
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      margin-left: 10px; /* Adjust if needed to further shift content */
-  }
-
-</style>
 
 <body class="hold-transition skin-blue sidebar-mini">
   <div class="wrapper">
@@ -185,49 +100,51 @@ if (!isset($_SESSION['email'])) {
               <ul class="nav nav-tabs">
                 <li class="active"><a href="#aboutme" data-toggle="tab">About Me</a></li>
                 <li><a href="#supportme" data-toggle="tab">Support Me</a></li>
-                <li><a href="#more" data-toggle="tab">.....</a></li>
-                <li><a href="#record" data-toggle="tab">Record Marks</a></li>
-
+                <li><a href="#more" data-toggle="tab">More</a></li>
               </ul>
               <div class="tab-content">
-                <!-- about me tab-pane -->
                 <div class="active tab-pane" id="aboutme">
                   <!-- here -->
-                  <div class="profile-personal-info">
-                    <h4>About Me</h4>
-                    <p>I'm a creative and curious kid who loves exploring new ideas and finding joy in my favorite activities.
-                      I do well in a calm, structured environment where I can learn and grow at my own pace.</p>
+                  <div>
+                    <div class="profile-personal-info">
+                      <h4 style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">About Me</h4>
+                      <p>I'm a creative and curious kid who loves exploring new ideas and finding joy in my favorite activities.
+                        I do well in a calm, structured environment where I can learn and grow at my own pace.</p>
+                    </div>
+
+                    <div class="profile-personal-info" style="margin-top: 20px;">
+                        <h4 style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">Personal Information</h4>
+
+                        <table style="width: 100%; border-collapse: collapse; font-size: 14px; color: #333;">
+                          <tr>
+                            <td style="width: 30%; padding: 8px 10px; font-weight: bold;">Name:</td>
+                            <td style="padding: 8px 10px;"><strong><?php echo $final['Name'] ?></strong></td>
+                          </tr>
+                          <tr>
+                            <td style="width: 30%; padding: 8px 10px; font-weight: bold;">Surname:</td>
+                            <td style="padding: 8px 10px;"><?php echo $final['Surname'] ?></td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 8px 10px; font-weight: bold;">Grade:</td>
+                            <td style="padding: 8px 10px;"><?php echo $final['Grade'] ?></td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 8px 10px; font-weight: bold;">Email:</td>
+                            <td style="padding: 8px 10px;"><?php echo $final['Email'] ?></td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 8px 10px; font-weight: bold;">Contact Number:</td>
+                            <td style="padding: 8px 10px;"><?php echo $final['Contact'] ?></td>
+                          </tr>
+                        </table>
+                      </div>
+
+
+                      
+                      <!-- /.here -->
+                    </div>
                   </div>
-
-                  <div class="profile-personal-info">
-                      <h4>Personal Information</h4>
-
-                      <div class="row mb-3">
-                        <div class="col-3"><strong><p>Name: </p></strong></div>
-                        <div class="col-9"><strong><p><?php echo $final['Name'] ?></p></strong></div>
-                      </div>
-                      <div class="row mb-3">
-                        <div class="col-3"><p>Surname: </p></div>
-                        <div class="col-9"><strong><p><?php echo $final['Surname'] ?></p></strong></div>
-                      </div>
-                      <div class="row mb-3">
-                        <div class="col-3"><strong><p>Grade: </p></strong></div>
-                        <div class="col-9"><strong><p><?php echo $final['Grade'] ?></p></strong></div>
-                      </div>
-                      <div class="row mb-3">
-                        <div class="col-3"><strong><p>Email: </p></strong></div>
-                        <div class="col-9"><strong><p><?php echo $final['Email'] ?></p></strong></div>
-                      </div>
-                      <div class="row mb-3">
-                        <div class="col-3"><strong><p>Contact Number: </p></strong></div>
-                        <div class="col-9"><strong><p><?php echo $final['Contact'] ?></p></strong></div>
-                      </div>
-                  </div>
-
-                  
-                  <!-- /.here -->
-                </div>
-                <!-- support me tab-pane -->
+                <!-- /.tab-pane -->
                 <div class="tab-pane" id="supportme">
                   <!-- here -->
                   <div class="profile-personal-info">
@@ -273,13 +190,25 @@ if (!isset($_SESSION['email'])) {
                             </div>
                  </div>
 
+                 
+
+
+                  <!-- /.here -->
+                </div>
+                <!-- /.tab-pane -->
+
+                <div class="tab-pane" id="more">
+                  <!-- here -->
                   <div class="profile-personal-info">
-                  
                   <div class="profile-skills border-bottom mb-4 pb-2">
                     <h4 class="text-primary mb-4">Things I Love</h4>
                     <div class="bubble-container">
                       <span class="bubble">Puzzles</span>
                       <span class="bubble">Being outside</span>
+                      <span class="bubble">Animals</span>
+                      <span class="bubble">Bubbles</span>
+                      <span class="bubble">Chocolate cake</span>
+                      <span class="bubble">Messy play</span>
                     </div>
                   </div>
                   </div>
@@ -288,6 +217,9 @@ if (!isset($_SESSION['email'])) {
                               <h4 class="text-primary mb-4">My Hopes and Wishes</h4>
                               <div class="bubble-container">
                                 <span class="bubble">To be happy</span>
+                                <span class="bubble">To be Independent</span>
+                                <span class="bubble">To reach my potential</span>
+                                <span class="bubble">To make friends</span>
                                 <span class="bubble">To be healthy</span>
                                 <span class="bubble">Messy play</span>
                               </div>   
@@ -299,12 +231,17 @@ if (!isset($_SESSION['email'])) {
                               <div class="bubble-container">
                                 <span class="bubble">My laugh</span>
                                 <span class="bubble">My smile</span>
+                                <span class="bubble">I am very good at numbers</span>
+                                <span class="bubble">I am great at giving hugs</span>
+                                <span class="bubble">I am very good at puzzels</span>
+                                <span class="bubble">I am interested in how things work</span>
                               </div>
                             </div>
                   </div>
                   <div class="profile-personal-info">
                            <div class="profile-skills border-bottom mb-4 pb-2">
                               <h4 class="text-primary mb-4">Things that I find Stressful</h4>
+
                               <div class="bubble-container">
                               <span class="bubble">Noise</span>
                               <span class="bubble">Pressure to Be Independent</span>
@@ -313,103 +250,9 @@ if (!isset($_SESSION['email'])) {
                             </div>
                   </div>
                  
-
-
                   <!-- /.here -->
                 </div>
-                <!-- more tab-pane -->
-                <div class="tab-pane" id="more">
-                <div class="profile-personal-info">
-  <div class="profile-skills border-bottom mb-4 pb-2">
-    <h4 class="text-primary mb-3">Mathematics</h4>
-    
-    <div class="bubble-container">
-      <div class="bubble">Algebra <span class="label label-success">Completed</span></div>
-      <div class="bubble">Fractions <span class="label label-warning">In Progress</span></div>
-    </div>
-
-    <div style="margin-top: 15px;">
-      <label>Enter Mark:</label>
-      <input type="text" value="Fractions" readonly style="border: none; background: transparent;">
-      <input type="number" class="form-control input-sm" style="width: 100px; display: inline;" placeholder="e.g. 65">
-      <button class="btn btn-xs btn-primary">Save</button>
-    </div>
-
-    <div style="margin-top: 15px;">
-      <label>Notes:</label>
-      <textarea class="form-control" rows="2" placeholder="e.g. Needs help with fractions."></textarea>
-      <button class="btn btn-xs btn-success" style="margin-top: 5px;">Save Note</button>
-    </div>
-
-    <div class="callout callout-info" style="margin-top: 20px;">
-      <h5>Progress Summary</h5>
-      <p>Completed 1 of 2 chapters. Avg Mark: <strong>70%</strong></p>
-    </div>
-  </div>
-</div>
-
-                </div>
-                <!-- record tab-pane -->
-                 <div class="tab-pane" id="record">
-
-                 <div class="profile-personal-info">
-                    <div class="profile-skills border-bottom mb-4 pb-2">
-                      <h4 class="text-primary mb-3">Capture Learner Marks</h4>
-
-                      <form action="save_marks.php" method="POST">
-
-                        <!-- Subject Dropdown (full row) -->
-                        <div class="form-group">
-                          <label>Subject:</label>
-                          <select name="subject" class="form-control input-sm" required>
-                            <option value="">-- Select Subject --</option>
-                            <option value="Mathematics">Mathematics</option>
-                            <option value="Natural Sciences">Natural Sciences</option>
-                            <option value="English">English</option>
-                          </select>
-                        </div>
-
-                        <!-- Chapter and Activity Side-by-side -->
-                        <div class="row">
-                          <div class="form-group col-md-6" style="padding-right: 5px;">
-                            <label>Chapter / Topic:</label>
-                            <input type="text" name="chapter" class="form-control input-sm" placeholder="e.g. Fractions" required>
-                          </div>
-                          <div class="form-group col-md-6" style="padding-left: 5px;">
-                            <label>Activity Name:</label>
-                            <input type="text" name="activity" class="form-control input-sm" placeholder="e.g. Quiz 1" required>
-                          </div>
-                        </div>
-
-                        <!-- Total Marks and Obtained Marks Side-by-side -->
-                        <div class="row">
-                          <div class="form-group col-md-6" style="padding-right: 5px;">
-                            <label>Total Marks:</label>
-                            <input type="number" name="total_marks" class="form-control input-sm" placeholder="e.g. 20" required>
-                          </div>
-                          <div class="form-group col-md-6" style="padding-left: 5px;">
-                            <label>Marks Obtained:</label>
-                            <input type="number" name="marks_obtained" class="form-control input-sm" placeholder="e.g. 15" required>
-                          </div>
-                        </div>
-
-                        <!-- Notes (Full Width) -->
-                        <div class="form-group">
-                          <label>Remarks / Notes (optional):</label>
-                          <textarea name="remarks" class="form-control" rows="2" placeholder="e.g. Learner struggled with question 3."></textarea>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" class="btn btn-sm btn-primary">Save Record</button>
-
-                      </form>
-                    </div>
-                  </div>
-
-                 
-                 
-                  <!-- /.here -->
-                </div>
+                <!-- /.tab-pane -->
               </div>
               <!-- /.tab-content -->
             </div>
