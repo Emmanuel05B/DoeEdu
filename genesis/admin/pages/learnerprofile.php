@@ -185,8 +185,10 @@ if (!isset($_SESSION['email'])) {
               <ul class="nav nav-tabs">
                 <li class="active"><a href="#aboutme" data-toggle="tab">About Me</a></li>
                 <li><a href="#supportme" data-toggle="tab">Support Me</a></li>
-                <li><a href="#more" data-toggle="tab">.....</a></li>
                 <li><a href="#record" data-toggle="tab">Record Marks</a></li>
+                <li><a href="#more" data-toggle="tab">.....</a></li>
+                <li><a href="#goals" data-toggle="tab">Goals</a></li>
+
 
               </ul>
               <div class="tab-content">
@@ -227,6 +229,7 @@ if (!isset($_SESSION['email'])) {
                   
                   <!-- /.here -->
                 </div>
+
                 <!-- support me tab-pane -->
                 <div class="tab-pane" id="supportme">
                   <!-- here -->
@@ -246,8 +249,9 @@ if (!isset($_SESSION['email'])) {
                              
                             
                   </div>
+
                   <div class="profile-personal-info">
-                  <div class="profile-skills border-bottom mb-4 pb-2">
+                          <div class="profile-skills border-bottom mb-4 pb-2">
                               <h4 class="text-primary mb-4">How to help me learn</h4>
                               
                                 <ul>
@@ -256,12 +260,12 @@ if (!isset($_SESSION['email'])) {
                                     
                                 </ul>
                             
-                            </div>
+                          </div>
           
-                 </div>
+                  </div>
 
-                 <div class="profile-personal-info">
-                 <div class="profile-skills border-bottom mb-4 pb-2">
+                  <div class="profile-personal-info">
+                           <div class="profile-skills border-bottom mb-4 pb-2">
                               <h4 class="text-primary mb-4">How to help me calm down</h4>
                               
                                 <ul>
@@ -271,20 +275,20 @@ if (!isset($_SESSION['email'])) {
                                 </ul>
                               
                             </div>
-                 </div>
+                  </div>
 
                   <div class="profile-personal-info">
                   
-                  <div class="profile-skills border-bottom mb-4 pb-2">
-                    <h4 class="text-primary mb-4">Things I Love</h4>
-                    <div class="bubble-container">
-                      <span class="bubble">Puzzles</span>
-                      <span class="bubble">Being outside</span>
+                    <div class="profile-skills border-bottom mb-4 pb-2">
+                      <h4 class="text-primary mb-4">Things I Love</h4>
+                      <div class="bubble-container">
+                        <span class="bubble">Puzzles</span>
+                        <span class="bubble">Being outside</span>
+                      </div>
                     </div>
                   </div>
-                  </div>
                   <div class="profile-personal-info">
-                  <div class="profile-skills border-bottom mb-4 pb-2">
+                   <div class="profile-skills border-bottom mb-4 pb-2">
                               <h4 class="text-primary mb-4">My Hopes and Wishes</h4>
                               <div class="bubble-container">
                                 <span class="bubble">To be happy</span>
@@ -309,107 +313,170 @@ if (!isset($_SESSION['email'])) {
                               <span class="bubble">Noise</span>
                               <span class="bubble">Pressure to Be Independent</span>
                               </div>
-
                             </div>
                   </div>
                  
-
-
-                  <!-- /.here -->
                 </div>
+
+                <!-- record tab-pane -->
+                <div class="tab-pane" id="record">
+                  <div class="profile-personal-info">
+                      <div class="profile-skills border-bottom mb-4 pb-2">
+                        <h4 class="text-primary mb-3">Capture Learner Marks</h4>
+
+                        <form action="save_marks.php" method="POST">
+
+                          <!-- Subject Dropdown (full row) -->
+                          <div class="form-group">
+                            <label>Subject:</label>
+                            <select name="subject" class="form-control input-sm" required>
+                              <option value="">-- Select Subject --</option>
+                              <option value="Mathematics">Mathematics</option>
+                              <option value="Natural Sciences">Natural Sciences</option>
+                              <option value="English">English</option>
+                            </select>
+                          </div>
+
+                          <!-- Chapter and Activity Side-by-side -->
+                          <div class="row">
+                            <div class="form-group col-md-6" style="padding-right: 5px;">
+                              <label>Chapter / Topic:</label>
+                              <input type="text" name="chapter" class="form-control input-sm" placeholder="e.g. Fractions" required>
+                            </div>
+                            <div class="form-group col-md-6" style="padding-left: 5px;">
+                              <label>Activity Name:</label>
+                              <input type="text" name="activity" class="form-control input-sm" placeholder="e.g. Quiz 1" required>
+                            </div>
+                          </div>
+
+                          <!-- Total Marks and Obtained Marks Side-by-side -->
+                          <div class="row">
+                            <div class="form-group col-md-6" style="padding-right: 5px;">
+                              <label>Total Marks:</label>
+                              <input type="number" name="total_marks" class="form-control input-sm" placeholder="e.g. 20" required>
+                            </div>
+                            <div class="form-group col-md-6" style="padding-left: 5px;">
+                              <label>Marks Obtained:</label>
+                              <input type="number" name="marks_obtained" class="form-control input-sm" placeholder="e.g. 15" required>
+                            </div>
+                          </div>
+
+                          <!-- Notes (Full Width) -->
+                          <div class="form-group">
+                            <label>Remarks / Notes (optional):</label>
+                            <textarea name="remarks" class="form-control" rows="2" placeholder="e.g. Learner struggled with question 3."></textarea>
+                          </div>
+
+                          <!-- Submit Button -->
+                          <button type="submit" class="btn btn-sm btn-primary">Save Record</button>
+
+                        </form>
+                      </div>
+                  </div>
+                </div>
+
                 <!-- more tab-pane -->
                 <div class="tab-pane" id="more">
-                <div class="profile-personal-info">
-  <div class="profile-skills border-bottom mb-4 pb-2">
-    <h4 class="text-primary mb-3">Mathematics</h4>
-    
-    <div class="bubble-container">
-      <div class="bubble">Algebra <span class="label label-success">Completed</span></div>
-      <div class="bubble">Fractions <span class="label label-warning">In Progress</span></div>
-    </div>
-
-    <div style="margin-top: 15px;">
-      <label>Enter Mark:</label>
-      <input type="text" value="Fractions" readonly style="border: none; background: transparent;">
-      <input type="number" class="form-control input-sm" style="width: 100px; display: inline;" placeholder="e.g. 65">
-      <button class="btn btn-xs btn-primary">Save</button>
-    </div>
-
-    <div style="margin-top: 15px;">
-      <label>Notes:</label>
-      <textarea class="form-control" rows="2" placeholder="e.g. Needs help with fractions."></textarea>
-      <button class="btn btn-xs btn-success" style="margin-top: 5px;">Save Note</button>
-    </div>
-
-    <div class="callout callout-info" style="margin-top: 20px;">
-      <h5>Progress Summary</h5>
-      <p>Completed 1 of 2 chapters. Avg Mark: <strong>70%</strong></p>
-    </div>
-  </div>
-</div>
-
-                </div>
-                <!-- record tab-pane -->
-                 <div class="tab-pane" id="record">
-
-                 <div class="profile-personal-info">
+                  <div class="profile-personal-info">
                     <div class="profile-skills border-bottom mb-4 pb-2">
-                      <h4 class="text-primary mb-3">Capture Learner Marks</h4>
+                      <h4 class="text-primary mb-3">Mathematics</h4>
+                      
+                      <div class="bubble-container">
+                        <div class="bubble">Algebra <span class="label label-success">Completed</span></div>
+                        <div class="bubble">Fractions <span class="label label-warning">In Progress</span></div>
+                      </div>
 
-                      <form action="save_marks.php" method="POST">
+                      <div style="margin-top: 15px;">
+                        <label>Enter Mark:</label>
+                        <input type="text" value="Fractions" readonly style="border: none; background: transparent;">
+                        <input type="number" class="form-control input-sm" style="width: 100px; display: inline;" placeholder="e.g. 65">
+                        <button class="btn btn-xs btn-primary">Save</button>
+                      </div>
 
-                        <!-- Subject Dropdown (full row) -->
-                        <div class="form-group">
-                          <label>Subject:</label>
-                          <select name="subject" class="form-control input-sm" required>
-                            <option value="">-- Select Subject --</option>
-                            <option value="Mathematics">Mathematics</option>
-                            <option value="Natural Sciences">Natural Sciences</option>
-                            <option value="English">English</option>
-                          </select>
-                        </div>
+                      <div style="margin-top: 15px;">
+                        <label>Notes:</label>
+                        <textarea class="form-control" rows="2" placeholder="e.g. Needs help with fractions."></textarea>
+                        <button class="btn btn-xs btn-success" style="margin-top: 5px;">Save Note</button>
+                      </div>
 
-                        <!-- Chapter and Activity Side-by-side -->
-                        <div class="row">
-                          <div class="form-group col-md-6" style="padding-right: 5px;">
-                            <label>Chapter / Topic:</label>
-                            <input type="text" name="chapter" class="form-control input-sm" placeholder="e.g. Fractions" required>
-                          </div>
-                          <div class="form-group col-md-6" style="padding-left: 5px;">
-                            <label>Activity Name:</label>
-                            <input type="text" name="activity" class="form-control input-sm" placeholder="e.g. Quiz 1" required>
-                          </div>
-                        </div>
-
-                        <!-- Total Marks and Obtained Marks Side-by-side -->
-                        <div class="row">
-                          <div class="form-group col-md-6" style="padding-right: 5px;">
-                            <label>Total Marks:</label>
-                            <input type="number" name="total_marks" class="form-control input-sm" placeholder="e.g. 20" required>
-                          </div>
-                          <div class="form-group col-md-6" style="padding-left: 5px;">
-                            <label>Marks Obtained:</label>
-                            <input type="number" name="marks_obtained" class="form-control input-sm" placeholder="e.g. 15" required>
-                          </div>
-                        </div>
-
-                        <!-- Notes (Full Width) -->
-                        <div class="form-group">
-                          <label>Remarks / Notes (optional):</label>
-                          <textarea name="remarks" class="form-control" rows="2" placeholder="e.g. Learner struggled with question 3."></textarea>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" class="btn btn-sm btn-primary">Save Record</button>
-
-                      </form>
+                      <div class="callout callout-info" style="margin-top: 20px;">
+                        <h5>Progress Summary</h5>
+                        <p>Completed 1 of 2 chapters. Avg Mark: <strong>70%</strong></p>
+                      </div>
                     </div>
                   </div>
-
-                 
-                 
-                  <!-- /.here -->
                 </div>
+
+
+                 <!-- Goals tab-pane -->
+            <div class="tab-pane" id="goals">
+
+  <!-- Mathematics Goal -->
+  <div class="profile-personal-info">
+    <div class="profile-skills border-bottom mb-4 pb-2">
+      <h4 class="text-primary mb-3">Mathematics Goal</h4>
+
+      <!-- Grid for Level Info -->
+      <div class="row" style="margin-bottom: 15px;">
+        <div class="col-md-3"><strong>Start Level:</strong><p>2</p></div>
+        <div class="col-md-3"><strong>Current Level:</strong><p>3</p></div>
+        <div class="col-md-3"><strong>Target Level:</strong><p>6</p></div>
+        <div class="col-md-3"><strong>Average Mark:</strong><p>58%</p></div>
+      </div>
+
+      <!-- Progress Bar -->
+      <label>Progress Toward Goal:</label>
+      <div class="progress" style="height: 20px;">
+        <div class="progress-bar progress-bar-info progress-bar-striped active"
+             role="progressbar" style="width: 50%;">
+          Level 3 of 6
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="callout callout-info" style="margin-top: 20px;">
+        <h5>Goal Tracker</h5>
+        <p>Based on current average, learner is expected to reach Level 4 by term end.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Physical Sciences Goal -->
+  <div class="profile-personal-info">
+    <div class="profile-skills border-bottom mb-4 pb-2">
+      <h4 class="text-primary mb-3">Physical Sciences Goal</h4>
+
+      <!-- Grid for Level Info -->
+      <div class="row" style="margin-bottom: 15px;">
+        <div class="col-md-3"><strong>Start Level:</strong><p>1</p></div>
+        <div class="col-md-3"><strong>Current Level:</strong><p>2</p></div>
+        <div class="col-md-3"><strong>Target Level:</strong><p>5</p></div>
+        <div class="col-md-3"><strong>Average Mark:</strong><p>46%</p></div>
+      </div>
+
+      <!-- Progress Bar -->
+      <label>Progress Toward Goal:</label>
+      <div class="progress" style="height: 20px;">
+        <div class="progress-bar progress-bar-warning progress-bar-striped active"
+             role="progressbar" style="width: 40%;">
+          Level 2 of 5
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="callout callout-warning" style="margin-top: 20px;">
+        <h5>Goal Tracker</h5>
+        <p>Progress is slow. Recommend additional practice sessions.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
               </div>
               <!-- /.tab-content -->
             </div>
