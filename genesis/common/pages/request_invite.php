@@ -1,6 +1,7 @@
 <?php
 session_start();
-include('../partials/connect.php');
+include('../../partials/connect.php');
+
 
 $errors = [];
 $success = '';

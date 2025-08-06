@@ -163,32 +163,22 @@ if (!isset($_SESSION['email'])) {
             <div class="box box-primary">
               <div class="box-body box-profile">
                 <div class="profile-photo-square">
-                  <img class="profile-user-img img-responsive img-circle" src="../uploads/doe.jpg" alt="User profile picture">
+                  <img class="profile-user-img img-responsive img-circle" src="../../uploads/doe.jpg" alt="User profile picture">
                 </div>
 
                 <h3 class="profile-username text-center"><?php echo $final['Name'] ?> <?php echo $final['Surname'] ?></h3>
 
                 <p class="text-muted text-center">DoE Learner</p>
 
-                <ul class="list-group list-group-unbordered">
-                  <li class="list-group-item">
-                    <a href="goals.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-primary btn-block">View Goals</a>
-                  </li>  
-                  <li class="list-group-item">
-                    <a href="tracklearnerprogress.php?id=<?php echo $final['LearnerId'] ?>&val=<?php echo $_GET['val'] ?>" class="btn btn-primary btn-block">Track Progress</a>
-                  </li>
-                  <li class="list-group-item">
-                  <a href="mcomposeparent.php?pid=<?php echo $final['LearnerId'] ?>" class="btn btn-primary btn-block">Contact Parent</a>
-                  </li>
-                  <li class="list-group-item">
-                    <a href="file.php?lid=<?php echo $final['LearnerId'] ?>&val=<?php echo $_GET['val'] ?>" class="btn btn-primary btn-block">View Report</a>
+                <div class="box-body text-center" style="background-color:#a3bffa;">
+                  <a href="individualactivity.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-primary btn-sm" style="width: 100px;">Record Marks</a>
+                  <a href="goals.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-primary btn-sm" style="width: 100px;">View Goals</a>
+                  <a href="updatelearners.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-primary btn-sm" style="width: 100px;">Update Details</a>
+                  <a href="tracklearnerprogress.php?id=<?php echo $final['LearnerId'] ?>&val=<?php echo $_GET['val'] ?>" class="btn btn-primary btn-sm" style="width: 100px;">Track Progress</a>
+                  <a href="mcomposeparent.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-primary btn-sm" style="width: 100px;">Contact Parent</a>
+                  <a href="file.php?id=<?php echo $final['LearnerId'] ?>&val=<?php echo $_GET['val'] ?>" class="btn btn-primary btn-sm" style="width: 100px;">View Report</a>
 
-                  </li>
-
-
-                 
-                 
-                </ul>
+                </div>
 
               </div>
               <!-- /.box-body -->
