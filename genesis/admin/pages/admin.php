@@ -115,11 +115,28 @@ if ($resultSubjects) {
                         <a href="addlearners.php" style="color: #1a73e8;" class="bubble">Register Learner</a>
                         <a href="addtutor.php" style="color: #1a73e8;" class="bubble">Register Tutor</a>
                         <a href="manage_inviterequests.php" style="color: #1a73e8;" class="bubble">Requests</a>
+                        <a href="addschool.php" style="color: #1a73e8;" class="bubble">School</a>
                       </div>
                     </div>
                   </div>
 
                   <div class="tab-pane" id="update">
+
+                    <div class="profile-personal-info">
+                      <h4 class="text-primary mb-4">Schools</h4>
+                      <div class="bubble-container">
+                        <?php if (empty($schools)): ?>
+                          <span>No schools found</span>
+                        <?php else: ?>
+                          <?php foreach ($schools as $school): ?>
+                            <a href="updateschool.php?id=<?= urlencode($school['SchoolId']) ?>" class="bubble">
+                              <?= htmlspecialchars($school['SchoolName']) ?>
+                            </a>
+                          <?php endforeach; ?>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+
                     <div class="profile-personal-info">
                       <h4 class="text-primary mb-4">Tutors</h4>
                       <div class="bubble-container">

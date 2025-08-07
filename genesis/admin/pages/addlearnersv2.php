@@ -31,13 +31,13 @@ if (!isset($_SESSION['email'])) {
             <h3 class="box-title" style="text-align: center;"></h3>
            
             <div class="box-body">
-              <form action="addlearnerh.php" method="post">
+              <form action="addlearnerhv2.php" method="post">
 
                 <!-- Learner Info Block -->
                 <fieldset class="tab">
                   <legend>Learner Info</legend>
                   <div class="form-group row">
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                       <label for="name">First Name</label>
                       <input type="text" class="form-control" id="name" name="name" placeholder="Enter your first name" required>
                     </div>
@@ -46,12 +46,6 @@ if (!isset($_SESSION['email'])) {
                       <input type="text" class="form-control" id="surname" name="surname" placeholder="Enter your surname" required>
                     </div>
                     <div class="col-md-3">
-                      <label for="schoolname">School Name</label>
-                      <input type="text" class="form-control" id="schoolname" name="schoolname" value="DOE" readonly>
-                    </div>
-                  </div>
-                  <div class="form-group row">
-                    <div class="col-md-3">
                       <label for="email">Email</label>
                       <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
                     </div>
@@ -59,8 +53,10 @@ if (!isset($_SESSION['email'])) {
                       <label for="contactnumber">Contact Number (10 digits)</label>
                       <input type="tel" class="form-control" id="contactnumber" name="contactnumber" pattern="[0-9]{10}" maxlength="10" required>
                       <input type="hidden" id="password" name="password" value="12345">
-
                     </div>
+                  </div>
+
+                  <div class="form-group row">
                     <div class="col-md-2">
                       <label for="learnertitle">Title</label>
                       <select class="form-control" id="learnertitle" name="learnertitle" required>
@@ -68,9 +64,19 @@ if (!isset($_SESSION['email'])) {
                         <option value="Mr">Mr.</option>
                         <option value="Mrs">Mrs.</option>
                         <option value="Ms">Ms.</option>
-                       
                       </select>
                     </div>
+                    <div class="col-md-3">
+                      <label for="schoolname">School Name</label>
+                      <select class="form-control" id="schoolname" name="schoolname" required>
+                        <option value="">Select School Name</option>
+                        <option value="School v1">School v1</option>
+                        <option value="School v2">School v2</option>
+                        <option value="School v3">School v3</option>
+                      </select>
+                    </div>
+                    
+                    
                     <div class="col-md-2">
                       <label for="grade">Grade</label>
                       <select id="grade" name="grade" class="form-control" required>
@@ -90,43 +96,12 @@ if (!isset($_SESSION['email'])) {
 
                 <!-- Subject Selection Block -->
                 <fieldset class="tab">
-                  <legend>Select Subjects and Duration</legend>
+                  <legend>Register Subjects and Levels(Goals)</legend>
                   <table class="table table-bordered">
                     <thead>
                       <tr>
                         <th>Subject</th>
-                        <th>Not Registered</th>
-                        <th>3 Months</th>
-                        <th>6 Months</th>
-                        <th>12 Months</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>Mathematics</td>
-                        <td><input type="radio" name="maths" value="0" checked></td>
-                        <td><input type="radio" name="maths" value="450.00"></td>
-                        <td><input type="radio" name="maths" value="750.00"></td>
-                        <td><input type="radio" name="maths" value="1199.00"></td>
-                      </tr>
-                      <tr>
-                        <td>Physical Sciences</td>
-                        <td><input type="radio" name="physics" value="0" checked></td>
-                        <td><input type="radio" name="physics" value="450.00"></td>
-                        <td><input type="radio" name="physics" value="750.00"></td>
-                        <td><input type="radio" name="physics" value="1199.00"></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </fieldset><br>
-
-                <!-- Current and Target Levels Block -->
-                <fieldset class="tab">
-                  <legend>Current and Target Levels</legend>
-                  <table class="table table-bordered">
-                    <thead>
-                      <tr>
-                        <th>Subject</th>
+                        <th>Mark (<i class="fa fa-check-square"></i>)</th>
                         <th>Current Level (1 - 7)</th>
                         <th>Target Level (3 - 7)</th>
                       </tr>
@@ -134,10 +109,10 @@ if (!isset($_SESSION['email'])) {
                     <tbody>
                       <tr>
                         <td>Mathematics</td>
+                        <td><input type="checkbox" name="maths" value="450.00" ></td>
                         <td>
-                          <select name="math-current" class="form-control" required>
-                            <option value="">Select Level</option>
-                            <option value="100">none</option>
+                          <select name="math-current" class="form-control">
+                            <option value="1">Select Level</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -148,9 +123,8 @@ if (!isset($_SESSION['email'])) {
                           </select>
                         </td>
                         <td>
-                          <select name="math-target" class="form-control" required>
-                            <option value="">Select Target</option>
-                            <option value="100">none</option>
+                          <select name="math-target" class="form-control">
+                            <option value="7">Select Target</option>
                             <option value="3">3</option>
                             <option value="4">4</option>
                             <option value="5">5</option>
@@ -161,6 +135,7 @@ if (!isset($_SESSION['email'])) {
                       </tr>
                       <tr>
                         <td>Physical Sciences</td>
+                        <td><input type="checkbox" name="physics" value="450.00"></td>
                         <td>
                           <select name="physics-current" class="form-control" required>
                             <option value="">Select Level</option>
@@ -187,6 +162,64 @@ if (!isset($_SESSION['email'])) {
                           </select>
                         </td>
                       </tr>
+                        <tr>
+                        <td>History</td>
+                        <td><input type="checkbox" name="history" value="450.00"></td>
+                        <td>
+                          <select name="history-current" class="form-control" required>
+                            <option value="">Select Level</option>
+                            <option value="100">none</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                          </select>
+                        </td>
+                        <td>
+                          <select name="history-target" class="form-control" required>
+                            <option value="">Select Target</option>
+                            <option value="100">none</option>
+                            <option value="1">1</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                          </select>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>English</td>
+                        <td><input type="checkbox" name="english" value="450.00"></td>
+                        <td>
+                          <select name="history-current" class="form-control" required>
+                            <option value="">Select Level</option>
+                            <option value="100">none</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                          </select>
+                        </td>
+                        <td>
+                          <select name="history-target" class="form-control" required>
+                            <option value="">Select Target</option>
+                            <option value="100">none</option>
+                            <option value="1">1</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                          </select>
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
                 </fieldset><br>
@@ -195,25 +228,20 @@ if (!isset($_SESSION['email'])) {
                 <fieldset class="tab">
                   <legend>Parent Info</legend>
                   <div class="form-group row">
-                    <div class="col-md-6">
+                    <div class="col-md-2">
                       <label for="parentname">First Name</label>
-                      <input type="text" class="form-control" id="parentname" name="parentname" placeholder="Enter parent first name" required>
+                      <input type="text" class="form-control" id="parentname" name="parentname" placeholder="Parent first name" required>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                       <label for="parentsurname">Surname</label>
                       <input type="text" class="form-control" id="parentsurname" name="parentsurname" placeholder="Enter parent surname" required>
                     </div>
-                  </div>
-                  <div class="form-group row">
+                  
                     <div class="col-md-3">
                       <label for="parentemail">Email</label>
                       <input type="email" class="form-control" id="parentemail" name="parentemail" placeholder="Enter parent email" required>
                     </div>
-                    <div class="col-md-3">
-                      <label for="parentcontact">Contact Number</label>
-                      <input type="tel" class="form-control" id="parentcontact" name="parentcontact" pattern="[0-9]{10}" maxlength="10" required>
-                    </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                       <label for="parenttitle">Title</label>
                       <select class="form-control" id="parenttitle" name="parenttitle" required>
                         <option value="">Select Title</option>
@@ -224,6 +252,11 @@ if (!isset($_SESSION['email'])) {
                         <option value="Prof">Prof.</option>
                       </select>
                     </div>
+                    <div class="col-md-2">
+                      <label for="parentcontact">Contact Number</label>
+                      <input type="tel" class="form-control" id="parentcontact" name="parentcontact" pattern="[0-9]{10}" maxlength="10" required>
+                    </div>
+                    
                   </div>
                 </fieldset>
 

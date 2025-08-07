@@ -18,7 +18,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
       <!-- Sidebar user panel -->
       <div class="user-panel">
         <div class="pull-left image">
-          <img src="../dist/img/avatar5.png" class="img-circle" alt="User Image">
+          <img src="../../common/dist/img/avatar5.png" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
           <p>Mr <?php echo $Principalresultsfinal['Surname'] ?></p>
@@ -42,7 +42,19 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
 
           <li><a href="adminindex.php"><i class="fa fa-circle-o"></i> Home</a></li>
           <li><a href="admin.php"><i class="fa fa-circle-o"></i> Administration</a></li>          
-          <li><a href="classes.php"><i class="fa fa-circle-o"></i> Classes</a></li>
+           <li class=" treeview">
+            <a href="#">
+              <i class="fa fa-circle-o"></i> <span>Classes</span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+              <li><a href="classes.php"><i class="fa fa-circle-o text-aqua"></i> DoE</a></li>
+              <li><a href="classes.php"><i class="fa fa-circle-o text-aqua"></i> School v1</a></li>
+              <li><a href="classes.php"><i class="fa fa-circle-o text-aqua"></i> School v2</a></li>
+            </ul>
+          </li>
           <li><a href="tutors.php"><i class="fa fa-circle-o"></i> Tutors</a></li>
           <li><a href="studyresources.php"><i class="fa fa-circle-o"></i> Resources</a></li>
           <li><a href="admin_create_notice.php"><i class="fa fa-circle-o"></i> Create Notices</a></li>

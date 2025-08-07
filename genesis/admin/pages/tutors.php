@@ -81,7 +81,7 @@ if ($result) {
                             <div class="box box-primary" style="min-height: 380px;">
                                 <div class="box-header with-border text-center">
                                     <img 
-                                        src="<?= !empty($tutor['ProfilePicture']) ? '' . htmlspecialchars($tutor['ProfilePicture']) : '../uploads/doe.jpg' ?>" 
+                                        src="<?= !empty($tutor['ProfilePicture']) ? '../' . htmlspecialchars($tutor['ProfilePicture']) : '../../uploads/doe.jpg' ?>" 
                                         alt="Tutor Picture" class="img-circle" width="90" height="90" style="object-fit: cover;">
                                     <h3 class="box-title" style="margin-top:10px;">
                                         <?= htmlspecialchars($tutor['Gender']) . ' ' . htmlspecialchars($tutor['Surname']) ?>
