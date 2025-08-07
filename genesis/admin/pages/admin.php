@@ -116,6 +116,7 @@ if ($resultSubjects) {
                         <a href="addtutor.php" style="color: #1a73e8;" class="bubble">Register Tutor</a>
                         <a href="manage_inviterequests.php" style="color: #1a73e8;" class="bubble">Requests</a>
                         <a href="addschool.php" style="color: #1a73e8;" class="bubble">School</a>
+                        <a href="addlearnersv2.php" style="color: #1a73e8;" class="bubble">V2</a>
                       </div>
                     </div>
                   </div>
