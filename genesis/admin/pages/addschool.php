@@ -8,6 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 
 include(__DIR__ . "/../../partials/connect.php");
 
+// Handle POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $schoolName = trim($_POST['schoolName'] ?? '');
     $schoolEmail = trim($_POST['schoolEmail'] ?? '');
@@ -16,90 +17,97 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $subjects = $_POST['subjects'] ?? [];
     $grades = $_POST['grades'] ?? [];
 
-
     if ($schoolName === '') {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Missing School Name',
-                text: 'Please enter a school name.',
-            }).then(() => { window.history.back(); });
-        </script>";
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Missing School Name',
+            'text' => 'Please enter a school name.'
+        ];
+        header("Location: addschool.php");
         exit();
     }
 
     if (count($subjects) === 0 || count($subjects) !== count($grades)) {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Invalid Data',
-                text: 'Please provide valid subject-grade pairs.',
-            }).then(() => { window.history.back(); });
-        </script>";
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Invalid Data',
+            'text' => 'Please provide valid subject-grade pairs.'
+        ];
+        header("Location: addschool.php");
         exit();
     }
 
     $connect->begin_transaction();
     try {
-
-
+        // Insert school
         $stmt = $connect->prepare("INSERT INTO schools (SchoolName, Address, ContactNumber, Email) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("ssss", $schoolName, $schoolAddress, $schoolContact, $schoolEmail);
-
-        if ($stmt->execute()) {
-            $schoolId = $stmt->insert_id;
-            // Success: you can now use $schoolId if needed
-        } else {
-            // Handle DB error
-            echo "Error: " . $stmt->error;
-        }
-
+        $stmt->execute();
+        $schoolId = $stmt->insert_id;
         $stmt->close();
-        	
-        $stmt2 = $connect->prepare("INSERT INTO schoolsubjects (SchoolId, SubjectId, Grade) VALUES (?, ?, ?)");
+
+        // Insert grades
+        $stmt2 = $connect->prepare("INSERT INTO grades (SchoolId, GradeName, CreatedAt) VALUES (?, ?, NOW())");
+        for ($i = 0; $i < count($subjects); $i++) {
+            $subject = trim($subjects[$i]);
+            $grade = trim($grades[$i]);
+            $stmt2->bind_param("is", $schoolId, $grade);
+            $stmt2->execute();
+        }
+        $stmt2->close();
+
+        // Insert subjects
+        $stmt3 = $connect->prepare("INSERT INTO subjects (GradeId, SubjectName, CreatedAt) VALUES (?, ?, NOW())");
+        // We need GradeId for each grade. You can get it by querying the grades table since your insertion logic inserted duplicates.
+        // To avoid big changes, we'll query the grade id inside the loop here:
         for ($i = 0; $i < count($subjects); $i++) {
             $subject = trim($subjects[$i]);
             $grade = trim($grades[$i]);
 
-            if ($subject === '' || !in_array($grade, ['8', '9', '10', '11', '12'])) {
-                throw new Exception("Invalid subject or grade at pair " . ($i + 1));
-            }
+            // Get GradeId for this school and grade (pick last inserted)
+            $sql = "SELECT GradeId FROM grades WHERE SchoolId = ? AND GradeName = ? ORDER BY GradeId DESC LIMIT 1";
+            $stmtGetGrade = $connect->prepare($sql);
+            $stmtGetGrade->bind_param("is", $schoolId, $grade);
+            $stmtGetGrade->execute();
+            $stmtGetGrade->bind_result($gradeId);
+            $stmtGetGrade->fetch();
+            $stmtGetGrade->close();
 
-            $stmt2->bind_param("iii", $schoolId, $subject, $grade);
-            $stmt2->execute();
+            if ($gradeId) {
+                $stmt3->bind_param("is", $gradeId, $subject);
+                $stmt3->execute();
+            }
         }
-        $stmt2->close();
+        $stmt3->close();
+
         $connect->commit();
 
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'School Saved',
-                text: 'School and subjects were added successfully.',
-            }).then(() => { window.location = 'addschool.php'; });
-        </script>";
+        $_SESSION['alert'] = [
+            'icon' => 'success',
+            'title' => 'School Saved',
+            'text' => 'School, grades, and subjects were added successfully.'
+        ];
+
+        header("Location: addschool.php");
+        exit();
 
     } catch (Exception $e) {
         $connect->rollback();
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Database Error',
-                text: '" . addslashes($e->getMessage()) . "',
-            }).then(() => { window.history.back(); });
-        </script>";
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Database Error',
+            'text' => $e->getMessage()
+        ];
+        header("Location: addschool.php");
         exit();
     }
-
-    exit();
 }
 ?>
 
 <?php include(__DIR__ . "/../../common/partials/head.php"); ?>
+<!-- Load SweetAlert2  here -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 <?php include(__DIR__ . "/../partials/header.php"); ?>
@@ -218,6 +226,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </script>
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-</div>
+
+<?php
+// SweetAlert display, if set in session
+if (isset($_SESSION['alert'])): ?>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Swal.fire({
+      icon: '<?php echo addslashes($_SESSION['alert']['icon']); ?>',
+      title: '<?php echo addslashes($_SESSION['alert']['title']); ?>',
+      text: '<?php echo addslashes($_SESSION['alert']['text']); ?>',
+      confirmButtonText: 'OK'
+    });
+  });
+</script>
+<?php unset($_SESSION['alert']); endif; ?>
+
 </body>
 </html>

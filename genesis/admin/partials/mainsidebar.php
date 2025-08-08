@@ -50,10 +50,20 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
               </span>
             </a>
             <ul class="treeview-menu">
-              <li><a href="classes.php"><i class="fa fa-circle-o text-aqua"></i> DoE</a></li>
-              <li><a href="classes.php"><i class="fa fa-circle-o text-aqua"></i> School v1</a></li>
-              <li><a href="classes.php"><i class="fa fa-circle-o text-aqua"></i> School v2</a></li>
+              <?php
+              // Query all schools
+              $result = $connect->query("SELECT SchoolId, SchoolName FROM schools ORDER BY SchoolName ASC");
+              if ($result && $result->num_rows > 0) {
+                  while ($school = $result->fetch_assoc()) {
+                      // Customize the URL as needed, e.g. passing school id as parameter
+                      echo '<li><a href="classes.php?schoolId=' . htmlspecialchars($school['SchoolId']) . '"><i class="fa fa-circle-o text-aqua"></i> ' . htmlspecialchars($school['SchoolName']) . '</a></li>';
+                  }
+              } else {
+                  echo '<li><a href="#"><i class="fa fa-circle-o text-red"></i> No schools found</a></li>';
+              }
+              ?>
             </ul>
+
           </li>
           <li><a href="tutors.php"><i class="fa fa-circle-o"></i> Tutors</a></li>
           <li><a href="studyresources.php"><i class="fa fa-circle-o"></i> Resources</a></li>
