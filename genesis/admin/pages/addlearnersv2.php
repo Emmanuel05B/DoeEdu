@@ -71,7 +71,9 @@ include(__DIR__ . "/../../partials/connect.php");
                       <select class="form-control" id="schoolname" name="schoolname" required>
                         <option value="">Select School Name</option>
                         <?php
+
                         $result = $connect->query("SELECT SchoolId, SchoolName FROM schools ORDER BY SchoolName ASC");
+                        
                         if ($result && $result->num_rows > 0) {
                             while ($school = $result->fetch_assoc()) {
                                 echo '<option value="' . htmlspecialchars($school['SchoolId']) . '">' . htmlspecialchars($school['SchoolName']) . '</option>';

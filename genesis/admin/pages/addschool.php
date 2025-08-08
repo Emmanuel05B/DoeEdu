@@ -8,7 +8,6 @@ if (!isset($_SESSION['user_id'])) {
 
 include(__DIR__ . "/../../partials/connect.php");
 
-// Handle POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $schoolName = trim($_POST['schoolName'] ?? '');
     $schoolEmail = trim($_POST['schoolEmail'] ?? '');
@@ -39,50 +38,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $connect->begin_transaction();
     try {
-        // Insert school
+        // Insert School
         $stmt = $connect->prepare("INSERT INTO schools (SchoolName, Address, ContactNumber, Email) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("ssss", $schoolName, $schoolAddress, $schoolContact, $schoolEmail);
         $stmt->execute();
         $schoolId = $stmt->insert_id;
         $stmt->close();
 
-        // Insert grades
-        $stmt2 = $connect->prepare("INSERT INTO grades (SchoolId, GradeName, CreatedAt) VALUES (?, ?, NOW())");
-        for ($i = 0; $i < count($subjects); $i++) {
-            $subject = trim($subjects[$i]);
-            $grade = trim($grades[$i]);
-            $stmt2->bind_param("is", $schoolId, $grade);
-            $stmt2->execute();
+        // Insert unique grades and store their IDs
+        $gradeMap = []; // gradeName => gradeId
+        $stmtGrade = $connect->prepare("INSERT INTO grades (SchoolId, GradeName, CreatedAt) VALUES (?, ?, NOW())");
+        foreach (array_unique($grades) as $gradeName) {
+            $stmtGrade->bind_param("is", $schoolId, $gradeName);
+            $stmtGrade->execute();
+            $gradeMap[$gradeName] = $stmtGrade->insert_id;
         }
-        $stmt2->close();
+        $stmtGrade->close();
 
-        // Insert subjects
-        $stmt3 = $connect->prepare("INSERT INTO subjects (GradeId, SubjectName, CreatedAt) VALUES (?, ?, NOW())");
-        // We need GradeId for each grade. You can get it by querying the grades table since your insertion logic inserted duplicates.
-        // To avoid big changes, we'll query the grade id inside the loop here:
+        // Insert subjects for each grade
+        $stmtSubject = $connect->prepare("INSERT INTO subjects (GradeId, SubjectName, CreatedAt) VALUES (?, ?, NOW())");
         for ($i = 0; $i < count($subjects); $i++) {
             $subject = trim($subjects[$i]);
             $grade = trim($grades[$i]);
-
-            // Get GradeId for this school and grade (pick last inserted)
-            $sql = "SELECT GradeId FROM grades WHERE SchoolId = ? AND GradeName = ? ORDER BY GradeId DESC LIMIT 1";
-            $stmtGetGrade = $connect->prepare($sql);
-            $stmtGetGrade->bind_param("is", $schoolId, $grade);
-            $stmtGetGrade->execute();
-            $stmtGetGrade->bind_result($gradeId);
-            $stmtGetGrade->fetch();
-            $stmtGetGrade->close();
-
-            if ($gradeId) {
-                $stmt3->bind_param("is", $gradeId, $subject);
-                $stmt3->execute();
+            if (isset($gradeMap[$grade])) {
+                $gradeId = $gradeMap[$grade];
+                $stmtSubject->bind_param("is", $gradeId, $subject);
+                $stmtSubject->execute();
             }
         }
-        $stmt3->close();
+        $stmtSubject->close();
 
         $connect->commit();
 
-        $_SESSION['alert'] = [
+         $_SESSION['alert'] = [
             'icon' => 'success',
             'title' => 'School Saved',
             'text' => 'School, grades, and subjects were added successfully.'
@@ -90,10 +78,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         header("Location: addschool.php");
         exit();
-
+        
     } catch (Exception $e) {
         $connect->rollback();
-        $_SESSION['alert'] = [
+         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Database Error',
             'text' => $e->getMessage()
@@ -101,7 +89,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: addschool.php");
         exit();
     }
+    exit();
 }
+
+
 ?>
 
 <?php include(__DIR__ . "/../../common/partials/head.php"); ?>
@@ -241,6 +232,6 @@ if (isset($_SESSION['alert'])): ?>
   });
 </script>
 <?php unset($_SESSION['alert']); endif; ?>
-
+</div>
 </body>
 </html>
