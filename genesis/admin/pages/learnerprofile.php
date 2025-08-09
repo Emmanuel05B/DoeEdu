@@ -110,8 +110,6 @@ if (!isset($_SESSION['email'])) {
           <?php
               include(__DIR__ . "/../../partials/connect.php");
 
-              $statusValue = intval($_GET['val']); // Get the subject value, ensure it's an integer
-
               if(isset($_GET['id'])){
                 $learnerId = $_GET['id'];
    
@@ -163,16 +161,10 @@ if (!isset($_SESSION['email'])) {
                 <p class="text-muted text-center">DoE Learner</p>
 
 
-                 <div class="box-body text-center" style="background-color:#a3bffa; padding: 10px;">
+                <div class="box-body text-center" style="background-color:#a3bffa; padding: 10px;">
                  
                   <div class="row justify-content-center" style="gap: 5px;">
                     
-                    <div class="col-auto">
-                      <a href="updatelearners.php?id=<?php echo $final['LearnerId'] ?>" 
-                        class="btn btn-primary btn-sm" style="min-width: 180px;"> Update Details
-                      </a>
-                    </div>
-
                     <div class="col-auto">
                       <a href="mcomposeparent.php?pid=<?php echo $final['LearnerId'] ?>" 
                         class="btn btn-primary btn-sm" style="min-width: 180px;"> Contact Parent
@@ -202,6 +194,32 @@ if (!isset($_SESSION['email'])) {
                         </ul>
                       </div>
                     </div>
+
+                    
+                  </div>
+
+                </div><br>
+
+                <div class="box-body text-center" style="background-color:#ffb3b3; padding: 10px;">
+                 
+                  <div class="row justify-content-center" style="gap: 5px;">
+                    
+                    <div class="col-auto">
+                      <a href="updatelearner.php?id=<?php echo $final['LearnerId'] ?>" 
+                        class="btn btn-danger btn-sm" style="min-width: 180px;"> Update Details
+                      </a>
+                    </div>
+                    <div class="col-auto">
+                      <a href="updatelearner.php?id=<?php echo $final['LearnerId'] ?>" 
+                        class="btn btn-danger btn-sm" style="min-width: 180px;"> Disable Learner
+                      </a>
+                    </div>
+                    <div class="col-auto">
+                      <a href="updatelearner.php?id=<?php echo $final['LearnerId'] ?>" 
+                        class="btn btn-danger btn-sm" style="min-width: 180px;"> Deregister Learner
+                      </a>
+                    </div>
+
 
                     
                   </div>

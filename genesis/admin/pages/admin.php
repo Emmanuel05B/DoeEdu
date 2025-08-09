@@ -105,17 +105,17 @@ if ($resultSubjects) {
                 <ul class="nav nav-tabs">
                   <li class="active"><a href="#add" data-toggle="tab">Add Users</a></li>
                   <li><a href="#update" data-toggle="tab">Update Users</a></li>
-                  <li><a href="#disable" data-toggle="tab">Disable Users</a></li>
                 </ul>
                 <div class="tab-content">
                   <div class="active tab-pane" id="add">
                     <div class="profile-personal-info">
-                      <h4>Register</h4>
+                      <h4 class="text-primary mb-4">Register</h4>
                       <div class="bubble-container">
-                        <a href="addlearners.php" style="color: #1a73e8;" class="bubble">Register Learner</a>
-                        <a href="addtutor.php" style="color: #1a73e8;" class="bubble">Register Tutor</a>
-                        <a href="manage_inviterequests.php" style="color: #1a73e8;" class="bubble">Requests</a>
-                        <a href="addschool.php" style="color: #1a73e8;" class="bubble">School</a>
+                        <a href="addlearners.php" style="color: #1a73e8;" class="bubble">Add Learners</a>
+                        <a href="addtutor.php" style="color: #1a73e8;" class="bubble">Add Tutors</a>
+                        <a href="addschool.php" style="color: #1a73e8;" class="bubble">Add School</a>
+                        <a href="manage_inviterequests.php" style="color: #1a73e8;" class="bubble">Manage Requests</a>
+                        
                         <a href="addlearnersv2.php" style="color: #1a73e8;" class="bubble">V2</a>
                       </div>
                     </div>
@@ -124,54 +124,15 @@ if ($resultSubjects) {
                   <div class="tab-pane" id="update">
 
                     <div class="profile-personal-info">
-                      <h4 class="text-primary mb-4">Schools</h4>
+                      <h4 class="text-primary mb-4">Update</h4>
                       <div class="bubble-container">
-                        <?php if (empty($schools)): ?>
-                          <span>No schools found</span>
-                        <?php else: ?>
-                          <?php foreach ($schools as $school): ?>
-                            <a href="updateschool.php?id=<?= urlencode($school['SchoolId']) ?>" class="bubble">
-                              <?= htmlspecialchars($school['SchoolName']) ?>
-                            </a>
-                          <?php endforeach; ?>
-                        <?php endif; ?>
-                      </div>
-                    </div>
-
-                    <div class="profile-personal-info">
-                      <h4 class="text-primary mb-4">Tutors</h4>
-                      <div class="bubble-container">
-                        <?php if (empty($tutors)): ?>
-                          <span>No tutors found</span>
-                        <?php else: ?>
-                          <?php foreach ($tutors as $tutor): ?>
-                            <a href="updatetutors.php?id=<?= urlencode($tutor['TutorId']) ?>" class="bubble">
-                              <?= htmlspecialchars($tutor['Name'] . ' ' . $tutor['Surname']) ?>
-                            </a>
-                          <?php endforeach; ?>
-                        <?php endif; ?>
-                      </div>
-                    </div>
-
-                    <div class="profile-personal-info">
-                      <h4 class="text-primary mb-4">Learners</h4>
-                      <div class="bubble-container">
-                        <?php if (empty($subjects)): ?>
-                          <span>No subjects found</span>
-                        <?php else: ?>
-                          <?php foreach ($subjects as $subject): ?>
-                            <a href="updatelearner.php?id=<?= urlencode($subject['SubjectId']) ?>" class="bubble">
-                              <?= htmlspecialchars($subject['SubjectName']) ?>
-                            </a>
-                          <?php endforeach; ?>
-                        <?php endif; ?>
+                        <a href="updatelearnerlist.php" style="color: #1a73e8;" class="bubble">Update Learner</a>
+                        <a href="updatetutorlist.php" style="color: #1a73e8;" class="bubble">Update Tutor</a>
+                        <a href="updatechoollist.php" style="color: #1a73e8;" class="bubble">Update School</a>
                       </div>
                     </div>
                   </div>
 
-                  <div class="tab-pane" id="disable">
-                    <!-- Your disable tab content here -->
-                  </div>
                 </div>
               </div>
             </div>

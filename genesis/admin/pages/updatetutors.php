@@ -30,9 +30,9 @@ $stmt->execute();
 $result = $stmt->get_result();
 $tutor = $result->fetch_assoc();
 
-// Fetch all subjects
+// Fetch all subjects..........updatethe subjects tabe with the new one.
 $allSubjects = [];
-$stmtAll = $connect->prepare("SELECT SubjectId, SubjectName, Grade FROM subjects ORDER BY SubjectName, Grade");
+$stmtAll = $connect->prepare("SELECT SubjectId, SubjectName, Grade FROM oldsubjects ORDER BY SubjectName, Grade");
 $stmtAll->execute();
 $resAll = $stmtAll->get_result();
 while ($row = $resAll->fetch_assoc()) {
@@ -72,7 +72,7 @@ $stmtReg->close();
     <section class="content">
       <div class="row">
         <div class="col-md-12">
-          <div class="box box-primary">
+          <div class="box box-danger">
             <div class="box-header with-border">
               <h3 class="box-title">Edit Tutor Information</h3>
             </div>
