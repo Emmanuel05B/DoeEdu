@@ -1,162 +1,177 @@
-<!DOCTYPE html>
-<html>
-
 <?php
 session_start();
-
 if (!isset($_SESSION['email'])) {
   header("Location: ../../common/pages/login.php");
   exit();
 }
+// Dummy static data for now — replace with real DB values later
+$subject = "Mathematics";
+$grade = "Grade 10";
+$level = "Intermediate (Medium)";
+$chapter = "Algebra Basics";
 
-include(__DIR__ . "/../../common/partials/head.php");
+$questionsCompleted = 5;
+$score = 4;
+$failed = 1;
+$totalTime = 750; // total time on level in seconds (e.g. 12m 30s)
+$levelAttempt = 1;
+$currentQuestionNumber = 6;
+
+// Function to format seconds to mm:ss
+function formatTime($seconds) {
+  return sprintf('%02d:%02d', floor($seconds / 60), $seconds % 60);
+}
+
+// Calculate progress percentage
+$totalQuestions = 25;
+$progressPercent = ($questionsCompleted / $totalQuestions) * 100;
 ?>
+
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-
   <?php include(__DIR__ . "/../partials/header.php"); ?>
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
-
     <section class="content-header">
-      <h1>Create Questions <small>For Subjects & Levels</small></h1>
+      <h1>Practice Questions <small>Answer and track your progress</small></h1>
       <ol class="breadcrumb">
-        <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Create Questions</li>
+        <li><a href="learnerindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Practice Questions</li>
       </ol>
     </section>
 
     <section class="content">
+      <!-- Info bar on top -->
+      <div class="box box-solid" style="border-top: 3px solid #605ca8; margin-bottom: 10px;">
+        <div class="box-header with-border" style="background-color:#f3edff;">
+          <h3 class="box-title" style="color:#605ca8;">
+            <i class="fa fa-folder-open"></i> Question Details
+          </h3>
+        </div>  
+        <div class="box-body">
+          <div class="row" style="margin: 0; font-weight: 600;">
+            <div class="col-sm-3">Subject: <?= htmlspecialchars($subject) ?></div>
+            <div class="col-sm-3">Chapter: <?= htmlspecialchars($chapter) ?></div>
+            <div class="col-sm-3">Grade: <?= htmlspecialchars($grade) ?></div>
+            <div class="col-sm-3">Level: <?= htmlspecialchars($level) ?></div>
+          </div>
+
+          <!-- Progress Bar -->
+          <progress value="<?= $questionsCompleted ?>" max="<?= $totalQuestions ?>" style="width: 100%; height: 20px; margin-top: 15px;"></progress>
+          <div style="text-align: right; font-weight: 600; margin-top: 5px;">
+            Progress: <?= $questionsCompleted ?>/<?= $totalQuestions ?> (<?= round($progressPercent) ?>%)
+          </div>
+        </div>
+      </div>
+
       <div class="row">
-        <div class="col-xs-12">
-          <div class="box box-primary">
-            <div class="box-header">
-              <h3 class="box-title"><i class="fa fa-question-circle"></i> Question Details</h3>
+        <!-- Left side: Question and options -->
+        <div class="col-md-6">
+          <div class="box box-primary" style="border-top: 3px solid #3c8dbc;">
+            <div class="box-header with-border" style="background-color:#f0f8ff;">
+              <h3 class="box-title" style="color:#3c8dbc;">
+                <i class="fa fa-question-circle"></i> Question
+              </h3>
             </div>
+            <div class="box-body" style="background-color:#ffffff;">
+              
+              <form id="learnerQuestionForm">
+                <p><strong>Q<?= $currentQuestionNumber ?>. What is 2 + 2?</strong></p>
 
-            <div class="box-body">
-              <form method="post" action="submit_question.php">
-                <div class="row">
-                  <!-- Subject Selection -->
-                  <div class="col-md-4">
-                    <div class="form-group">
-                      <label for="Subject">Subject</label>
-                      <select class="form-control" name="Subject" id="Subject" required>
-                        <option value="">-- Select Subject --</option>
-                        <option value="Mathematics">Mathematics</option>
-                        <option value="English">English</option>
-                        <option value="Science">Science</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <!-- Difficulty -->
-                  <div class="col-md-4">
-                    <div class="form-group">
-                      <label for="Difficulty">Difficulty</label>
-                      <select class="form-control" name="Difficulty" id="Difficulty" required>
-                        <option value="">-- Select Difficulty --</option>
-                        <option value="Easy">Easy</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Hard">Hard</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <!-- Question Type -->
-                  <div class="col-md-4">
-                    <div class="form-group">
-                      <label for="QuestionType">Question Type</label>
-                      <select class="form-control" name="QuestionType" id="QuestionType" required>
-                        <option value="">-- Select Type --</option>
-                        <option value="mcq">Multiple Choice</option>
-                        <option value="text">One-word Answer</option>
-                      </select>
-                    </div>
-                  </div>
+                <div class="radio">
+                  <label><input type="radio" name="answer" value="A"> 3</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" name="answer" value="B"> 4</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" name="answer" value="C"> 5</label>
+                </div>
+                <div class="radio">
+                  <label><input type="radio" name="answer" value="D"> 6</label>
                 </div>
 
-                <!-- Question Text -->
-                <div class="form-group">
-                  <label for="QuestionText">Question</label>
-                  <textarea class="form-control" name="QuestionText" id="QuestionText" rows="3" placeholder="Enter the question..." required></textarea>
-                </div>
-
-                <!-- Multiple Choice Options (Shown only if MCQ selected) -->
-                <div id="mcqOptions" style="display: none;">
-                  <label>Options</label>
-                  <div class="form-group">
-                    <input type="text" class="form-control" name="OptionA" placeholder="Option A">
-                    <input type="text" class="form-control" name="OptionB" placeholder="Option B">
-                    <input type="text" class="form-control" name="OptionC" placeholder="Option C">
-                    <input type="text" class="form-control" name="OptionD" placeholder="Option D">
-                    <input type="text" class="form-control" name="OptionE" placeholder="Option E (Optional)">
-                    <label for="CorrectOption">Correct Option</label>
-                    <select class="form-control" name="CorrectOption">
-                      <option value="">-- Select Correct Option --</option>
-                      <option value="A">A</option>
-                      <option value="B">B</option>
-                      <option value="C">C</option>
-                      <option value="D">D</option>
-                      <option value="E">E</option>
-                    </select>
-                  </div>
-                </div>
-
-                <!-- Text Answer Input (Shown only if text selected) -->
-                <div id="textAnswer" style="display: none;">
-                  <div class="form-group">
-                    <label for="AnswerText">Correct Answer</label>
-                    <input type="text" class="form-control" name="AnswerText" id="AnswerText" placeholder="Enter the correct answer...">
-                  </div>
-                </div>
-
-                <!-- Pass Mark per Level (Optional Control) -->
-                <div class="form-group">
-                  <label for="PassMark">Pass Mark for Level (%)</label>
-                  <input type="number" class="form-control" name="PassMark" id="PassMark" placeholder="e.g. 70" min="0" max="100">
-                </div>
-
-                <!-- Submit Buttons -->
-                <div class="text-right">
-                  <button type="reset" class="btn btn-default">Clear</button>
-                  <button type="submit" class="btn btn-primary"><i class="fa fa-plus-circle"></i> Save Question</button>
+                <div class="text-right" style="margin-top:15px;">
+                  <button type="button" class="btn btn-success" onclick="alert('Answer submitted!')">
+                    <i class="fa fa-check"></i> Submit Answer
+                  </button>
+                  <button type="button" class="btn btn-primary" onclick="alert('Load next question!')">
+                    <i class="fa fa-arrow-right"></i> Next Question
+                  </button>
                 </div>
               </form>
-            </div> <!-- /.box-body -->
-          </div> <!-- /.box -->
-        </div> <!-- /.col -->
-      </div> <!-- /.row -->
-    </section> <!-- /.content -->
+            </div>
+          </div>
+        </div>
 
-  </div> <!-- /.content-wrapper -->
+        <!-- Right side: Performance info -->
+        <div class="col-md-6">
+  <div class="box box-primary" style="border-top: 3px solid #3c8dbc;">
+    <div class="box-header with-border" style="background-color:#f0f8ff;">
+      <h3 class="box-title" style="color:#3c8dbc;">
+        <i class="fa fa-bar-chart"></i> Practice Questions
+      </h3>
+    </div>
+    <div class="box-body" style="background-color:#ffffff;">
+      <div class="row text-center" style="font-size: 15px;">
+        <div class="col-xs-6 col-sm-6" style="border-right: 1px solid #ddd; padding: 15px 5px;">
+          <i class="fa fa-trophy" style="font-size: 24px; color: #f39c12;"></i>
+          <div><strong>Correct</strong></div>
+          <div><?= $score ?></div>
+        </div>
+        <div class="col-xs-6 col-sm-6" style="padding: 15px 5px;">
+          <i class="fa fa-times-circle" style="font-size: 24px; color: red;"></i>
+          <div><strong>Incorrect</strong></div>
+          <div><?= $failed ?></div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row text-center" style="font-size: 15px;">
+        <div class="col-xs-6 col-sm-4" style="border-right: 1px solid #ddd; padding: 15px 5px;">
+          <i class="fa fa-clock-o" style="font-size: 24px;"></i>
+          <div><strong>Timer</strong></div>
+          <div id="timer">00:00</div>
+        </div>
+        <div class="col-xs-6 col-sm-4" style="border-right: 1px solid #ddd; padding: 15px 5px;">
+          <i class="fa fa-clock" style="font-size: 24px;"></i>
+          <div><strong>Total Time</strong></div>
+          <div><?= formatTime($totalTime) ?></div>
+        </div>
+        <div class="col-xs-6 col-sm-4" style="padding: 15px 5px;">
+          <i class="fa fa-repeat" style="font-size: 24px;"></i>
+          <div><strong>Level Attempt</strong></div>
+          <div><?= $levelAttempt ?></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      </div>
+    </section>
+  </div>
 
   <div class="control-sidebar-bg"></div>
-</div> <!-- ./wrapper -->
+</div>
 
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-
-<!-- jQuery logic to switch question type views -->
 <script>
-  $(document).ready(function () {
-    $('#QuestionType').change(function () {
-      const selected = $(this).val();
-      if (selected === "mcq") {
-        $('#mcqOptions').show();
-        $('#textAnswer').hide();
-      } else if (selected === "text") {
-        $('#textAnswer').show();
-        $('#mcqOptions').hide();
-      } else {
-        $('#mcqOptions, #textAnswer').hide();
-      }
-    });
-  });
+let seconds = 0;
+const timerEl = document.getElementById('timer');
+
+setInterval(() => {
+  seconds++;
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = (seconds % 60).toString().padStart(2, '0');
+  timerEl.textContent = `${m}:${s}`;
+}, 1000);
 </script>
 
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 </body>
 </html>

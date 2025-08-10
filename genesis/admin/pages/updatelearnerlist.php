@@ -24,7 +24,7 @@ if (!isset($_SESSION['email'])) {
         <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">Update Learner</li>
       </ol>
-    </section><br>
+    </section>
 
     <section class="content">
       <div class="row">
@@ -54,6 +54,7 @@ if (!isset($_SESSION['email'])) {
                       <th>First Name</th>
                       <th>Last Name</th>
                       <th>Grade</th>
+                      <th>School xxxxxxxx</th>
                       <th class="text-center">Actions</th>
                     </tr>
                   </thead>
@@ -65,10 +66,11 @@ if (!isset($_SESSION['email'])) {
                           <td><?php echo htmlspecialchars($final['Name']) ?></td>
                           <td><?php echo htmlspecialchars($final['Surname']) ?></td>
                           <td><?php echo htmlspecialchars($final['Grade']) ?></td>
+                          <td><?php echo htmlspecialchars($final['Grade']) ?></td>
                           <td class="text-center">
-                            <a href="updatelearner.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-sm btn-warning">Update</a>
-                            <a href="disablelearner.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to disable this learner?');">Disable</a>
-                            <a href="learnerprofile.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-sm btn-primary">Open Profile</a>
+                            <a href="updatelearner.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-xs btn-warning">Update</a>
+                            <a href="disablelearner.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-xs btn-danger" onclick="return confirm('Are you sure you want to disable this learner?');">Disable</a>
+                            <a href="learnerprofile.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-xs btn-primary">Open Profile</a>
                           </td>
                         </tr>
                       <?php endwhile; ?>
@@ -84,6 +86,7 @@ if (!isset($_SESSION['email'])) {
                       <th>First Name</th>
                       <th>Last Name</th>
                       <th>Grade</th>
+                      <th>School</th>
                       <th class="text-center">Actions</th>
                     </tr>
                   </tfoot>

@@ -65,12 +65,13 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
             </ul>
 
           </li>
-          <li><a href="tutors.php"><i class="fa fa-circle-o"></i> Tutors</a></li>
+          <li><a href="tutors.php"><i class="fa fa-circle-o"></i> Tutors</a></li> 
           <li><a href="studyresources.php"><i class="fa fa-circle-o"></i> Resources</a></li>
           <li><a href="admin_create_notice.php"><i class="fa fa-circle-o"></i> Create Notices</a></li>
           <li><a href="finances.php"><i class="fa fa-circle-o"></i> Finances</a></li>
 
           <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> Activity Manegement</a></li>
+          <li><a href="setupquestion.php"><i class="fa fa-circle-o"></i> Question Builder</a></li>
           <li><a href="logout.php"><i class="fa fa-circle-o"></i> Log out</a></li>          
 
         </li>

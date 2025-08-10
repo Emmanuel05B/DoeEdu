@@ -56,57 +56,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <section class="content">
       <div class="container-fluid">
-        <div class="box box-primary">
-          <div class="box-header with-border">
-            <h3 class="box-title">Notice Details</h3>
-          </div>
-
-          <form method="POST" action="">
-            <div class="box-body">
-
-              <div class="row">
-                <!-- Left side: Title and Content -->
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="title">Title</label>
-                    <input type="text" name="title" class="form-control" placeholder="Enter title" required value="<?= htmlspecialchars($_POST['title'] ?? '') ?>">
-                  </div>
-
-                  <div class="form-group">
-                    <label for="content">Content</label>
-                    <textarea name="content" rows="5" class="form-control" placeholder="Write the notice here..." required><?= htmlspecialchars($_POST['content'] ?? '') ?></textarea>
-                  </div>
-                </div>
-
-                <!-- Right side: Send To and Expiry Date -->
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="createdFor">Send To</label>
-                    <select name="createdFor" class="form-control" required>
-                      <option value="">-- Select --</option>
-                      <option value="1" <?= (isset($_POST['createdFor']) && $_POST['createdFor'] == '1') ? 'selected' : '' ?>>Learners</option>
-                      <option value="2" <?= (isset($_POST['createdFor']) && $_POST['createdFor'] == '2') ? 'selected' : '' ?>>Tutors</option>
-                      <option value="12" <?= (isset($_POST['createdFor']) && $_POST['createdFor'] == '12') ? 'selected' : '' ?>>Both Learners & Tutors</option>
-                    </select>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="expiryDate">Expiry Date</label>
-                    <input type="date" name="expiryDate" class="form-control" required value="<?= htmlspecialchars($_POST['expiryDate'] ?? '') ?>">
-                  </div>
-                </div>
+        <div class="row">
+          
+          <!-- Left side: Notice form -->
+          <div class="col-md-8">
+            <div class="box box-primary">
+              <div class="box-header with-border">
+                <h3 class="box-title">Notice Details</h3>
               </div>
 
-            </div>
+              <form method="POST" action="">
+                <div class="box-body">
+                  <div class="row">
+                    <!-- Left: Title & Content -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" name="title" class="form-control" placeholder="Enter title" required value="<?= htmlspecialchars($_POST['title'] ?? '') ?>">
+                      </div>
 
-            <div class="box-footer">
-              <button type="submit" class="btn btn-primary">Create Notice</button>
-              <a href="adminindex.php" class="btn btn-default">Cancel</a>
+                      <div class="form-group">
+                        <label for="content">Content</label>
+                        <textarea name="content" rows="5" class="form-control" placeholder="Write the notice here..." required><?= htmlspecialchars($_POST['content'] ?? '') ?></textarea>
+                      </div>
+                    </div>
+
+                    <!-- Right: Send To & Expiry Date -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="createdFor">Send To</label>
+                        <select name="createdFor" class="form-control" required>
+                          <option value="">-- Select --</option>
+                          <option value="1" <?= (isset($_POST['createdFor']) && $_POST['createdFor'] == '1') ? 'selected' : '' ?>>Learners</option>
+                          <option value="2" <?= (isset($_POST['createdFor']) && $_POST['createdFor'] == '2') ? 'selected' : '' ?>>Tutors</option>
+                          <option value="12" <?= (isset($_POST['createdFor']) && $_POST['createdFor'] == '12') ? 'selected' : '' ?>>Both Learners & Tutors</option>
+                        </select>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="expiryDate">Expiry Date</label>
+                        <input type="date" name="expiryDate" class="form-control" required value="<?= htmlspecialchars($_POST['expiryDate'] ?? '') ?>">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="box-footer">
+                  <button type="submit" class="btn btn-primary">Create Notice</button>
+                  <a href="adminindex.php" class="btn btn-default">Cancel</a>
+                </div>
+              </form>
             </div>
-          </form>
+          </div>
+
+          <!-- Right side: Extra info -->
+          <div class="col-md-4">
+            <div class="box box-info">
+              <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-info-circle"></i> Tips for Creating Notices</h3>
+              </div>
+              <div class="box-body">
+                <ul>
+                  <li>Use a short, clear title.</li>
+                  <li>Be concise and direct in the content.</li>
+                  <li>Select the correct audience (Learners, Tutors, or Both).</li>
+                  <li>Set an expiry date to automatically remove outdated notices.</li>
+                </ul>
+                <p><strong>Example:</strong>  
+                <em>"Exam Timetable Updated - Please download the latest PDF from the resources page."</em></p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
+
   </div>
 
   <div class="control-sidebar-bg"></div>

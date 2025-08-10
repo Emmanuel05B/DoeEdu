@@ -98,6 +98,7 @@
 
         <!-- Stat Boxes -->
         <div class="row">
+          
           <div class="col-lg-3 col-xs-6">
             <div class="small-box" style="background-color: #7bd3f6ff;">
               <div class="inner">
@@ -106,7 +107,7 @@
               </div>
               <a href="pendingverifications.php">
                 <div class="icon" style="font-size: 50px; top: 10px;">
-                  <i class="fa fa-user-plus"></i>
+                  <i class="ion ion-alert-circled"></i>
                 </div>
               </a>
             </div>
@@ -132,9 +133,9 @@
                 <h3><?php echo $row['count']; ?></h3>
                 <p>Learners Registered</p>
               </div>
-              <a href="classes.php">
-                <div class="icon" style="font-size: 50px; top: 10px;">
-                  <i class="ion ion-person"></i>
+              <a href="updatelearnerlist.php">
+                <div class="icon" style="font-size: 55px; top: 10px;">
+                  <i class="ion ion-person-add"></i>
                 </div>
               </a>
             </div>
@@ -146,11 +147,12 @@
                 <h3><?= 55 ?></h3>
                 <p>Student Voices</p>
               </div>
-              <a href="resources.php">
+              <a href="voices.php">
                 <div class="icon" style="font-size: 50px; top: 10px;">
-                  <i class="fa fa-upload"></i>
+                  <i class="fa fa-bullhorn"></i>
                 </div>
               </a>
+
             </div>
           </div>
 

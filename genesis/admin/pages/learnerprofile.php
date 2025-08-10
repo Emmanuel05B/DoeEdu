@@ -296,9 +296,7 @@ if (!isset($_SESSION['email'])) {
                                     <li>I need visuals to help me understant what is happening</li>
                                     <li>I need time to process information</li>
                                     <li>Language needs to be short and clear</li>
-                                    <li>I am still in nappies and need help with dressing</li>
-                                    <li>Eating is still hard for meI may need extra time and food put directly into my hand.</li>
-                                    <li>I am still in nappies and need help with dressing</li>
+                                    
                                 </ul>
                              
                             
