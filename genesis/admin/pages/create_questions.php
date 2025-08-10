@@ -7,17 +7,18 @@ if (!isset($_SESSION['email'])) {
 include(__DIR__ . "/../../common/partials/head.php");
 include(__DIR__ . "/../../partials/connect.php");
 
-/*
+/* ss
 $subject = "Mathematics";
 $grade = "Grade 10";
 $level = "Intermediate(Medium)";
 $chapter = "Algebra Basics";
-*/
+*/ 
 
 $subject = isset($_POST['subject']) ? trim($_POST['subject']) : '';
 $grade = isset($_POST['grade']) ? trim($_POST['grade']) : '';
 $level = isset($_POST['level']) ? trim($_POST['level']) : '';
 $chapter = isset($_POST['chapter']) ? trim($_POST['chapter']) : '';
+
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -60,7 +61,7 @@ $chapter = isset($_POST['chapter']) ? trim($_POST['chapter']) : '';
                       <a href="?question=<?= $i ?>" class="btn btn-default"><?= $i ?></a>
                   <?php endfor; ?>
                   <a href="?question=24" class="btn btn-default">24</a>
-                  <a href="?question=25" class="btn btn-default">25</a>
+                  <a href="?question=25" class="btn btn-default">255</a>
               </div>
               
               <!-- Upload Memo PDF Form -->
