@@ -111,18 +111,13 @@ if ($selectedQuestionId > 0) {
             icon: '<?= $alert['type'] ?>',
             title: '<?= $alert['type'] === 'success' ? 'Success!' : 'Error!' ?>',
             text: '<?= addslashes($alert['message']) ?>',
-            <?php if ($alert['type'] === 'success'): ?>
-              timer: 1100,
-              timerProgressBar: true,
-              showConfirmButton: false
-            <?php else: ?>
-              showConfirmButton: true
-            <?php endif; ?>
+            timer: 3500,
+            timerProgressBar: true,
+            showConfirmButton: false
           });
         });
       </script>
     <?php endif; ?>
-
 
     <section class="content-header">
       <h1>Create Questions <small>Create and edit practice questions.</small></h1>
@@ -151,22 +146,16 @@ if ($selectedQuestionId > 0) {
           </div>
           <div class="box-body" style="background-color:#ffffff;">
               <div class="btn-group" role="group" style="overflow-x:auto; white-space:nowrap; width:100%;">
-                <?php if (count($questionIds) > 0): ?>
-                  <?php
-                    $counter = 1;
-                    foreach ($questionIds as $qid): ?>
+                  <?php if (count($questionIds) > 0): ?>
+                    <?php foreach ($questionIds as $qid): ?>
                       <a href="?subject=<?= urlencode($subject) ?>&grade=<?= urlencode($grade) ?>&chapter=<?= urlencode($chapter) ?>&level=<?= urlencode($level) ?>&question=<?= $qid ?>" class="btn btn-default <?= ($qid == $selectedQuestionId) ? 'active' : '' ?>">
-                        Q <?= $counter ?>
+                        <?= $qid ?>
                       </a>
-                  <?php
-                    $counter++;
-                    endforeach;
-                  ?>
-                <?php else: ?>
-                  <span>No questions created yet.</span>
-                <?php endif; ?>
+                    <?php endforeach; ?>
+                  <?php else: ?>
+                    <span>No questions created yet.</span>
+                  <?php endif; ?>
               </div>
-
               
               <!-- Upload Memo PDF Form -->
               <hr>

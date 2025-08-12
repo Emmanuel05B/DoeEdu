@@ -75,7 +75,11 @@ include(__DIR__ . "/../../partials/connect.php");
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fa fa-arrow-right"></i> Continue
                                     </button>
+                                    <a href="editpracticequestions.php" class="btn btn-warning" style="margin-left:8px;">
+                                        <i class="fa fa-edit"></i> Existing Practice Questions
+                                    </a>
                                 </div>
+
                             </form>
                         </div>
 
