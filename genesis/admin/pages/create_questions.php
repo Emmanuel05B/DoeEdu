@@ -4,6 +4,14 @@ if (!isset($_SESSION['email'])) {
   header("Location: ../../common/pages/login.php");
   exit();
 }
+
+// Grab alert from session if any, then clear it
+$alert = null;
+if (isset($_SESSION['alert'])) {
+    $alert = $_SESSION['alert'];
+    unset($_SESSION['alert']);
+}
+
 include(__DIR__ . "/../../common/partials/head.php");
 include(__DIR__ . "/../../partials/connect.php");
 
@@ -13,7 +21,37 @@ $level = isset($_POST['level']) ? trim($_POST['level']) : (isset($_GET['level'])
 $chapter = isset($_POST['chapter']) ? trim($_POST['chapter']) : (isset($_GET['chapter']) ? trim($_GET['chapter']) : '');
 $selectedQuestionId = isset($_GET['question']) ? intval($_GET['question']) : 0;
 
-$alert = null; // Will hold sweetalert info ['type'=>'success'|'error', 'message'=>string]
+// Helper function to handle image upload
+function handleImageUpload($fileInputName) {
+    if (isset($_FILES[$fileInputName]) && $_FILES[$fileInputName]['error'] === UPLOAD_ERR_OK) {
+        $imgTmpPath = $_FILES[$fileInputName]['tmp_name'];
+        $imgName = $_FILES[$fileInputName]['name'];
+        $imgType = mime_content_type($imgTmpPath);
+
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        if (in_array($imgType, $allowedTypes)) {
+            $uploadDir = __DIR__ . "/../../uploads/practice_question_images/";
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            $ext = pathinfo($imgName, PATHINFO_EXTENSION);
+            $newImgName = uniqid('qimg_', true) . '.' . $ext;
+            $destPath = $uploadDir . $newImgName;
+
+            if (move_uploaded_file($imgTmpPath, $destPath)) {
+                // Return relative path for DB storage
+                return "uploads/practice_question_images/" . $newImgName;
+            } else {
+                return false; // Failed to move file
+            }
+        } else {
+            return false; // Invalid file type
+        }
+    }
+    return null; // No file uploaded
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['addQuestion'])) {
@@ -26,17 +64,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $answer = trim($_POST['answer'] ?? '');
 
         if ($subject && $grade && $level && $chapter && $description && $optionA && $optionB && $optionC && $optionD && $answer) {
-            // Insert new question with prepared stmt
-            $stmt = $connect->prepare("INSERT INTO practicequestions (Text, OptionA, OptionB, OptionC, OptionD, Answer, LevelId, Chapter, SubjectName, GradeName) VALUES (?, ?, ?, ?, ?, ?, (SELECT Id FROM level WHERE LevelName = ? LIMIT 1), ?, ?, ?)");
-            $stmt->bind_param("ssssssssss", $description, $optionA, $optionB, $optionC, $optionD, $answer, $level, $chapter, $subject, $grade);
-
-            if ($stmt->execute()) {
-                $alert = ['type' => 'success', 'message' => 'Question added successfully!'];
-                $selectedQuestionId = $stmt->insert_id;
+            // Handle image upload
+            $imagePath = handleImageUpload('question_image');
+            if ($imagePath === false) {
+                $alert = ['type' => 'error', 'message' => 'Invalid image upload. Allowed types: jpg, png, gif, webp.'];
             } else {
-                $alert = ['type' => 'error', 'message' => 'Failed to add question: ' . $stmt->error];
+                $stmt = $connect->prepare("INSERT INTO practicequestions (Text, OptionA, OptionB, OptionC, OptionD, Answer, ImagePath, LevelId, Chapter, SubjectName, GradeName) VALUES (?, ?, ?, ?, ?, ?, ?, (SELECT Id FROM level WHERE LevelName = ? LIMIT 1), ?, ?, ?)");
+                $stmt->bind_param("sssssssssss", $description, $optionA, $optionB, $optionC, $optionD, $answer, $imagePath, $level, $chapter, $subject, $grade);
+
+                if ($stmt->execute()) {
+                    $alert = ['type' => 'success', 'message' => 'Question added successfully!'];
+                    $selectedQuestionId = $stmt->insert_id;
+                } else {
+                    $alert = ['type' => 'error', 'message' => 'Failed to add question: ' . $stmt->error];
+                }
+                $stmt->close();
             }
-            $stmt->close();
         } else {
             $alert = ['type' => 'error', 'message' => 'Please fill in all fields to add a question.'];
         }
@@ -53,23 +96,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $editQuestionId = intval($_POST['editQuestionId'] ?? 0);
 
         if ($editQuestionId > 0 && $editDescription && $editOptionA && $editOptionB && $editOptionC && $editOptionD && $editAnswer) {
-            $stmt = $connect->prepare("UPDATE practicequestions SET Text=?, OptionA=?, OptionB=?, OptionC=?, OptionD=?, Answer=? WHERE Id=?");
-            $stmt->bind_param("ssssssi", $editDescription, $editOptionA, $editOptionB, $editOptionC, $editOptionD, $editAnswer, $editQuestionId);
-
-            if ($stmt->execute()) {
-                $alert = ['type' => 'success', 'message' => 'Question updated successfully!'];
-                $selectedQuestionId = $editQuestionId;
+            $imagePath = handleImageUpload('question_image');
+            if ($imagePath === false) {
+                $alert = ['type' => 'error', 'message' => 'Invalid image upload. Allowed types: jpg, png, gif, webp.'];
             } else {
-                $alert = ['type' => 'error', 'message' => 'Failed to update question: ' . $stmt->error];
+                if ($imagePath !== null) {
+                    // Delete old image if exists
+                    $stmtImg = $connect->prepare("SELECT ImagePath FROM practicequestions WHERE Id = ?");
+                    $stmtImg->bind_param("i", $editQuestionId);
+                    $stmtImg->execute();
+                    $resultImg = $stmtImg->get_result();
+                    $oldImage = $resultImg->fetch_assoc()['ImagePath'] ?? null;
+                    $stmtImg->close();
+
+                    if ($oldImage && file_exists(__DIR__ . "/../../" . $oldImage)) {
+                        unlink(__DIR__ . "/../../" . $oldImage);
+                    }
+
+                    $stmt = $connect->prepare("UPDATE practicequestions SET Text=?, OptionA=?, OptionB=?, OptionC=?, OptionD=?, Answer=?, ImagePath=? WHERE Id=?");
+                    $stmt->bind_param("sssssssi", $editDescription, $editOptionA, $editOptionB, $editOptionC, $editOptionD, $editAnswer, $imagePath, $editQuestionId);
+                } else {
+                    $stmt = $connect->prepare("UPDATE practicequestions SET Text=?, OptionA=?, OptionB=?, OptionC=?, OptionD=?, Answer=? WHERE Id=?");
+                    $stmt->bind_param("ssssssi", $editDescription, $editOptionA, $editOptionB, $editOptionC, $editOptionD, $editAnswer, $editQuestionId);
+                }
+
+                if ($stmt->execute()) {
+                    $alert = ['type' => 'success', 'message' => 'Question updated successfully!'];
+                    $selectedQuestionId = $editQuestionId;
+                } else {
+                    $alert = ['type' => 'error', 'message' => 'Failed to update question: ' . $stmt->error];
+                }
+                $stmt->close();
             }
-            $stmt->close();
         } else {
             $alert = ['type' => 'error', 'message' => 'Please fill in all fields to update the question.'];
         }
     }
 }
 
-// Fetch question IDs for buttons
+// Fetch question IDs for navigation buttons
 $questionIds = [];
 if ($subject && $grade && $level && $chapter) {
     $stmt = $connect->prepare("SELECT Id FROM practicequestions WHERE SubjectName = ? AND GradeName = ? AND LevelId = (SELECT Id FROM level WHERE LevelName = ?) AND Chapter = ? ORDER BY Id ASC");
@@ -82,7 +147,7 @@ if ($subject && $grade && $level && $chapter) {
     $stmt->close();
 }
 
-// Fetch selected question details
+// Fetch selected question details for editing
 $editQuestion = null;
 if ($selectedQuestionId > 0) {
     $stmt = $connect->prepare("SELECT * FROM practicequestions WHERE Id = ?");
@@ -101,6 +166,7 @@ if ($selectedQuestionId > 0) {
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
+    <!-- jQuery and SweetAlert2 -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -122,7 +188,6 @@ if ($selectedQuestionId > 0) {
         });
       </script>
     <?php endif; ?>
-
 
     <section class="content-header">
       <h1>Create Questions <small>Create and edit practice questions.</small></h1>
@@ -167,7 +232,6 @@ if ($selectedQuestionId > 0) {
                 <?php endif; ?>
               </div>
 
-              
               <!-- Upload Memo PDF Form -->
               <hr>
               <form action="upload_memo.php" method="POST" enctype="multipart/form-data" style="margin-top: 10px;">
@@ -270,7 +334,7 @@ if ($selectedQuestionId > 0) {
             </div>
             <div class="box-body" style="background-color:#ffffff;">
               <?php if (!$editQuestion): ?>
-                <p>No records found.</p>
+                <p>Select question to edit.</p>
               <?php else: ?>
                 <form id="editQuestionForm" method="POST" enctype="multipart/form-data">
                   <input type="hidden" name="editQuestionId" value="<?= $editQuestion['Id'] ?>">
@@ -318,6 +382,13 @@ if ($selectedQuestionId > 0) {
                       <input type="file" name="question_image" class="form-control" accept="image/*">
                     </div>
                   </div>
+
+                  <?php if (!empty($editQuestion['ImagePath'])): ?>
+                    <div class="form-group">
+                      <label>Current Image:</label><br>
+                      <img src="../../<?= htmlspecialchars($editQuestion['ImagePath']) ?>" alt="Question Image" style="max-width: 100%; max-height: 200px; border: 1px solid #ddd; padding: 5px;">
+                    </div>
+                  <?php endif; ?>
 
                   <div class="text-right">
                     <button type="submit" class="btn btn-info">

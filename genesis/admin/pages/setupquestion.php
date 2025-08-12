@@ -6,6 +6,20 @@ if (!isset($_SESSION['email'])) {
 }
 include(__DIR__ . "/../../common/partials/head.php");
 include(__DIR__ . "/../../partials/connect.php");
+
+// Fetch distinct existing question sets grouped by Grade, Subject, Chapter, Level
+$query = "
+    SELECT DISTINCT GradeName, SubjectName, Chapter, LevelName
+    FROM practicequestions 
+    JOIN level ON practicequestions.LevelId = level.Id
+    ORDER BY GradeName, SubjectName, Chapter, LevelName
+";
+$result = $connect->query($query);
+
+$existingSets = [];
+while ($row = $result->fetch_assoc()) {
+    $existingSets[] = $row;
+}
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -75,11 +89,7 @@ include(__DIR__ . "/../../partials/connect.php");
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fa fa-arrow-right"></i> Continue
                                     </button>
-                                    <a href="editpracticequestions.php" class="btn btn-warning" style="margin-left:8px;">
-                                        <i class="fa fa-edit"></i> Existing Practice Questions
-                                    </a>
                                 </div>
-
                             </form>
                         </div>
 
@@ -88,6 +98,7 @@ include(__DIR__ . "/../../partials/connect.php");
                             <div class="callout callout-info">
                                 <h4><i class="fa fa-info-circle"></i> About This Page</h4>
                                 <p>This setup page allows you to define the key details for your practice questions before creating them. Once you select a grade, subject, chapter, and difficulty level, you can proceed to add the questions.</p>
+                                <p>You can also edit existing sets of questions by clicking the <strong>Edit</strong> button in the table below.</p>
                             </div>
 
                             <div class="box box-solid">
@@ -107,8 +118,50 @@ include(__DIR__ . "/../../partials/connect.php");
                     </div>
                 </div>
             </div>
-        </section>
 
+            <!-- Existing question sets list -->
+            <div class="box box-warning" style="border-top: 3px solid #f39c12; margin-top: 20px;">
+                <div class="box-header with-border" style="background-color:#fff8e1;">
+                    <h3 class="box-title" style="color:#f39c12;">
+                        <i class="fa fa-folder-open"></i> Existing Practice Question Sets
+                    </h3>
+                </div>
+                <div class="box-body" style="max-height: 400px; overflow-y: auto;">
+                    <?php if (empty($existingSets)): ?>
+                        <p>No existing question sets found.</p>
+                    <?php else: ?>
+                        <table class="table table-striped table-bordered table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Grade</th>
+                                    <th>Subject</th>
+                                    <th>Chapter</th>
+                                    <th>Level</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($existingSets as $set): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($set['GradeName']) ?></td>
+                                        <td><?= htmlspecialchars($set['SubjectName']) ?></td>
+                                        <td><?= htmlspecialchars($set['Chapter']) ?></td>
+                                        <td><?= htmlspecialchars($set['LevelName']) ?></td>
+                                        <td>
+                                            <a href="create_questions.php?grade=<?= urlencode($set['GradeName']) ?>&subject=<?= urlencode($set['SubjectName']) ?>&chapter=<?= urlencode($set['Chapter']) ?>&level=<?= urlencode($set['LevelName']) ?>" 
+                                               class="btn btn-xs btn-warning">
+                                               <i class="fa fa-edit"></i> Edit
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+        </section>
     </div>
 
     <div class="control-sidebar-bg"></div>
