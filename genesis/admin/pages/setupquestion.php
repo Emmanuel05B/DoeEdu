@@ -121,45 +121,59 @@ while ($row = $result->fetch_assoc()) {
 
             <!-- Existing question sets list -->
             <div class="box box-warning" style="border-top: 3px solid #f39c12; margin-top: 20px;">
-                <div class="box-header with-border" style="background-color:#fff8e1;">
-                    <h3 class="box-title" style="color:#f39c12;">
-                        <i class="fa fa-folder-open"></i> Existing Practice Question Sets
-                    </h3>
-                </div>
-                <div class="box-body" style="max-height: 400px; overflow-y: auto;">
-                    <?php if (empty($existingSets)): ?>
-                        <p>No existing question sets found.</p>
-                    <?php else: ?>
-                        <table class="table table-striped table-bordered table-condensed">
-                            <thead>
-                                <tr>
-                                    <th>Grade</th>
-                                    <th>Subject</th>
-                                    <th>Chapter</th>
-                                    <th>Level</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($existingSets as $set): ?>
-                                    <tr>
-                                        <td><?= htmlspecialchars($set['GradeName']) ?></td>
-                                        <td><?= htmlspecialchars($set['SubjectName']) ?></td>
-                                        <td><?= htmlspecialchars($set['Chapter']) ?></td>
-                                        <td><?= htmlspecialchars($set['LevelName']) ?></td>
-                                        <td>
-                                            <a href="create_questions.php?grade=<?= urlencode($set['GradeName']) ?>&subject=<?= urlencode($set['SubjectName']) ?>&chapter=<?= urlencode($set['Chapter']) ?>&level=<?= urlencode($set['LevelName']) ?>" 
-                                               class="btn btn-xs btn-warning">
-                                               <i class="fa fa-edit"></i> Edit
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    <?php endif; ?>
-                </div>
-            </div>
+  <div class="box-header with-border" style="background-color:#fff8e1;">
+    <h3 class="box-title" style="color:#f39c12;">
+      <i class="fa fa-folder-open"></i> Existing Practice Question Sets
+    </h3>
+  </div>
+  <div class="box-body">
+    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+      <?php if (empty($existingSets)): ?>
+        <p>No existing question sets found.</p>
+      <?php else: ?>
+        <table id="example1" class="table table-bordered table-hover table-condensed">
+          <thead style="background-color: #f9f9f9;">
+            <tr>
+              <th>Grade</th>
+              <th>Subject</th>
+              <th>Chapter</th>
+              <th>Level</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($existingSets as $set): ?>
+              <tr>
+                <td><?= htmlspecialchars($set['GradeName']) ?></td>
+                <td><?= htmlspecialchars($set['SubjectName']) ?></td>
+                <td><?= htmlspecialchars($set['Chapter']) ?></td>
+                <td><?= htmlspecialchars($set['LevelName']) ?></td>
+                <td class="text-center">
+                  <a href="create_questions.php?grade=<?= urlencode($set['GradeName']) ?>&subject=<?= urlencode($set['SubjectName']) ?>&chapter=<?= urlencode($set['Chapter']) ?>&level=<?= urlencode($set['LevelName']) ?>" 
+                     class="btn btn-xs btn-warning">
+                     <i class="fa fa-edit"></i> Edit
+                  </a>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+          <tfoot style="background-color: #f9f9f9;">
+            <tr>
+              <th>Grade</th>
+              <th>Subject</th>
+              <th>Chapter</th>
+              <th>Level</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </tfoot>
+        </table>
+      <?php endif; ?>
+    </div>
+  </div>
+</div>
+
+
+
 
         </section>
     </div>
@@ -168,5 +182,21 @@ while ($row = $result->fetch_assoc()) {
 </div>
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+
+<!-- DataTables initialization script -->
+<script>
+  $(function () {
+    $('#example1').DataTable({
+      paging: true,
+      lengthChange: true,
+      searching: true,
+      ordering: true,
+      info: true,
+      autoWidth: false,
+      responsive: true
+    });
+  });
+</script>
+
 </body>
 </html>
