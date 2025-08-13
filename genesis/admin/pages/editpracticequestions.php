@@ -8,7 +8,7 @@ if (!isset($_SESSION['email'])) {
 include(__DIR__ . "/../../common/partials/head.php");
 include(__DIR__ . "/../../partials/connect.php");
 
-// Grab alert from session if any, then clear it
+// Grab alert from session if any, then clear it xxx
 $alert = $_SESSION['alert'] ?? null;
 unset($_SESSION['alert']);
 

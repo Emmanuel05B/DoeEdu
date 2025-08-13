@@ -128,7 +128,7 @@
           </div>
 
           <div class="col-lg-3 col-xs-6">
-            <div class="small-box" style="background-color: #b2ebf2;"> <!-- light aqua -->
+            <div class="small-box" style="background-color: #b2ebf2;"> <!-- light aqua  -->
               <div class="inner">
                 <h3><?php echo $row['count']; ?></h3>
                 <p>Learners Registered</p>

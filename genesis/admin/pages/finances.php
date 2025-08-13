@@ -202,7 +202,7 @@ include(__DIR__ . "/../../partials/connect.php");
                               <form action="payhandler.php" method="POST" class="horizontal-container">
                                 <input type="number" class="form-control2" id="newamount" name="newamount" min="-5000" max="5000" required>
                                 <input type="hidden" name="learnerid" value="<?php echo htmlspecialchars($final['LearnerId']); ?>">                                                                        
-                                <button type="submit" name="updateby" class="btn btn-primary py-3 px-4">Pay</button>
+                                <button type="submit" name="updateby" class="btn btn-sm btn-primary py-3 px-4">Pay</button>
                               </form>
                             </td>
                           </tr>

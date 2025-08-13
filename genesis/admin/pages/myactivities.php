@@ -75,8 +75,8 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                           <td>" . htmlspecialchars($row['SubjectName']) . "</td>
                           <td>" . htmlspecialchars($row['SubjectName']) . "</td>
                           <td>" . htmlspecialchars($row['DueDate']) . "</td>
-                          <td><a href='viewactivity.php?activityId=" . intval($row['Id']) . "' class='btn btn-block btn-primary'>View/Edit</a></td>
-                          <td><a href='activityoverview.php?activityId=" . intval($row['Id']) . "' class='btn btn-block btn-primary'>Overview</a></td></tr>";
+                          <td><a href='viewactivity.php?activityId=" . intval($row['Id']) . "' class='btn btn-sm btn-primary'>View/Edit</a></td>
+                          <td><a href='activityoverview.php?activityId=" . intval($row['Id']) . "' class='btn btn-sm btn-primary'>Overview</a></td></tr>";
                 }
               }
               $stmt->close();

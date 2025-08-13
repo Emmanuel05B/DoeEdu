@@ -150,7 +150,7 @@ $progressPercent = ($questionsCompleted / $totalQuestions) * 100;
       </div>
     </div>
   </div>
-</div>
+</div>  
 
 
       </div>

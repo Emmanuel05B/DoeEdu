@@ -173,14 +173,14 @@ if (!isset($_SESSION['email'])) {
           <td><?php echo $final['GroupName']; ?></td>
           <td>
             <p>
-              <a href="tracklearnerprogress.php?id=<?php echo $final['LearnerId']; ?>&val=<?php echo $subjectId; ?>" class="btn btn-block btn-primary">
+              <a href="tracklearnerprogress.php?id=<?php echo $final['LearnerId']; ?>&val=<?php echo $subjectId; ?>" class="btn btn-xs btn-primary">
                 Track Progress
               </a>
             </p>
           </td>
           <td>
             <p>
-              <a href="learnerprofile.php?id=<?php echo $final['LearnerId']; ?>&val=<?php echo $subjectId; ?>" class="btn btn-block btn-primary">
+              <a href="learnerprofile.php?id=<?php echo $final['LearnerId']; ?>&val=<?php echo $subjectId; ?>" class="btn btn-xs btn-primary">
                 Open Profile
               </a>
             </p>
