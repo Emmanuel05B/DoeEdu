@@ -62,7 +62,7 @@ include(__DIR__ . "/../../common/partials/head.php");
                 echo "<div class='col-lg-4 col-md-6 col-sm-12' style='margin-bottom:15px;'>
                         <div class='box {$cardClass}'>
                             <div class='box-body'>
-                                <p>Q{$questionNumber}: " . htmlspecialchars($row['QuestionText']) . "</p>
+                                <p><strong>Q{$questionNumber}:</strong> " . htmlspecialchars($row['QuestionText']) . "</p>
                                 <p><strong>A:</strong> " . htmlspecialchars($row['OptionA']) . "</p>
                                 <p><strong>B:</strong> " . htmlspecialchars($row['OptionB']) . "</p>
                                 <p><strong>C:</strong> " . htmlspecialchars($row['OptionC']) . "</p>

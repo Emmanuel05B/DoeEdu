@@ -42,7 +42,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
 
           <li><a href="adminindex.php"><i class="fa fa-circle-o"></i> Home</a></li>
           <li><a href="admin.php"><i class="fa fa-circle-o"></i> Administration</a></li>          
-           <li class=" treeview">
+          <li class=" treeview">
             <a href="#">
               <i class="fa fa-circle-o"></i> <span>Classes</span>
               <span class="pull-right-container">

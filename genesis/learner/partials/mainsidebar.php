@@ -48,7 +48,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
         <li><a href="training.php"><i class="fa fa-circle-o"></i> Training</a></li>
         <li class=" treeview">
             <a href="#">
-              <i class="fa fa-circle-o"></i> <span>Classes</span>
+              <i class="fa fa-circle-o"></i> <span>xxxxxxx</span>
               <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
