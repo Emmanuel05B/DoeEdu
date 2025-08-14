@@ -3,11 +3,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-  header("Location: ../common/login.php");
+  header("Location: ../../common/pages/login.php");
   exit();
 }
 ?>
-<?php include("learnerpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -20,7 +20,7 @@ if (!isset($_SESSION['email'])) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
 
     <section class="content-header">
-        <h1>xxxxxxx <small>xxxx x x x</small></h1>
+        <h1>Video Lessons <small>xxxx x x x</small></h1>
         <ol class="breadcrumb">
           <li><a href="learnerindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
           <li class="active">xxxx</li>
@@ -33,10 +33,6 @@ if (!isset($_SESSION['email'])) {
           <!-- /.box -->
 
           <div class="box">
-            <div class="box-header">
-              <h3 class="box-title">Video Lessons</h3>
-            </div>
-
             <!-- /.box-header -->
             <div class="box-body">
 
