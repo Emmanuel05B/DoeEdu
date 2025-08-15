@@ -71,9 +71,9 @@ while ($row = $chaptersRes->fetch_assoc()) {
 }
 $chaptersStmt->close();
 
-// 3) Fetch learner eligibility for levels
+// 3) Fetch learner eligibility per chapter
 $learnerLevelsStmt = $connect->prepare("
-    SELECT LevelId, Complete
+    SELECT LevelId, ChapterName, Complete
     FROM learnerlevel
     WHERE LearnerId = ?
 ");
@@ -82,16 +82,18 @@ $learnerLevelsStmt->execute();
 $res = $learnerLevelsStmt->get_result();
 $learnerLevels = [];
 while($row = $res->fetch_assoc()){
-    $learnerLevels[$row['LevelId']] = $row['Complete'];
+    $learnerLevels[$row['ChapterName']][$row['LevelId']] = $row['Complete'];
 }
 $learnerLevelsStmt->close();
 
+
 // Helper: check if learner is eligible for a level
-function isEligible($levelId, $learnerLevels){
+function isEligible($levelId, $chapterName, $learnerLevels){
     if($levelId == 1) return true; // Easy always eligible
     $prevLevel = $levelId - 1;
-    return !empty($learnerLevels[$prevLevel]) && $learnerLevels[$prevLevel] == 1;
+    return !empty($learnerLevels[$chapterName][$prevLevel]) && $learnerLevels[$chapterName][$prevLevel] == 1;
 }
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -124,7 +126,7 @@ function isEligible($levelId, $learnerLevels){
                 <div class="box-body">
                     <div class="row">
                         <!-- Left: Chapters table -->
-                        <div class="col-md-7">
+                        <div class="col-md-8">
                             <div class="box box-solid">
                                 <div class="box-body">
                                     <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
@@ -148,23 +150,31 @@ function isEligible($levelId, $learnerLevels){
                                                         <td><?php echo htmlspecialchars($chapterName); ?></td>
 
                                                         <?php foreach(['Easy'=>1,'Medium'=>2,'Hard'=>3] as $levelName=>$lvlId): ?>
-                                                            <td class="text-center">
-                                                                <?php if(!empty($levels[$levelName])): ?>
-                                                                    <?php if(isEligible($lvlId,$learnerLevels)): ?>
-                                                                        <a href="training.php?grade=<?php echo urlencode($gradeName); ?>&subject=<?php echo urlencode($subjectName); ?>&chapter=<?php echo urlencode($chapterName); ?>&level=<?php echo urlencode($levels[$levelName]); ?>"
-                                                                        class="btn btn-xs btn-<?php echo $levelName=='Easy'?'success':($levelName=='Medium'?'warning':'danger'); ?>">
-                                                                            <i class="fa fa-play"></i> Practice
+                                                        <td class="text-center">
+                                                            <?php if(!empty($levels[$levelName])): ?>
+                                                                <?php if(isEligible($lvlId,$chapterName,$learnerLevels)): ?>
+                                                                    <a href="training.php?grade=<?= urlencode($gradeName); ?>&subject=<?= urlencode($subjectName); ?>&chapter=<?= urlencode($chapterName); ?>&level=<?= $levels[$levelName]; ?>"
+                                                                    class="btn btn-xs btn-<?= $levelName=='Easy'?'success':($levelName=='Medium'?'warning':'danger'); ?>">
+                                                                        <i class="fa fa-play"></i> Practice
+                                                                    </a>
+                                                                    <?php if(!empty($learnerLevels[$chapterName][$lvlId]) && $learnerLevels[$chapterName][$lvlId] == 1): ?>
+                                                                        <a href="memo.php?grade=<?= urlencode($gradeName); ?>&subject=<?= urlencode($subjectName); ?>&chapter=<?= urlencode($chapterName); ?>&level=<?= $levels[$levelName]; ?>"
+                                                                        class="btn btn-xs btn-info" title="View Memo">
+                                                                            <i class="fa fa-file-text"></i> Memo
                                                                         </a>
-                                                                    <?php else: ?>
-                                                                        <button class="btn btn-xs btn-default" disabled>
-                                                                            <i class="fa fa-lock"></i> Locked
-                                                                        </button>
                                                                     <?php endif; ?>
                                                                 <?php else: ?>
-                                                                    <span class="text-muted">N/A</span>
+                                                                    <button class="btn btn-xs btn-default" disabled>
+                                                                        <i class="fa fa-lock"></i> Locked
+                                                                    </button>
                                                                 <?php endif; ?>
-                                                            </td>
+                                                            <?php else: ?>
+                                                                <span class="text-muted">N/A</span>
+                                                            <?php endif; ?>
+                                                        </td>
                                                         <?php endforeach; ?>
+
+
 
                                                     </tr>
                                                 <?php endforeach; ?>
@@ -177,7 +187,7 @@ function isEligible($levelId, $learnerLevels){
                         </div>
 
                         <!-- Right: Tips panel -->
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <div class="box box-solid">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Tips for Answering the Questions</h3>
