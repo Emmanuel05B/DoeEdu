@@ -9,17 +9,6 @@ if (!isset($_SESSION['user_id'])) {
 include(__DIR__ . "/../../partials/connect.php");
 ?>
 
-<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
-<style>
-  body, html, .wrapper {
-    background-color: #fff !important;
-  }
-</style>
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
-
-<body class="hold-transition skin-blue sidebar-mini">
-
 <?php
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -222,14 +211,10 @@ $stmt->bind_param("sssisssi",
 );
 
 if ($stmt->execute()) {
-    echo "<script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Resource uploaded!',
-        }).then(() => {
-            window.location = 'studyresources.php';
-        });
-    </script>";
+
+    header("Location: studyresources.php?uploaded=1");
+    exit;
+    
 } else {
     echo "<script>
         Swal.fire({
@@ -243,6 +228,3 @@ if ($stmt->execute()) {
 }
 ?>
 
-<div class="wrapper"></div>
-</body>
-</html>

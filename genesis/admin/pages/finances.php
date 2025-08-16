@@ -243,7 +243,52 @@ include(__DIR__ . "/../../partials/connect.php");
 
 <!-- Scripts -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+  <?php if (isset($_GET['paid']) && $_GET['paid'] == 1): ?>
+    <?php  
+    echo '<script>
+        Swal.fire({
+            icon: "success",
+            title: "Payment Updated Successfully",
+            text: "The learner\'s payment information has been saved.",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK"
+        }).then(() => {
+            window.location.href = "#";
+        });
+        </script>'; 
+      ?>
+  <?php endif; ?>
 
+  <?php if (isset($_GET['notpaid']) && $_GET['notpaid'] == 1): ?>
+    <?php  
+    echo '<script>
+        Swal.fire({
+            icon: "error",
+            title: "Update Failed",
+            text: "Unable to update the payment record. Please try again.",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK"
+        }).then(() => {
+            window.location.href = "#";
+        });
+        </script>';
+      ?>
+  <?php endif; ?>
+  <?php if (isset($_GET['notfound']) && $_GET['notfound'] == 1): ?>
+    <?php  
+    echo '<script>
+        Swal.fire({
+            icon: "error",
+            title: "Learner Not Found",
+            text: "The learner ID does not exist.",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK"
+        }).then(() => {
+            window.location.href = "#";
+        });
+        </script>';
+      ?>
+  <?php endif; ?>
 
 <script>
   $(function () {

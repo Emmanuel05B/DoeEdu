@@ -64,9 +64,9 @@
   <?php include(__DIR__ . "/../partials/header.php"); ?>
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
+  
+
   <div class="content-wrapper">
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
 
     <section class="content-header">
       <h1>Study Resources <small>Upload and manage learning materials.</small></h1>
@@ -294,6 +294,19 @@
 
 <!-- Scripts -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+
+<?php if (isset($_GET['uploaded']) && $_GET['uploaded'] == 1): ?>
+    <?php  
+      echo "<script>
+          Swal.fire({
+              icon: 'success',
+              title: 'Resource uploaded!',
+          }).then(() => {
+              window.location = '#';
+          });
+      </script>"; 
+    ?>
+  <?php endif; ?>
 
 <script>
   $(function () {

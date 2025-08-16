@@ -1,13 +1,3 @@
-<!DOCTYPE html>
-<html>
-
-<?php include(__DIR__ . "/../../common/partials/head.php"); 
- // affects the alert styling 
- ?>  
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
-
-<body class="hold-transition skin-blue sidebar-mini">
 
 <?php
 
@@ -25,7 +15,7 @@ if (isset($_POST["updateby"])) {
 
     // Get form data
     $newamount = $_POST['newamount'];  // amount paid to reduce the debt
-    $learnerid = $_POST['learnerid']; // hidden input
+    $learnerid = $_POST['learnerid']; // hidden input d
 
     // Get current payment details
     $sql = "SELECT * FROM learners WHERE LearnerId = ?";
@@ -37,18 +27,9 @@ if (isset($_POST["updateby"])) {
     $stmt->close();
 
     if (!$final) {
-        echo '<script>
-        Swal.fire({
-            icon: "error",
-            title: "Learner Not Found",
-            text: "The learner ID does not exist.",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK"
-        }).then(() => {
-            window.location.href = "finances.php";
-        });
-        </script>';
-        exit();
+        header("Location: finances.php?id=" . urlencode($learnerid) . "&notfound=1");
+        exit;
+        
     }
 
     $totalfees = $final['TotalFees'];   // get total fees
@@ -65,29 +46,13 @@ if (isset($_POST["updateby"])) {
 
     // Execute update
     if ($UpdateStmt->execute()) {
-        echo '<script>
-        Swal.fire({
-            icon: "success",
-            title: "Payment Updated Successfully",
-            text: "The learner\'s payment information has been saved.",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK"
-        }).then(() => {
-            window.location.href = "finances.php?id=' . $learnerid . '";
-        });
-        </script>';
+        header("Location: finances.php?id=" . urlencode($learnerid) . "&paid=1");
+        exit;
+        
     } else {
-        echo '<script>
-        Swal.fire({
-            icon: "error",
-            title: "Update Failed",
-            text: "Unable to update the payment record. Please try again.",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK"
-        }).then(() => {
-            window.location.href = "finances.php?id=' . $learnerid . '";
-        });
-        </script>';
+        header("Location: finances.php?id=" . urlencode($learnerid) . "&notpaid=1");
+        exit;
+        
     }
 
     $UpdateStmt->close();
@@ -96,5 +61,3 @@ if (isset($_POST["updateby"])) {
 }
 ?>
 
-</body>
-</html>
