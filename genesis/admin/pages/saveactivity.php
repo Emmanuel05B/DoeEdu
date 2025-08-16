@@ -92,14 +92,10 @@ try {
     // Commit transaction
     $connect->commit();
     
-    
     header("Location: generateactivity.php?gra=" . urlencode($grade) . "&cha=" . urlencode($chapter) . "&group=" . urlencode($group) . "&sub=" . urlencode($subject) . "&save=1");
     exit; 
 
     
-
-
-
 } catch (Exception $e) {
     $connect->rollback();
     // Log error for debugging (optional)
