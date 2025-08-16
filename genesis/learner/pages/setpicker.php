@@ -102,6 +102,20 @@ function isEligible($levelId, $chapterName, $learnerLevels){
     <?php include(__DIR__ . "/../partials/header.php"); ?>
     <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
+    <?php if (isset($_GET['levelCompleted']) && $_GET['levelCompleted'] == 1): ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Level Already Completed!',
+            text: 'You have already completed this level for this chapter. 🎉 Click on the memo to review all questions and answers for this level.',
+
+            confirmButtonText: 'OK'
+        });
+    </script>
+    <?php endif; ?>
+
+
     <div class="content-wrapper">
         <section class="content-header">
             <h1>
@@ -159,10 +173,34 @@ function isEligible($levelId, $chapterName, $learnerLevels){
                                                                         <i class="fa fa-play"></i> Practice
                                                                     </a>
                                                                     <?php if(!empty($learnerLevels[$chapterName][$lvlId]) && $learnerLevels[$chapterName][$lvlId] == 1): ?>
-                                                                        <a href="memo.php?grade=<?= urlencode($gradeName); ?>&subject=<?= urlencode($subjectName); ?>&chapter=<?= urlencode($chapterName); ?>&level=<?= $levels[$levelName]; ?>"
-                                                                        class="btn btn-xs btn-info" title="View Memo">
-                                                                            <i class="fa fa-file-text"></i> Memo
-                                                                        </a>
+                                                                        
+
+
+                                                                        <?php
+                                                                            // Fetch memo for this grade, subject, level, chapter
+                                                                            $stmtMemo = $connect->prepare("
+                                                                                SELECT MemoFilename 
+                                                                                FROM memos 
+                                                                                WHERE SubjectName = ? AND GradeName = ? AND LevelName = ? AND Chapter = ?
+                                                                                LIMIT 1
+                                                                            ");
+                                                                            $stmtMemo->bind_param("ssss", $subjectName, $gradeName, $levelName, $chapterName);
+                                                                            $stmtMemo->execute();
+                                                                            $memoData = $stmtMemo->get_result()->fetch_assoc();
+                                                                            $stmtMemo->close();
+
+                                                                            if ($memoData && !empty($memoData['MemoFilename'])) {
+                                                                                $memoFilePath = "/DoeEdu/genesis/uploads/practicequestionsmemos/" . $memoData['MemoFilename'];
+                                                                                ?>
+                                                                                <a href="<?= htmlspecialchars($memoFilePath) ?>" class="btn btn-xs btn-info" title="Download Memo" target="_blank" download>
+                                                                                    <i class="fa fa-file-text"></i> Memo
+                                                                                </a>
+                                                                            <?php
+                                                                            } else {
+                                                                                echo "<span class='text-muted'>Memo N/A</span>";
+                                                                            }
+                                                                            ?>
+
                                                                     <?php endif; ?>
                                                                 <?php else: ?>
                                                                     <button class="btn btn-xs btn-default" disabled>

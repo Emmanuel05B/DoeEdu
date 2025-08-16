@@ -45,6 +45,28 @@ if (!$isEligible) {
     die("<div class='alert alert-danger' style='margin:20px;'>You are not eligible to access this level yet.</div>");
 }
 
+
+
+// --- Check if level for this chapter is already completed ---
+$stmtCheck = $connect->prepare("
+    SELECT Complete 
+    FROM learnerlevel 
+    WHERE LearnerId=? AND LevelId=? AND ChapterName=?
+");
+$stmtCheck->bind_param("iis", $learnerId, $levelId, $chapter);
+$stmtCheck->execute();
+$completedRow = $stmtCheck->get_result()->fetch_assoc();
+$stmtCheck->close();
+
+if (!empty($completedRow) && intval($completedRow['Complete']) === 1) {
+    // Redirect to setpicker.php with a query parameter
+    header("Location: setpicker.php?subjectId=" . urlencode($subjectId) . "&levelCompleted=1");
+    exit;
+}
+
+
+
+
 // Fetch Level Name
 $levelStmt = $connect->prepare("SELECT LevelName FROM level WHERE Id=?");
 $levelStmt->bind_param("i", $levelId);
