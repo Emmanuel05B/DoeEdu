@@ -79,7 +79,10 @@ try {
     $numLeft = max($totalQuestions - $numCompleted, 0);
 
     // Check completion
+    $passMessage = '';  
+    $failMessage = '';
     $completeFlag = 0;
+
     if ($numCompleted >= $totalQuestions) {
         $passPercent = ($currentScore / $totalQuestions) * 100;
         if ($passPercent >= 70) {
@@ -88,6 +91,8 @@ try {
             //congratulate them on passing the level and let them know that the memo is now available
             // direct back to setpicker.php?subjectId=subjectid here
             // then ready to start a new level
+
+            $passMessage = '🎉 Congratulations! You have passed this level. The memo is now available.';
         } else {
             // Repeat level
             $currentScore = 0;
@@ -110,6 +115,8 @@ try {
             $stmtDel->bind_param("iis", $learnerId, $levelId, $chapter);
             $stmtDel->execute();
             $stmtDel->close();
+
+            $failMessage = '❌ You did not pass this level. You are required to repeat it.';
         }
     }
 
@@ -168,7 +175,9 @@ try {
         'totalQuestions' => $totalQuestions,
         'totalTimeFormatted' => sprintf('%02d:%02d', floor($totalTimeAccum/60), $totalTimeAccum%60),
         'progressPercent' => round(($numCompleted / max($totalQuestions,1))*100),
-        'subjectId' => $subjectId
+        'subjectId' => $subjectId,
+        'passMessage' => $passMessage ?? '',
+        'failMessage' => $failMessage ?? ''
     ]);
 
 } catch (Exception $e) {

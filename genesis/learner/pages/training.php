@@ -321,6 +321,79 @@ function formatTime($seconds)
     
 
 <script>
+    document.getElementById('learnerQuestionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const subjectId = <?= json_encode($subjectId); ?>;
+    const form = e.target;
+    const formData = new FormData(form);
+
+    try {
+        const res = await fetch('submit_answer.php', { method: 'POST', body: formData });
+        const data = await res.text();
+        let json;
+
+        try { json = JSON.parse(data); }
+        catch (err) { throw new Error("Invalid JSON response"); }
+
+        if (json.status !== 'success') {
+            throw new Error(json.message || "Something went wrong");
+        }
+
+        // Determine alert
+        let alertOptions = {};
+        if (json.passMessage) {
+            alertOptions = {
+                icon: 'success',
+                title: 'Level Complete!',
+                text: json.passMessage,
+                confirmButtonText: 'OK'
+            };
+        } else if (json.failMessage) {
+            alertOptions = {
+                icon: 'error',
+                title: 'Level Incomplete',
+                text: json.failMessage,
+                confirmButtonText: 'Retry Level'
+            };
+        } else {
+            // Answer feedback (correct/incorrect)
+            alertOptions = {
+                icon: json.isCorrect ? 'success' : 'error',
+                title: json.isCorrect ? 'Correct answer!' : 'Incorrect answer!',
+                html: `
+                    Score: ${json.score}<br>
+                    Completed: ${json.numCompleted}/${json.totalQuestions}<br>
+                    Time: ${json.totalTimeFormatted}
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Next Question',
+                cancelButtonText: 'Rest/Continue Later',
+                reverseButtons: true
+            };
+        }
+
+        const result = await Swal.fire(alertOptions);
+
+        // Redirect logic
+        if (json.passMessage) {
+            window.location.href = `setpicker.php?subjectId=${encodeURIComponent(subjectId)}`;
+        } else if (json.failMessage) {
+            window.location.href = `training.php?subject=${encodeURIComponent(formData.get('subject'))}&sid=${encodeURIComponent(subjectId)}&grade=${encodeURIComponent(formData.get('grade'))}&chapter=${encodeURIComponent(formData.get('chapter'))}&level=${formData.get('levelId')}`;
+        } else if (result.isConfirmed) {
+            // Next question
+            window.location.href = `training.php?subject=${encodeURIComponent(formData.get('subject'))}&sid=${encodeURIComponent(subjectId)}&grade=${encodeURIComponent(formData.get('grade'))}&chapter=${encodeURIComponent(formData.get('chapter'))}&level=${formData.get('levelId')}`;
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            // Rest / back
+            window.location.href = `setpicker.php?subjectId=${encodeURIComponent(subjectId)}`;
+        }
+
+    } catch (err) {
+        console.error(err);
+        Swal.fire('Error', err.message, 'error');
+    }
+});
+/*
 document.getElementById('learnerQuestionForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -346,7 +419,6 @@ document.getElementById('learnerQuestionForm').addEventListener('submit', functi
 
         if (json.status === 'success') {
             const message = json.isCorrect ? 'Correct answer!' : 'Incorrect answer!';
-
 
             Swal.fire({
                 icon: json.isCorrect ? 'success' : 'error',
@@ -380,12 +452,41 @@ document.getElementById('learnerQuestionForm').addEventListener('submit', functi
         } else {
             Swal.fire('Error', json.message || 'Something went wrong', 'error');
         }
+
+   
+        if (json.passMessage) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Level Complete!',
+                text: json.passMessage,
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = `setpicker.php?subjectId=${encodeURIComponent(subjectId)}`;
+            });
+        } else if (json.failMessage) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Level Incomplete',
+                text: json.failMessage,
+                confirmButtonText: 'Retry Level'
+            }).then(() => {
+                // Reload the same level to repeat
+                window.location.href = `training.php?subject=${encodeURIComponent(formData.get('subject'))}&sid=${encodeURIComponent(subjectId)}&grade=${encodeURIComponent(formData.get('grade'))}&chapter=${encodeURIComponent(formData.get('chapter'))}&level=${formData.get('levelId')}`;
+            });
+        } else {
+            // Existing Next/Rest SweetAlert logic
+        }
+
+
+
     })
     .catch(err => {
         console.error("Fetch error:", err);
         Swal.fire('Error', 'Something went wrong (network error).', 'error');
-    });
-});
+    }); 
+});   
+
+*/
 </script>
 
     
