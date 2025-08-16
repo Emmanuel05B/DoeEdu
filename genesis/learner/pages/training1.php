@@ -141,11 +141,16 @@ $stmtCompleted->execute();
 $questionsCompleted = $stmtCompleted->get_result()->fetch_assoc()['completed'] ?? 0;
 $stmtCompleted->close();
 
-$stmtLevel = $connect->prepare("SELECT * FROM learnerlevel WHERE LearnerId=? AND LevelId=?");
-$stmtLevel->bind_param("ii", $learnerId, $levelId);
+$stmtLevel = $connect->prepare("
+    SELECT * 
+    FROM learnerlevel 
+    WHERE LearnerId=? AND LevelId=? AND ChapterName=?
+");
+$stmtLevel->bind_param("iis", $learnerId, $levelId, $chapter);
 $stmtLevel->execute();
 $levelData = $stmtLevel->get_result()->fetch_assoc();
 $stmtLevel->close();
+
 
 $totalTime       = $levelData['TotalTimeTaken'] ?? 0;
 $levelAttempt    = $levelData['NumberAttempts'] ?? 1;

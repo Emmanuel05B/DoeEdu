@@ -153,7 +153,8 @@ function isEligible($levelId, $chapterName, $learnerLevels){
                                                         <td class="text-center">
                                                             <?php if(!empty($levels[$levelName])): ?>
                                                                 <?php if(isEligible($lvlId,$chapterName,$learnerLevels)): ?>
-                                                                    <a href="training.php?grade=<?= urlencode($gradeName); ?>&subject=<?= urlencode($subjectName); ?>&chapter=<?= urlencode($chapterName); ?>&level=<?= $levels[$levelName]; ?>"
+                                                                    <a href="training.php?grade=<?= urlencode($gradeName); ?>&subject=<?= urlencode($subjectName); ?>&sid=<?= $subjectId; ?>&chapter=<?= urlencode($chapterName); ?>&level=<?= $levels[$levelName]; ?>"
+
                                                                     class="btn btn-xs btn-<?= $levelName=='Easy'?'success':($levelName=='Medium'?'warning':'danger'); ?>">
                                                                         <i class="fa fa-play"></i> Practice
                                                                     </a>

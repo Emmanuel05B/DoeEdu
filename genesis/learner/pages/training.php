@@ -11,6 +11,8 @@ include(__DIR__ . "/../../partials/connect.php");
 $learnerId       = $_SESSION['user_id'];
 
 $subject         = $_GET['subject'] ?? '';
+$subjectId         = $_GET['sid'] ?? '';
+
 $grade           = $_GET['grade'] ?? '';
 $chapter         = $_GET['chapter'] ?? '';
 $levelId         = intval($_GET['level'] ?? 0);
@@ -212,6 +214,7 @@ function formatTime($seconds)
                                 <form id="learnerQuestionForm" method="POST" action="submit_answer.php">
                                     <input type="hidden" name="questionId" value="<?= $currentQuestionId ?>">
                                     <input type="hidden" name="learnerId" value="<?= $learnerId ?>">
+                                    <input type="hidden" name="sid" value="<?= $subjectId ?>">
 
                                     <input type="hidden" name="grade" value="<?= htmlspecialchars($grade) ?>">
                                     <input type="hidden" name="subject" value="<?= htmlspecialchars($subject) ?>">
@@ -243,11 +246,7 @@ function formatTime($seconds)
                                                 <i class="fa fa-check"></i> Submit Answer
                                             </button>
                                         </div>
-                                        <div class="col-xs-6">
-                                            <a href="training.php?subject=<?= urlencode($subject) ?>&grade=<?= urlencode($grade) ?>&chapter=<?= urlencode($chapter) ?>&level=<?= $levelId ?>" class="btn btn-primary btn-block">
-                                                <i class="fa fa-arrow-right"></i> Next Question
-                                            </a>
-                                        </div>
+                                       
                                     </div>
                                 </form>
                             </div>
@@ -325,6 +324,8 @@ function formatTime($seconds)
 document.getElementById('learnerQuestionForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
+    const subjectId = <?= json_encode($subjectId); ?>;
+
     const form = e.target;
     const formData = new FormData(form);
 
@@ -345,6 +346,8 @@ document.getElementById('learnerQuestionForm').addEventListener('submit', functi
 
         if (json.status === 'success') {
             const message = json.isCorrect ? 'Correct answer!' : 'Incorrect answer!';
+
+
             Swal.fire({
                 icon: json.isCorrect ? 'success' : 'error',
                 title: message,
@@ -352,11 +355,28 @@ document.getElementById('learnerQuestionForm').addEventListener('submit', functi
                     Score: ${json.score}<br>
                     Completed: ${json.numCompleted}/${json.totalQuestions}<br>
                     Time: ${json.totalTimeFormatted}
-                `
-            }).then(() => {
-                // reload the page or move to next question
-                window.location.href = `training.php?subject=${encodeURIComponent(formData.get('subject'))}&grade=${encodeURIComponent(formData.get('grade'))}&chapter=${encodeURIComponent(formData.get('chapter'))}&level=${formData.get('levelId')}`;
+                `,
+                showCancelButton: true,        // enables second button
+                confirmButtonText: 'Next Question',     // main button
+                cancelButtonText: 'Rest',      // second button
+                reverseButtons: true           // optional: shows cancel on left
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // User clicked "Next"
+                    window.location.href = `training.php?subject=${encodeURIComponent(formData.get('subject'))}&sid=${encodeURIComponent(subjectId)}&grade=${encodeURIComponent(formData.get('grade'))}&chapter=${encodeURIComponent(formData.get('chapter'))}&level=${formData.get('levelId')}`;
+
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // User clicked "Back/Rest"
+                     window.location.href = `setpicker.php?subjectId=${encodeURIComponent(subjectId)}`;  //subjectId
+                     
+
+                }
             });
+
+
+
+
+
         } else {
             Swal.fire('Error', json.message || 'Something went wrong', 'error');
         }

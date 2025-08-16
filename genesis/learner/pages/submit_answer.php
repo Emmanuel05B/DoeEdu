@@ -6,6 +6,7 @@ include(__DIR__ . "/../../partials/connect.php");
 
 $learnerId  = $_POST['learnerId'] ?? 0;
 $questionId = $_POST['questionId'] ?? 0;
+$subjectId = $_POST['sid'] ?? 0;  ///newly added id...
 $levelId    = intval($_POST['levelId'] ?? 0);
 $subject    = $_POST['subject'] ?? '';
 $grade      = $_POST['grade'] ?? '';
@@ -166,7 +167,8 @@ try {
         'numLeft' => $numLeft,
         'totalQuestions' => $totalQuestions,
         'totalTimeFormatted' => sprintf('%02d:%02d', floor($totalTimeAccum/60), $totalTimeAccum%60),
-        'progressPercent' => round(($numCompleted / max($totalQuestions,1))*100)
+        'progressPercent' => round(($numCompleted / max($totalQuestions,1))*100),
+        'subjectId' => $subjectId
     ]);
 
 } catch (Exception $e) {
