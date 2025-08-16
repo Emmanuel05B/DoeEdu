@@ -245,7 +245,7 @@ function formatTime($seconds)
 
                                     <input type="hidden" name="timeTaken" id="timeTakenInput" value="0">
 
-                                    <p><strong>Q<?= $currentQuestionId ?>. <?= htmlspecialchars($questionText) ?></strong></p>
+                                    <p><strong>Q<?= $questionsCompleted ?>. <?= htmlspecialchars($questionText) ?></strong></p>
 
                                     <?php if ($imagePath): ?>
                                         <div style="margin-bottom:10px;">

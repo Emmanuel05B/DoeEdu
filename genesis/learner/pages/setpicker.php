@@ -175,7 +175,6 @@ function isEligible($levelId, $chapterName, $learnerLevels){
                                                                     <?php if(!empty($learnerLevels[$chapterName][$lvlId]) && $learnerLevels[$chapterName][$lvlId] == 1): ?>
                                                                         
 
-
                                                                         <?php
                                                                             // Fetch memo for this grade, subject, level, chapter
                                                                             $stmtMemo = $connect->prepare("
