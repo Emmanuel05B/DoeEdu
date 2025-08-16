@@ -31,8 +31,6 @@ if (!isset($_SESSION['email'])) {
         $grade = $_GET['gra'];
         $chaptername = $_GET['cha'];
         $SubjectId = intval($_GET['sub']); // Get the subject value, ensure it's an integer
-        $group = $_GET['group']; 
-
 
         $stmt = $connect->prepare("SELECT SubjectName FROM subjects WHERE SubjectId = ?");
         $stmt->bind_param("i", $SubjectId);
@@ -176,31 +174,7 @@ if (!isset($_SESSION['email'])) {
 
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-<?php if (isset($_GET['save']) && $_GET['save'] == 1): ?>
-    
-      <?php
-      $url = "generateactivity.php?group=" . urlencode($group) . "&gra=" . urlencode($grade) . "&cha=" . urlencode($chaptername) . "&sub=" . urlencode($SubjectId);
 
-      echo '<script>
-          Swal.fire({
-              icon: "success",
-              title: "Activity saved successfully.",
-              showDenyButton: true,
-              confirmButtonColor: "#3085d6",
-              denyButtonColor: "#28a745",
-              confirmButtonText: "OK",
-              denyButtonText: "Add Another Quiz"
-          }).then((result) => {
-              if (result.isConfirmed) {
-                  window.location.href = "classes.php";
-              } else if (result.isDenied) {
-                  window.location.href = "' . $url . '";
-              }
-          });
-      </script>';
-      ?>
-
-  <?php endif; ?>
 
 
 

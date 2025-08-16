@@ -1,3 +1,6 @@
+<!DOCTYPE html>
+<html>
+
 <?php
 session_start();
 
@@ -5,7 +8,19 @@ if (!isset($_SESSION['email'])) {
   header("Location: ../../common/pages/login.php");
     exit();
 }
+
 include(__DIR__ . "/../../partials/connect.php");
+
+?>
+
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+
+<body class="hold-transition skin-blue sidebar-mini">
+
+<?php
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     die("Invalid request method.");
@@ -91,14 +106,19 @@ try {
 
     // Commit transaction
     $connect->commit();
-    
-    
-    header("Location: generateactivity.php?gra=" . urlencode($grade) . "&cha=" . urlencode($chapter) . "&group=" . urlencode($group) . "&sub=" . urlencode($subject) . "&save=1");
-    exit; 
 
-    
-
-
+    echo '<script>
+        Swal.fire({
+            icon: "success",
+            title: "Activity saved successfully.",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "classes.php";
+            }
+        });
+    </script>';
 
 } catch (Exception $e) {
     $connect->rollback();
@@ -121,3 +141,7 @@ $connect->close();
 
 ?>
 
+<div class="wrapper"></div>
+
+</body>
+</html>

@@ -146,7 +146,6 @@ if (!isset($_SESSION['email'])) {
 <!-- Scripts -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
-
 <!-- Enable DataTable features (search, sort, pagination) -->
 <script>
   $(function () {

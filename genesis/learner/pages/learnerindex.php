@@ -183,33 +183,7 @@ $stmt->close();
         </div>
       </div>
 
-      <!-- Upcoming Homework + Chart -->
-      <div class="row">
-        <div class="col-md-6">
-          <div class="box" style="border-top: 3px solid #3a3a72;">
-            <div class="box-header with-border">
-              <h3 class="box-title">Upcoming Homework</h3>
-            </div>
-            <div class="box-body">
-              <?php if (count($upcomingHomework) === 0): ?>
-                <p>No upcoming homework.</p>
-              <?php else: ?>
-                <ul class="list-group">
-                  <?php foreach ($upcomingHomework as $hw): 
-                    $subjectName = getSubjectName(intval($hw['SubjectName']), $connect);
-                    $dueDate = date("j M Y", strtotime($hw['DueDate']));
-                  ?>
-                    <li class="list-group-item">
-                      <strong><?= htmlspecialchars($subjectName) ?>:</strong> <?= htmlspecialchars($hw['Title']) ?> (Due: <?= $dueDate ?>)
-                      <span class="label label-warning pull-right">Pending</span>
-                    </li>
-                  <?php endforeach; ?>
-                </ul>
-                <a href="myhomework.php" class="btn btn-primary btn-sm" style="margin-top:10px;">See All Homework</a>
-              <?php endif; ?>
-            </div>
-          </div>
-        </div>
+      
 
         <div class="col-md-6">
           <div class="box" style="border-top: 3px solid #6a52a3;">
