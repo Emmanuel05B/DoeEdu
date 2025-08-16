@@ -178,6 +178,7 @@ $stmtReg->close();
 <!-- Scripts -->
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+
   <?php if (isset($_GET['updated']) && $_GET['updated'] == 1): ?>
     <?php  
     echo "<script>

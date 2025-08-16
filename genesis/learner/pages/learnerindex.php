@@ -183,18 +183,135 @@ $stmt->close();
         </div>
       </div>
 
-      
-
-        <div class="col-md-6">
-          <div class="box" style="border-top: 3px solid #6a52a3;">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="box" style="border-top:3px solid #3a3a72;">
             <div class="box-header with-border">
-              <h3 class="box-title">Performance This Term</h3>
+              <h3 class="box-title">Quick Actions</h3>
             </div>
-            <div class="box-body">
-              <canvas id="termChart" width="100%" height="70"></canvas>
+            <div class="box-body text-center">
+              <a href="startquiz.php" class="btn btn-primary" style="margin:5px;">📘 Start New Quiz</a>
+              <a href="studymaterials.php" class="btn btn-info" style="margin:5px;">📂 View Study Materials</a>
+              <a href="myresults.php" class="btn btn-success" style="margin:5px;">📊 Check Results</a>
+              <a href="homework.php" class="btn btn-warning" style="margin:5px;">📝 Pending Homework</a>
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="box" style="border-top:3px solid #ff9800;">
+            <div class="box-header with-border">
+              <h3 class="box-title">Class Leaderboard</h3>
+            </div>
+            <div class="box-body">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Learner</th>
+                    <th>Score (%)</th>
+                    <th>Badges</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Jane Doe</td>
+                    <td>95%</td>
+                    <td>🏆🎯</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>John Smith</td>
+                    <td>92%</td>
+                    <td>🎯</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>Mary Johnson</td>
+                    <td>90%</td>
+                    <td>🎯</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+      <div class="row">
+
+        <!-- Upcoming Homework -->
+        <div class="col-md-6">
+          <div class="box" style="border-top:3px solid #0073e6;">
+            <div class="box-header with-border">
+              <h3 class="box-title">Upcoming Homework</h3>
+            </div>
+            <div class="box-body">
+              <ul>
+                <li>Math – Algebra Quiz <span style="color:red;">Due Tomorrow</span></li>
+                <li>Science – Lab Report <span style="color:orange;">Due in 3 days</span></li>
+                <li>History – Essay <span style="color:green;">Due in 1 week</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Results -->
+        <div class="col-md-6">
+          <div class="box" style="border-top:3px solid #28a745;">
+            <div class="box-header with-border">
+              <h3 class="box-title">Recent Results</h3>
+            </div>
+            <div class="box-body">
+              <table class="table table-bordered">
+                <tr><th>Subject</th><th>Score</th><th>Date</th></tr>
+                <tr><td>Math</td><td>85%</td><td>Aug 10</td></tr>
+                <tr><td>Science</td><td>92%</td><td>Aug 7</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row">
+
+          <!-- Announcements -->
+          <div class="col-md-6">
+            <div class="box" style="border-top:3px solid #ff9800;">
+              <div class="box-header with-border">
+                <h3 class="box-title">Announcements</h3>
+              </div>
+              <div class="box-body">
+                <p>📢 School closed on Friday for maintenance.</p>
+                <p>📢 New worksheets uploaded for Grade 10 Science.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Achievements -->
+          <div class="col-md-6">
+            <div class="box" style="border-top:3px solid #9c27b0;">
+              <div class="box-header with-border">
+                <h3 class="box-title">Your Achievements</h3>
+              </div>
+              <div class="box-body">
+                <span class="badge" style="background:#28a745;">Perfect Score</span>
+                <span class="badge" style="background:#0073e6;">On-Time Submissions</span>
+                <span class="badge" style="background:#ff9800;">Consistency Star</span>
+              </div>
+            </div>
+          </div>
+
+      </div>
+
       </div>
 
 
