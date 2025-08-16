@@ -184,8 +184,6 @@ $stmt->close();
 <!-- Scripts -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
-
-
 <?php if ($success): ?>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
