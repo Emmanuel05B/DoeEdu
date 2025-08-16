@@ -16,16 +16,23 @@ if (!isset($_SESSION['email'])) {
   <?php
     // Handle disable
     /*
-  if (isset($_GET['disable_id'])) {
+
+    if (isset($_GET['disable_id'])) {
       $disable_id = intval($_GET['disable_id']);
-      $stmt = $connect->prepare("UPDATE FROM learners WHERE LearnerId = ? set dfgdf = 1");
+
+      // Update the learner as disabled
+      $stmt = $connect->prepare("UPDATE learners SET IsDisabled = 1 WHERE LearnerId = ?");
       $stmt->bind_param("i", $disable_id);
       $stmt->execute();
       $stmt->close();
-      $_SESSION['success_message'] = "name Disabled successfully.";  //settiing the session for the success alert
+
+      // Success alert with the learner’s name (optional)
+      $_SESSION['success_message'] = "Learner has been disabled successfully.";
+
       header('Location: updatelearnerlist.php');
       exit;
-  }     */
+    }
+ */
   ?>
 
   <div class="content-wrapper">
@@ -155,11 +162,11 @@ if (!isset($_SESSION['email'])) {
 
     // disable with SweetAlert
     $('.swal-disable').on('click', function () {
-      const id = $(this).data('LearnerId');
-      const name = $(this).data('Name');
+      const id = $(this).data('id');
+      const name = $(this).data('name');
       Swal.fire({
         title: 'Are you sure?',
-        text: `Disable ${name}from the System?`,
+        text: `Disable ${name} from the System?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
