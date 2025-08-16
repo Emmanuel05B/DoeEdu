@@ -8,6 +8,7 @@ if (!isset($_SESSION['email'])) {
 include(__DIR__ . "/../../partials/connect.php");
 
 $tutorId = 0;
+$alertScript = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_details'])) {
     $tutorId = intval($_POST['tutor_id']);
@@ -45,15 +46,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_details'])) {
 
         $connect->commit();
 
-        header("Location: updatetutors.php?id=" . urlencode($tutorId) . "&updated=1");
-        exit;
-
+        $alertScript = "
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Tutor details updated successfully!',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = 'updatetutors.php?id={$tutorId}';
+                });
+            </script>
+        ";
     } catch (Exception $e) {
         $connect->rollback();
         $errorMessage = addslashes($e->getMessage());
-        header("Location: updatetutors.php?id=" . urlencode($errorMessage) . "&notupdated=1");
-        exit;
-        
+        $alertScript = "
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to update tutor details: {$errorMessage}',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.history.back();
+                });
+            </script>
+        ";
     }
 } else {
     header("Location: updatetutors.php?id={$tutorId}");
@@ -61,4 +80,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_details'])) {
 }
 ?> 
 
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Updating Tutor Details</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+</head>
+<body>
+    <?php echo $alertScript; ?>
+</body>
+</html>

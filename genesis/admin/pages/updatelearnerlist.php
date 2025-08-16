@@ -13,6 +13,20 @@ if (!isset($_SESSION['email'])) {
 <div class="wrapper">
   <?php include(__DIR__ . "/../partials/header.php"); ?>
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+  <?php
+    // Handle disable
+    /*
+  if (isset($_GET['disable_id'])) {
+      $disable_id = intval($_GET['disable_id']);
+      $stmt = $connect->prepare("UPDATE FROM learners WHERE LearnerId = ? set dfgdf = 1");
+      $stmt->bind_param("i", $disable_id);
+      $stmt->execute();
+      $stmt->close();
+      $_SESSION['success_message'] = "name Disabled successfully.";  //settiing the session for the success alert
+      header('Location: updatelearnerlist.php');
+      exit;
+  }     */
+  ?>
 
   <div class="content-wrapper">
 
@@ -69,8 +83,14 @@ if (!isset($_SESSION['email'])) {
                           <td><?php echo htmlspecialchars($final['Grade']) ?></td>
                           <td class="text-center">
                             <a href="updatelearner.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-xs btn-warning">Update</a>
-                            <a href="disablelearner.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-xs btn-danger" onclick="return confirm('Are you sure you want to disable this learner?');">Disable</a>
+                            
+                            <button class="btn btn-danger btn-xs swal-disable"
+                              data-id="<?= $final['LearnerId'] ?>"
+                              data-name="<?= htmlspecialchars($final['Name']) ?>"
+                            >Disable</button>
+
                             <a href="learnerprofile.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-xs btn-primary">Open Profile</a>
+                            
                           </td>
                         </tr>
                       <?php endwhile; ?>
@@ -123,7 +143,7 @@ if (!isset($_SESSION['email'])) {
 <!-- Enable DataTable features (search, sort, pagination) -->
 <script>
   $(function () {
-    $('#example1').DataTable({
+    $('#inviteTable').DataTable({
       "paging": true,
       "lengthChange": true,
       "searching": true,  // <-- This shows the search bar
@@ -132,6 +152,37 @@ if (!isset($_SESSION['email'])) {
       "autoWidth": false,
       "responsive": true
     });
+
+    // disable with SweetAlert
+    $('.swal-disable').on('click', function () {
+      const id = $(this).data('LearnerId');
+      const name = $(this).data('Name');
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `Disable ${name}from the System?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#aaa',
+       // cancelButtonText: 'give the cancel button a custom name',
+        confirmButtonText: 'Yes, Disable!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = `updatelearnerlist.php?disable_id=${id}`;
+        }
+      });
+    });
+
+    // Success alert (after redirect)
+    <?php if (isset($_SESSION['success_message'])): ?>
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: '<?= $_SESSION['success_message'] ?>',
+        confirmButtonText: 'OK'
+      });
+      <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
   });
 </script>
 

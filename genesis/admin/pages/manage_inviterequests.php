@@ -14,7 +14,7 @@ if (isset($_GET['delete_id'])) {
     $stmt->bind_param("i", $delete_id);
     $stmt->execute();
     $stmt->close();
-    $_SESSION['success_message'] = "Invite request deleted successfully.";
+    $_SESSION['success_message'] = "Invite request deleted successfully.";  //settiing the session for the success alert
     header('Location: manage_inviterequests.php');
     exit;
 }
@@ -77,7 +77,8 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
                       <?php endif; ?>
                       <button class="btn btn-danger btn-xs swal-delete"
                               data-id="<?= $req['id'] ?>"
-                              data-name="<?= htmlspecialchars($req['name']) ?>">Delete</button>
+                              data-name="<?= htmlspecialchars($req['name']) ?>"
+                            >Delete</button>
                     </td>
                   </tr>
                 <?php endwhile; ?>
@@ -130,6 +131,7 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#aaa',
+       // cancelButtonText: 'give the cancel button a custom name',
         confirmButtonText: 'Yes, delete it!'
       }).then((result) => {
         if (result.isConfirmed) {

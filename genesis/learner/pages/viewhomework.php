@@ -54,9 +54,58 @@ $qstmt->close();
   <?php include(__DIR__ . "/../partials/header.php"); ?>
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
+  <?php if (isset($_GET['alreadysubmitted']) && $_GET['alreadysubmitted'] == 1): ?>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <?php  
+    echo "<script>
+          Swal.fire({
+              icon: 'info',
+              title: 'Already Completed',
+              text: 'You have already submitted this homework.',
+              showCancelButton: true,
+              confirmButtonText: 'View Memo',
+              cancelButtonText: 'Okay'
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  window.location.href = 'viewmemo.php?activityid=$activityId';
+              } else {
+                  window.location.href = 'viewhomework.php?activityId={$activityId}';
+              }
+          });
+     
+      </script>"; 
+      ?>
+  <?php endif; ?>
+
+    <?php if (isset($_GET['submitted']) && $_GET['submitted'] == 1): ?>
+      
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <?php  
+    $score = intval($_GET['score']);
+          echo "<script>
+
+          Swal.fire({
+              icon: 'success',
+              title: 'Homework Submitted',
+              text: 'Score: {$score}%',
+              showCancelButton: true,
+              confirmButtonText: 'View Memo',
+              cancelButtonText: 'Go to Dashboard'
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  window.location.href = 'viewmemo.php?activityid={$activityId}'; 
+              } else {
+                  window.location.href = 'homework.php';
+              }
+          });
+      </script>"; 
+      ?>
+  <?php endif; ?>
+
+
   <div class="content-wrapper">
 
-    <!-- Page Header -->
+    <!-- Page Headerf -->
     <section class="content-header">
         <h1>
             Quiz Details
