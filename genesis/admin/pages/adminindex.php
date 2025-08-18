@@ -56,8 +56,8 @@
 
 <body class="hold-transition skin-blue sidebar-mini">
   <div class="wrapper">
-  <?php include(__DIR__ . "/../partials/header.php"); ?>
-  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+    <?php include(__DIR__ . "/../partials/header.php"); ?>
+    <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
       <!-- cover section (untouched)-->
@@ -263,6 +263,7 @@
             </div>
 
           </section>
+
         </div>
 
       </section>
@@ -275,6 +276,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
   <?php
     //include('../partials/connect.php');
@@ -301,7 +304,7 @@
         $('#myModal').modal('show');
       });
     </script>
-    <?php $_SESSION['seen_notification'] = true; ?>
+    <?php // $_SESSION['seen_notification'] = true; ?>
   <?php endif; ?>
 
   <!-- Notification Modal -->
@@ -310,13 +313,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <a href="adminindex.php" class="close" data-dismiss="modal" onclick="closeModal()">&times;</a>
-          <h3 class="modal-title" id="modalTitle">Notification Centre (for now, will be about user registrations or deactivations)</h3>
-          <?php
-          if (isset($_SESSION['succes'])) {
-            echo '<p>' . $_SESSION['succes'] . '</p>';
-            unset($_SESSION['succes']);
-          }
-          ?>
+          <h3 class="modal-title" id="modalTitle">Notification Centre (for now)</h3>
         </div>
 
         <div class="modal-body">
@@ -341,6 +338,5 @@
     </div>
   </div>
 
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 </body>
 </html>

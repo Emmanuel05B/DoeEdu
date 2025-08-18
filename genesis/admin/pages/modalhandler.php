@@ -1,77 +1,82 @@
 <?php
 session_start();
 
+// Redirect if not logged in
 if (!isset($_SESSION['email'])) {
     header("Location: ../../common/pages/login.php");
-  exit();
+    exit();
 }
 
 include(__DIR__ . "/../../partials/connect.php");
 
 if (isset($_POST["submit"])) {
 
-$TeacherId = $_SESSION['user_id'];  // For user
+    $TeacherId = $_SESSION['user_id'];  // Logged-in teacher
 
-// Prepare the SQL statement to prevent SQL injection
-$usql = "SELECT Surname FROM users WHERE Id = ?";
-$stmt = $connect->prepare($usql);
-$stmt->bind_param("i", $TeacherId); 
-$stmt->execute();
-$stmt->bind_result($surname);
-$stmt->fetch();
-// Close the statement
-$Surname = $surname;
-$stmt->close();
+    // Fetch teacher surname safely
+    $stmt = $connect->prepare("SELECT Surname FROM users WHERE Id = ?");
+    $stmt->bind_param("i", $TeacherId); 
+    $stmt->execute();
+    $stmt->bind_result($Surname);
+    $stmt->fetch();
+    $stmt->close();
 
+    // Get form data from POST
+    $graid = $_POST['graid'];
+    $subject = $_POST['subid'];
+    $group = $_POST['group'];
+    $activityname = trim($_POST['activityname']);    
+    $chaptername = trim($_POST['chaptername']);
+    $activitytotal = (int) $_POST['activitytotal']; 
 
-// get form data  passed via hidden inputs
-$graid = $_POST['graid'];
-$subject = $_POST['subid'];
-$chaptername = $_POST['chaid'];
-$group = $_POST['group'];
-
-
-$activityname = $_POST['activityname'];    
-$activitytotal = $_POST['activitytotal']; 
-
-// Prepare the SQL insert statement   //create a table for activities
-
-$insertStmt = $connect->prepare("INSERT INTO activities
-    (ActivityName, SubjectId, ActivityDate, MaxMarks, Creator, Grade, ChapterName, GroupName) 
-    VALUES (?, ?,NOW(), ?, ?, ?, ?, ?)");
-
-// Bind the parameters..........come back for subject
-    $insertStmt->bind_param("siisiss",  $activityname, $subject, $activitytotal,$Surname, $graid, $chaptername, $group);
-
-// Execute the prepared statement
-if ($insertStmt->execute()) {
-
-    //after creating this new/recent activity.. I want its Id so that i can go with it to class.php.    this will be the activity id where ...the id is the biggest
-    //$sql = "SELECT * FROM activities ORDER BY ActivityDate DESC, ActivityId DESC LIMIT 1";
-
-    $sql = "SELECT * FROM activities ORDER BY ActivityId DESC LIMIT 1";
-    $results = $connect->query($sql);
-
-    // Check if there is any result
-    if ($results->num_rows > 0) {
-    $finalres = $results->fetch_assoc();
-    $activityid = $finalres['ActivityId'];
-
-    header("Location: class.php?aid=$activityid");
-
-    } else {
-    echo "No records found.";
+    // Basic validation
+    if (empty($activityname) || empty($chaptername) || $activitytotal <= 0) {
+        die("All fields are required and total must be greater than 0.");
     }
-     
- 
 
-    exit(); 
-} else {
-    echo "Error: " . $insertStmt->error;
-}
+    // Check that the subject exists to prevent foreign key errors
+    $checkSub = $connect->prepare("SELECT SubjectId FROM subjects WHERE SubjectId = ?");
+    $checkSub->bind_param("i", $subject);
+    $checkSub->execute();
+    $checkSub->store_result();
+    if ($checkSub->num_rows === 0) {
+        die("Invalid Subject ID: $subject. Cannot create activity.");
+    }
+    $checkSub->close();
 
-// Close the database connection
-$connect->close();
-exit();
+    // Prepare SQL insert statement
+    $insertStmt = $connect->prepare("
+        INSERT INTO activities
+        (ActivityName, SubjectId, ActivityDate, MaxMarks, Creator, Grade, ChapterName, GroupName)
+        VALUES (?, ?, NOW(), ?, ?, ?, ?, ?)
+    ");
+
+    $insertStmt->bind_param(
+        "siisiss",
+        $activityname,
+        $subject,
+        $activitytotal,
+        $Surname,
+        $graid,
+        $chaptername,
+        $group
+    );
+
+    if ($insertStmt->execute()) {
+        // Get the ID of the newly created activity
+        $activityid = $insertStmt->insert_id;
+
+        // Redirect to class.php with the new activity ID
+        header("Location: class.php?aid=$activityid");
+        $insertStmt->close();
+        $connect->close();
+        exit();
+    } else {
+        echo "Error: " . $insertStmt->error;
+    }
+
+    $insertStmt->close();
+    $connect->close();
+    exit();
 }
 ?>

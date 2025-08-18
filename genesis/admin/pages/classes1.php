@@ -63,11 +63,9 @@ include(__DIR__ . "/../../partials/connect.php");
         $result = $stmt->get_result();
         */
 
-
-        $sql = "SELECT c.*, s.SubjectName, s.MaxClassSize, s.SubjectId
+        $sql = "SELECT c.*, s.SubjectName, s.MaxClassSize
         FROM classes c
-        INNER JOIN subjects s ON c.SubjectId = s.SubjectId";
-
+        INNER JOIN subjects s ON c.SubjectID = s.SubjectID";
 
         $stmt = $connect->prepare($sql);
         $stmt->execute();
@@ -91,23 +89,10 @@ include(__DIR__ . "/../../partials/connect.php");
               <p><i class="fa fa-circle text-<?php echo $status == 'Full' ? 'red' : 'green'; ?>"></i> <?php echo $status; ?></p>
             </div>
             <div class="box-body text-center" style="background-color:#a3bffa;">
-              <!-- Button that triggers modal -->
-                     
-              <button 
-                  class="btn btn-info btn-sm" 
-                  style="width: 100px;" 
-                  data-toggle="modal" 
-                  data-target="#modal-recordMarks"
-                  data-grade="<?php echo $grade; ?>"
-                  data-subject="<?php echo $row['SubjectId']; ?>"
-                  data-group="<?php echo $group; ?>">
-                  Record Marks
-              </button>
-
+              <a href="chapters.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Record Marks</a>
               <a href="actychapters.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Create Quiz</a>
               <a href="managestudymaterials.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Resources</a>
               <a href="alllearner.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Open Class</a>
-
             </div>
           </div>
         </div>
@@ -122,83 +107,6 @@ include(__DIR__ . "/../../partials/connect.php");
 
 <!-- Scripts -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-
-
-
-<!-- Record Marks Modal -->
-<div class="modal fade" id="modal-recordMarks" tabindex="-1" role="dialog" aria-labelledby="recordMarksLabel" aria-hidden="true">
-  <div class="modal-dialog modal-md" role="document">
-    <div class="modal-content">
-      
-      <div class="modal-header bg-info">
-        <h4 class="modal-title" id="recordMarksLabel">Record Marks</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-
-      <form action="modalhandler.php" method="post">
-        <div class="modal-body">
-
-          <div class="row">
-            <!-- Activity Name -->
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="activityName">Activity Name</label>
-                <input type="text" class="form-control" id="activityName" name="activityname" required>
-              </div>
-            </div>
-
-            <!-- Chapter Name -->
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="chapterName">Chapter Name</label>
-                <input type="text" class="form-control" id="chapterName" name="chaptername" required>
-              </div>
-            </div>
-
-            <!-- Activity Total -->
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="activityTotal">Activity Total</label>
-                <input type="number" class="form-control" id="activityTotal" name="activitytotal" min="1" max="100" required>
-              </div>
-            </div>
-          </div>
-
-          <!-- Hidden inputs to send to handler -->
-          <input type="hidden" id="graid" name="graid">
-          <input type="hidden" id="subid" name="subid">
-          <input type="hidden" id="groupid" name="group">
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="submit" name="submit" class="btn btn-primary">Submit</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<script>
-$('#modal-recordMarks').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget); // Button that triggered the modal
-    var modal = $(this);
-
-    // Get data attributes
-    var grade = button.data('grade');
-    var subject = button.data('subject');
-    var group = button.data('group');
-
-    // Fill hidden inputs
-    modal.find('#graid').val(grade);
-    modal.find('#subid').val(subject);
-    modal.find('#groupid').val(group);
-});
-</script>
-
-
-
-
 
 </body>
 </html>

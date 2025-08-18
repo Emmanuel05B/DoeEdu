@@ -107,7 +107,6 @@ if (!isset($_SESSION['email'])) {
                         <tr>
                             <td>2</td>
                             <td>Provide the Total for the activity</td>
-                            <td>Provide the name for the chapter</td>
                             <td><input type="number" name="activitytotal" min="1" max="100"></td>
                         </tr>
 
@@ -119,6 +118,16 @@ if (!isset($_SESSION['email'])) {
                 </form>
 
                    <hr>
+
+                <!-- Generate Activity Button -->
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="generateactivity.php?gra=<?php echo $grade ?>&sub=<?php echo $subject ?>&cha=<?php echo $chaptername ?>" class="btn btn-primary">
+                        Generate Quiz Instead
+                    </a>
+                </div>
+
+                <hr>
+                
 
                 <div style="text-align: center; margin-top: 20px;">
                     <a href="classes.php" class="btn btn-primary">
