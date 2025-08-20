@@ -1,128 +1,218 @@
 <!DOCTYPE html>
 <html>
 <?php
-session_start();
+  session_start();
 
-if (!isset($_SESSION['email'])) {
-    header("Location: ../common/login.php");
-    exit();
-}
+  if (!isset($_SESSION['email'])) {
+      header("Location: ../common/login.php");
+      exit();
+  }
 
-include('../../partials/connect.php');
-include(__DIR__ . "/../../common/partials/head.php"); 
+  include('../../partials/connect.php');
+  include(__DIR__ . "/../../common/partials/head.php"); 
 
-$learnerId = $_SESSION['user_id'];
-// Fetch learner full name (fallback to session var or 'Learner')
-$stmt = $connect->prepare("SELECT CONCAT(Name, ' ', Surname) AS fullname FROM users WHERE Id = ?");
-$stmt->bind_param("i", $learnerId);
-$stmt->execute();
-$stmt->bind_result($learnerName);
-$stmt->fetch();
-$stmt->close();
+  $learnerId = $_SESSION['user_id'];
+  // Fetch learner full name (fallback to session var or 'Learner')
+  $stmt = $connect->prepare("SELECT CONCAT(Name, ' ', Surname) AS fullname FROM users WHERE Id = ?");
+  $stmt->bind_param("i", $learnerId);
+  $stmt->execute();
+  $stmt->bind_result($learnerName);
+  $stmt->fetch();
+  $stmt->close();
 
-if (!$learnerName) {
-    $learnerName = $_SESSION['full_name'] ?? 'Learner';
-}
+  if (!$learnerName) {
+      $learnerName = $_SESSION['full_name'] ?? 'Learner';
+  }
 
-// Fetch Pending Homework count (not submitted & due date in future)
-$stmt = $connect->prepare("
-    SELECT COUNT(DISTINCT oa.Id) 
-    FROM onlineactivities oa
-    LEFT JOIN learneranswers la ON la.ActivityId = oa.Id AND la.UserId = ?
-    WHERE la.Id IS NULL AND oa.DueDate >= CURDATE()
-");
-$stmt->bind_param("i", $learnerId);
-$stmt->execute();
-$stmt->bind_result($pendingHomeworkCount);
-$stmt->fetch();
-$stmt->close();
+  // Fetch Pending Homework count (not submitted & due date in future)
+  $stmt = $connect->prepare("
+      SELECT COUNT(DISTINCT oa.Id) 
+      FROM onlineactivities oa
+      LEFT JOIN learneranswers la ON la.ActivityId = oa.Id AND la.UserId = ?
+      WHERE la.Id IS NULL AND oa.DueDate >= CURDATE()
+  ");
+  $stmt->bind_param("i", $learnerId);
+  $stmt->execute();
+  $stmt->bind_result($pendingHomeworkCount);
+  $stmt->fetch();
+  $stmt->close();
 
-// Fetch Completed Homework count (learner answered)
-$stmt = $connect->prepare("
-    SELECT COUNT(DISTINCT la.ActivityId) 
-    FROM learneranswers la
-    WHERE la.UserId = ?
-");
-$stmt->bind_param("i", $learnerId);
-$stmt->execute();
-$stmt->bind_result($completedTasksCount);
-$stmt->fetch();
-$stmt->close();
+  // Fetch Completed Homework count (learner answered)
+  $stmt = $connect->prepare("
+      SELECT COUNT(DISTINCT la.ActivityId) 
+      FROM learneranswers la
+      WHERE la.UserId = ?
+  ");
+  $stmt->bind_param("i", $learnerId);
+  $stmt->execute();
+  $stmt->bind_result($completedTasksCount);
+  $stmt->fetch();
+  $stmt->close();
 
-// Fetch Average Score from learneranswers and onlinequestions
-$stmt = $connect->prepare("
-    SELECT AVG(score) FROM (
-        SELECT la.ActivityId, SUM(oq.CorrectAnswer = la.SelectedAnswer) / COUNT(*) * 100 AS score
-        FROM learneranswers la
-        JOIN onlinequestions oq ON la.QuestionId = oq.Id
-        WHERE la.UserId = ?
-        GROUP BY la.ActivityId
-    ) AS scores
-");
-$stmt->bind_param("i", $learnerId);
-$stmt->execute();
-$stmt->bind_result($averageScore);
-$stmt->fetch();
-$stmt->close();
+  // Fetch Average Score from learneranswers and onlinequestions
+  $stmt = $connect->prepare("
+      SELECT AVG(score) FROM (
+          SELECT la.ActivityId, SUM(oq.CorrectAnswer = la.SelectedAnswer) / COUNT(*) * 100 AS score
+          FROM learneranswers la
+          JOIN onlinequestions oq ON la.QuestionId = oq.Id
+          WHERE la.UserId = ?
+          GROUP BY la.ActivityId
+      ) AS scores
+  ");
+  $stmt->bind_param("i", $learnerId);
+  $stmt->execute();
+  $stmt->bind_result($averageScore);
+  $stmt->fetch();
+  $stmt->close();
 
-$averageScore = $averageScore ? round($averageScore) : 0;
+  $averageScore = $averageScore ? round($averageScore) : 0;
 
 
 
-// Fetch Upcoming Homework (due in future, not submitted yet) limit 5
-$stmt = $connect->prepare("
-    SELECT oa.Id, oa.SubjectName, oa.Title, oa.DueDate
-    FROM onlineactivities oa
-    LEFT JOIN learneranswers la ON la.ActivityId = oa.Id AND la.UserId = ?
-    WHERE oa.DueDate >= CURDATE() AND la.Id IS NULL
-    ORDER BY oa.DueDate ASC
-    LIMIT 5
-");
-$stmt->bind_param("i", $learnerId);
-$stmt->execute();
-$upcomingHomeworkResult = $stmt->get_result();
-$upcomingHomework = $upcomingHomeworkResult->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
+  // Fetch Upcoming Homework (due in future, not submitted yet) limit 5
+  $stmt = $connect->prepare("
+      SELECT oa.Id, oa.SubjectName, oa.Title, oa.DueDate
+      FROM onlineactivities oa
+      LEFT JOIN learneranswers la ON la.ActivityId = oa.Id AND la.UserId = ?
+      WHERE oa.DueDate >= CURDATE() AND la.Id IS NULL
+      ORDER BY oa.DueDate ASC
+      LIMIT 5
+  ");
+  $stmt->bind_param("i", $learnerId);
+  $stmt->execute();
+  $upcomingHomeworkResult = $stmt->get_result();
+  $upcomingHomework = $upcomingHomeworkResult->fetch_all(MYSQLI_ASSOC);
+  $stmt->close();
 
-// Map SubjectId to name (or fetch from subjects table if exists)
-function getSubjectName($id, $connect) {
-    // Try DB lookup for subject name
-    $subStmt = $connect->prepare("SELECT Name FROM subjects WHERE Id = ?");
-    $subStmt->bind_param("i", $id);
-    $subStmt->execute();
-    $subStmt->bind_result($name);
-    if ($subStmt->fetch()) {
-        $subStmt->close();
-        return $name;
-    }
-    $subStmt->close();
-    return "Unknown Subject";
-}
+  // Map SubjectId to name (or fetch from subjects table if exists)
+  function getSubjectName($id, $connect) {
+      // Try DB lookup for subject name
+      $subStmt = $connect->prepare("SELECT Name FROM subjects WHERE Id = ?");
+      $subStmt->bind_param("i", $id);
+      $subStmt->execute();
+      $subStmt->bind_result($name);
+      if ($subStmt->fetch()) {
+          $subStmt->close();
+          return $name;
+      }
+      $subStmt->close();
+      return "Unknown Subject";
+  }
 
-// Fetch Recent Results (limit 5 latest)
-$stmt = $connect->prepare("
-    SELECT oa.SubjectName, oa.Topic, oa.Title, oa.DueDate, la.UserId, la.CreatedAt,
-    ROUND(SUM(oq.CorrectAnswer = la.SelectedAnswer) / COUNT(*) * 100) AS ScorePercent
-    FROM learneranswers la
-    JOIN onlinequestions oq ON la.QuestionId = oq.Id
-    JOIN onlineactivities oa ON la.ActivityId = oa.Id
-    WHERE la.UserId = ?
-    GROUP BY la.ActivityId
-    ORDER BY la.CreatedAt DESC
-    LIMIT 5
-");
-$stmt->bind_param("i", $learnerId);
-$stmt->execute();
-$recentResultsResult = $stmt->get_result();
-$recentResults = $recentResultsResult->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
+  // Fetch Recent Results (limit 5 latest)
+  $stmt = $connect->prepare("
+      SELECT oa.SubjectName, oa.Topic, oa.Title, oa.DueDate, la.UserId, la.CreatedAt,
+      ROUND(SUM(oq.CorrectAnswer = la.SelectedAnswer) / COUNT(*) * 100) AS ScorePercent
+      FROM learneranswers la
+      JOIN onlinequestions oq ON la.QuestionId = oq.Id
+      JOIN onlineactivities oa ON la.ActivityId = oa.Id
+      WHERE la.UserId = ?
+      GROUP BY la.ActivityId
+      ORDER BY la.CreatedAt DESC
+      LIMIT 5
+  ");
+  $stmt->bind_param("i", $learnerId);
+  $stmt->execute();
+  $recentResultsResult = $stmt->get_result();
+  $recentResults = $recentResultsResult->fetch_all(MYSQLI_ASSOC);
+  $stmt->close();
 
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include(__DIR__ . "/../partials/header.php"); ?>
+  <header class="main-header">
+    <!-- Logo -->
+    <a href="adminindex.php" class="logo">
+      <!-- mini logo for sidebar mini 50x50 pixels -->
+      <span class="logo-mini"><b>Click</b></span>
+      <!-- logo for regular state and mobile devices -->
+      <span class="logo-lgd"><b>DoE_Genesis </b></span>
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+      <!-- Sidebar toggle button-->
+      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+        <span class="sr-only">Toggle navigation</span>
+        
+        <span class="logo-lg"><b>Distributors Of Education </b></span>
+
+      </a>
+      <button class="btn btn-primary" data-toggle="modal" data-target="#learnerNotificationsModal">
+          View Notifications
+        </button>
+
+      <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+          <!-- Notifications: style can be found in dropdown.less -->
+          <li class="dropdown notifications-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-bell-o"></i>
+              <span class="label label-warning">5</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="header">You have 5 notifications</li>
+              <li>
+                <ul class="menu">
+                  <!-- 1. New Resource -->
+                  <li>
+                    <a href="viewResource.php?id=101">
+                      <i class="fa fa-file-text text-aqua"></i> New resource "Algebra Basics" uploaded
+                      <small><i>Aug 20, 10:15</i></small>
+                    </a>
+                  </li>
+
+                  <!-- 2. Learner Complaint -->
+                  <li>
+                    <a href="viewComplaint.php?id=55">
+                      <i class="fa fa-exclamation-circle text-red"></i> New complaint submitted by John Doe
+                      <small><i>Aug 20, 11:00</i></small>
+                    </a>
+                  </li>
+
+                  <!-- 3. Quiz Results Available -->
+                  <li>
+                    <a href="viewQuizResults.php?quizId=23">
+                      <i class="fa fa-check-square text-green"></i> Quiz results for Grade 10 Math are ready
+                      <small><i>Aug 19, 16:45</i></small>
+                    </a>
+                  </li>
+
+                  <!-- 4. Session Booking -->
+                  <li>
+                    <a href="viewSession.php?id=12">
+                      <i class="fa fa-calendar text-yellow"></i> New session booked by Jane Smith
+                      <small><i>Aug 20, 09:30</i></small>
+                    </a>
+                  </li>
+
+                  <!-- 5. New Rating -->
+                  <li>
+                    <a href="viewRatings.php?sessionId=5">
+                      <i class="fa fa-star text-purple"></i> New rating received for your session
+                      <small><i>Aug 19, 14:20</i></small>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="footer"><a href="allnotifications.php">View all notifications</a></li>
+            </ul>
+          </li>
+
+
+          <!-- User Account: style can be found in dropdown.less -->
+          <li class="dropdown user user-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <img src="../images/emma.jpg" class="user-image" alt="User Image">
+              <span class="hidden-xs"><?php ?></span>
+            </a>
+
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
@@ -134,10 +224,6 @@ $stmt->close();
           <li class="active">Dashboard</li>
         </ol>
     </section>
-
-<button class="btn btn-primary" data-toggle="modal" data-target="#learnerNotificationsModal">
-    View Notifications
-  </button>
 
     <section class="content">
       <div class="row">
@@ -327,10 +413,6 @@ $stmt->close();
 </div>
 
 <!-- JS Scripts -->
-<script src="bower_components/jquery/dist/jquery.min.js"></script>
-<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="bower_components/chart.js/Chart.min.js"></script>
-<script src="dist/js/adminlte.min.js"></script>
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
 <!-- Notifications Modal -->

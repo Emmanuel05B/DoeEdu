@@ -11,48 +11,7 @@
 
 <?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
-<!-- Styles -->
-<style>
-  .dashline {
-    border-top: 1px dashed #ccc;
-    margin: 15px 0;
-  }
-  .modal-header {
-    background-color: rgba(166, 220, 248, 1);
-    color: white;
-    padding: 20px;
-    border-bottom: 1px solid #eee;
-  }
-  .modal-header h3 {
-    margin: 0;
-    color: blue;
-  }
-  .notice {
-    padding: 15px;
-    background-color: #f9f9f9;
-    border-left: 5px solid #3c8dbc;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-  }
-  .notice:hover {
-    background-color: #eef5fb;
-  }
-  .modal-footer {
-    padding: 15px 20px;
-    background-color: #6cbedfff;
-    text-align: right;
-    border-top: 1px solid #ddd;
-  }
-  .modal-body p {
-    margin-bottom: 5px;
-  }
-  .modal-content {
-    box-shadow: 0 3px 9px rgba(0,0,0,0.3);
-  }
-  .modal-backdrop {
-    background-color: rgba(0, 0, 0, 0.3);
-  }
-</style>
+
 
 <body class="hold-transition skin-blue sidebar-mini">
   <div class="wrapper">
@@ -269,13 +228,9 @@
       </section>
     </div>
 
-    <div class="control-sidebar-bg"></div>
   </div>
 
   <!-- Scripts -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
@@ -301,42 +256,50 @@
   <?php if (!isset($_SESSION['seen_notification'])): ?>
     <script>
       $(document).ready(function () {
-        $('#myModal').modal('show');
+        $('#adminNotificationsModal').modal('show');
       });
     </script>
     <?php $_SESSION['seen_notification'] = true; ?>
   <?php endif; ?>
 
   <!-- Notification Modal -->
-  <div class="modal fade" id="myModal" role="dialog" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <a href="adminindex.php" class="close" data-dismiss="modal" onclick="closeModal()">&times;</a>
-          <h3 class="modal-title" id="modalTitle">Notification Centre (for now)</h3>
-        </div>
+ <div class="modal fade" id="adminNotificationsModal" tabindex="-1" role="dialog" aria-labelledby="adminNotifTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
 
-        <div class="modal-body">
-          <?php if ($results && $results->num_rows > 0): ?>
-            <?php while ($notice = $results->fetch_assoc()): ?>
-              <div class="notice" data-id="<?php echo $notice['NoticeNo']; ?>">
-                <p><strong style="color: blue;">Date:</strong> <?php echo date('Y-m-d', strtotime($notice['Date'])); ?></p>
-                <p><strong style="color: blue;">Subject:</strong> <strong style="color: black;"><?php echo htmlspecialchars($notice['Title']); ?></strong></p>
-                <p><?php echo nl2br(htmlspecialchars($notice['Content'])); ?></p>
-              </div>
-              <hr class="dashline" />
-            <?php endwhile; ?>
-          <?php else: ?>
-            <p>No notices available.</p>
-          <?php endif; ?>
-        </div>
-
-        <div class="modal-footer">
-          <a href="adminindex.php" class="close" data-dismiss="modal" onclick="closeModal()" class="btn btn-default">Close</a>
-        </div>
+      <!-- Modal Header -->
+      <div class="modal-header bg-primary text-white">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title" id="adminNotifTitle">Notification Centre</h4>
       </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <?php if ($results && $results->num_rows > 0): ?>
+          <?php while ($notice = $results->fetch_assoc()): ?>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <strong>Date:</strong> <?php echo date('Y-m-d H:i', strtotime($notice['Date'])); ?>
+              </div>
+              <div class="panel-body">
+                <strong> <?php echo htmlspecialchars($notice['Title']); ?></strong> <a href="#"> dynamic</a><br>
+                <?php echo nl2br(htmlspecialchars($notice['Content'])); ?>
+              </div>
+            </div>
+          <?php endwhile; ?>
+        <?php else: ?>
+          <p>No notifications available.</p>
+        <?php endif; ?>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+
     </div>
   </div>
+</div>
 
 </body>
 </html>
