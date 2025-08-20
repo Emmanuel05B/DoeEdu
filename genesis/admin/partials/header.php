@@ -39,7 +39,7 @@
           <!-- Messages: style can be found in dropdown.less-->
 
           <li class="dropdown messages-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <a href="inbox.php" class="dropdown-toggle" data-toggle="dropdown">
 
               <i class="fa fa-envelope-o"></i>
               <span class="label label-success">25</span>
@@ -93,7 +93,7 @@
                     ?>
 
                   <li><!-- start message -->
-                    <a href="mread-mail.php?id=<?php echo $final['Email'];?>">
+                    <a href="inbox.php?id=<?php echo $final['Email'];?>">
                       <div class="pull-left">
                         <img src="<?= !empty($tutor['ProfilePicture']) ? '' . htmlspecialchars($tutor['ProfilePicture']) : '../uploads/doe.jpg' ?>"class="img-circle" alt="User Image">
 
@@ -118,54 +118,70 @@
                   
                 </ul>
               </li>
-              <li class="footer"><a href="#">See All Messages</a></li>
+              <li class="footer"><a href="inbox.php">See All Messages</a></li>
             </ul>
           </li>
           <!-- Notifications: style can be found in dropdown.less -->
 
-          <?php
-
-                $sql = "SELECT COUNT(*) as countnotices FROM users";
-                // Execute the query
-                $result = $connect->query($sql);
-                $noticesrow = $result->fetch_assoc();
-               
-          ?>
-
           <li class="dropdown notifications-menu">
-            <a href="noticepage.php" class="dropdown-toggle" data-toggle="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-bell-o"></i>
-              <span class="label label-warning"><?php echo $noticesrow['countnotices'];?></span>
+              <span class="label label-warning">5</span>
             </a>
             <ul class="dropdown-menu">
-              <li class="header">You have <?php echo $noticesrow['countnotices'];?> notifications</li>
+              <li class="header">You have 5 notifications</li>
               <li>
-                <!-- inner menu: contains the actual data -->
                 <ul class="menu">
-                <?php
-                  
-                  $sql = "SELECT * FROM users";  //comeback for condition
-                  $results = $connect->query($sql);
-                  while($final = $results->fetch_assoc()) { ?>
-         
+                  <!-- 1. New Resource -->
                   <li>
-                    <a href="#">
-                      <i class="fa fa-user text-red"></i> <?php echo $final['Name'];?>
+                    <a href="viewResource.php?id=101">
+                      <i class="fa fa-file-text text-aqua"></i> New resource "Algebra Basics" uploaded
+                      <small><i>Aug 20, 10:15</i></small>
                     </a>
                   </li>
-                  <?php } ?>
+
+                  <!-- 2. Learner Complaint -->
+                  <li>
+                    <a href="viewComplaint.php?id=55">
+                      <i class="fa fa-exclamation-circle text-red"></i> New complaint submitted by John Doe
+                      <small><i>Aug 20, 11:00</i></small>
+                    </a>
+                  </li>
+
+                  <!-- 3. Quiz Results Available -->
+                  <li>
+                    <a href="viewQuizResults.php?quizId=23">
+                      <i class="fa fa-check-square text-green"></i> Quiz results for Grade 10 Math are ready
+                      <small><i>Aug 19, 16:45</i></small>
+                    </a>
+                  </li>
+
+                  <!-- 4. Session Booking -->
+                  <li>
+                    <a href="viewSession.php?id=12">
+                      <i class="fa fa-calendar text-yellow"></i> New session booked by Jane Smith
+                      <small><i>Aug 20, 09:30</i></small>
+                    </a>
+                  </li>
+
+                  <!-- 5. New Rating -->
+                  <li>
+                    <a href="viewRatings.php?sessionId=5">
+                      <i class="fa fa-star text-purple"></i> New rating received for your session
+                      <small><i>Aug 19, 14:20</i></small>
+                    </a>
+                  </li>
                 </ul>
               </li>
-              <li class="footer"><a href="noticepage.php">View all</a></li>
+              <li class="footer"><a href="allnotifications.php">View all notifications</a></li>
             </ul>
           </li>
-          <!-- Tasks: style can be found in dropdown.less -->
 
 
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="dist/img/avatar5.png" class="user-image" alt="User Image">
+              <img src="../images/emma.jpg" class="user-image" alt="User Image">
               <span class="hidden-xs"><?php echo $Teacherresultsfinal['Surname'] ?></span>
             </a>
 

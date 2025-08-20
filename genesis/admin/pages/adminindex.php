@@ -304,7 +304,7 @@
         $('#myModal').modal('show');
       });
     </script>
-    <?php // $_SESSION['seen_notification'] = true; ?>
+    <?php $_SESSION['seen_notification'] = true; ?>
   <?php endif; ?>
 
   <!-- Notification Modal -->

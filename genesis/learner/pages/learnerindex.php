@@ -135,6 +135,10 @@ $stmt->close();
         </ol>
     </section>
 
+<button class="btn btn-primary" data-toggle="modal" data-target="#learnerNotificationsModal">
+    View Notifications
+  </button>
+
     <section class="content">
       <div class="row">
         <!-- Metric Cards -->
@@ -318,6 +322,8 @@ $stmt->close();
     </section>
   </div>
 
+  
+
 </div>
 
 <!-- JS Scripts -->
@@ -327,7 +333,76 @@ $stmt->close();
 <script src="dist/js/adminlte.min.js"></script>
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
+<!-- Notifications Modal -->
+  <div class="modal fade" id="learnerNotificationsModal" tabindex="-1" role="dialog" aria-labelledby="learnerNotifTitle" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
 
+        <div class="modal-header bg-primary text-white">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" id="learnerNotifTitle">Notification Centre</h4>
+        </div>
+
+        <div class="modal-body">
+          <!-- Sample notifications -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <strong>Date:</strong> 2025-08-20 10:30
+            </div>
+            <div class="panel-body">
+              <strong>New Resource Uploaded:</strong> <a href="#">Algebra Notes</a><br>
+              Check out the latest material uploaded for your Math class.
+            </div>
+          </div>
+
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <strong>Date:</strong> 2025-08-19 16:00
+            </div>
+            <div class="panel-body">
+              <strong>Upcoming Quiz Reminder:</strong> <a href="#">Science Quiz</a><br>
+              Don't forget your quiz scheduled for tomorrow at 10:00 AM.
+            </div>
+          </div>
+
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <strong>Date:</strong> 2025-08-18 09:00
+            </div>
+            <div class="panel-body">
+              <strong>Feedback Received:</strong> <a href="#">Math Assignment</a><br>
+              Your tutor has provided feedback on your recent submission.
+            </div>
+          </div>
+
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <strong>Date:</strong> 2025-08-17 12:45
+            </div>
+            <div class="panel-body">
+              <strong>Appreciation Received:</strong> <a href="#">Tutor John</a><br>
+              Your tutor appreciated your active participation in the class.
+            </div>
+          </div>
+
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <strong>Date:</strong> 2025-08-16 14:30
+            </div>
+            <div class="panel-body">
+              <strong>Missed Homework Alert:</strong> <a href="#">History Essay</a><br>
+              You missed the submission deadline. Please contact your tutor.
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
