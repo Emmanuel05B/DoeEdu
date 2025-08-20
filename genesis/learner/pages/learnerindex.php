@@ -139,67 +139,21 @@
         <span class="logo-lg"><b>Distributors Of Education </b></span>
 
       </a>
-      <button class="btn btn-primary" data-toggle="modal" data-target="#learnerNotificationsModal">
-          View Notifications
-        </button>
+      
+        <!-- Button to manually open the modal -->
+      <a href="#" data-toggle="modal" data-target="#learnerNotificationsModal">
+        <i class="fa fa-bell"></i> Notifications
+      </a>
 
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
-          <!-- Notifications: style can be found in dropdown.less -->
-          <li class="dropdown notifications-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-bell-o"></i>
-              <span class="label label-warning">5</span>
+          <!-- Notifications:-->
+          
+          <li href="#">
+            <a href="#" data-toggle="modal" data-target="#learnerNotificationsModal">
+            <i class="fa fa-bell-o"></i> Notifications
             </a>
-            <ul class="dropdown-menu">
-              <li class="header">You have 5 notifications</li>
-              <li>
-                <ul class="menu">
-                  <!-- 1. New Resource -->
-                  <li>
-                    <a href="viewResource.php?id=101">
-                      <i class="fa fa-file-text text-aqua"></i> New resource "Algebra Basics" uploaded
-                      <small><i>Aug 20, 10:15</i></small>
-                    </a>
-                  </li>
-
-                  <!-- 2. Learner Complaint -->
-                  <li>
-                    <a href="viewComplaint.php?id=55">
-                      <i class="fa fa-exclamation-circle text-red"></i> New complaint submitted by John Doe
-                      <small><i>Aug 20, 11:00</i></small>
-                    </a>
-                  </li>
-
-                  <!-- 3. Quiz Results Available -->
-                  <li>
-                    <a href="viewQuizResults.php?quizId=23">
-                      <i class="fa fa-check-square text-green"></i> Quiz results for Grade 10 Math are ready
-                      <small><i>Aug 19, 16:45</i></small>
-                    </a>
-                  </li>
-
-                  <!-- 4. Session Booking -->
-                  <li>
-                    <a href="viewSession.php?id=12">
-                      <i class="fa fa-calendar text-yellow"></i> New session booked by Jane Smith
-                      <small><i>Aug 20, 09:30</i></small>
-                    </a>
-                  </li>
-
-                  <!-- 5. New Rating -->
-                  <li>
-                    <a href="viewRatings.php?sessionId=5">
-                      <i class="fa fa-star text-purple"></i> New rating received for your session
-                      <small><i>Aug 19, 14:20</i></small>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li class="footer"><a href="allnotifications.php">View all notifications</a></li>
-            </ul>
           </li>
-
 
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
@@ -414,6 +368,16 @@
 
 <!-- JS Scripts -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+
+<!-- show modal the first time -->
+<?php if (!isset($_SESSION['seen_notification'])): ?>
+<script>
+  $(document).ready(function () {
+    $('#learnerNotificationsModal').modal('show');
+  });
+</script>
+<?php $_SESSION['seen_notification'] = true; ?>
+<?php endif; ?>
 
 <!-- Notifications Modal -->
   <div class="modal fade" id="learnerNotificationsModal" tabindex="-1" role="dialog" aria-labelledby="learnerNotifTitle" aria-hidden="true">

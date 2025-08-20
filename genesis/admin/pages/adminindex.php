@@ -20,12 +20,17 @@
 
     <div class="content-wrapper">
       <!-- cover section (untouched)-->
+
       <section class="content-header">
         <h1>Dashboard <small>Control panel</small></h1>
         <ol class="breadcrumb">
           <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
           <li class="active">Dashboard</li>
         </ol>
+        <!-- Button to manually open the modal -->
+      <a href="#" data-toggle="modal" data-target="#adminNotificationsModal">
+        <i class="fa fa-bell"></i> Notifications
+      </a>
       </section>
 
       <section class="content">
@@ -252,18 +257,20 @@
     $results = $connect->query($sql);
   ?>
 
-  <!-- Only show modal the first time -->
-  <?php if (!isset($_SESSION['seen_notification'])): ?>
-    <script>
-      $(document).ready(function () {
-        $('#adminNotificationsModal').modal('show');
-      });
-    </script>
-    <?php $_SESSION['seen_notification'] = true; ?>
-  <?php endif; ?>
 
-  <!-- Notification Modal -->
- <div class="modal fade" id="adminNotificationsModal" tabindex="-1" role="dialog" aria-labelledby="adminNotifTitle" aria-hidden="true">
+
+<!-- show modal the first time -->
+<?php if (!isset($_SESSION['seen_notification'])): ?>
+<script>
+  $(document).ready(function () {
+    $('#adminNotificationsModal').modal('show');
+  });
+</script>
+<?php $_SESSION['seen_notification'] = true; ?>
+<?php endif; ?>
+
+<!-- Notification Modal -->
+<div class="modal fade" id="adminNotificationsModal" tabindex="-1" role="dialog" aria-labelledby="adminNotifTitle" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
 
@@ -278,11 +285,11 @@
         <?php if ($results && $results->num_rows > 0): ?>
           <?php while ($notice = $results->fetch_assoc()): ?>
             <div class="panel panel-default">
-              <div class="panel-heading">
+              <div class="panel-heading" style="background-color:#f5f5f5;">
                 <strong>Date:</strong> <?php echo date('Y-m-d H:i', strtotime($notice['Date'])); ?>
               </div>
               <div class="panel-body">
-                <strong> <?php echo htmlspecialchars($notice['Title']); ?></strong> <a href="#"> dynamic</a><br>
+                <strong><?php echo htmlspecialchars($notice['Title']); ?></strong> <a href="#">dynamic</a><br>
                 <?php echo nl2br(htmlspecialchars($notice['Content'])); ?>
               </div>
             </div>
@@ -300,6 +307,7 @@
     </div>
   </div>
 </div>
+
 
 </body>
 </html>
