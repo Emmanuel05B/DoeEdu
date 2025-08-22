@@ -3,23 +3,23 @@
 
 <?php
 session_start();
+
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
-  exit();
+    header("Location: ../../common/pages/login.php");
+    exit();
 }
 
 include(__DIR__ . "/../../partials/connect.php");
 
-// Validate activityId from GET
-if (!isset($_GET['activityId']) || !is_numeric($_GET['activityId'])) {
-    die("Invalid activity ID.");
-}
-
-$activityId = intval($_GET['activityId']);
-$tutorId = $_SESSION['user_id']; // logged-in tutor
+$activityId = isset($_GET['activityId']) ? intval($_GET['activityId']) : 0;
+$tutorId = $_SESSION['user_id']; // Logged-in tutor
 
 // Fetch activity details
-$stmt = $connect->prepare("SELECT TutorId, SubjectId, Grade, Topic, Title, Instructions, TotalMarks, DueDate, CreatedAt, ImagePath FROM onlineactivities WHERE id = ?");
+$stmt = $connect->prepare("
+    SELECT TutorId, SubjectId, Grade, Topic, Title, Instructions, MemoPath, TotalMarks, DueDate, CreatedAt, ImagePath
+    FROM onlineactivities 
+    WHERE Id = ?
+");
 $stmt->bind_param("i", $activityId);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -57,39 +57,99 @@ $qstmt->close();
 
   <div class="content-wrapper">
     <section class="content-header">
-       <h1>Edit Activity <small>List of all questions for this activity</small></h1>
+       <h1>Edit Activity <small>Update activity details and questions</small></h1>
         <ol class="breadcrumb">
           <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
-          <li class="active">Questions</li>
+          <li class="active">Edit Activity</li>
         </ol>
     </section>
     
     <section class="content">
-      <div class="row" >
+      <div class="row">
         <div class="col-xs-12">
 
+          <!-- Update Activity Form -->
           <div class="box box-primary">
             <div class="box-header">
-              <h3 class="box-title"><?php echo htmlspecialchars($activity['Title']); ?></h3>
-              <p><small>
-                Subject: <?php echo htmlspecialchars($activity['SubjectId']); ?> | 
-                Grade: <?php echo htmlspecialchars($activity['Grade']); ?> | 
-                Topic: <?php echo htmlspecialchars($activity['Topic']); ?> | 
-                Due Date: <?php echo htmlspecialchars($activity['DueDate']); ?>
-              </small></p>
+              <h3 class="box-title">Update Activity Details</h3>
+            </div>
+            <div class="box-body">
+              <form action="updateactivity.php" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="activityId" value="<?php echo $activityId; ?>">
+
+                <div class="row">
+                  <!-- Title -->
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Title</label>
+                      <input type="text" name="Title" class="form-control" value="<?php echo htmlspecialchars($activity['Title']); ?>" required>
+                    </div>
+                  </div>
+
+                  <!-- Grade & Subject -->
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label>Grade</label>
+                      <input type="text" class="form-control" value="<?php echo htmlspecialchars($activity['Grade']); ?>" readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label>Subject</label>
+                      <input type="text" class="form-control" value="<?php echo htmlspecialchars($activity['SubjectId']); ?>" readonly>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <!-- Instructions -->
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Instructions</label>
+                      <textarea name="Instructions" class="form-control" rows="4"><?php echo htmlspecialchars($activity['Instructions']); ?></textarea>
+                    </div>
+                  </div>
+
+                  <!-- Image -->
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label>Current Image</label><br>
+                      <?php if(!empty($activity['ImagePath']) && file_exists($activity['ImagePath'])): ?>
+                        <img src="<?php echo htmlspecialchars($activity['ImagePath']); ?>" style="max-width:100%; margin-bottom:10px;">
+                      <?php else: ?>
+                        <p>No image uploaded</p>
+                      <?php endif; ?>
+                      <input type="file" name="ImagePath" class="form-control">
+                    </div>
+                  </div>
+
+                  <!-- Memo -->
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label>Current Memo</label><br>
+                      <?php if(!empty($activity['MemoPath']) && file_exists($activity['MemoPath'])): ?>
+                        <a href="<?php echo htmlspecialchars($activity['MemoPath']); ?>" target="_blank">View Memo</a>
+                      <?php else: ?>
+                        <p>No memo uploaded</p>
+                      <?php endif; ?>
+                      <input type="file" name="MemoPath" class="form-control">
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Update Activity</button>
+              </form>
+            </div>
+          </div>
+
+
+          <!-- Questions Display -->
+          <div class="box box-primary">
+            <div class="box-header">
+              <h3 class="box-title"><?php echo htmlspecialchars($activity['Title']); ?> - Questions</h3>
             </div>
 
             <div class="box-body">
-                <p><strong>Instructions:</strong></p>
-                <p><?php echo nl2br(htmlspecialchars($activity['Instructions'])); ?></p>
-
-                <?php if (!empty($activity['ImagePath']) && file_exists($activity['ImagePath'])): ?>
-                <div style="margin-bottom:20px;">
-                  <img src="<?php echo htmlspecialchars($activity['ImagePath']); ?>" alt="Activity Image" style="max-width: 30%; height: auto;">
-                </div>
-                <?php endif; ?>
-
-                <h4>Questions</h4>
 
                 <!-- Desktop/Table layout -->
                 <div class="hidden-xs hidden-sm">
@@ -164,12 +224,17 @@ $qstmt->close();
 </div>
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-
+<?php if (isset($_SESSION['alert'])): ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  $(function () {
-    $('#example1').DataTable()
-  })
+    Swal.fire({
+        icon: '<?php echo $_SESSION['alert']['icon']; ?>',
+        title: '<?php echo $_SESSION['alert']['title']; ?>',
+        text: '<?php echo $_SESSION['alert']['text']; ?>'
+    });
 </script>
+<?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
 
 </body>
 </html>

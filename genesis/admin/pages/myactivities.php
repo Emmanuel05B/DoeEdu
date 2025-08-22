@@ -5,13 +5,12 @@ session_start();
 
 if (!isset($_SESSION['email'])) {
   header("Location: ../../common/pages/login.php");
-    exit();
+  exit();
 }
 
 include(__DIR__ . "/../../partials/connect.php");
 
 $tutorId = $_SESSION['user_id']; // Logged-in tutor id
-
 ?>
 
 <?php include(__DIR__ . "/../../common/partials/head.php"); ?>
@@ -21,6 +20,19 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
 
   <?php include(__DIR__ . "/../partials/header.php"); ?>
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+
+  <?php if (isset($_GET['deleted']) && $_GET['deleted'] == 1): ?>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+  Swal.fire({
+      icon: 'success',
+      title: 'Deleted!',
+      text: 'The activity has been successfully deleted.',
+      confirmButtonText: 'OK'
+  });
+  </script>
+  <?php endif; ?>
+
   
   <div class="content-wrapper">
     <section class="content-header">
@@ -40,12 +52,12 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
           <table class="table table-bordered table-hover" id="activitiesTable" style="width:100%;">
             <thead style="background-color: #3c8dbc; color: white;">
               <tr>
-                
                 <th>Title</th>
                 <th>Topic</th>
                 <th>Grade</th>
                 <th>Subject</th>
                 <th>Due Date</th>
+                <th>Click</th>
                 <th>Click</th>
                 <th>Click</th>
               </tr>
@@ -64,17 +76,22 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
               $result = $stmt->get_result();
 
               if ($result->num_rows === 0) {
-                echo "<tr><td colspan='6' class='text-center'>No activities found.</td></tr>";
+                echo "<tr><td colspan='8' class='text-center'>No activities found.</td></tr>";
               } else {
                 while ($row = $result->fetch_assoc()) {
+                  $activityId = intval($row['Id']);
                   echo "<tr>
                           <td>" . htmlspecialchars($row['Title']) . "</td>
                           <td>" . htmlspecialchars($row['Topic']) . "</td>
                           <td>" . htmlspecialchars($row['Grade']) . "</td>
                           <td>" . htmlspecialchars($row['SubjectName']) . "</td>
                           <td>" . htmlspecialchars($row['DueDate']) . "</td>
-                          <td><a href='viewactivity.php?activityId=" . intval($row['Id']) . "' class='btn btn-sm btn-primary'>View/Edit</a></td>
-                          <td><a href='activityoverview.php?activityId=" . intval($row['Id']) . "' class='btn btn-sm btn-primary'>Overview</a></td></tr>";
+                          <td><a href='viewactivity.php?activityId={$activityId}' class='btn btn-xs btn-primary'>View/Edit</a></td>
+                          <td><a href='#' class='btn btn-xs btn-danger delete-activity-btn' data-id='" . intval($row['Id']) . "'>Delete</a></td>
+
+
+                          <td><a href='activityoverview.php?activityId={$activityId}' class='btn btn-xs btn-primary'>Overview</a></td>
+                        </tr>";
                 }
               }
               $stmt->close();
@@ -89,21 +106,42 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
   <div class="control-sidebar-bg"></div>
 </div>
 
-<!-- Scripts -->
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
-
-
 <script>
-  $(function () {
+$(function () {
     $('#activitiesTable').DataTable({
-      responsive: true,
-      autoWidth: false,
-      order: [[4, "asc"]] // Sort by due date ascending by default
+        responsive: true,
+        autoWidth: false,
+        order: [[4, "asc"]] // Sort by due date ascending by default
     });
-  });
-</script>
 
+    // SweetAlert for Delete buttons
+    $(document).on('click', '.delete-activity-btn', function(e) {
+    e.preventDefault();
+    var activityId = $(this).data('id');
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "This will permanently delete the activity!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'deleteactivity.php?activityId=' + activityId;
+        }
+    });
+});
+
+});
+</script>
 
 </body>
 </html>
