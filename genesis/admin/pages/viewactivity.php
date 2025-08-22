@@ -19,7 +19,7 @@ $activityId = intval($_GET['activityId']);
 $tutorId = $_SESSION['user_id']; // logged-in tutor
 
 // Fetch activity details
-$stmt = $connect->prepare("SELECT TutorId, SubjectName, Grade, Topic, Title, Instructions, TotalMarks, DueDate, CreatedAt, ImagePath FROM onlineactivities WHERE id = ?");
+$stmt = $connect->prepare("SELECT TutorId, SubjectId, Grade, Topic, Title, Instructions, TotalMarks, DueDate, CreatedAt, ImagePath FROM onlineactivities WHERE id = ?");
 $stmt->bind_param("i", $activityId);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -50,38 +50,6 @@ $qstmt->close();
 
 <?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
-<style>
-  .question-tile {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 15px;
-    margin-bottom: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .question-tile h4 {
-    margin-top: 0;
-    font-weight: 600;
-    color: #333;
-  }
-  .question-tile ul {
-    list-style: none;
-    padding-left: 0;
-    margin-bottom: 10px;
-  }
-  .question-tile ul li {
-    margin-bottom: 6px;
-    color: #555;
-  }
-  .edit-btn {
-    align-self: flex-start;
-  }
-</style>
-
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
   <?php include(__DIR__ . "/../partials/header.php"); ?>
@@ -89,7 +57,7 @@ $qstmt->close();
 
   <div class="content-wrapper">
     <section class="content-header">
-       <h1>Edit Activity <small>List of all questions for this activities</small></h1>
+       <h1>Edit Activity <small>List of all questions for this activity</small></h1>
         <ol class="breadcrumb">
           <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
           <li class="active">Questions</li>
@@ -104,7 +72,7 @@ $qstmt->close();
             <div class="box-header">
               <h3 class="box-title"><?php echo htmlspecialchars($activity['Title']); ?></h3>
               <p><small>
-                Subject: <?php echo htmlspecialchars($activity['SubjectName']); ?> | 
+                Subject: <?php echo htmlspecialchars($activity['SubjectId']); ?> | 
                 Grade: <?php echo htmlspecialchars($activity['Grade']); ?> | 
                 Topic: <?php echo htmlspecialchars($activity['Topic']); ?> | 
                 Due Date: <?php echo htmlspecialchars($activity['DueDate']); ?>
@@ -123,19 +91,62 @@ $qstmt->close();
 
                 <h4>Questions</h4>
 
-                <div class="row">
+                <!-- Desktop/Table layout -->
+                <div class="hidden-xs hidden-sm">
+                  <table class="table table-borderless">
+                    <tr>
+                    <?php
+                    $columnsPerRow = 3;
+                    $colCount = 0;
+
+                    foreach ($questions as $index => $question):
+                        if ($colCount == $columnsPerRow) {
+                            echo "</tr><tr>";
+                            $colCount = 0;
+                        }
+                    ?>
+                        <td class="align-top" style="width: <?php echo 100/$columnsPerRow; ?>%;">
+                          <div class="box box-solid">
+                            <div class="box-body">
+                              <h4>Question <?php echo $index + 1; ?></h4>
+                              <p><?php echo htmlspecialchars($question['QuestionText']); ?></p>
+                              <ul class="list-unstyled">
+                                <li>A. <?php echo htmlspecialchars($question['OptionA']); ?></li>
+                                <li>B. <?php echo htmlspecialchars($question['OptionB']); ?></li>
+                                <li>C. <?php echo htmlspecialchars($question['OptionC']); ?></li>
+                                <li>D. <?php echo htmlspecialchars($question['OptionD']); ?></li>
+                              </ul>
+                              <a href="editquestion.php?questionId=<?php echo $question['Id']; ?>" class="btn btn-sm btn-primary">Edit Question</a>
+                            </div>
+                          </div>
+                        </td>
+                    <?php
+                        $colCount++;
+                    endforeach;
+
+                    while ($colCount > 0 && $colCount < $columnsPerRow) {
+                        echo "<td></td>";
+                        $colCount++;
+                    }
+                    ?>
+                    </tr>
+                  </table>
+                </div>
+
+                <!-- Mobile layout -->
+                <div class="visible-xs visible-sm">
                   <?php foreach ($questions as $index => $question): ?>
-                    <div class="col-lg-4 col-xs-12">
-                      <div class="question-tile">
+                    <div class="box box-solid" style="margin-bottom:15px;">
+                      <div class="box-body">
                         <h4>Question <?php echo $index + 1; ?></h4>
                         <p><?php echo htmlspecialchars($question['QuestionText']); ?></p>
-                        <ul>
+                        <ul class="list-unstyled">
                           <li>A. <?php echo htmlspecialchars($question['OptionA']); ?></li>
                           <li>B. <?php echo htmlspecialchars($question['OptionB']); ?></li>
                           <li>C. <?php echo htmlspecialchars($question['OptionC']); ?></li>
                           <li>D. <?php echo htmlspecialchars($question['OptionD']); ?></li>
                         </ul>
-                        <a href="editquestion.php?questionId=<?php echo $question['Id']; ?>" class="btn btn-sm btn-primary edit-btn">Edit Question</a>
+                        <a href="editquestion.php?questionId=<?php echo $question['Id']; ?>" class="btn btn-sm btn-primary">Edit Question</a>
                       </div>
                     </div>
                   <?php endforeach; ?>
@@ -152,9 +163,7 @@ $qstmt->close();
   <div class="control-sidebar-bg"></div>
 </div>
 
-<!-- jQuery 3 -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-
 
 <script>
   $(function () {

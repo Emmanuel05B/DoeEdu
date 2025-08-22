@@ -71,7 +71,7 @@
 
   // Fetch Upcoming Homework (due in future, not submitted yet) limit 5
   $stmt = $connect->prepare("
-      SELECT oa.Id, oa.SubjectName, oa.Title, oa.DueDate
+      SELECT oa.Id, oa.SubjectId, oa.Title, oa.DueDate
       FROM onlineactivities oa
       LEFT JOIN learneranswers la ON la.ActivityId = oa.Id AND la.UserId = ?
       WHERE oa.DueDate >= CURDATE() AND la.Id IS NULL
@@ -101,7 +101,7 @@
 
   // Fetch Recent Results (limit 5 latest)
   $stmt = $connect->prepare("
-      SELECT oa.SubjectName, oa.Topic, oa.Title, oa.DueDate, la.UserId, la.CreatedAt,
+      SELECT oa.SubjectId, oa.Topic, oa.Title, oa.DueDate, la.UserId, la.CreatedAt,
       ROUND(SUM(oq.CorrectAnswer = la.SelectedAnswer) / COUNT(*) * 100) AS ScorePercent
       FROM learneranswers la
       JOIN onlinequestions oq ON la.QuestionId = oq.Id
@@ -157,16 +157,17 @@
 
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <a href="#">
               <img src="../images/emma.jpg" class="user-image" alt="User Image">
               <span class="hidden-xs"><?php ?></span>
             </a>
-
           </li>
+          
         </ul>
       </div>
     </nav>
   </header>
+  
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
@@ -208,7 +209,7 @@
           <div class="box" style="background:#f0f7ff; border-radius:15px;">
             <div class="box-body">
               <h4 style="color:#3a3a72;">Attendance</h4>
-              <h2>%</h2>
+              <h2>95%</h2>
               <i class="fa fa-calendar-check-o fa-2x pull-right" style="color:#0073e6;"></i>
               <a href="attendance.php" class="btn btn-link">Track Attendance</a>
             </div>

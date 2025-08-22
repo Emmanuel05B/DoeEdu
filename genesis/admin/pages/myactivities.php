@@ -45,7 +45,6 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                 <th>Topic</th>
                 <th>Grade</th>
                 <th>Subject</th>
-                <th>Group</th>
                 <th>Due Date</th>
                 <th>Click</th>
                 <th>Click</th>
@@ -56,7 +55,7 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
               $stmt = $connect->prepare("
                 SELECT oa.Id, oa.Title, oa.Topic, oa.Grade, s.SubjectName, oa.DueDate
                 FROM onlineactivities oa
-                INNER JOIN subjects s ON oa.SubjectName = s.SubjectId
+                INNER JOIN subjects s ON oa.SubjectId = s.SubjectId
                 WHERE oa.TutorId = ?
                 ORDER BY oa.Id DESC
               ");
@@ -72,7 +71,6 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                           <td>" . htmlspecialchars($row['Title']) . "</td>
                           <td>" . htmlspecialchars($row['Topic']) . "</td>
                           <td>" . htmlspecialchars($row['Grade']) . "</td>
-                          <td>" . htmlspecialchars($row['SubjectName']) . "</td>
                           <td>" . htmlspecialchars($row['SubjectName']) . "</td>
                           <td>" . htmlspecialchars($row['DueDate']) . "</td>
                           <td><a href='viewactivity.php?activityId=" . intval($row['Id']) . "' class='btn btn-sm btn-primary'>View/Edit</a></td>

@@ -10,36 +10,46 @@ if (!isset($_SESSION['email'])) {
 include(__DIR__ . "/../../common/partials/head.php"); 
 include(__DIR__ . "/../../partials/connect.php"); 
 
+
 // Get learner ID from session
 $learnerId = $_SESSION['user_id'];
 $tutors = [];
 
 if ($learnerId) {
-    // Step 1: Get subject IDs linked to learner
-    $subjectQuery = $connect->prepare("SELECT SubjectId FROM learnersubject WHERE LearnerId = ?");
-    $subjectQuery->bind_param("i", $learnerId);
-    $subjectQuery->execute();
-    $subjectResult = $subjectQuery->get_result();
 
-    $subjectIds = [];
-    while ($row = $subjectResult->fetch_assoc()) {
-        $subjectIds[] = $row['SubjectId'];
+    // Step 1: Get the class IDs linked to learner
+    $classQuery = $connect->prepare("
+        SELECT ClassID 
+        FROM learnerclasses
+        WHERE LearnerId = ?
+    ");
+    $classQuery->bind_param("i", $learnerId);
+    $classQuery->execute();
+    $classResult = $classQuery->get_result();
+
+    $classIds = [];
+    while ($row = $classResult->fetch_assoc()) {
+        $classIds[] = $row['ClassID'];
     }
-    $subjectQuery->close();
+    $classQuery->close();
 
-    if (!empty($subjectIds)) {
-        $cleanedIds = array_map('intval', $subjectIds);
+    if (!empty($classIds)) {
+        $cleanedIds = array_map('intval', $classIds);
         $inClause = implode(',', $cleanedIds);
 
+        // Step 2: Get tutors based on these class IDs
         $sql = "
             SELECT 
-                t.TutorId, u.Name, u.Surname, u.Email, u.Contact, u.Gender, t.Availability, t.ProfilePicture, 
-                GROUP_CONCAT(DISTINCT s.SubjectName SEPARATOR ', ') AS Subjects
-            FROM tutorsubject ts
-            JOIN tutors t ON ts.TutorId = t.TutorId
+                t.TutorId, 
+                u.Name, u.Surname, u.Email, u.Contact, u.Gender, 
+                t.Availability, t.ProfilePicture,
+                GROUP_CONCAT(DISTINCT s.SubjectName SEPARATOR ', ') AS Subjects,
+                GROUP_CONCAT(DISTINCT CONCAT(c.Grade, ' ', c.GroupName) SEPARATOR ', ') AS Classes
+            FROM classes c
+            JOIN tutors t ON c.TutorID = t.TutorId
             JOIN users u ON t.TutorId = u.Id
-            JOIN subjects s ON ts.SubjectId = s.SubjectId
-            WHERE ts.SubjectId IN ($inClause)
+            JOIN subjects s ON c.SubjectID = s.SubjectId
+            WHERE c.ClassID IN ($inClause)
             GROUP BY t.TutorId
         ";
 
@@ -53,6 +63,7 @@ if ($learnerId) {
         }
     }
 }
+
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -78,7 +89,7 @@ if ($learnerId) {
                     </div>
                 <?php else: ?>
                     <?php foreach ($tutors as $tutor): ?>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="box box-primary" style="min-height: 330px;">
                                 <div class="box-header with-border text-center">
                                     <img 

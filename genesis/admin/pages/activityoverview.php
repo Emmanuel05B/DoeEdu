@@ -124,8 +124,7 @@ $isClosed = $now > $dueDate;
         <div class="box-body">
           <div class="row">
             <div class="col-md-4">
-              <p><strong>Title:</strong> <?= htmlspecialchars($activity['Title']) ?></p>
-              <p><strong>Grade:</strong> <?= htmlspecialchars($activity['Grade']) ?></p>
+              
               <p><strong>Topic:</strong> <?= htmlspecialchars($activity['Topic']) ?></p>
               <p><strong>Instructions:</strong> <?= nl2br(htmlspecialchars($activity['Instructions'])) ?></p>
             </div>
@@ -222,6 +221,9 @@ $isClosed = $now > $dueDate;
             <tbody>
               <?php
               if ($learners && $learners->num_rows > 0) {
+
+                //this code checks to see if the leaner has completed an online activity or not.
+                //im a creating a learneronlineactivity to store the status of the learner for that onlineactivity. 
                 while ($learner = $learners->fetch_assoc()) {
                   $uid = $learner['Id'];
                   $scoreStmt = $connect->prepare("

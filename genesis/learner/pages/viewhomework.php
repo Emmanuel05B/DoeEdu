@@ -17,8 +17,11 @@ if (!isset($_GET['activityId']) || !is_numeric($_GET['activityId'])) {
 $activityId = intval($_GET['activityId']);
 $userId = $_SESSION['user_id']; // logged-in learner
 
+// Get subject name from URL if passed
+$subjectName = isset($_GET['subject']) ? $_GET['subject'] : '';
+
 // Fetch activity details
-$stmt = $connect->prepare("SELECT TutorId, SubjectName, Grade, Topic, Title, Instructions, TotalMarks, DueDate, CreatedAt, ImagePath FROM onlineactivities WHERE id = ?");
+$stmt = $connect->prepare("SELECT TutorId, SubjectId, Grade, Topic, Title, Instructions, TotalMarks, DueDate, CreatedAt, ImagePath FROM onlineactivities WHERE id = ?");
 $stmt->bind_param("i", $activityId);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -67,9 +70,9 @@ $qstmt->close();
               cancelButtonText: 'Okay'
           }).then((result) => {
               if (result.isConfirmed) {
-                  window.location.href = 'viewmemo.php?activityid=$activityId';
+                  window.location.href = 'viewmemo.php?activityid=$activityId&subject=" . urlencode($subjectName) . "';
               } else {
-                  window.location.href = 'viewhomework.php?activityId={$activityId}';
+                  window.location.href = 'viewhomework.php?activityId={$activityId}&subject=" . urlencode($subjectName) . "';
               }
           });
      
@@ -93,7 +96,7 @@ $qstmt->close();
               cancelButtonText: 'Go to Dashboard'
           }).then((result) => {
               if (result.isConfirmed) {
-                  window.location.href = 'viewmemo.php?activityid={$activityId}'; 
+                  window.location.href = 'viewmemo.php?activityid={$activityId}&subject=" . urlencode($subjectName) . "'; 
               } else {
                   window.location.href = 'homework.php';
               }
@@ -129,7 +132,7 @@ $qstmt->close();
             </div>
             <div class="box-body">
               <p>
-                <strong>Subject:</strong> <?php echo htmlspecialchars($activity['SubjectName']); ?> &nbsp;|&nbsp;
+                <strong>Subject:</strong> <?php echo htmlspecialchars($subjectName); ?> &nbsp;|&nbsp;
                 <strong>Grade:</strong> <?php echo htmlspecialchars($activity['Grade']); ?> &nbsp;|&nbsp;
                 <strong>Topic:</strong> <?php echo htmlspecialchars($activity['Topic']); ?> &nbsp;|&nbsp;
                 <strong>Due Date:</strong> <?php echo htmlspecialchars($activity['DueDate']); ?>
@@ -142,6 +145,7 @@ $qstmt->close();
         <div class="col-xs-12">
           <form action="submithomework.php" method="POST">
             <input type="hidden" name="activityId" value="<?php echo $activityId; ?>">
+            <input type="hidden" name="subjectName" value="<?php echo htmlspecialchars($subjectName); ?>">
 
             <!-- Instructions Box -->
             <div class="col-xs-12" style="margin-bottom:15px;">

@@ -3,21 +3,25 @@
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-  header("Location: ../common/login.php");
+  header("Location: ../../common/pages/login.php");
   exit();
 }
 ?>
-<?php include("learnerpartials/head.php"); ?>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <?php include("learnerpartials/header.php") ?>
-  <?php include("learnerpartials/mainsidebar.php") ?>
+  <?php include(__DIR__ . "/../partials/header.php"); ?>
+  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
+
     <section class="content-header">
-      <h1 style="color:#3a3a72; font-weight:600;">Student Voices</h1>
-      <p style="color:#6a52a3;">Share your thoughts, feedback, or suggestions. You can choose to stay anonymous.</p>
+      <h1>Student Voices <small>Share your thoughts, feedback, or suggestions. You can choose to stay anonymous.</small></h1>
+      <ol class="breadcrumb">
+        <li><a href="learnerindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Student Voices</li>
+      </ol>
     </section>
 
     <section class="content">
@@ -71,5 +75,6 @@ if (!isset($_SESSION['email'])) {
 
   <div class="control-sidebar-bg"></div>
 </div>
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 </body>
 </html>
