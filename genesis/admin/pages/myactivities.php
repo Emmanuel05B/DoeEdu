@@ -57,9 +57,7 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                 <th>Grade</th>
                 <th>Subject</th>
                 <th>Due Date</th>
-                <th>Click</th>
-                <th>Click</th>
-                <th>Click</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -81,17 +79,25 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                 while ($row = $result->fetch_assoc()) {
                   $activityId = intval($row['Id']);
                   echo "<tr>
-                          <td>" . htmlspecialchars($row['Title']) . "</td>
-                          <td>" . htmlspecialchars($row['Topic']) . "</td>
-                          <td>" . htmlspecialchars($row['Grade']) . "</td>
-                          <td>" . htmlspecialchars($row['SubjectName']) . "</td>
-                          <td>" . htmlspecialchars($row['DueDate']) . "</td>
-                          <td><a href='viewactivity.php?activityId={$activityId}' class='btn btn-xs btn-primary'>View/Edit</a></td>
-                          <td><a href='#' class='btn btn-xs btn-danger delete-activity-btn' data-id='" . intval($row['Id']) . "'>Delete</a></td>
+                    <td>" . htmlspecialchars($row['Title']) . "</td>
+                    <td>" . htmlspecialchars($row['Topic']) . "</td>
+                    <td>" . htmlspecialchars($row['Grade']) . "</td>
+                    <td>" . htmlspecialchars($row['SubjectName']) . "</td>
+                    <td>" . htmlspecialchars($row['DueDate']) . "</td>
+                   <td>
+            <a href='viewactivity.php?activityId=" . $activityId . " ' class='btn btn-xs btn-primary' title='Edit'>
+                <i class='fa fa-pencil'></i>
+            </a>
+            <a href='#' class='btn btn-xs btn-danger delete-activity-btn' data-id='" . intval($row['Id']) . "' title='Delete'>
+                <i class='fa fa-trash'></i>
+            </a>
+            <a href='activityoverview.php?activityId=" . $activityId . "' class='btn btn-xs btn-info' title='Overview'>
+                <i class='fa fa-info-circle'></i>
+            </a>
+        </td>
+                    
+                </tr>";
 
-
-                          <td><a href='activityoverview.php?activityId={$activityId}' class='btn btn-xs btn-primary'>Overview</a></td>
-                        </tr>";
                 }
               }
               $stmt->close();

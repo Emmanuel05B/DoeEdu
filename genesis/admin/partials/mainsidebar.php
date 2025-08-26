@@ -41,7 +41,10 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
         <li class="header">MAIN NAVIGATION</li>
 
           <li><a href="adminindex.php"><i class="fa fa-circle-o"></i> Home</a></li>
-          <li><a href="admin.php"><i class="fa fa-circle-o"></i> Administration</a></li>          
+          <li><a href="admin.php"><i class="fa fa-circle-o"></i> Administration</a></li>
+          <li><a href="classes.php"><i class="fa fa-circle-o"></i> Classes</a></li>
+
+          <!-- 
           <li class=" treeview">
             <a href="#">
               <i class="fa fa-circle-o"></i> <span>Classes</span>
@@ -52,6 +55,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
             <ul class="treeview-menu">
               <?php
               // Query all schools
+              /*
               $result = $connect->query("SELECT SchoolId, SchoolName FROM schools ORDER BY SchoolName ASC");
               if ($result && $result->num_rows > 0) {
                   while ($school = $result->fetch_assoc()) {
@@ -61,10 +65,12 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
               } else {
                   echo '<li><a href="#"><i class="fa fa-circle-o text-red"></i> No schools found</a></li>';
               }
+                  */
               ?>
             </ul>
 
           </li>
+          -->
           <li><a href="tutors.php"><i class="fa fa-circle-o"></i> Tutors</a></li> 
           <li><a href="studyresources.php"><i class="fa fa-circle-o"></i> Resources</a></li>
           <li><a href="admincreatenotifications.php"><i class="fa fa-circle-o"></i> Create Notifications</a></li>

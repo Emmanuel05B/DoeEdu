@@ -11,10 +11,11 @@ if (!isset($_SESSION['email'])) {
 
 include(__DIR__ . "/../../partials/connect.php");
 
+
 $activityId = isset($_GET['activityId']) ? intval($_GET['activityId']) : 0;
 $tutorId = $_SESSION['user_id']; // Logged-in tutor
 
-// Fetch activity details
+// Fetch activity details including SubjectId
 $stmt = $connect->prepare("
     SELECT TutorId, SubjectId, Grade, Topic, Title, Instructions, MemoPath, TotalMarks, DueDate, CreatedAt, ImagePath
     FROM onlineactivities 
@@ -29,7 +30,22 @@ if ($result->num_rows === 0) {
 }
 
 $activity = $result->fetch_assoc();
-$stmt->close();
+$subjectId = $activity['SubjectId'];
+
+// Fetch the subject name from subjects table
+$stmt2 = $connect->prepare("SELECT SubjectName FROM subjects WHERE SubjectId = ?");
+$stmt2->bind_param("i", $subjectId);
+$stmt2->execute();
+$result2 = $stmt2->get_result();
+
+if ($result2->num_rows === 0) {
+    die("Subject not found.");
+}
+
+$subjectRow = $result2->fetch_assoc();
+$subjectName = $subjectRow['SubjectName'];
+
+
 
 if ($activity['TutorId'] != $tutorId) {
     die("You do not have permission to view this activity.");
@@ -96,7 +112,7 @@ $qstmt->close();
                   <div class="col-md-3">
                     <div class="form-group">
                       <label>Subject</label>
-                      <input type="text" class="form-control" value="<?php echo htmlspecialchars($activity['SubjectId']); ?>" readonly>
+                      <input type="text" class="form-control" value="<?php echo $subjectName; ?>" readonly>
                     </div>
                   </div>
                 </div>

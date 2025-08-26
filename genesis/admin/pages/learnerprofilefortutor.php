@@ -148,8 +148,8 @@ if (!isset($_SESSION['email'])) {
       <section class="content">
 
         <div class="row">
-
           <div class="col-md-3">
+
             <!-- Profile Image -->
             <div class="box box-primary">
               <div class="box-body box-profile">
@@ -229,19 +229,22 @@ if (!isset($_SESSION['email'])) {
               </div>
               <!-- /.box-body -->
             </div>
+            <!-- /.box -->
 
           </div>
-          
+          <!-- /.col -->
           <div class="col-md-9">
             <div class="nav-tabs-custom">
               <ul class="nav nav-tabs">
                 <li class="active"><a href="#aboutme" data-toggle="tab">About Me</a></li>
                 <li><a href="#supportme" data-toggle="tab">Support Me</a></li>
                 <li><a href="#record" data-toggle="tab">Record Marks</a></li>
+                <li><a href="#more" data-toggle="tab">.....</a></li>
                 <li><a href="#goals" data-toggle="tab">Goals</a></li>
-                <li><a href="#zzz" data-toggle="tab">Practice Q Progress</a></li>
-              </ul>
+                <li><a href="#zzz" data-toggle="tab">zzz</a></li>
 
+
+              </ul>
               <div class="tab-content">
                 <!-- about me tab-pane -->
                 <div class="active tab-pane" id="aboutme">
@@ -426,13 +429,46 @@ if (!isset($_SESSION['email'])) {
                   </div>
                 </div>
 
+                <!-- more tab-pane -->
+                <div class="tab-pane" id="more">
+                  <div class="profile-personal-info">
+                    <div class="profile-skills border-bottom mb-4 pb-2">
+                      <h4 class="text-primary mb-3">Mathematics</h4>
+                      
+                      <div class="bubble-container">
+                        <div class="bubble">Algebra <span class="label label-success">Completed</span></div>
+                        <div class="bubble">Fractions <span class="label label-warning">In Progress</span></div>
+                      </div>
+
+                      <div style="margin-top: 15px;">
+                        <label>Enter Mark:</label>
+                        <input type="text" value="Fractions" readonly style="border: none; background: transparent;">
+                        <input type="number" class="form-control input-sm" style="width: 100px; display: inline;" placeholder="e.g. 65">
+                        <button class="btn btn-xs btn-primary">Save</button>
+                      </div>
+
+                      <div style="margin-top: 15px;">
+                        <label>Notes:</label>
+                        <textarea class="form-control" rows="2" placeholder="e.g. Needs help with fractions."></textarea>
+                        <button class="btn btn-xs btn-success" style="margin-top: 5px;">Save Note</button>
+                      </div>
+
+                      <div class="callout callout-info" style="margin-top: 20px;">
+                        <h5>Progress Summary</h5>
+                        <p>Completed 1 of 2 chapters. Avg Mark: <strong>70%</strong></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
                  <!-- Goals tab-pane -->
                   <div class="tab-pane" id="goals">
 
                     <!-- Mathematics Goal -->
                     <div class="profile-personal-info">
                       <div class="profile-skills border-bottom mb-4 pb-2">
-                        <h4 class="text-primary mb-3">Mathematics</h4>
+                        <h4 class="text-primary mb-3">Mathematics Goal</h4>
 
                         <!-- Grid for Level Info -->
 
@@ -461,84 +497,134 @@ if (!isset($_SESSION['email'])) {
                       </div>
                     </div>
 
-                    <!-- Goal ends here -->
-                   
+                    <!-- Physical Sciences Goal -->
+                    <div class="profile-personal-info">
+                      <div class="profile-skills border-bottom mb-4 pb-2">
+                        <h4 class="text-primary mb-3">Physical Sciences Goal</h4>
 
-                  </div>
-
-
-                <!-- Practice Progress Tab -->
-                <!-- Tutor View of Learner's Practice Progress -->
-                <div class="tab-pane" id="zzz">
-                  <div class="profile-personal-info">
-                    <div class="profile-skills border-bottom mb-4 pb-2">
-                      <h4 class="text-primary mb-3">Practice Question Progress</h4>
-
-                      <!-- Level Breakdown Table -->
-                      <div class="table-responsive">
-                        <table class="table table-condensed table-bordered">
-                          <thead>
-                            <tr class="bg-gray">
-                              <th>Level</th>
-                              <th>Attempts</th>
-                              <th>Avg Score</th>
-                              <th>Best Score</th>
-                              <th>Status</th>
-                              <th>Time Spent</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>Easy</td>
-                              <td>3</td>
-                              <td>68%</td>
-                              <td>76%</td>
-                              <td><span class="label label-success">Passed</span></td>
-                              <td>13 min</td>
-                            </tr>
-                            <tr>
-                              <td>Medium</td>
-                              <td>1</td>
-                              <td>54%</td>
-                              <td>54%</td>
-                              <td><span class="label label-danger">Failed</span></td>
-                              <td>8 min</td>
-                            </tr>
-                            <tr>
-                              <td>Hard</td>
-                              <td>0</td>
-                              <td>-</td>
-                              <td>-</td>
-                              <td><span class="label label-default">Not Attempted</span></td>
-                              <td>-</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-
-                      <!-- Pattern Analysis (Optional but Insightful) -->
-                      <div class="box box-default box-solid">
-                        <div class="box-header with-border">
-                          <h5 class="box-title">Tutor Observations</h5>
+                        <!-- Grid for Level Info -->
+                        <div class="row" style="margin-bottom: 15px;">
+                          <div class="col-md-3"><strong>Start Level:</strong><p>1</p></div>
+                          <div class="col-md-3"><strong>Current Level:</strong><p>2</p></div>
+                          <div class="col-md-3"><strong>Target Level:</strong><p>5</p></div>
+                          <div class="col-md-3"><strong>Average Mark:</strong><p>46%</p></div>
                         </div>
-                        <div class="box-body">
-                          <ul style="margin-left: 20px;">
-                            <li>Struggles with Medium-level logic questions (avg score below pass mark).</li>
-                            <li>Completes levels faster than peers (avg time per level: ~10 min).</li>
-                            <li>Performs better on conceptual questions vs. memory-based ones.</li>
-                            <li>Shows improvement with each Easy-level attempt.</li>
-                          </ul>
-                        </div>
-                      </div>
 
-                      <!-- Additional Tutor Note -->
-                      <div class="form-group mt-2">
-                        <label>Tutor Note (Private)</label>
-                        <textarea name="note" class="form-control input-sm" rows="2" placeholder="e.g. Consider giving extra support on algebra-based problems."></textarea>
+                        <!-- Progress Bar -->
+                        <label>Progress Toward Goal:</label>
+                        <div class="progress" style="height: 20px;">
+                          <div class="progress-bar progress-bar-warning progress-bar-striped active"
+                              role="progressbar" style="width: 40%;">
+                            Level 2 of 5
+                          </div>
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="callout callout-warning" style="margin-top: 20px;">
+                          <h5>Goal Tracker</h5>
+                          <p>Progress is slow. Recommend additional practice sessions.</p>
+                        </div>
                       </div>
                     </div>
+
                   </div>
-                </div>
+
+
+
+
+
+
+
+
+
+
+
+         
+
+                <!-- Practice Progress Tab -->
+<!-- Tutor View of Learner's Practice Progress -->
+<div class="tab-pane" id="zzz">
+  <div class="profile-personal-info">
+    <div class="profile-skills border-bottom mb-4 pb-2">
+      <h4 class="text-primary mb-3">Practice Question Progress</h4>
+
+      <!-- Level Breakdown Table -->
+      <div class="table-responsive">
+        <table class="table table-condensed table-bordered">
+          <thead>
+            <tr class="bg-gray">
+              <th>Level</th>
+              <th>Attempts</th>
+              <th>Avg Score</th>
+              <th>Best Score</th>
+              <th>Status</th>
+              <th>Time Spent</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Easy</td>
+              <td>3</td>
+              <td>68%</td>
+              <td>76%</td>
+              <td><span class="label label-success">Passed</span></td>
+              <td>13 min</td>
+            </tr>
+            <tr>
+              <td>Medium</td>
+              <td>1</td>
+              <td>54%</td>
+              <td>54%</td>
+              <td><span class="label label-danger">Failed</span></td>
+              <td>8 min</td>
+            </tr>
+            <tr>
+              <td>Hard</td>
+              <td>0</td>
+              <td>-</td>
+              <td>-</td>
+              <td><span class="label label-default">Not Attempted</span></td>
+              <td>-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pattern Analysis (Optional but Insightful) -->
+      <div class="box box-default box-solid">
+        <div class="box-header with-border">
+          <h5 class="box-title">Tutor Observations</h5>
+        </div>
+        <div class="box-body">
+          <ul style="margin-left: 20px;">
+            <li>Struggles with Medium-level logic questions (avg score below pass mark).</li>
+            <li>Completes levels faster than peers (avg time per level: ~10 min).</li>
+            <li>Performs better on conceptual questions vs. memory-based ones.</li>
+            <li>Shows improvement with each Easy-level attempt.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Additional Tutor Note -->
+      <div class="form-group mt-2">
+        <label>Tutor Note (Private)</label>
+        <textarea name="note" class="form-control input-sm" rows="2" placeholder="e.g. Consider giving extra support on algebra-based problems."></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -181,6 +181,7 @@
     </section>
 
     <section class="content">
+
       <div class="row">
         <!-- Metric Cards -->
         <div class="col-md-3">
@@ -228,136 +229,203 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-md-12">
-          <div class="box" style="border-top:3px solid #3a3a72;">
-            <div class="box-header with-border">
-              <h3 class="box-title">Quick Actions</h3>
-            </div>
-            <div class="box-body text-center">
-              <a href="startquiz.php" class="btn btn-primary" style="margin:5px;">📘 Start New Quiz</a>
-              <a href="studymaterials.php" class="btn btn-info" style="margin:5px;">📂 View Study Materials</a>
-              <a href="myresults.php" class="btn btn-success" style="margin:5px;">📊 Check Results</a>
-              <a href="homework.php" class="btn btn-warning" style="margin:5px;">📝 Pending Homework</a>
-            </div>
-          </div>
-        </div>
+
+<div class="row"> 
+  <div class="col-md-12">
+    <div class="box box-default" style="border-top:3px solid #3a3a72;">
+      <div class="box-header with-border">
+        <h3 class="box-title">Quick Links</h3>
       </div>
+      <div class="box-body">
 
-      <div class="row">
-        <div class="col-md-12">
-          <div class="box" style="border-top:3px solid #ff9800;">
-            <div class="box-header with-border">
-              <h3 class="box-title">Class Leaderboard</h3>
-            </div>
-            <div class="box-body">
-              <table class="table table-bordered table-hover">
-                <thead>
-                  <tr>
-                    <th>Rank</th>
-                    <th>Learner</th>
-                    <th>Score (%)</th>
-                    <th>Badges</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>Jane Doe</td>
-                    <td>95%</td>
-                    <td>🏆🎯</td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>John Smith</td>
-                    <td>92%</td>
-                    <td>🎯</td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>Mary Johnson</td>
-                    <td>90%</td>
-                    <td>🎯</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+        <!-- ================= Profile & Settings ================= -->
+        <h4 style="color:#3a3a72; margin-bottom:10px;">Profile & Settings</h4>
+        <div class="row">
+          <div class="col-md-3 col-sm-6">
+            <a href="profile.php">
+              <div class="small-box" style="background:#f0f8ff; color:#333;">
+                <div class="inner">
+                  <h4>👤</h4>
+                  <p>My Profile</p>
+                </div>
+              </div>
+            </a>
           </div>
-        </div>
-      </div>
-
-
-
-
-
-      <div class="row">
-
-        <!-- Upcoming Homework -->
-        <div class="col-md-6">
-          <div class="box" style="border-top:3px solid #0073e6;">
-            <div class="box-header with-border">
-              <h3 class="box-title">Upcoming Homework</h3>
-            </div>
-            <div class="box-body">
-              <ul>
-                <li>Math – Algebra Quiz <span style="color:red;">Due Tomorrow</span></li>
-                <li>Science – Lab Report <span style="color:orange;">Due in 3 days</span></li>
-                <li>History – Essay <span style="color:green;">Due in 1 week</span></li>
-              </ul>
-            </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="mysubjects.php">
+              <div class="small-box" style="background:#e0f7fa; color:#333;">
+                <div class="inner">
+                  <h4>📖</h4>
+                  <p>My Subjects</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="booksession.php">
+              <div class="small-box" style="background:#fffde7; color:#333;">
+                <div class="inner">
+                  <h4>📅</h4>
+                  <p>Book a Session</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="tutorrating.php">
+              <div class="small-box" style="background:#fff3e0; color:#333;">
+                <div class="inner">
+                  <h4>⭐</h4>
+                  <p>Rate Your Tutor</p>
+                </div>
+              </div>
+            </a>
           </div>
         </div>
 
-        <!-- Recent Results -->
-        <div class="col-md-6">
-          <div class="box" style="border-top:3px solid #28a745;">
-            <div class="box-header with-border">
-              <h3 class="box-title">Recent Results</h3>
-            </div>
-            <div class="box-body">
-              <table class="table table-bordered">
-                <tr><th>Subject</th><th>Score</th><th>Date</th></tr>
-                <tr><td>Math</td><td>85%</td><td>Aug 10</td></tr>
-                <tr><td>Science</td><td>92%</td><td>Aug 7</td></tr>
-              </table>
-            </div>
+        <!-- ================= Study & Resources ================= -->
+        <h4 style="color:#3a3a72; margin:20px 0 10px 0;">Study & Resources</h4>
+        <div class="row">
+          <div class="col-md-3 col-sm-6">
+            <a href="studymaterials.php">
+              <div class="small-box" style="background:#e8f5e9; color:#333;">
+                <div class="inner">
+                  <h4>📚</h4>
+                  <p>Study Materials</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="pastpapers.php">
+              <div class="small-box" style="background:#fff3f3; color:#333;">
+                <div class="inner">
+                  <h4>📝</h4>
+                  <p>Past Papers</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="practicequizzes.php">
+              <div class="small-box" style="background:#e8eaf6; color:#333;">
+                <div class="inner">
+                  <h4>📝</h4>
+                  <p>Sharpen My Skills</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="assignments.php">
+              <div class="small-box" style="background:#fff8e1; color:#333;">
+                <div class="inner">
+                  <h4>🗂️</h4>
+                  <p>Homeworks/Quizzes</p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- ================= Progress & Performance ================= -->
+        <h4 style="color:#3a3a72; margin:20px 0 10px 0;">Progress & Performance</h4>
+        <div class="row">
+          <div class="col-md-3 col-sm-6">
+            <a href="myresults.php">
+              <div class="small-box" style="background:#fff8e1; color:#333;">
+                <div class="inner">
+                  <h4>📊</h4>
+                  <p>My Results</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="progress.php">
+              <div class="small-box" style="background:#f0f7ff; color:#333;">
+                <div class="inner">
+                  <h4>🚀</h4>
+                  <p>Track Progress</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="schedule.php">
+              <div class="small-box" style="background:#fefcf0; color:#333;">
+                <div class="inner">
+                  <h4>⏰</h4>
+                  <p>My Schedule</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="attendance.php">
+              <div class="small-box" style="background:#f0fff0; color:#333;">
+                <div class="inner">
+                  <h4>📅</h4>
+                  <p>My Attendance</p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- ================= Communication & Support ================= -->
+        <h4 style="color:#3a3a72; margin:20px 0 10px 0;">Communication & Support</h4>
+        <div class="row">
+          <div class="col-md-3 col-sm-6">
+            <a href="support.php">
+              <div class="small-box" style="background:#fff0f5; color:#333;">
+                <div class="inner">
+                  <h4>🆘</h4>
+                  <p>Help & Support</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="forums.php">
+              <div class="small-box" style="background:#f1f8e9; color:#333;">
+                <div class="inner">
+                  <h4>💬</h4>
+                  <p>Discussion Forums</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="studentvoice.php">
+              <div class="small-box" style="background:#fff3e0; color:#333;">
+                <div class="inner">
+                  <h4>🗣️</h4>
+                  <p>Student Voice</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <a href="announcements.php">
+              <div class="small-box" style="background:#fce4ec; color:#333;">
+                <div class="inner">
+                  <h4>📢</h4>
+                  <p>Announcements</p>
+                </div>
+              </div>
+            </a>
           </div>
         </div>
 
       </div>
+    </div>
+  </div>
+</div>
 
-      <div class="row">
 
-          <!-- Announcements -->
-          <div class="col-md-6">
-            <div class="box" style="border-top:3px solid #ff9800;">
-              <div class="box-header with-border">
-                <h3 class="box-title">Announcements</h3>
-              </div>
-              <div class="box-body">
-                <p>📢 School closed on Friday for maintenance.</p>
-                <p>📢 New worksheets uploaded for Grade 10 Science.</p>
-              </div>
-            </div>
-          </div>
 
-          <!-- Achievements -->
-          <div class="col-md-6">
-            <div class="box" style="border-top:3px solid #9c27b0;">
-              <div class="box-header with-border">
-                <h3 class="box-title">Your Achievements</h3>
-              </div>
-              <div class="box-body">
-                <span class="badge" style="background:#28a745;">Perfect Score</span>
-                <span class="badge" style="background:#0073e6;">On-Time Submissions</span>
-                <span class="badge" style="background:#ff9800;">Consistency Star</span>
-              </div>
-            </div>
-          </div>
 
-      </div>
-
-      </div>
 
 
     </section>

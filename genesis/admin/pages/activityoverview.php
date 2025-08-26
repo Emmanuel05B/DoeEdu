@@ -16,15 +16,16 @@ if (!isset($_GET['activityId'])) {
 }
 $activityId = intval($_GET['activityId']);
 
+
 // Get activity details including last feedback date
-$actStmt = $connect->prepare("SELECT Title, Grade, Topic, Instructions, DueDate, CreatedAt, TotalMarks, SubjectName, LastFeedbackSent, GroupName
+$actStmt = $connect->prepare("SELECT Title, Grade, Topic, Instructions, DueDate, CreatedAt, TotalMarks, SubjectId, LastFeedbackSent, GroupName
 FROM onlineactivities WHERE Id = ?");
 $actStmt->bind_param("i", $activityId);
 $actStmt->execute();
 $activity = $actStmt->get_result()->fetch_assoc();
 $actStmt->close();
 
-$subjectId = $activity['SubjectName'];
+$subjectId = $activity['SubjectId'];   
 $grade = $activity['Grade'];
 $last_feedback_date = $activity['LastFeedbackSent'];
 $group = $activity['GroupName'];

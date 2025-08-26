@@ -31,6 +31,7 @@ include(__DIR__ . "/../../partials/connect.php");
     <section class="content">
       <div class="row">
         <?php 
+        /*
           $sql = "SELECT                
             SUM(TotalFees) AS TotalFees,
             SUM(TotalPaid) AS TotalPaid,
@@ -44,6 +45,12 @@ include(__DIR__ . "/../../partials/connect.php");
           $TotalPaid = $final['TotalPaid'];
           $TotalOwe = $final['TotalOwe'];
           $Owe = (-1 * $final['Owe']);
+          */
+
+          $TotalFees = 5201;
+          $TotalPaid = 4151;
+          $TotalOwe = 5201 - 4151;
+          $Owe = 0;
         ?>
 
         <div class="col-md-3 col-sm-6 col-xs-12">
@@ -169,12 +176,7 @@ include(__DIR__ . "/../../partials/connect.php");
                             users.Name, 
                             users.Surname, 
                             learners.Grade, 
-                            learners.Math, 
-                            learners.Physics,
-                            learners.TotalFees, 
-                            learners.TotalPaid, 
-                            learners.TotalOwe,
-                            learners.LastUpdated
+                            
                           FROM learners
                           JOIN users ON learners.LearnerId = users.Id
                         ";
@@ -184,11 +186,10 @@ include(__DIR__ . "/../../partials/connect.php");
                             <td><?php echo htmlspecialchars($final['Name']); ?></td>
                             <td><?php echo htmlspecialchars($final['Surname']); ?></td>
                             <td><?php echo htmlspecialchars($final['Grade']); ?></td>
-                            <td><?php echo htmlspecialchars($final['Math']); ?></td>
-                            <td><?php echo htmlspecialchars($final['Physics']); ?></td>
-                            <td>R<?php echo number_format($final['TotalFees'], 2); ?></td>
-                            <td>R<?php echo number_format($final['TotalPaid'], 2); ?></td>
-                            <td>R<?php echo number_format($final['TotalOwe'], 2); ?></td>
+                           
+                            <td>R<?php echo number_format(524, 2); ?></td>
+                            <td>R<?php echo number_format(142, 2); ?></td>
+                            <td>R<?php echo number_format(547, 2); ?></td>
                             <td>
                               <?php 
                                 if (!empty($final['LastUpdated'])) {
