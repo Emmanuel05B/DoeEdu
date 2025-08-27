@@ -116,25 +116,23 @@ while($row = $gradesResult->fetch_assoc()){
                   <fieldset class="tab">
                     <legend>Parent Info</legend>
                     <div class="form-group row">
-                      <div class="col-md-6">
+                      <div class="col-md-3">
                         <label>First Name</label>
                         <input type="text" class="form-control" name="parentname" required>
                       </div>
-                      <div class="col-md-6">
+                      <div class="col-md-3">
                         <label>Surname</label>
                         <input type="text" class="form-control" name="parentsurname" required>
                       </div>
-                    </div>
-                    <div class="form-group row">
                       <div class="col-md-3">
                         <label>Email</label>
                         <input type="email" class="form-control" name="parentemail" required>
                       </div>
-                      <div class="col-md-3">
-                        <label>Contact Number</label>
+                      <div class="col-md-2">
+                        <label>Cell No:</label>
                         <input type="tel" class="form-control" name="parentcontact" pattern="[0-9]{10}" maxlength="10" required>
                       </div>
-                      <div class="col-md-3">
+                      <div class="col-md-2">
                         <label>Title</label>
                         <select class="form-control" name="parenttitle" required>
                           <option value="">Select Title</option>
@@ -145,6 +143,10 @@ while($row = $gradesResult->fetch_assoc()){
                           <option value="Prof">Prof.</option>
                         </select>
                       </div>
+                    </div>
+                    <div class="form-group row">
+                      
+                      
                     </div>
                   </fieldset>
 
@@ -300,7 +302,7 @@ while($row = $gradesResult->fetch_assoc()){
           const targetLevels = $('select[name="TargetLevel[]"]').map((i, el) => $(el).val()).get();
 
           for(let i=0; i<subjects.length; i++){
-              if(durations[i] > 0){
+              if(durations[i] > 0){  // check if subject has been registered or not. 
                   const subjectName = $('#subjectsTable tr').eq(i).find('td:first').text();
                   const durationText = $('#subjectsTable tr').eq(i).find('select[name="Duration[]"] option:selected').text();
                   total += durations[i];

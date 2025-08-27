@@ -85,7 +85,7 @@ include(__DIR__ . "/../../partials/connect.php");
         <div class="col-md-3">
           <div class="box box-primary">
             <div class="box-header with-border text-center">
-              <h3 class="box-title" style="margin:10px auto;">Grade <?php echo $grade; ?></h3>
+              <h3 class="box-title" style="margin:10px auto;"><?php echo $grade; ?></h3>
               <p><i class="fa fa-book"></i> <?php echo $subjectName; ?> - Group <?php echo $group; ?></p>
               <p><i class="fa fa-users"></i> <strong><?php echo $learnerCount; ?> learner<?php echo $learnerCount != 1 ? 's' : ''; ?></strong></p>
               <p><i class="fa fa-circle text-<?php echo $status == 'Full' ? 'red' : 'green'; ?>"></i> <?php echo $status; ?></p>

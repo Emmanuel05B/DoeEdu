@@ -11,7 +11,7 @@
     
 
     // Assume tutor id for demo, replace with actual logged-in tutor ID in real
-    $tutorId = 2;
+    $tutorId = 25;
 
     // Fetch tutor's assigned classes info for dropdowns
     $subjectGradeOptions = [];
@@ -80,67 +80,98 @@
 
       <div class="row">
         <!-- Upload Resource - Left Side -->
-        <div class="col-md-6">
+      
+        <div class="col-md-12">
           <div class="box box-primary" style="border-top: 3px solid #3c8dbc;">
             <div class="box-header with-border" style="background-color:#f0f8ff;">
-              <h3 class="box-title" style="color:#3c8dbc;"><i class="fa fa-upload"></i> Upload New Resource</h3>
+              <h3 class="box-title" style="color:#3c8dbc;">
+                <i class="fa fa-upload"></i> Upload New Resource
+              </h3>
             </div>
             <div class="box-body" style="background-color:#ffffff;">
               <form action="upload_resource.php" method="POST" enctype="multipart/form-data">
                 <div class="row">
 
-                  <!-- Title -->
-                  <div class="col-md-6 form-group">
-                    <label for="title">Title</label>
-                    <input type="text" name="title" class="form-control" placeholder="E.g. Newton’s Laws Summary" required>
+                  <!-- Left Column: Form Fields (8 cols) -->
+                  <div class="col-md-8">
+                    <div class="row">
+                      <!-- Title -->
+                      <div class="col-md-6 form-group">
+                        <label for="title">Title</label>
+                        <input type="text" name="title" class="form-control" placeholder="E.g. Newton’s Laws Summary" required>
+                      </div>
+
+                      <!-- Subject & Grade -->
+                      <div class="col-md-6 form-group">
+                        <label for="subject_grade">Subject & Grade</label>
+                        <select name="classId" class="form-control" required>
+                          <option value="">Select Subject & Grade</option>
+                          <?php foreach ($subjectGradeOptions as $option): ?>
+                            <option value="<?= htmlspecialchars($option['ClassID']) ?>">
+                              Grade <?= htmlspecialchars($option['Grade']) ?> - Group <?= htmlspecialchars($option['GroupName']) ?> (<?= htmlspecialchars($option['SubjectName']) ?>)
+                            </option>
+                          <?php endforeach; ?>
+                        </select>
+                      </div>
+
+                      <!-- File Upload -->
+                      <div class="col-md-6 form-group">
+                        <label for="resource_file">Choose File</label>
+                        <input type="file" name="resource_file" class="form-control" required>
+                      </div>
+
+                      <!-- Visibility -->
+                      <div class="col-md-6 form-group">
+                        <label for="visibility">Visibility</label>
+                        <select name="visibility" class="form-control" required>
+                          <option value="private">Private (Only assigned classes)</option>
+                          <option value="public">Public (All learners can access)</option>
+                        </select>
+                      </div>
+
+                      <!-- Description -->
+                      <div class="col-md-12 form-group">
+                        <label for="description">Description / Notes (Optional)</label>
+                        <textarea name="description" class="form-control" rows="2" placeholder="Brief info about the resource"></textarea>
+                      </div>
+                    </div>
                   </div>
 
-                  <!-- Subject & Grade -->
-                  <div class="col-md-6 form-group">
-                    <label for="subject_grade">Subject & Grade</label>
-                    <select name="classId" class="form-control" required>
-                      <option value="">Select Subject & Grade</option>
-                      <?php foreach ($subjectGradeOptions as $option): ?>
-                        <option value="<?= htmlspecialchars($option['ClassID']) ?>">
-                          Grade <?= htmlspecialchars($option['Grade']) ?> - Group <?= htmlspecialchars($option['GroupName']) ?> (<?= htmlspecialchars($option['SubjectName']) ?>)
-                        </option>
-                      <?php endforeach; ?>
-                    </select>
-                  </div>
-
-                  <!-- File Upload -->
-                  <div class="col-md-6 form-group">
-                    <label for="resource_file">Choose File</label>
-                    <input type="file" name="resource_file" class="form-control" required>
-                  </div>
-
-                  <!-- Visibility -->
-                  <div class="col-md-6 form-group">
-                    <label for="visibility">Visibility</label>
-                    <select name="visibility" class="form-control" required>
-                      <option value="private">Private (Only assigned classes)</option>
-                      <option value="public">Public (All learners can access)</option>
-                    </select>
-                  </div>
-
-                  <!-- Description -->
-                  <div class="col-md-6 form-group">
-                    <label for="description">Description / Notes (Optional)</label>
-                    <textarea name="description" class="form-control" rows="2" placeholder="Brief info about the resource"></textarea>
+                  <!-- Right Column: File Info (4 cols) -->
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Supported File Types</label>
+                      <div class="alert alert-info" style="margin-bottom:0;">
+                        <strong>Allowed formats:</strong><br>
+                        <ul style="margin: 0; padding-left: 18px;">
+                          <li>PDF (.pdf)</li>
+                          <li>Images (.jpg, .jpeg, .png, .gif, .webp)</li>
+                          <li>Documents (.doc, .docx, .xls, .xlsx, .ppt, .pptx)</li>
+                          <li>Videos (.mp4, .avi, .mov, .mkv, .webm)</li>
+                          <li>Audio (.mp3, .wav, .m4a, .ogg)</li>
+                          <li>Compressed (.zip, .rar, .7z)</li>
+                          <li>Text files (.txt, .csv)</li>
+                        </ul>
+                        <p style="margin-top:5px;"><strong>Maximum size:</strong> 50 MB</p>
+                      </div>
+                    </div>
                   </div>
 
                 </div>
 
                 <div class="col-md-12 text-right" style="margin-top: 10px;">
-                  <button type="submit" class="btn btn-primary"><i class="fa fa-cloud-upload"></i> Upload Resource</button>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-cloud-upload"></i> Upload Resource
+                  </button>
                 </div>
               </form>
             </div>
           </div>
         </div>
 
+
         <!-- Bulk Assign Resources to Class - Right Side -->
-        <div class="col-md-6">
+        <div class="col-md-12">
           <div class="box box-info" style="border-top: 3px solid #00c0ef;">
             <div class="box-header with-border" style="background-color:#d9f0fb;">
               <h3 class="box-title" style="color:#0073b7;">

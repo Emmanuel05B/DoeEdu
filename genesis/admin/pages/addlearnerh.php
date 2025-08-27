@@ -7,6 +7,12 @@ if (!isset($_SESSION['email'])) {
 
 include(__DIR__ . "/../../partials/connect.php");
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Load Composer's autoloader
+require __DIR__ . '/../../../vendor/autoload.php';
+
 // Transaction start
 $connect->begin_transaction();
 
@@ -73,7 +79,8 @@ try {
     foreach ($_POST['SubjectID'] as $i => $sid) {    //SubjectID  from the form
         $sid = (int)$sid;
         $duration = $_POST['Duration'][$i];
-        $currentLevel = $_POST['CurrentLevel'][$i];
+        if($duration > 0){  // check if subject has been registered or not. 
+            $currentLevel = $_POST['CurrentLevel'][$i];
         $targetLevel  = $_POST['TargetLevel'][$i];
 
         $stmtSub = $connect->prepare("
@@ -129,7 +136,7 @@ try {
             ORDER BY CreatedAt ASC 
             LIMIT 1
         ");
-        $stmtClass->bind_param("ii", $sid, $grade);
+        $stmtClass->bind_param("ii", $sid, $gradeName);
         $stmtClass->execute();
         $resultClass = $stmtClass->get_result();
 
@@ -142,7 +149,8 @@ try {
             $update = $connect->prepare("UPDATE classes SET CurrentLearnerCount = ?, Status = ? WHERE ClassID = ?");
             $update->bind_param("isi", $newCount, $classStat, $classId);
             $update->execute();
-            $update->close();
+            $update->close();  
+                
         } else {
             $stmtGroup = $connect->prepare("
                 SELECT GroupName 
@@ -151,26 +159,13 @@ try {
                 ORDER BY GroupName DESC 
                 LIMIT 1
             ");
-            $stmtGroup->bind_param("ii", $sid, $grade);
+            $stmtGroup->bind_param("is", $sid, $gradeName);
             $stmtGroup->execute();
             $groupResult = $stmtGroup->get_result();
 
             if ($groupResult->num_rows > 0) {
-                $last = $groupResult->fetch_assoc()['GroupName'];
-                $last = strtoupper(trim($last));
-                if ($last === '' || preg_match('/[^A-Z]/', $last)) {
-                    $newGroupName = 'A';
-                } else {
-                    $carry = 1;
-                    $chars = str_split(strrev($last));
-                    for ($j = 0; $j < count($chars); $j++) {
-                        $n = ord($chars[$j]) - 65 + $carry;
-                        if ($n >= 26) { $chars[$j] = 'A'; $carry = 1; }
-                        else { $chars[$j] = chr(65 + $n); $carry = 0; break; }
-                    }
-                    if ($carry === 1) $chars[] = 'A';
-                    $newGroupName = strrev(implode('', $chars));
-                }
+                $lastGroupName = $groupResult->fetch_assoc()['GroupName'];
+                $newGroupName = chr(ord($lastGroupName) + 1); // A → B → C, etc.
             } else {
                 $newGroupName = 'A';
             }
@@ -195,6 +190,8 @@ try {
         $assign->bind_param("ii", $learnerId, $classId);
         $assign->execute();
         $assign->close();
+        }
+        
     } // End of subjects loop
 
     // -------------------
@@ -224,6 +221,10 @@ try {
     // Commit transaction
     $connect->commit();
 
+    //sendEmailToParent($parent_email, $parent_name, $learner_name);
+    //sendEmailToLearner($learner_email, $learner_name, $verificationToken);
+
+
     $_SESSION['success'] = "Learner registered successfully!";
     header("Location: addlearners.php");
     exit();
@@ -234,3 +235,122 @@ try {
     header("Location: addlearners.php");
     exit();
 }
+
+
+/*/ Send email to parent
+function sendEmailToParent($parent_email, $parent_name, $learner_name) {
+  $mail = new PHPMailer(true);
+  try {
+      $mail->isSMTP();
+      $mail->Host = 'smtp.gmail.com';
+      $mail->SMTPAuth = true;
+      $mail->Username = 'thedistributorsofedu@gmail.com';
+      $mail->Password = 'bxuxtebkzbibtvej';
+      $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+      $mail->Port = 465;
+
+      $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
+      $mail->addAddress($parent_email, $parent_name);
+      $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis');
+
+      $mail->isHTML(true);
+      $mail->Subject = 'Your Child is Registered with DoE';
+      $mail->Body = "
+      <p>Dear $parent_name,</p>
+      <p>Your child <strong>$learner_name</strong> has been successfully registered with the Distributors of Education.</p>
+      <p>You will be updated with progress reports, announcements, and upcoming sessions.</p>
+      <p>Thank you for choosing us to support your child's learning journey.</p>
+      <br><p>Warm regards,</p><p><strong>DoE Team</strong></p>";
+
+      $mail->send();
+  } catch (Exception $e) {
+      // You could log errors if needed
+  }
+}
+*/
+/*
+// Send email to learner with verification link
+function sendEmailToLearner($learner_email, $learner_name, $verificationToken) {
+  $mail = new PHPMailer(true);
+  try {
+      $mail->isSMTP();
+      $mail->Host = 'smtp.gmail.com';
+      $mail->SMTPAuth = true;
+      $mail->Username = 'thedistributorsofedu@gmail.com';
+      $mail->Password = 'bxuxtebkzbibtvej';
+      $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+      $mail->Port = 465;
+
+      $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
+      $mail->addAddress($learner_email, $learner_name);
+      $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis');
+
+      $mail->isHTML(true);
+      $mail->Subject = 'Welcome to DoE - Please Verify Your Email';
+      $mail->Body = "
+      <p>Dear $learner_name,</p>
+      <p>Welcome to the Distributors of Education! You have been successfully registered.</p>
+      <p>Please verify your email address to activate your account:</p>
+      <a href='http://localhost/DoeEdu/genesis/common/verification.php?token=$verificationToken' style='background-color: #008CBA; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify Email</a>
+      <p>If you have any questions, feel free to contact us.</p>
+      <br><p>Best regards,</p><p><strong>DoE Team</strong></p>";
+
+      if ($mail->send()) {
+
+        echo '<!DOCTYPE html>
+          <html>
+          <head>
+            <title>Success</title>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+          </head>
+          <body>
+          <script>
+            Swal.fire({
+                icon: "success",
+                title: "Registration Successful",
+                text: "Emails sent to both parent and learner.",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "addlearners.php";
+                }
+            });
+          </script>
+          </body>
+          </html>';
+
+          exit;
+
+      }
+
+  } catch (Exception $e) {
+
+    echo '<!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <title>Email Send Failed</title>
+          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      </head>
+      <body>
+          <script>
+              document.addEventListener("DOMContentLoaded", function () {
+                  Swal.fire({
+                      icon: "error",
+                      title: "Email Send Failed",
+                      text: "There was an issue sending the email to learner.",
+                      confirmButtonText: "OK"
+                  }).then(function () {
+                      window.location.href = "addlearners.php";
+                  });
+              });
+          </script>
+      </body>
+      </html>';
+      exit;
+
+  }
+}
+
+*/
