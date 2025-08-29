@@ -32,7 +32,7 @@ $tutor = $result->fetch_assoc();
 
 // Fetch all subjects..........updatethe subjects tabe with the new one.
 $allSubjects = [];
-$stmtAll = $connect->prepare("SELECT SubjectId, SubjectName, Grade FROM oldsubjects ORDER BY SubjectName, Grade");
+$stmtAll = $connect->prepare("SELECT SubjectId, SubjectName, GradeId FROM subjects ORDER BY SubjectName, GradeId");
 $stmtAll->execute();
 $resAll = $stmtAll->get_result();
 while ($row = $resAll->fetch_assoc()) {
@@ -144,7 +144,7 @@ $stmtReg->close();
                   <div class="row">
                     <?php foreach ($allSubjects as $subject): 
                       $checked = in_array($subject['SubjectId'], $registeredIds) ? 'checked' : '';
-                      $subjectLabel = htmlspecialchars($subject['SubjectName']) . " - Grade " . htmlspecialchars($subject['Grade']);
+                      $subjectLabel = htmlspecialchars($subject['SubjectName']) . " - Grade " . htmlspecialchars($subject['GradeId']);
                     ?>
                       <div class="form-group col-md-4">
                         <div class="checkbox">

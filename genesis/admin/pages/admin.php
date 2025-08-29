@@ -99,50 +99,121 @@ if ($resultSubjects) {
           </ol><br>
         </section>
         <section class="content">
-          <div class="row">
-            <div class="col-md-12"> 
-              <div class="nav-tabs-custom">
-                <ul class="nav nav-tabs">
-                  <li class="active"><a href="#add" data-toggle="tab">Add Users</a></li>
-                  <li><a href="#update" data-toggle="tab">Update Users</a></li>
-                </ul>
-                <div class="tab-content">
-                  <div class="active tab-pane" id="add">
-                    <div class="profile-personal-info">
-                      <h4 class="text-primary mb-4">Register</h4>
-                      <div class="bubble-container">
-                        <a href="addlearners.php" style="color: #1a73e8;" class="bubble">Add Learners</a>
-                        <a href="addtutor.php" style="color: #1a73e8;" class="bubble">Add Tutors</a>
-                        <a href="addschool.php" style="color: #1a73e8;" class="bubble">Add School</a>
-                        <a href="manage_inviterequests.php" style="color: #1a73e8;" class="bubble">Manage Requests</a>
-                        
-                        <a href="addlearnersv2.php" style="color: #1a73e8;" class="bubble">V2</a>
-                      </div>
-                    </div>
-                  </div>
+  <div class="row">
+    <div class="col-md-12"> 
+      <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#add" data-toggle="tab">Add Users</a></li>
+          <li><a href="#update" data-toggle="tab">Update Users</a></li>
+          <li><a href="#settings" data-toggle="tab">System Settings</a></li>
+        </ul>
+        <div class="tab-content">
 
-                  <div class="tab-pane" id="update">
-
-                    <div class="profile-personal-info">
-                      <h4 class="text-primary mb-4">Update</h4>
-                      <div class="bubble-container">
-                        <a href="updatelearnerlist.php" style="color: #1a73e8;" class="bubble">Update Learner</a>
-                        <a href="updatetutorlist.php" style="color: #1a73e8;" class="bubble">Update Tutor</a>
-                        <a href="updatechoollist.php" style="color: #1a73e8;" class="bubble">Update School</a>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
+          <!-- Add Users -->
+          <div class="active tab-pane" id="add">
+            <div class="profile-personal-info">
+              <h4 class="text-primary mb-4">Register</h4>
+              <div class="bubble-container">
+                <a href="addlearners.php" class="bubble">Add Learners</a>
+                <a href="addtutor.php" class="bubble">Add Tutors</a>
+                <a href="addschool.php" class="bubble">Add School</a>
+                <a href="manage_inviterequests.php" class="bubble">Manage Requests</a>
+                <a href="addlearnersv2.php" class="bubble">V2</a>
               </div>
             </div>
           </div>
-        </section>
+
+          <!-- Update Users -->
+          <div class="tab-pane" id="update">
+            <div class="profile-personal-info">
+              <h4 class="text-primary mb-4">Update</h4>
+              <div class="bubble-container">
+                <a href="updatelearnerlist.php" class="bubble">Update Learner</a>
+                <a href="updatetutorlist.php" class="bubble">Update Tutor</a>
+                <a href="updateschoollist.php" class="bubble">Update School</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Settings -->
+          <div class="tab-pane" id="settings">
+            <div class="profile-personal-info">
+              <h4 class="text-primary mb-4">System Settings</h4>
+              <div class="bubble-container">
+                <a href="general_settings.php" class="bubble">General Settings</a>
+                <a href="roles_permissions.php" class="bubble">Roles & Permissions</a>
+                <a href="audit_logs.php" class="bubble">Audit Logs</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 
     </div>
 
     <div class="control-sidebar-bg"></div>
-  </div>
+</div>
+
+
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+
+<!-- Deregister Learner Modal -->
+<div class="modal fade" id="deregisterLearnerModal" tabindex="-1" role="dialog" aria-labelledby="deregisterLearnerLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-red">
+        <h4 class="modal-title" id="deregisterLearnerLabel">Deregister Learner from Program</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form action="process_deregistration.php" method="POST">
+        <div class="modal-body">
+          <p>Are you sure you want to deregister this learner from the program completely?</p>
+          
+          <!-- Learner selection -->
+          <div class="form-group">
+            <label for="learnerSelect">Select Learner</label>
+            <select name="LearnerId" id="learnerSelect" class="form-control" required>
+              <option value="">-- Choose Learner --</option>
+              <?php
+              $learnersQuery = "
+                SELECT l.LearnerId, u.Name, u.Surname
+                FROM learners l
+                JOIN users u ON l.LearnerId = u.Id
+                ORDER BY u.Surname, u.Name
+              ";
+              $res = $connect->query($learnersQuery);
+              while ($row = $res->fetch_assoc()) {
+                  echo "<option value='{$row['LearnerId']}'>{$row['Surname']}, {$row['Name']}</option>";
+              }
+              ?>
+            </select>
+          </div>
+
+          <!-- Reason -->
+          <div class="form-group">
+            <label for="reason">Reason for Deregistration</label>
+            <textarea name="Reason" id="reason" class="form-control" rows="3" placeholder="Enter reason..." required></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger">Deregister</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
