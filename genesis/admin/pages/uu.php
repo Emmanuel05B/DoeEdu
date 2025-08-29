@@ -29,149 +29,162 @@ include(__DIR__ . "/../../common/partials/head.php"); ?>
 
     <section class="content">
 
-    <!-- PERSONAL INFO -->
-    <form>
-        <div class="box box-info" style="border-top:3px solid #00c0ef;">
-            <div class="box-header with-border" style="background-color:#e0f7ff;">
-                <h3 class="box-title" style="color:#00c0ef;">Personal Information</h3>
-            </div>
-            <div class="box-body">
-                <div class="row">
-                    <div class="col-md-3 form-group">
-                        <label>First Name</label>
-                        <input type="text" class="form-control" value="John" required>
+    <!-- PERSONAL + PROFESSIONAL INFO GRID -->
+    <div class="row" style="margin-top:20px;">
+
+        <!-- Personal Info (left) -->
+        <div class="col-md-6">
+            <form>
+                <div class="box box-info" style="border-top:3px solid #00c0ef;">
+                    <div class="box-header with-border" style="background-color:#e0f7ff;">
+                        <h3 class="box-title" style="color:#00c0ef;">Personal Information</h3>
                     </div>
-                    <div class="col-md-3 form-group">
-                        <label>Surname</label>
-                        <input type="text" class="form-control" value="Doe" required>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>First Name</label>
+                                <input type="text" class="form-control" value="John" required>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Surname</label>
+                                <input type="text" class="form-control" value="Doe" required>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Email</label>
+                                <input type="email" class="form-control" value="john.doe@example.com" required>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Contact</label>
+                                <input type="tel" class="form-control" value="+27 123 456 789" required>
+                            </div>
+                          
+                        </div>
                     </div>
-                    <div class="col-md-3 form-group">
-                        <label>Email</label>
-                        <input type="email" class="form-control" value="john.doe@example.com" required>
+                    <div class="box-footer text-right">
+                        <button type="submit" class="btn btn-info">Update Personal Info</button>
                     </div>
-                    <div class="col-md-3 form-group">
-                        <label>Contact</label>
-                        <input type="tel" class="form-control" value="+27 123 456 789" required>
-                    </div>
-                   
                 </div>
-            </div>
-            <div class="box-footer text-right">
-                <button type="submit" class="btn btn-info">Update Personal Info</button>
-            </div>
+            </form>
         </div>
-    </form>
 
-    <!-- PROFESSIONAL INFO (readonly) -->
-    <div class="box box-warning" style="border-top:3px solid #f39c12;">
-        <div class="box-header with-border" style="background-color:#fff3e0;">
-            <h3 class="box-title" style="color:#f39c12;">Professional Info (Read-Only)</h3>
-        </div>
-        <div class="box-body row">
-            <div class="col-md-5">
-                <label>Bio</label>
-                <textarea class="form-control" rows="5" readonly style="background:#f5f5f5; cursor:not-allowed;">Experienced tutor in Maths and Science.</textarea>
-            </div>
-            <div class="col-md-5">
-                <label>Qualifications</label>
-                <textarea class="form-control" rows="5" readonly style="background:#f5f5f5; cursor:not-allowed;">BSc in Computer Science</textarea>
-            </div>
-            <div class="col-md-2">
-                <label>Experience (Years)</label>
-                <input class="form-control form-control-plaintext" value="5" readonly style="background:#f5f5f5;">
-                <label>Availability</label>
-                <input class="form-control form-control-plaintext" value="Weekdays 10am-4pm" readonly style="background:#f5f5f5;">
-            </div>
-        </div>
-    </div>
-
-    <!-- SUBJECTS + CLASSES GRID -->
-<div class="row" style="margin-top:20px;">
-
-    <!-- Manage Subjects -->
-    <div class="col-md-6">
-        <form>
-            <div class="box box-primary" style="border-top:3px solid #3c8dbc;">
-                <div class="box-header with-border" style="background-color:#f0f8ff;">
-                    <h3 class="box-title" style="color:#3c8dbc;">Manage Subjects</h3>
+        <!-- Professional Info (right) -->
+        <div class="col-md-6">
+            <div class="box box-warning" style="border-top:3px solid #f39c12;">
+                <div class="box-header with-border" style="background-color:#fff3e0;">
+                    <h3 class="box-title" style="color:#f39c12;">Professional Info (Read-Only)</h3>
                 </div>
                 <div class="box-body">
                     <div class="row">
-                        <div class="col-md-4">
-                            <div class="checkbox">
-                                <label><input type="checkbox" checked> Mathematics - Grade 10</label>
-                            </div>
+                        <div class="col-md-6 form-group">
+                            <label>Bio</label>
+                            <textarea class="form-control" rows="4" readonly style="background:#f5f5f5; cursor:not-allowed;">Experienced tutor in Maths and Science.</textarea>
                         </div>
-                        <div class="col-md-4">
-                            <div class="checkbox">
-                                <label><input type="checkbox"> Science - Grade 10</label>
-                            </div>
+                        <div class="col-md-6 form-group">
+                            <label>Qualifications</label>
+                            <textarea class="form-control" rows="4" readonly style="background:#f5f5f5; cursor:not-allowed;">BSc in Computer Science</textarea>
                         </div>
-                        <div class="col-md-4">
-                            <div class="checkbox">
-                                <label><input type="checkbox"> Physical Sciences - Grade 10</label>
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>Experience (Years)</label>
+                            <input class="form-control form-control-plaintext" value="5" readonly style="background:#f5f5f5;">
                         </div>
-                        <!-- Add more subjects here if needed, they will flow into next row automatically -->
-                         <div class="col-md-4">
-                            <div class="checkbox">
-                                <label><input type="checkbox"> Science - Grade 11</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="checkbox">
-                                <label><input type="checkbox"> English - Grade 11</label>
-                            </div>
+                        <div class="col-md-6 form-group">
+                            <label>Availability</label>
+                            <input class="form-control form-control-plaintext" value="Weekdays 10am-4pm" readonly style="background:#f5f5f5;">
                         </div>
                     </div>
                 </div>
-                <div class="box-footer text-right">
-                    <button type="submit" class="btn btn-primary">Update Subjects</button>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <!-- Assigned Classes & Groups -->
-    <div class="col-md-6">
-        <div class="box box-info" style="border-top:3px solid #605ca8;">
-            <div class="box-header with-border" style="background-color:#e8e5f7;">
-                <h3 class="box-title" style="color:#605ca8;">Assigned Classes & Groups</h3>
-            </div>
-            <div class="box-body">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Group Name</th>
-                            <th>Grade</th>
-                            <th>Subject</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Group A</td>
-                            <td>Grade 10</td>
-                            <td>Mathematics</td>
-                        </tr>
-                        <tr>
-                            <td>Group B</td>
-                            <td>Grade 10</td>
-                            <td>Science</td>
-                        </tr>
-                        <tr>
-                            <td>Group C</td>
-                            <td>Grade 10</td>
-                            <td>English</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
+
     </div>
 
-</div>
+    <!-- SUBJECTS + CLASSES GRID -->
+    <div class="row" style="margin-top:20px;">
 
+        <!-- Manage Subjects -->
+        <div class="col-md-6">
+            <form>
+                <div class="box box-primary" style="border-top:3px solid #3c8dbc;">
+                    <div class="box-header with-border" style="background-color:#f0f8ff;">
+                        <h3 class="box-title" style="color:#3c8dbc;">Manage Subjects</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label><input type="checkbox" checked> Mathematics - Grade 10</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label><input type="checkbox"> Science - Grade 10</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label><input type="checkbox"> Physical Sciences - Grade 10</label>
+                                </div>
+                            </div>
+                            <!-- Add more subjects here if needed, they will flow into next row automatically -->
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label><input type="checkbox"> Science - Grade 11</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label><input type="checkbox"> English - Grade 11</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer text-right">
+                        <button type="submit" class="btn btn-primary">Update Subjects</button>
+                    </div>
+                </div>
+            </form>
+        </div>
 
+        <!-- Assigned Classes & Groups -->
+        <div class="col-md-6">
+            <div class="box box-info" style="border-top:3px solid #605ca8;">
+                <div class="box-header with-border" style="background-color:#e8e5f7;">
+                    <h3 class="box-title" style="color:#605ca8;">Assigned Classes & Groups</h3>
+                </div>
+                <div class="box-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Group Name</th>
+                                <th>Grade</th>
+                                <th>Subject</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Group A</td>
+                                <td>Grade 10</td>
+                                <td>Mathematics</td>
+                            </tr>
+                            <tr>
+                                <td>Group B</td>
+                                <td>Grade 10</td>
+                                <td>Science</td>
+                            </tr>
+                            <tr>
+                                <td>Group C</td>
+                                <td>Grade 10</td>
+                                <td>English</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
     <!-- FINANCE -->
     <div class="box box-success" style="border-top:3px solid #00a65a; margin-top:20px;">
