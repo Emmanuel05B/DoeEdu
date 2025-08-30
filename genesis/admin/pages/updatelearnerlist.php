@@ -75,7 +75,6 @@ if (!isset($_SESSION['email'])) {
                       <th>First Name</th>
                       <th>Last Name</th>
                       <th>Grade</th>
-                      <th>School xxxxxxxx</th>
                       <th class="text-center">Actions</th>
                     </tr>
                   </thead>
@@ -86,7 +85,6 @@ if (!isset($_SESSION['email'])) {
                           <td><?php echo htmlspecialchars($final['LearnerId']) ?></td>
                           <td><?php echo htmlspecialchars($final['Name']) ?></td>
                           <td><?php echo htmlspecialchars($final['Surname']) ?></td>
-                          <td><?php echo htmlspecialchars($final['Grade']) ?></td>
                           <td><?php echo htmlspecialchars($final['Grade']) ?></td>
                           <td class="text-center">
                             <a href="updatelearner.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-xs btn-warning">Update</a>
@@ -113,7 +111,6 @@ if (!isset($_SESSION['email'])) {
                       <th>First Name</th>
                       <th>Last Name</th>
                       <th>Grade</th>
-                      <th>School</th>
                       <th class="text-center">Actions</th>
                     </tr>
                   </tfoot>

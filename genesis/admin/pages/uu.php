@@ -1,240 +1,145 @@
-<!DOCTYPE html>
-<html>
 <?php
 session_start();
-
 if (!isset($_SESSION['email'])) {
     header("Location: ../../common/pages/login.php");
-  exit();
+    exit();
 }
 
-include(__DIR__ . "/../../common/partials/head.php"); 
 include(__DIR__ . "/../../partials/connect.php");
 
+// Fetch all subjects (for now, assuming schoolId = 4)
+$schoolId = 4;
+$stmt = $connect->prepare("SELECT SubjectId, SubjectName, Price3Months, Price6Months, Price12Months 
+                           FROM subjects WHERE SchoolId = ? ORDER BY SubjectName");
+$stmt->bind_param("i", $schoolId);
+$stmt->execute();
+$subjects = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 
-include(__DIR__ . "/../../common/partials/head.php"); ?>
+// Fetch system defaults
+$defaultsRes = $connect->query("SELECT SettingKey, SettingValue FROM systemsettings");
+$defaults = [];
+while ($row = $defaultsRes->fetch_assoc()) {
+    $defaults[$row['SettingKey']] = $row['SettingValue'];
+}
+?>
+<!DOCTYPE html>
+<html>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-<?php include(__DIR__ . "/../partials/header.php"); ?>
-<?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+  <?php include(__DIR__ . "/../partials/header.php"); ?>
+  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
-<div class="content-wrapper">
+  <div class="content-wrapper">
     <section class="content-header">
-        <h1>Update Tutor <small>Manage Tutor Profile</small></h1>
-        <ol class="breadcrumb">
-            <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li class="active">Update Tutor</li>
-        </ol>
+      <h1>System Settings <small>Manage Pricing & Default Values</small></h1>
+      <ol class="breadcrumb">
+        <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Settings</li>
+      </ol>
     </section>
 
     <section class="content">
-
-    <!-- PERSONAL + PROFESSIONAL INFO GRID -->
-    <div class="row" style="margin-top:20px;">
-
-        <!-- Personal Info (left) -->
-        <div class="col-md-6">
-            <form>
-                <div class="box box-info" style="border-top:3px solid #00c0ef;">
-                    <div class="box-header with-border" style="background-color:#e0f7ff;">
-                        <h3 class="box-title" style="color:#00c0ef;">Personal Information</h3>
-                    </div>
-                    <div class="box-body">
-                        <div class="row">
-                            <div class="col-md-6 form-group">
-                                <label>First Name</label>
-                                <input type="text" class="form-control" value="John" required>
-                            </div>
-                            <div class="col-md-6 form-group">
-                                <label>Surname</label>
-                                <input type="text" class="form-control" value="Doe" required>
-                            </div>
-                            <div class="col-md-6 form-group">
-                                <label>Email</label>
-                                <input type="email" class="form-control" value="john.doe@example.com" required>
-                            </div>
-                            <div class="col-md-6 form-group">
-                                <label>Contact</label>
-                                <input type="tel" class="form-control" value="+27 123 456 789" required>
-                            </div>
-                          
-                        </div>
-                    </div>
-                    <div class="box-footer text-right">
-                        <button type="submit" class="btn btn-info">Update Personal Info</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <!-- Professional Info (right) -->
-        <div class="col-md-6">
-            <div class="box box-warning" style="border-top:3px solid #f39c12;">
-                <div class="box-header with-border" style="background-color:#fff3e0;">
-                    <h3 class="box-title" style="color:#f39c12;">Professional Info (Read-Only)</h3>
-                </div>
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-6 form-group">
-                            <label>Bio</label>
-                            <textarea class="form-control" rows="4" readonly style="background:#f5f5f5; cursor:not-allowed;">Experienced tutor in Maths and Science.</textarea>
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Qualifications</label>
-                            <textarea class="form-control" rows="4" readonly style="background:#f5f5f5; cursor:not-allowed;">BSc in Computer Science</textarea>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 form-group">
-                            <label>Experience (Years)</label>
-                            <input class="form-control form-control-plaintext" value="5" readonly style="background:#f5f5f5;">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Availability</label>
-                            <input class="form-control form-control-plaintext" value="Weekdays 10am-4pm" readonly style="background:#f5f5f5;">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- SUBJECTS + CLASSES GRID -->
-    <div class="row" style="margin-top:20px;">
-
-        <!-- Manage Subjects -->
-        <div class="col-md-6">
-            <form>
+      <div class="row">
+        <!-- SUBJECT PRICING -->
+        <div class="col-md-8">
+          <h3 style="margin-bottom:15px;">Subject Pricing</h3>
+          <div class="row">
+          <?php foreach ($subjects as $sub): ?>
+            <div class="col-md-6 mb-3">
+              <form method="POST" action="updatesubjectprice.php">
+                <input type="hidden" name="SubjectId" value="<?= $sub['SubjectId'] ?>">
                 <div class="box box-primary" style="border-top:3px solid #3c8dbc;">
-                    <div class="box-header with-border" style="background-color:#f0f8ff;">
-                        <h3 class="box-title" style="color:#3c8dbc;">Manage Subjects</h3>
+                  <div class="box-header with-border" style="background-color:#f0f8ff;">
+                    <h3 class="box-title" style="color:#3c8dbc;"><?= htmlspecialchars($sub['SubjectName']) ?></h3>
+                  </div>
+                  <div class="box-body" style="background-color:#ffffff;">
+                    <div class="row">
+                      <div class="col-md-4 form-group">
+                        <label>3 Months</label>
+                        <input type="number" step="0.01" name="Price3Months" 
+                               value="<?= $sub['Price3Months'] ?>" class="form-control">
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <label>6 Months</label>
+                        <input type="number" step="0.01" name="Price6Months" 
+                               value="<?= $sub['Price6Months'] ?>" class="form-control">
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <label>12 Months</label>
+                        <input type="number" step="0.01" name="Price12Months" 
+                               value="<?= $sub['Price12Months'] ?>" class="form-control">
+                      </div>
+                      <div class="col-md-12 text-right">
+                        <button type="submit" class="btn btn-primary" style="width:120px;">Save</button>
+                      </div>
                     </div>
-                    <div class="box-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="checkbox">
-                                    <label><input type="checkbox" checked> Mathematics - Grade 10</label>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="checkbox">
-                                    <label><input type="checkbox"> Science - Grade 10</label>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="checkbox">
-                                    <label><input type="checkbox"> Physical Sciences - Grade 10</label>
-                                </div>
-                            </div>
-                            <!-- Add more subjects here if needed, they will flow into next row automatically -->
-                            <div class="col-md-4">
-                                <div class="checkbox">
-                                    <label><input type="checkbox"> Science - Grade 11</label>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="checkbox">
-                                    <label><input type="checkbox"> English - Grade 11</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="box-footer text-right">
-                        <button type="submit" class="btn btn-primary">Update Subjects</button>
-                    </div>
+                  </div>
                 </div>
-            </form>
-        </div>
-
-        <!-- Assigned Classes & Groups -->
-        <div class="col-md-6">
-            <div class="box box-info" style="border-top:3px solid #605ca8;">
-                <div class="box-header with-border" style="background-color:#e8e5f7;">
-                    <h3 class="box-title" style="color:#605ca8;">Assigned Classes & Groups</h3>
-                </div>
-                <div class="box-body">
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>Group Name</th>
-                                <th>Grade</th>
-                                <th>Subject</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Group A</td>
-                                <td>Grade 10</td>
-                                <td>Mathematics</td>
-                            </tr>
-                            <tr>
-                                <td>Group B</td>
-                                <td>Grade 10</td>
-                                <td>Science</td>
-                            </tr>
-                            <tr>
-                                <td>Group C</td>
-                                <td>Grade 10</td>
-                                <td>English</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+              </form>
             </div>
+          <?php endforeach; ?>
+          </div>
         </div>
 
-    </div>
-
-    <!-- FINANCE -->
-    <div class="box box-success" style="border-top:3px solid #00a65a; margin-top:20px;">
-        <div class="box-header with-border" style="background-color:#e6ffed;">
-            <h3 class="box-title" style="color:#00a65a;">Finance</h3>
-        </div>
-        <div class="box-body">
-            <p><strong>Total Paid:</strong> R 5000.00</p>
-            <form>
-                <div class="row">
-                    <div class="col-md-3">
-                        <label>Amount</label>
-                        <input type="number" step="0.01" class="form-control">
-                    </div>
-                    <div class="col-md-6">
-                        <label>Notes</label>
-                        <input type="text" class="form-control">
-                    </div>
-                    <div class="col-md-3 text-right" style="margin-top:25px;">
-                        <button type="submit" class="btn btn-success">Add Payment</button>
-                    </div>
+        <!-- DEFAULT VALUES -->
+        <div class="col-md-4">
+          <h3 style="margin-bottom:15px;">Default Values</h3>
+          <form method="POST" action="updatedefaults.php">
+            <div class="box box-warning" style="border-top:3px solid #f39c12;">
+              <div class="box-header with-border" style="background-color:#fff8e1;">
+                <h3 class="box-title" style="color:#f39c12;">System Defaults</h3>
+              </div>
+              <div class="box-body" style="background-color:#ffffff;">
+                <div class="form-group">
+                  <label>Default Tutor ID</label>
+                  <input type="number" class="form-control" 
+                         name="DefaultTutorId" value="<?= $defaults['DefaultTutorId'] ?? '' ?>">
                 </div>
-            </form>
-            <table class="table table-bordered table-striped" style="margin-top:15px;">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Amount (R)</th>
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>2025-08-29</td>
-                        <td>2000.00</td>
-                        <td>August Payment</td>
-                    </tr>
-                    <tr>
-                        <td>2025-08-15</td>
-                        <td>3000.00</td>
-                        <td>July Payment</td>
-                    </tr>
-                </tbody>
-            </table>
+                <div class="form-group">
+                  <label>Default Class Duration (minutes)</label>
+                  <input type="number" class="form-control" 
+                         name="DefaultClassDuration" value="<?= $defaults['DefaultClassDuration'] ?? '' ?>">
+                </div>
+                <div class="form-group">
+                  <label>Default Pass Mark (%)</label>
+                  <input type="number" class="form-control" 
+                         name="DefaultPassMark" value="<?= $defaults['DefaultPassMark'] ?? '' ?>">
+                </div>
+                <div class="form-group">
+                  <label>Default Grade Level</label>
+                  <input type="number" class="form-control" 
+                         name="DefaultGradeLevel" value="<?= $defaults['DefaultGradeLevel'] ?? '' ?>">
+                </div>
+                <div class="form-group">
+                  <label>Default Resource Limit</label>
+                  <input type="number" class="form-control" 
+                         name="DefaultResourceLimit" value="<?= $defaults['DefaultResourceLimit'] ?? '' ?>">
+                </div>
+                <div class="form-group">
+                  <label>Default Currency</label>
+                  <input type="text" class="form-control" 
+                         name="DefaultCurrency" value="<?= $defaults['DefaultCurrency'] ?? '' ?>">
+                </div>
+                <div class="form-group">
+                  <label>Default Payment Cycle</label>
+                  <select class="form-control" name="DefaultPaymentCycle">
+                    <option value="Monthly" <?= ($defaults['DefaultPaymentCycle']??'')==='Monthly'?'selected':'' ?>>Monthly</option>
+                    <option value="Quarterly" <?= ($defaults['DefaultPaymentCycle']??'')==='Quarterly'?'selected':'' ?>>Quarterly</option>
+                    <option value="Annually" <?= ($defaults['DefaultPaymentCycle']??'')==='Annually'?'selected':'' ?>>Annually</option>
+                  </select>
+                </div>
+              </div>
+              <div class="box-footer text-right">
+                <button type="submit" class="btn btn-warning">Save Defaults</button>
+              </div>
+            </div>
+          </form>
         </div>
-    </div>
-
+      </div>
     </section>
-</div>
-<div class="control-sidebar-bg"></div>
+  </div>
 </div>
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>

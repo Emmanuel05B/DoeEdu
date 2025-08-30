@@ -24,7 +24,7 @@ if (!isset($_SESSION['email'])) {
         <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">Update Tutors</li>
       </ol>
-    </section><br>
+    </section>
 
     <section class="content">
       <div class="row">
@@ -66,9 +66,9 @@ if (!isset($_SESSION['email'])) {
                           <td><?php echo htmlspecialchars($final['Surname']) ?></td>
                           <td><?php echo htmlspecialchars($final['Availability']) ?></td>
                           <td class="text-center">
-                            <a href="updatetutors.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-sm btn-warning">Update</a>
-                            <a href="disablelearner.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to disable this tutor?');">Disable</a>
-                            <a href="learnerprofile.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-sm btn-primary">Open Profile</a>
+                            <a href="updatetutors.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-xs btn-warning">Update</a>
+                            <a href="disablelearner.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-xs btn-danger" onclick="return confirm('Are you sure you want to disable this tutor?');">Disable</a>
+                            <a href="learnerprofile.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-xs btn-primary">Open Profile</a>
                           </td>
                         </tr>
                       <?php endwhile; ?>

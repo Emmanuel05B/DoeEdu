@@ -99,59 +99,489 @@ if ($resultSubjects) {
           </ol><br>
         </section>
         <section class="content">
-  <div class="row">
-    <div class="col-md-12"> 
-      <div class="nav-tabs-custom">
-        <ul class="nav nav-tabs">
-          <li class="active"><a href="#add" data-toggle="tab">Add Users</a></li>
-          <li><a href="#update" data-toggle="tab">Update Users</a></li>
-          <li><a href="#settings" data-toggle="tab">System Settings</a></li>
-        </ul>
-        <div class="tab-content">
+          <div class="row">
+            <div class="col-md-12"> 
+              <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                  <li class="active"><a href="#add" data-toggle="tab">Add Users</a></li>
+                  <li><a href="#update" data-toggle="tab">Update Users</a></li>
+                  <li><a href="#settings" data-toggle="tab">System Settings</a></li>
+                </ul>
+                <div class="tab-content">
 
-          <!-- Add Users -->
-          <div class="active tab-pane" id="add">
-            <div class="profile-personal-info">
-              <h4 class="text-primary mb-4">Register</h4>
-              <div class="bubble-container">
-                <a href="addlearners.php" class="bubble">Add Learners</a>
-                <a href="addtutor.php" class="bubble">Add Tutors</a>
-                <a href="addschool.php" class="bubble">Add School</a>
-                <a href="manage_inviterequests.php" class="bubble">Manage Requests</a>
-                <a href="addlearnersv2.php" class="bubble">V2</a>
+                  <!-- Add Users -->
+                  <div class="active tab-pane" id="add">
+                    <div class="profile-personal-info">
+                      <h4 class="text-primary mb-4">Register</h4>
+                      <div class="bubble-container">
+                        <a href="addlearners.php" class="bubble">Add Learners</a>
+                        <a href="addtutor.php" class="bubble">Add Tutors</a>
+                        <a href="addschool.php" class="bubble">Add School</a>
+                        <a href="manage_inviterequests.php" class="bubble">Manage Requests</a>
+                        <a href="addlearnersv2.php" class="bubble">V2</a>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Update Users -->
+                  <div class="tab-pane" id="update">
+                    <div class="profile-personal-info">
+                      <h4 class="text-primary mb-4">Update</h4>
+                    
+                     
+                        <div class="row">
+
+                        
+                          <!-- Learners List -->
+                          <div class="col-md-6">
+                            <div class="box">
+                              <div class="box-header with-border">
+                                <?php
+                                  $stmt = $connect->prepare("
+                                      SELECT lt.*, u.Name, u.Surname
+                                      FROM learners lt
+                                      JOIN users u ON lt.LearnerId = u.Id
+                                  ");
+                                  $stmt->execute();
+                                  $results = $stmt->get_result();
+
+                                  echo "<h3 class='box-title'>Learners List</h3>";
+                                ?>
+                              </div>
+
+                              <div class="box-body">
+                                <div class="table-responsive">
+                                  <table id="learnersTable" class="table table-bordered table-hover">
+                                    <thead style="background-color: #d1d9ff;">
+                                      <tr>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Grade</th>
+                                        <th class="text-center">Actions</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <?php if ($results && $results->num_rows > 0): ?>
+                                        <?php while($final = $results->fetch_assoc()): ?>
+                                          <tr>
+                                            <td><?php echo htmlspecialchars($final['Name']) ?></td>
+                                            <td><?php echo htmlspecialchars($final['Surname']) ?></td>
+                                            <td><?php echo htmlspecialchars($final['Grade']) ?></td>
+                                            <td class="text-center">
+                                              <a href="updatelearner.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-xs btn-warning">Update</a>
+                                              <a href="learnerprofile.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-xs btn-primary">Open Profile</a>
+                                            </td>
+                                          </tr>
+                                        <?php endwhile; ?>
+                                      <?php else: ?>
+                                        <tr>
+                                          <td colspan="4" class="text-center">No learners found.</td>
+                                        </tr>
+                                      <?php endif; ?>
+                                    </tbody>
+                                    <tfoot style="background-color: #f9f9f9;">
+                                      <tr>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Grade</th>
+                                        <th class="text-center">Actions</th>
+                                      </tr>
+                                    </tfoot>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Tutors List -->
+                          <div class="col-md-6">
+                            <div class="box">
+                              <div class="box-header with-border">
+                                <?php
+                                  $stmt = $connect->prepare("
+                                      SELECT lt.*, u.Name, u.Surname
+                                      FROM tutors lt
+                                      JOIN users u ON lt.TutorId = u.Id
+                                  ");
+                                  $stmt->execute();
+                                  $results = $stmt->get_result();
+
+                                  echo "<h3 class='box-title'>Tutors List</h3>";
+                                ?>
+                              </div>
+
+                              <div class="box-body">
+                                <div class="table-responsive">
+                                  <table id="tutorsTable" class="table table-bordered table-hover">
+                                    <thead style="background-color: #d1d9ff;">
+                                      <tr>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Availability</th>
+                                        <th class="text-center">Actions</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <?php if ($results && $results->num_rows > 0): ?>
+                                        <?php while($final = $results->fetch_assoc()): ?>
+                                          <tr>
+                                            <td><?php echo htmlspecialchars($final['Name']) ?></td>
+                                            <td><?php echo htmlspecialchars($final['Surname']) ?></td>
+                                            <td><?php echo htmlspecialchars($final['Availability']) ?></td>
+                                            <td class="text-center">
+                                              <a href="updatetutors.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-xs btn-warning">Update</a>
+                                              <a href="learnerprofile.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-xs btn-primary">Open Profile</a>
+                                            </td>
+                                          </tr>
+                                        <?php endwhile; ?>
+                                      <?php else: ?>
+                                        <tr>
+                                          <td colspan="5" class="text-center">No tutors found.</td>
+                                        </tr>
+                                      <?php endif; ?>
+                                    </tbody>
+                                    <tfoot style="background-color: #f9f9f9;">
+                                      <tr>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Availability</th>
+                                        <th class="text-center">Actions</th>
+                                      </tr>
+                                    </tfoot>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                     
+
+
+
+
+
+
+                    </div>
+                  </div>
+
+                  <!-- System Settings -->
+                  <div class="tab-pane" id="settings">
+                    <div class="profile-personal-info">
+                      <h4 class="text-primary mb-4">System Settings</h4>
+                      
+                      <div class="row">
+                        <!-- General Settings -->
+                        <div class="col-md-4">
+                          <div class="box box-primary" style="border-top: 3px solid #3c8dbc;">
+                            <div class="box-header with-border" style="background-color:#f0f8ff;">
+                              <h3 class="box-title" style="color:#3c8dbc;">
+                                <i class="fa fa-cogs"></i> General Settings
+                              </h3>
+                            </div>
+                            <form role="form">
+                              <div class="box-body">
+                                <div class="form-group">
+                                  <label for="siteName">Site Name</label>
+                                  <input type="text" class="form-control" id="siteName" placeholder="Enter site name">
+                                </div>
+                                <div class="form-group">
+                                  <label for="adminEmail">Admin Email</label>
+                                  <input type="email" class="form-control" id="adminEmail" placeholder="Enter admin email">
+                                </div>
+                                <div class="form-group">
+                                  <label for="theme">Theme</label>
+                                  <select class="form-control" id="theme">
+                                    <option>Default</option>
+                                    <option>Dark</option>
+                                    <option>Light</option>
+                                  </select>
+                                </div>
+                                <div class="form-group">
+                                  <label>Maintenance Mode</label><br>
+                                  <label class="radio-inline">
+                                    <input type="radio" name="maintenance" value="on"> On
+                                  </label>
+                                  <label class="radio-inline">
+                                    <input type="radio" name="maintenance" value="off" checked> Off
+                                  </label>
+                                </div>
+                              </div>
+                              <div class="box-footer">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+
+                        <!-- Roles & Permissions -->
+                        <div class="col-md-4">
+                          <div class="box box-success" style="border-top: 3px solid #00a65a;">
+                            <div class="box-header with-border" style="background-color:#e6ffed;">
+                              <h3 class="box-title" style="color:#00a65a;">
+                                <i class="fa fa-user-shield"></i> Roles & Permissions
+                              </h3>
+                            </div>
+                            <form role="form">
+                              <div class="box-body">
+                                <div class="form-group">
+                                  <label for="roleName">Role Name</label>
+                                  <input type="text" class="form-control" id="roleName" placeholder="Enter role name">
+                                </div>
+                                <div class="form-group">
+                                  <label>Permissions</label>
+                                  <div class="checkbox">
+                                    <label><input type="checkbox"> Manage Users</label>
+                                  </div>
+                                  <div class="checkbox">
+                                    <label><input type="checkbox"> Manage Resources</label>
+                                  </div>
+                                  <div class="checkbox">
+                                    <label><input type="checkbox"> View Reports</label>
+                                  </div>
+                                  <div class="checkbox">
+                                    <label><input type="checkbox"> System Settings</label>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="box-footer">
+                                <button type="submit" class="btn btn-success">Save Role</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+
+                        <!-- Audit Logs -->
+                        <div class="col-md-4">
+                          <div class="box box-warning" style="border-top: 3px solid #f39c12;">
+                            <div class="box-header with-border" style="background-color:#fff3e0;">
+                              <h3 class="box-title" style="color:#f39c12;">
+                                <i class="fa fa-history"></i> Audit Logs
+                              </h3>
+                            </div>
+                            <form role="form">
+                              <div class="box-body">
+                                <div class="form-group">
+                                  <label for="userFilter">Filter by User</label>
+                                  <input type="text" class="form-control" id="userFilter" placeholder="Enter username">
+                                </div>
+                                <div class="form-group">
+                                  <label for="actionType">Action Type</label>
+                                  <select class="form-control" id="actionType">
+                                    <option>All</option>
+                                    <option>Login</option>
+                                    <option>Update</option>
+                                    <option>Delete</option>
+                                    <option>Create</option>
+                                  </select>
+                                </div>
+                                <div class="form-group">
+                                  <label>Date Range</label>
+                                  <input type="date" class="form-control" style="display:inline-block; width:48%;" id="startDate">
+                                  <input type="date" class="form-control" style="display:inline-block; width:48%;" id="endDate">
+                                </div>
+                              </div>
+                              <div class="box-footer">
+                                <button type="submit" class="btn btn-warning">Search Logs</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Main Content -->
+                      <section class="content">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="box box-primary">
+                              <div class="box-header with-border">
+                                <h3 class="box-title">Subject Pricing</h3>
+                              </div>
+                              <div class="box-body">
+
+                                <table class="table table-bordered text-center">
+                                  <thead>
+                                    <tr>
+                                      <th>Subject</th>
+                                      <th>3 Months</th>
+                                      <th>6 Months</th>
+                                      <th>12 Months</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>Mathematics</td>
+                                      <td><input type="text" class="form-control text-center" value="R450.00"></td>
+                                      <td><input type="text" class="form-control text-center" value="R750.00"></td>
+                                      <td><input type="text" class="form-control text-center" value="R1199.00"></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Physical Sciences</td>
+                                      <td><input type="text" class="form-control text-center" value="R450.00"></td>
+                                      <td><input type="text" class="form-control text-center" value="R750.00"></td>
+                                      <td><input type="text" class="form-control text-center" value="R1199.00"></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Both Subjects</td>
+                                      <td><input type="text" class="form-control text-center" value="R850.00"></td>
+                                      <td><input type="text" class="form-control text-center" value="R1250.00"></td>
+                                      <td><input type="text" class="form-control text-center" value="R1950.00"></td>
+                                    </tr>
+                                    <!-- Add more subjects as new rows -->
+                                  </tbody>
+                                </table>
+
+                              </div>
+                              <div class="box-footer text-right">
+                                <button type="button" class="btn btn-primary">Save Pricing</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </section>
+
+
+                      <!-- Main content -->
+                      <section class="content">
+                        <div class="row">
+
+                          <!-- Subject Pricing -->
+                          <div class="col-md-12">
+                            <h3>Subject Pricing</h3>
+                          </div>
+
+                          <!-- Mathematics Block -->
+                          <div class="col-md-4">
+                            <div class="box box-primary">
+                              <div class="box-header with-border">
+                                <h3 class="box-title">Mathematics</h3>
+                              </div>
+                              <div class="box-body">
+                                <div class="form-group">
+                                  <label>3 Months</label>
+                                  <input type="number" class="form-control" placeholder="e.g. 500">
+                                </div>
+                                <div class="form-group">
+                                  <label>6 Months</label>
+                                  <input type="number" class="form-control" placeholder="e.g. 900">
+                                </div>
+                                <div class="form-group">
+                                  <label>12 Months</label>
+                                  <input type="number" class="form-control" placeholder="e.g. 1600">
+                                </div>
+                              </div>
+                              <div class="box-footer">
+                                <button type="button" class="btn btn-primary">Save</button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- English Block -->
+                          <div class="col-md-4">
+                            <div class="box box-primary">
+                              <div class="box-header with-border">
+                                <h3 class="box-title">English</h3>
+                              </div>
+                              <div class="box-body">
+                                <div class="form-group">
+                                  <label>3 Months</label>
+                                  <input type="number" class="form-control" placeholder="e.g. 400">
+                                </div>
+                                <div class="form-group">
+                                  <label>6 Months</label>
+                                  <input type="number" class="form-control" placeholder="e.g. 750">
+                                </div>
+                                <div class="form-group">
+                                  <label>12 Months</label>
+                                  <input type="number" class="form-control" placeholder="e.g. 1400">
+                                </div>
+                              </div>
+                              <div class="box-footer">
+                                <button type="button" class="btn btn-primary">Save</button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Science Block -->
+                          <div class="col-md-4">
+                            <div class="box box-primary">
+                              <div class="box-header with-border">
+                                <h3 class="box-title">Science</h3>
+                              </div>
+                              <div class="box-body">
+                                <div class="form-group">
+                                  <label>3 Months</label>
+                                  <input type="number" class="form-control" placeholder="e.g. 600">
+                                </div>
+                                <div class="form-group">
+                                  <label>6 Months</label>
+                                  <input type="number" class="form-control" placeholder="e.g. 1100">
+                                </div>
+                                <div class="form-group">
+                                  <label>12 Months</label>
+                                  <input type="number" class="form-control" placeholder="e.g. 2000">
+                                </div>
+                              </div>
+                              <div class="box-footer">
+                                <button type="button" class="btn btn-primary">Save</button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Add more subjects in same block format -->
+
+                          <!-- Default Values -->
+                          <div class="col-md-12">
+                            <h3>Default Values</h3>
+                            <div class="box box-warning">
+                              <div class="box-header with-border">
+                                <h3 class="box-title">System Defaults</h3>
+                              </div>
+                              <div class="box-body">
+                                <div class="default-values-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px;">
+                                  <div class="form-group">
+                                    <label>Default Tutor ID</label>
+                                    <input type="number" class="form-control" placeholder="Enter Tutor ID">
+                                  </div>
+                                  <div class="form-group">
+                                    <label>Default Class Duration (minutes)</label>
+                                    <input type="number" class="form-control" placeholder="e.g. 60">
+                                  </div>
+                                  <div class="form-group">
+                                    <label>Default Pass Mark (%)</label>
+                                    <input type="number" class="form-control" placeholder="e.g. 70">
+                                  </div>
+                                  <div class="form-group">
+                                    <label>Default Maximum Learners per Class</label>
+                                    <input type="number" class="form-control" placeholder="e.g. 30">
+                                  </div>
+                                  <div class="form-group">
+                                    <label>Default Resource Storage Limit (MB)</label>
+                                    <input type="number" class="form-control" placeholder="e.g. 500">
+                                  </div>
+                                  <!-- Add more default values here if needed -->
+                                </div>
+                              </div>
+                              <div class="box-footer text-right">
+                                <button type="button" class="btn btn-warning">Save Defaults</button>
+                              </div>
+                            </div>
+                          </div>
+
+
+                        </div>
+                      </section>
+
+
+
+                    </div>
+                  </div>
+
+                </div>
               </div>
             </div>
           </div>
-
-          <!-- Update Users -->
-          <div class="tab-pane" id="update">
-            <div class="profile-personal-info">
-              <h4 class="text-primary mb-4">Update</h4>
-              <div class="bubble-container">
-                <a href="updatelearnerlist.php" class="bubble">Update Learner</a>
-                <a href="updatetutorlist.php" class="bubble">Update Tutor</a>
-                <a href="updateschoollist.php" class="bubble">Update School</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- System Settings -->
-          <div class="tab-pane" id="settings">
-            <div class="profile-personal-info">
-              <h4 class="text-primary mb-4">System Settings</h4>
-              <div class="bubble-container">
-                <a href="general_settings.php" class="bubble">General Settings</a>
-                <a href="roles_permissions.php" class="bubble">Roles & Permissions</a>
-                <a href="audit_logs.php" class="bubble">Audit Logs</a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+        </section>
 
 
 
@@ -162,6 +592,31 @@ if ($resultSubjects) {
 
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<script>
+  $(function () {
+    // Initialize Learners Table
+    $('#learnersTable').DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true
+    });
+
+    // Initialize Tutors Table
+    $('#tutorsTable').DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true
+    });
+  });
+</script>
 
 <!-- Deregister Learner Modal -->
 <div class="modal fade" id="deregisterLearnerModal" tabindex="-1" role="dialog" aria-labelledby="deregisterLearnerLabel" aria-hidden="true">

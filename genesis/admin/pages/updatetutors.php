@@ -1,213 +1,242 @@
+<!DOCTYPE html>
+<html>
 <?php
 session_start();
+
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
+    header("Location: ../../common/pages/login.php");
   exit();
 }
 
 include(__DIR__ . "/../../common/partials/head.php"); 
 include(__DIR__ . "/../../partials/connect.php");
 
-// Get Tutor ID from URL
-$tutorId = isset($_GET['id']) ? intval($_GET['id']) : 0;
-if ($tutorId === 0) {
-  echo "<script>alert('Invalid tutor ID'); window.location.href='managetutors.php';</script>";
-  exit();
-}
 
-// Fetch tutor personal and professional info
-$tutor = [];
-$stmt = $connect->prepare("
-  SELECT u.Name, u.Surname, u.Email, u.Contact, u.Gender,
-         t.Bio, t.Qualifications, t.ExperienceYears, t.Availability
-  FROM users u
-  LEFT JOIN tutors t ON u.Id = t.TutorId
-  WHERE u.Id = ?
-  LIMIT 1
-");
-$stmt->bind_param("i", $tutorId);
-$stmt->execute();
-$result = $stmt->get_result();
-$tutor = $result->fetch_assoc();
-
-// Fetch all subjects..........updatethe subjects tabe with the new one.
-$allSubjects = [];
-$stmtAll = $connect->prepare("SELECT SubjectId, SubjectName, GradeId FROM subjects ORDER BY SubjectName, GradeId");
-$stmtAll->execute();
-$resAll = $stmtAll->get_result();
-while ($row = $resAll->fetch_assoc()) {
-    $allSubjects[] = $row;
-}
-$stmtAll->close();
-
-// Fetch registered subject IDs
-$registeredIds = [];
-$stmtReg = $connect->prepare("SELECT SubjectId FROM tutorsubject WHERE TutorId = ?");
-$stmtReg->bind_param("i", $tutorId);
-$stmtReg->execute();
-$resReg = $stmtReg->get_result();
-while ($row = $resReg->fetch_assoc()) {
-    $registeredIds[] = $row['SubjectId'];
-}
-$stmtReg->close();
-?>
-
+include(__DIR__ . "/../../common/partials/head.php"); ?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
+<?php include(__DIR__ . "/../partials/header.php"); ?>
+<?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
-  <?php include(__DIR__ . "/../partials/header.php"); ?>
-  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
-
-  <div class="content-wrapper">
+<div class="content-wrapper">
     <section class="content-header">
-      <h1>Update Tutor Details <small>Manage tutor profile information</small></h1>
-      <ol class="breadcrumb">
-        <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Update Tutor</li>
-      </ol>
-    </section><br>
-  <?php $tutorId = isset($_GET['id']) ? intval($_GET['id']) : 0; ?>
+        <h1>Update Tutor <small>Manage Tutor Profile</small></h1>
+        <ol class="breadcrumb">
+            <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Update Tutor</li>
+        </ol>
+    </section>
 
- 
     <section class="content">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="box box-danger">
-            <div class="box-header with-border">
-              <h3 class="box-title">Edit Tutor Information</h3>
-            </div>
 
-            <!-- SINGLE FORM -->
-            <form role="form" action="updatetutorhandler.php" method="post" enctype="multipart/form-data">
-              <input type="hidden" name="tutor_id" value="<?php echo $tutorId; ?>">
+    <!-- PERSONAL + PROFESSIONAL INFO GRID -->
+    <div class="row" style="margin-top:20px;">
 
-              <div class="box-body">
-
-                <!-- Personal Info -->
-                <fieldset style="border:1px solid #ddd; padding:15px; margin-bottom:20px;">
-                  <legend><strong>Personal Information</strong></legend>
-                  <div class="row">
-                    <div class="form-group col-md-3">
-                      <label for="firstname">First Name</label>
-                      <input type="text" class="form-control" id="firstname" name="firstname" value="<?php echo htmlspecialchars($tutor['Name']); ?>" required>
+        <!-- Personal Info (left) -->
+        <div class="col-md-6">
+            <form>
+                <div class="box box-info" style="border-top:3px solid #00c0ef;">
+                    <div class="box-header with-border" style="background-color:#e0f7ff;">
+                        <h3 class="box-title" style="color:#00c0ef;">Personal Information</h3>
                     </div>
-                    <div class="form-group col-md-3">
-                      <label for="surname">Surname</label>
-                      <input type="text" class="form-control" id="surname" name="surname" value="<?php echo htmlspecialchars($tutor['Surname']); ?>" required>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>First Name</label>
+                                <input type="text" class="form-control" value="John" required>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Surname</label>
+                                <input type="text" class="form-control" value="Doe" required>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Email</label>
+                                <input type="email" class="form-control" value="john.doe@example.com" required>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Contact</label>
+                                <input type="tel" class="form-control" value="+27 123 456 789" required>
+                            </div>
+                          
+                        </div>
                     </div>
-                    <div class="form-group col-md-3">
-                      <label for="email">Email</label>
-                      <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($tutor['Email']); ?>" required>
-                    </div>
-                    <div class="form-group col-md-3">
-                      <label for="contactnumber">Contact Number</label>
-                      <input type="tel" class="form-control" id="contactnumber" name="contactnumber" value="<?php echo htmlspecialchars($tutor['Contact']); ?>" pattern="[0-9]{10}" maxlength="10" required>
-                    </div>
-                  </div>
-                </fieldset>
-
-                <!-- Professional Details - READONLY with form-control-plaintext -->
-                <fieldset style="border:1px solid #ddd; padding:15px; margin-bottom:20px;">
-                <legend><strong>Professional Details (Read-Only)</strong></legend>
-                <div class="row">
-                    <!-- Bio -->
-                    <div class="form-group col-md-5">
-                    <label for="bio">Short Bio</label>
-                    <textarea class="form-control" id="bio" rows="5" readonly style="background:#f5f5f5; cursor:not-allowed;"><?php echo htmlspecialchars($tutor['Bio']); ?></textarea>
-                    </div>
-
-                    <!-- Qualifications -->
-                    <div class="form-group col-md-5">
-                    <label for="qualifications">Qualifications</label>
-                    <textarea class="form-control" id="qualifications" rows="5" readonly style="background:#f5f5f5; cursor:not-allowed;"><?php echo htmlspecialchars($tutor['Qualifications']); ?></textarea>
-                    </div>
-
-                    <!-- Experience and Availability (right side) -->
-                    <div class="form-group col-md-2">
-                    <div class="form-group">
-                        <label for="experience_years">Years of Experience</label>
-                        <input type="text" class="form-control form-control-plaintext" id="experience_years" value="<?php echo htmlspecialchars($tutor['ExperienceYears']); ?>" readonly style="background:#f5f5f5; cursor:not-allowed;">
-                    </div>
-                    <div class="form-group">
-                        <label for="availability">Availability</label>
-                        <input type="text" class="form-control form-control-plaintext" id="availability" value="<?php echo htmlspecialchars($tutor['Availability']); ?>" readonly style="background:#f5f5f5; cursor:not-allowed;">
-                    </div>
+                    <div class="box-footer text-right">
+                        <button type="submit" class="btn btn-info">Update Personal Info</button>
                     </div>
                 </div>
-                </fieldset>
-
-
-                <!-- Manage Tutor Subjects -->
-                <fieldset style="border:1px solid #ddd; padding:15px; margin-bottom:20px;">
-                  <legend><strong>Manage Tutor Subjects</strong></legend>
-
-                  <div class="row">
-                    <?php foreach ($allSubjects as $subject): 
-                      $checked = in_array($subject['SubjectId'], $registeredIds) ? 'checked' : '';
-                      $subjectLabel = htmlspecialchars($subject['SubjectName']) . " - Grade " . htmlspecialchars($subject['GradeId']);
-                    ?>
-                      <div class="form-group col-md-4">
-                        <div class="checkbox">
-                          <label>
-                            <input type="checkbox" name="subject_ids[]" value="<?php echo $subject['SubjectId']; ?>" <?php echo $checked; ?>>
-                            <?php echo $subjectLabel; ?>
-                          </label>
-                        </div>
-                      </div>
-                    <?php endforeach; ?>
-                  </div>
-
-                </fieldset>
-
-              </div>
-
-              <div class="box-footer text-center" style="margin-top:15px;">
-                <button type="submit" name="update_details" class="btn btn-lg btn-primary"><i class="fa fa-save"></i> Update Details & Subjects</button>
-              </div>
-              
             </form>
-          </div>
         </div>
-      </div>
-    </section>
-  </div>
 
-  <div class="control-sidebar-bg"></div>
+        <!-- Professional Info (right) -->
+        <div class="col-md-6">
+            <div class="box box-warning" style="border-top:3px solid #f39c12;">
+                <div class="box-header with-border" style="background-color:#fff3e0;">
+                    <h3 class="box-title" style="color:#f39c12;">Professional Info (Read-Only)</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>Bio</label>
+                            <textarea class="form-control" rows="4" readonly style="background:#f5f5f5; cursor:not-allowed;">Experienced tutor in Maths and Science.</textarea>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Qualifications</label>
+                            <textarea class="form-control" rows="4" readonly style="background:#f5f5f5; cursor:not-allowed;">BSc in Computer Science</textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>Experience (Years)</label>
+                            <input class="form-control form-control-plaintext" value="5" readonly style="background:#f5f5f5;">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Availability</label>
+                            <input class="form-control form-control-plaintext" value="Weekdays 10am-4pm" readonly style="background:#f5f5f5;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SUBJECTS + CLASSES GRID -->
+    <div class="row" style="margin-top:20px;">
+
+        <!-- Manage Subjects -->
+        <div class="col-md-6">
+            <form>
+                <div class="box box-primary" style="border-top:3px solid #3c8dbc;">
+                    <div class="box-header with-border" style="background-color:#f0f8ff;">
+                        <h3 class="box-title" style="color:#3c8dbc;">Manage Subjects</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label><input type="checkbox" checked> Mathematics - Grade 10</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label><input type="checkbox"> Science - Grade 10</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label><input type="checkbox"> Physical Sciences - Grade 10</label>
+                                </div>
+                            </div>
+                            <!-- Add more subjects here if needed, they will flow into next row automatically -->
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label><input type="checkbox"> Science - Grade 11</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="checkbox">
+                                    <label><input type="checkbox"> English - Grade 11</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer text-right">
+                        <button type="submit" class="btn btn-primary">Update Subjects</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Assigned Classes & Groups -->
+        <div class="col-md-6">
+            <div class="box box-info" style="border-top:3px solid #605ca8;">
+                <div class="box-header with-border" style="background-color:#e8e5f7;">
+                    <h3 class="box-title" style="color:#605ca8;">Assigned Classes & Groups</h3>
+                </div>
+                <div class="box-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Group Name</th>
+                                <th>Grade</th>
+                                <th>Subject</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Group A</td>
+                                <td>Grade 10</td>
+                                <td>Mathematics</td>
+                            </tr>
+                            <tr>
+                                <td>Group B</td>
+                                <td>Grade 10</td>
+                                <td>Science</td>
+                            </tr>
+                            <tr>
+                                <td>Group C</td>
+                                <td>Grade 10</td>
+                                <td>English</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FINANCE -->
+    <div class="box box-success" style="border-top:3px solid #00a65a; margin-top:20px;">
+        <div class="box-header with-border" style="background-color:#e6ffed;">
+            <h3 class="box-title" style="color:#00a65a;">Finance</h3>
+        </div>
+        <div class="box-body">
+            <p><strong>Total Paid:</strong> R 5000.00</p>
+            <form>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Amount</label>
+                        <input type="number" step="0.01" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Notes</label>
+                        <input type="text" class="form-control">
+                    </div>
+                    <div class="col-md-3 text-right" style="margin-top:25px;">
+                        <button type="submit" class="btn btn-success">Add Payment</button>
+                    </div>
+                </div>
+            </form>
+            <table class="table table-bordered table-striped" style="margin-top:15px;">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount (R)</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2025-08-29</td>
+                        <td>2000.00</td>
+                        <td>August Payment</td>
+                    </tr>
+                    <tr>
+                        <td>2025-08-15</td>
+                        <td>3000.00</td>
+                        <td>July Payment</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    </section>
+</div>
+<div class="control-sidebar-bg"></div>
 </div>
 
-<!-- Scripts -->
-
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-
-  <?php if (isset($_GET['updated']) && $_GET['updated'] == 1): ?>
-    <?php  
-    echo "<script>
-         Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Tutor details updated successfully!',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.href = '#?id={$tutorId}';
-                });
-      </script>"; 
-      ?>
-  <?php endif; ?>
-
-  <?php if (isset($_GET['notupdated']) && $_GET['notupdated'] == 1): ?>
-    <?php  
-    echo "<script>
-        Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to update tutor details: {$errorMessage}',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.history.back();
-                });
-      </script>"; 
-      ?>
-  <?php endif; ?>
-
 </body>
 </html>
