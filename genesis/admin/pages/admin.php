@@ -46,40 +46,6 @@ if ($resultSubjects) {
 }
 ?>
 
-<style>
-  .profile-personal-info {
-    border-bottom: 2px solid #007bff;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    padding-left: 30px;
-  }
-  .profile-personal-info h4 {
-    font-size: 24px;
-    font-weight: bold;
-    color: #007bff;
-    margin-bottom: 15px;
-  }
-  .bubble-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .bubble {
-    border: 2px solid #add8e6;
-    padding: 10px 20px;
-    border-radius: 50px;
-    text-align: center;
-    text-decoration: none;
-    color: #000;
-    display: inline-block;
-    white-space: nowrap;
-  }
-  .bubble:hover {
-    border-color: #007bff;
-    color: #007bff;
-  }
-</style> 
-
 <body class="hold-transition skin-blue sidebar-mini">
   <div class="wrapper">
 
@@ -112,21 +78,69 @@ if ($resultSubjects) {
                   <!-- Add Users -->
                   <div class="active tab-pane" id="add">
                     <div class="profile-personal-info">
-                      <h4 class="text-primary mb-4">Register</h4>
-                      <div class="bubble-container">
-                        <a href="addlearners.php" class="bubble">Add Learners</a>
-                        <a href="addtutor.php" class="bubble">Add Tutors</a>
-                        <a href="addschool.php" class="bubble">Add School</a>
-                        <a href="manage_inviterequests.php" class="bubble">Manage Requests</a>
-                        <a href="addlearnersv2.php" class="bubble">V2</a>
+                      <h3 class="text-primary mb-4">Register</h3>
+                      
+                      <div class="row">
+
+                        <!-- Add Learners -->
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                          <div class="small-box" style="background-color:#d9d2f5; color:#4b2e83;">
+                            <div class="inner text-center">
+                              <h5>Add Learners</h5>
+                            </div>
+                            <a href="addlearners.php" class="small-box-footer" style="color:#4b2e83;">Go <i class="fa fa-arrow-circle-right"></i></a>
+                          </div>
+                        </div>
+
+                        <!-- Add Tutors -->
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                          <div class="small-box" style="background-color:#e0d4f7; color:#3a1f70;">
+                            <div class="inner text-center">
+                              <h5>Add Tutors</h5>
+                            </div>
+                            <a href="addtutor.php" class="small-box-footer" style="color:#3a1f70;">Go <i class="fa fa-arrow-circle-right"></i></a>
+                          </div>
+                        </div>
+
+                        <!-- Add School -->
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                          <div class="small-box" style="background-color:#f0e6fa; color:#6c4a97;">
+                            <div class="inner text-center">
+                              <h5>Add School</h5>
+                            </div>
+                            <a href="addschool.php" class="small-box-footer" style="color:#6c4a97;">Go <i class="fa fa-arrow-circle-right"></i></a>
+                          </div>
+                        </div>
+
+                        <!-- Manage Requests -->
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                          <div class="small-box" style="background-color:#e8e0f8; color:#4b2e83;">
+                            <div class="inner text-center">
+                              <h5>Manage Requests</h5>
+                            </div>
+                            <a href="manage_inviterequests.php" class="small-box-footer" style="color:#4b2e83;">Go <i class="fa fa-arrow-circle-right"></i></a>
+                          </div>
+                        </div>
+
+                        <!-- V2 -->
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                          <div class="small-box" style="background-color:#f3e6fa; color:#6c4a97;">
+                            <div class="inner text-center">
+                              <h5>V2</h5>
+                            </div>
+                            <a href="addlearnersv2.php" class="small-box-footer" style="color:#6c4a97;">Go <i class="fa fa-arrow-circle-right"></i></a>
+                          </div>
+                        </div>
+
                       </div>
+
                     </div>
                   </div>
 
                   <!-- Update Users -->
                   <div class="tab-pane" id="update">
                     <div class="profile-personal-info">
-                      <h4 class="text-primary mb-4">Update</h4>
+                      <h3 class="text-primary mb-4">Update</h3>
                     
                      
                         <div class="row">
@@ -268,7 +282,7 @@ if ($resultSubjects) {
                   <!-- System Settings -->
                   <div class="tab-pane" id="settings">
                     <div class="profile-personal-info">
-                      <h4 class="text-primary mb-4">System Settings</h4>
+                      <h3 class="text-primary mb-4">System Settings</h3>
                       
                       <div class="row">
                         <!-- General Settings -->
