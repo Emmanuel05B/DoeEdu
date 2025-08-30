@@ -143,8 +143,8 @@ $subjects = $connect->query("
         <div class="row">
           <div class="col-md-2 mb-2">
             <label>Subject</label>
-            <select name="NewSubject[SubjectId]" class="form-control">
-              <option value="">-- Select Subject --</option>
+            <select name="NewSubject[SubjectId]" class="form-control" required>
+              <option value="" >-- Select Subject --</option>
               <?php foreach($allSubjects as $s): ?>
                 <option value="<?= $s['SubjectId'] ?>"><?= htmlspecialchars($s['SubjectName']) ?></option>
               <?php endforeach; ?>
@@ -152,23 +152,23 @@ $subjects = $connect->query("
           </div>
           <div class="col-md-2 mb-2">
             <label>Current Level</label>
-            <input type="number" name="NewSubject[CurrentLevel]" class="form-control" placeholder="1-7">
+            <input type="number" name="NewSubject[CurrentLevel]" class="form-control" placeholder="1-7" min="1" max="7" required>
           </div>
           <div class="col-md-2 mb-2">
             <label>Target Level</label>
-            <input type="number" name="NewSubject[TargetLevel]" class="form-control" placeholder="1-7">
+            <input type="number" name="NewSubject[TargetLevel]" class="form-control" placeholder="1-7" min="1" max="7" required>
           </div>
           <div class="col-md-2 mb-2">
             <label>Start Date</label>
-            <input type="date" name="NewSubject[ContractStartDate]" class="form-control">
+            <input type="date" name="NewSubject[ContractStartDate]" class="form-control" required>
           </div>
           <div class="col-md-2 mb-2">
             <label>End Date</label>
-            <input type="date" name="NewSubject[ContractExpiryDate]" class="form-control">
+            <input type="date" name="NewSubject[ContractExpiryDate]" class="form-control" required>
           </div>
           <div class="col-md-2 mb-2">
             <label>Fee</label>
-            <input type="number" step="0.01" name="NewSubject[ContractFee]" class="form-control" placeholder="R">
+            <input type="number" step="0.01" name="NewSubject[ContractFee]" class="form-control" placeholder="R" required>
           </div>
           <div class="col-md-12 text-right">
             <button type="submit" name="Action" value="RegisterNewSubject" class="btn btn-success" style="width:120px;">Add</button>

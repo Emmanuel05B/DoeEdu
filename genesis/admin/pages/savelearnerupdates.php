@@ -18,7 +18,7 @@ if (!$learnerId || !$action) {
 // 1. UPDATE EXISTING SUBJECT
 // --------------------
 if (str_starts_with($action, "UpdateSubject_")) {
-    $learnerSubjectId = intval(str_replace("UpdateSubject_", "", $action));
+    $learnerSubjectId = intval(str_replace("UpdateSubject_", "", $action));   //shouldnt this just be SubjectId??
     $subData = $_POST['Subjects'][$learnerSubjectId] ?? [];
 
     if ($subData) {
@@ -33,7 +33,7 @@ if (str_starts_with($action, "UpdateSubject_")) {
             $subData['ContractStartDate'],
             $subData['ContractExpiryDate'],
             $subData['ContractFee'],
-            $subData['Status'],    //suspended, cancelled, Active or completed
+            $subData['Status'],    //'Active','Suspended','Completed','Cancelled') DEFAULT  is 'Active'
             $learnerSubjectId,
             $learnerId
         );
@@ -44,6 +44,7 @@ if (str_starts_with($action, "UpdateSubject_")) {
         $subjectAction = $subData['Action'] ?? '';     //Drop, Extend or Cut Short
         if ($subjectAction === "Deregister") {
             $connect->query("DELETE FROM learnersubject WHERE LearnerSubjectId=$learnerSubjectId AND LearnerId=$learnerId");
+            // we might also wanna remove him from the classes as well just to ensure that...
         } elseif ($subjectAction === "Extend") {
             // Example: extend expiry by 1 month
             $connect->query("UPDATE learnersubject SET ContractExpiryDate = DATE_ADD(ContractExpiryDate, INTERVAL 1 MONTH) WHERE LearnerSubjectId=$learnerSubjectId");
@@ -64,13 +65,15 @@ if ($action === "RegisterNewSubject") {
     if (!empty($newSub['SubjectId'])) {
         $stmt = $connect->prepare("
             INSERT INTO learnersubject 
-            (LearnerId, SubjectId, ContractStartDate, ContractExpiryDate, ContractFee) 
-            VALUES (?, ?, ?, ?, ?)
+            (LearnerId, SubjectId, TargetLevel, CurrentLevel, ContractStartDate, ContractExpiryDate, ContractFee) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->bind_param(
             "iissd",
             $learnerId,
             $newSub['SubjectId'],
+            $newSub['TargetLevel'],
+            $newSub['CurrentLevel'],
             $newSub['ContractStartDate'],
             $newSub['ContractExpiryDate'],
             $newSub['ContractFee']
