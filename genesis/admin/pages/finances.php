@@ -29,70 +29,65 @@ include(__DIR__ . "/../../partials/connect.php");
     </section>
 
     <section class="content">
-      <div class="row">
-        <?php 
-        /*
-          $sql = "SELECT                
-            SUM(TotalFees) AS TotalFees,
-            SUM(TotalPaid) AS TotalPaid,
-            SUM(CASE WHEN TotalOwe > 0 THEN TotalOwe ELSE 0 END) AS TotalOwe,
-            SUM(CASE WHEN TotalOwe < 0 THEN TotalOwe ELSE 0 END) AS Owe
-            FROM learners";
-          $results = $connect->query($sql);
-          $final = $results->fetch_assoc();
+      <?php
+// Fetch totals from finances table
+$sqlTotals = "
+    SELECT 
+        SUM(TotalFees) AS TotalFees,
+        SUM(TotalPaid) AS TotalPaid,
+        SUM(Balance) AS TotalOwe
+    FROM finances
+";
+$resultTotals = $connect->query($sqlTotals);
+$totals = $resultTotals->fetch_assoc();
 
-          $TotalFees = $final['TotalFees'];
-          $TotalPaid = $final['TotalPaid'];
-          $TotalOwe = $final['TotalOwe'];
-          $Owe = (-1 * $final['Owe']);
-          */
+$TotalFees = (float)$totals['TotalFees'];
+$TotalPaid = (float)$totals['TotalPaid'];
+$TotalOwe  = (float)$totals['TotalOwe'];
+$Owe       = 0; // still static if needed
+?>
 
-          $TotalFees = 5201;
-          $TotalPaid = 4151;
-          $TotalOwe = 5201 - 4151;
-          $Owe = 0;
-        ?>
-
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box">
+<div class="row">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
             <span class="info-box-icon bg-aqua"><i class="fa fa-balance-scale"></i></span>
             <div class="info-box-content">
-              <span class="info-box-text">Total Paid by Learners</span><br>
-              <span class="info-box-number">R<?php echo number_format($TotalPaid, 2); ?></span>
+                <span class="info-box-text">Total Paid by Learners</span><br>
+                <span class="info-box-number">R<?php echo number_format($TotalPaid, 2); ?></span>
             </div>
-          </div>
         </div>
+    </div>
 
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
             <span class="info-box-icon bg-yellow"><i class="fa fa-money"></i></span>
             <div class="info-box-content">
-              <span class="info-box-text">Total Amount Expected</span><br>
-              <span class="info-box-number">R<?php echo number_format($TotalFees, 2); ?></span>
+                <span class="info-box-text">Total Amount Expected</span><br>
+                <span class="info-box-number">R<?php echo number_format($TotalFees, 2); ?></span>
             </div>
-          </div>
         </div>
+    </div>
 
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
             <span class="info-box-icon bg-green"><i class="fa fa-dollar"></i></span>
             <div class="info-box-content">
-              <span class="info-box-text">Amount Due to Us</span><br>
-              <span class="info-box-number">R<?php echo number_format($TotalOwe, 2); ?></span>
+                <span class="info-box-text">Amount Due to Us</span><br>
+                <span class="info-box-number">R<?php echo number_format($TotalOwe, 2); ?></span>
             </div>
-          </div>
         </div>
+    </div>
 
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
             <span class="info-box-icon bg-red"><i class="fa fa-credit-card"></i></span>
             <div class="info-box-content">
-              <span class="info-box-text">Amount We Owe</span><br>
-              <span class="info-box-number">R<?php echo number_format($Owe, 2); ?></span>
+                <span class="info-box-text">Amount We Owe</span><br>
+                <span class="info-box-number">R<?php echo number_format($Owe, 2); ?></span>
             </div>
-          </div>
         </div>
-      </div>
+    </div>
+</div>
 
       <!-- Status Links  -->
       <div class="row">
@@ -146,104 +141,96 @@ include(__DIR__ . "/../../partials/connect.php");
 
       <!-- Learners Table -->
         <div class="row">
-          <div class="col-xs-12">
-            <div class="box">
-              <div class="box-header">
-                <h3 class="box-title">Learners</h3>
-              </div>
-              <div class="box-body">
-                <div class="table-responsive">
-                  <table id="example1" class="table table-bordered table-striped">
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Surname</th>
-                        <th>Grade</th>
-                        <th>Math</th>
-                        <th>Physics</th>
-                        <th>Total Fees</th>
-                        <th>Total Paid</th>
-                        <th>Total Owe</th>
-                        <th>Last Paid</th>
-                        <th>Update By</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php
-                        $sql = "
-                          SELECT 
-                            learners.LearnerId, 
-                            users.Name, 
-                            users.Surname, 
-                            learners.Grade, 
-                            
-                          FROM learners
-                          JOIN users ON learners.LearnerId = users.Id
-                        ";
-                        $results = $connect->query($sql);
-                        while($final = $results->fetch_assoc()) { ?>
-                          <tr>
-                            <td><?php echo htmlspecialchars($final['Name']); ?></td>
-                            <td><?php echo htmlspecialchars($final['Surname']); ?></td>
-                            <td><?php echo htmlspecialchars($final['Grade']); ?></td>
-                           
-                            <td>R<?php echo number_format(524, 2); ?></td>
-                            <td>R<?php echo number_format(142, 2); ?></td>
-                            <td>R<?php echo number_format(547, 2); ?></td>
-                            <td>
-                              <?php 
-                                if (!empty($final['LastUpdated'])) {
-                                  echo date('d M Y, H:i', strtotime($final['LastUpdated']));
-                                } else {
-                                  echo "Never";
-                                }
-                              ?>
-                            </td>
-                            <td>
-                              <form action="payhandler.php" method="POST" class="horizontal-container">
-                                <input type="number" class="form-control2" id="newamount" name="newamount" min="-5000" max="5000" required>
-                                <input type="hidden" name="learnerid" value="<?php echo htmlspecialchars($final['LearnerId']); ?>">                                                                        
-                                <button type="submit" name="updateby" class="btn btn-sm btn-primary py-3 px-4">Pay</button>
-                              </form>
-                            </td>
-                          </tr>
-                      <?php } ?>
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <th>Name</th>
-                        <th>Surname</th>
-                        <th>Grade</th>
-                        <th>Math</th>
-                        <th>Physics</th>
-                        <th>Total Fees</th>
-                        <th>Total Paid</th>
-                        <th>Total Owe</th>
-                        <th>Last Paid</th>
-                        <th>Update By</th>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-                <a href="mailparent.php" class="btn btn-block btn-primary">Mail Parents <i class="fa fa-arrow-circle-right"></i></a>
-              </div>
-            </div>
-          </div>
+  <div class="col-xs-12">
+    <div class="box">
+      <div class="box-header">
+        <h3 class="box-title">Learners Finances</h3>
+      </div>
+      <div class="box-body">
+        <div class="table-responsive">
+          <table id="example1" class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Total Fees</th>
+                <th>Total Paid</th>
+                <th>Balance</th>
+                <th>Last Payment Date</th> <!-- Added column -->
+                <th>Update Payment</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+                $sql = "
+                  SELECT 
+                    f.LearnerId,
+                    u.Name,
+                    u.Surname,
+                    f.TotalFees,
+                    f.TotalPaid,
+                    f.Balance,
+                    f.LastPaymentDate
+                  FROM finances f
+                  JOIN users u ON f.LearnerId = u.Id
+                  ORDER BY u.Surname, u.Name
+                ";
+                
+                $results = $connect->query($sql);
+                if ($results && $results->num_rows > 0) {
+                  while($final = $results->fetch_assoc()) { ?>
+                    <tr>
+                      <td><?= htmlspecialchars($final['Name']) ?></td>
+                      <td><?= htmlspecialchars($final['Surname']) ?></td>
+                      <td>R<?= number_format($final['TotalFees'], 2) ?></td>
+                      <td>R<?= number_format($final['TotalPaid'], 2) ?></td>
+                      <td>R<?= number_format($final['Balance'], 2) ?></td>
+                      <td>
+                        <?= !empty($final['LastPaymentDate']) ? date('d M Y, H:i', strtotime($final['LastPaymentDate'])) : 'Never' ?>
+                      </td>
+                      <td>
+                        <form action="payhandler.php" method="POST" class="horizontal-container">
+                          <input type="number" class="form-control2" id="newamount" name="newamount" min="-5000" max="5000" required>
+                          <input type="hidden" name="learnerid" value="<?= htmlspecialchars($final['LearnerId']) ?>">                                                                        
+                          <button type="submit" name="updateby" class="btn btn-sm btn-primary py-3 px-4">Pay</button>
+                        </form>
+                      </td>
+                    </tr>
+                  <?php }
+                } else { ?>
+                  <tr>
+                    <td colspan="7" class="text-center">No learners found in finances table.</td>
+                  </tr>
+              <?php } ?>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Total Fees</th>
+                <th>Total Paid</th>
+                <th>Balance</th>
+                <th>Last Payment Date</th> <!-- Added column -->
+                <th>Update Payment</th>
+              </tr>
+            </tfoot>
+          </table>
         </div>
+        <a href="mailparent.php" class="btn btn-block btn-primary">Mail Parents <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+  </div>
+</div>
+
     </section>
 
   </div>
 
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Tabs omitted for brevity - keep your existing code here -->
-    <!-- ... -->
-  </aside>
-  <div class="control-sidebar-bg"></div>
 </div>
 
 <!-- Scripts -->
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+  <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+
   <?php if (isset($_GET['paid']) && $_GET['paid'] == 1): ?>
     <?php  
     echo '<script>
@@ -275,6 +262,7 @@ include(__DIR__ . "/../../partials/connect.php");
         </script>';
       ?>
   <?php endif; ?>
+
   <?php if (isset($_GET['notfound']) && $_GET['notfound'] == 1): ?>
     <?php  
     echo '<script>

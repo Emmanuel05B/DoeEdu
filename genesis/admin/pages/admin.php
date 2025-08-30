@@ -142,10 +142,8 @@ if ($resultSubjects) {
                     <div class="profile-personal-info">
                       <h3 class="text-primary mb-4">Update</h3>
                     
-                     
                         <div class="row">
 
-                        
                           <!-- Learners List -->
                           <div class="col-md-6">
                             <div class="box">

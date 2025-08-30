@@ -1,11 +1,9 @@
-
 <?php
+session_start();
 
-session_start(); // Start the session
-
-// Check if the session variable is set
+// Check if user is logged in
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
+    header("Location: ../../common/pages/login.php");
     exit();
 }
 
@@ -14,50 +12,48 @@ include(__DIR__ . "/../../partials/connect.php");
 if (isset($_POST["updateby"])) {
 
     // Get form data
-    $newamount = $_POST['newamount'];  // amount paid to reduce the debt
-    $learnerid = $_POST['learnerid']; // hidden input d
+    $newamount = floatval($_POST['newamount']);  // amount to pay
+    $learnerid = intval($_POST['learnerid']);    // hidden input
 
-    // Get current payment details
-    $sql = "SELECT * FROM learners WHERE LearnerId = ?";
+    // Fetch current finance record
+    $sql = "SELECT * FROM finances WHERE LearnerId = ?";
     $stmt = $connect->prepare($sql);
     $stmt->bind_param("i", $learnerid);
     $stmt->execute();
     $result = $stmt->get_result();
-    $final = $result->fetch_assoc();
+    $finance = $result->fetch_assoc();
     $stmt->close();
 
-    if (!$final) {
+    if (!$finance) {
         header("Location: finances.php?id=" . urlencode($learnerid) . "&notfound=1");
-        exit;
-        
+        exit();
     }
-
-    $totalfees = $final['TotalFees'];   // get total fees
-    $totalpaid = $final['TotalPaid'];   // get total paid before the new payment
 
     // Calculate new totals
-    $totalpaid += $newamount;    
-    $totalowe = $totalfees - $totalpaid;      
+    $totalPaid = $finance['TotalPaid'] + $newamount;
+    $balance   = $finance['TotalFees'] - $totalPaid;
 
-    // Update with LastUpdated = NOW()
-    $sql = "UPDATE learners SET TotalPaid = ?, TotalOwe = ?, LastUpdated = NOW() WHERE LearnerId = ?";
-    $UpdateStmt = $connect->prepare($sql);
-    $UpdateStmt->bind_param("ddi", $totalpaid, $totalowe, $learnerid);
+    // Update finances table
+    $updateSql = "
+        UPDATE finances 
+        SET TotalPaid = ?, 
+            Balance = ?, 
+            LastPaymentDate = NOW(), 
+            UpdatedAt = NOW() 
+        WHERE LearnerId = ?
+    ";
+    $updateStmt = $connect->prepare($updateSql);
+    $updateStmt->bind_param("ddi", $totalPaid, $balance, $learnerid);
 
-    // Execute update
-    if ($UpdateStmt->execute()) {
+    if ($updateStmt->execute()) {
         header("Location: finances.php?id=" . urlencode($learnerid) . "&paid=1");
-        exit;
-        
+        exit();
     } else {
         header("Location: finances.php?id=" . urlencode($learnerid) . "&notpaid=1");
-        exit;
-        
+        exit();
     }
 
-    $UpdateStmt->close();
+    $updateStmt->close();
     $connect->close();
-    exit();
 }
 ?>
-

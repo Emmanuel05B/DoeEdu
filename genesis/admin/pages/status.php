@@ -1,10 +1,11 @@
 <?php
 session_start();
-
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
-  exit();
-}    
+    header("Location: ../../common/pages/login.php");
+    exit();
+}
+
+include(__DIR__ . "/../../partials/connect.php");
 ?>
 
 <?php include(__DIR__ . "/../../common/partials/head.php"); ?>
@@ -13,162 +14,117 @@ if (!isset($_SESSION['email'])) {
   <?php include(__DIR__ . "/../partials/header.php"); ?>
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
-  <!-- Content Wrapper. Contains page content ---> 
+  <!-- Content Wrapper -->
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-    </section>
+    <section class="content-header"></section>
 
-    <!-- Main content table---------------------------------------------> 
+    <!-- Main content -->
     <section class="content">
       <div class="row">
         <div class="col-xs-12">
           <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">Learners Finances</h3>
+            </div>
             <div class="box-body">
-              <div class="table-responsive"> <!-- the magic!!!! -->
-              <table id="example1" class="table table-bordered table-striped">
-                <thead>
-                  <tr>
-                    <th>StNo</th>
-                    <th>Name</th>
-                    <th>Surname</th>
-                    <th>Grade</th>
-                    <th>Math</th>
-                    <th>Physics</th>
-                    <th>Total Fees</th>
-                    <th>Total Paid</th>
-                    <th>Total Owe</th>
+              <div class="table-responsive">
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>StNo</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>Total Fees</th>
+                      <th>Total Paid</th>
+                      <th>Total Owe</th>
+                      <th>Last Payment</th>
+                      <th>Update By</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  <?php
+                  $statusValue = isset($_GET['val']) ? intval($_GET['val']) : 0;
 
-                  </tr>
-                </thead> 
+                  $sqlBase = "
+                    SELECT f.LearnerId, f.TotalFees, f.TotalPaid, f.Balance, f.LastPaymentDate,
+                           u.Name, u.Surname,
+                           ls.ContractExpiryDate
+                    FROM finances AS f
+                    JOIN users AS u ON f.LearnerId = u.Id
+                    LEFT JOIN learnersubject AS ls ON f.LearnerId = ls.LearnerId
+                    AND ls.ContractExpiryDate = (
+                        SELECT MAX(ls2.ContractExpiryDate)
+                        FROM learnersubject AS ls2
+                        WHERE ls2.LearnerId = f.LearnerId
+                    )
+                  ";
 
-                <tbody>
-                <?php
-                include('../../partials/connect.php');
-      
-                $statusValue = intval($_GET['val']);  // Ensure it's an integer
-          
-                // Check the status and render different HTML for each case
-                if ($statusValue == 1) {
-                    // Status 1: On Contract and Owing Learners
-                    echo '<h3>On Contract and Owing Learners</h3><br>';
+                  switch($statusValue) {
+                      case 1: // On Contract & Owing
+                          echo '<h3>On Contract and Owing Learners</h3><br>';
+                          $sql = $sqlBase . " WHERE f.Balance > 0 AND ls.ContractExpiryDate > CURDATE()";
+                          break;
+                      case 2: // On Contract & Not Owing
+                          echo '<h3>On Contract and Not Owing Learners</h3><br>';
+                          $sql = $sqlBase . " WHERE f.Balance <= 0 AND ls.ContractExpiryDate > CURDATE()";
+                          break;
+                      case 3: // Expired Contract & Not Owing
+                          echo '<h3>Expired Contract and Not Owing Learners</h3><br>';
+                          $sql = $sqlBase . " WHERE f.Balance <= 0 AND ls.ContractExpiryDate <= CURDATE()";
+                          break;
+                      case 4: // Expired Contract & Owing
+                          echo '<h3>Expired Contract and Owing Learners</h3><br>';
+                          $sql = $sqlBase . " WHERE f.Balance > 0 AND ls.ContractExpiryDate <= CURDATE()";
+                          break;
+                      default:
+                          echo '<h3>All Learners</h3><br>';
+                          $sql = $sqlBase;
+                          break;
+                  }
 
-                    // SQL query for learners owing money and with unexpired contracts
-                    $sql = "SELECT 
-                                lt.*, 
-                                ls.*, 
-                                u.Name, 
-                                u.Surname
-                            FROM learners AS lt
-                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                            JOIN users AS u ON u.Id = lt.LearnerId
-                            WHERE lt.TotalOwe > 0
-                              AND ls.ContractExpiryDate = (
-                                  SELECT MAX(ls2.ContractExpiryDate)
-                                  FROM learnersubject AS ls2
-                                  WHERE ls2.LearnerId = ls.LearnerId
-                              )
-                              AND ls.ContractExpiryDate > CURDATE()";
-
-                            
-                } else if ($statusValue == 2) {
-                    // Status 2: On Contract and Not Owing Learners
-                    echo '<h3>On Contract and Not Owing Learners</h3><br>';
-
-                    // SQL query for learners not owing money and with unexpired contracts
-                    $sql = "SELECT 
-                                lt.*, 
-                                ls.*, 
-                                u.Name, 
-                                u.Surname
-                            FROM learners AS lt
-                            JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                            JOIN users AS u ON u.Id = lt.LearnerId
-                            WHERE lt.TotalOwe <= 0
-                              AND ls.ContractExpiryDate = (
-                                  SELECT MAX(ls2.ContractExpiryDate)
-                                  FROM learnersubject AS ls2
-                                  WHERE ls2.LearnerId = ls.LearnerId
-                              )
-                              AND ls.ContractExpiryDate > CURDATE()";
-                } else if ($statusValue == 3) {
-                    // Status 3: Expired Contract and Not Owing Learners
-                    echo '<h3>Expired Contract and Not Owing Learners</h3><br>';
-
-                    // SQL query for learners not owing money and with expired contracts
-                    $sql = "SELECT 
-                        lt.*, 
-                        ls.*, 
-                        u.Name, 
-                        u.Surname
-                    FROM learners AS lt
-                    JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                    JOIN users AS u ON u.Id = lt.LearnerId
-                    WHERE lt.TotalOwe <= 0
-                      AND ls.ContractExpiryDate = (
-                          SELECT MAX(ls2.ContractExpiryDate)
-                          FROM learnersubject AS ls2
-                          WHERE ls2.LearnerId = ls.LearnerId
-                      )
-                      AND ls.ContractExpiryDate <= CURDATE()";
-                } else if ($statusValue == 4) {
-                    // Status 4: Expired Contract and Owing Learners
-                    echo '<h3>Expired Contract and Owing Learners</h3><br>';
-
-                    // SQL query for learners owing money and with expired contracts
-                    $sql = "SELECT 
-                        lt.*, 
-                        ls.*, 
-                        u.Name, 
-                        u.Surname
-                    FROM learners AS lt
-                    JOIN learnersubject AS ls ON lt.LearnerId = ls.LearnerId
-                    JOIN users AS u ON u.Id = lt.LearnerId
-                    WHERE lt.TotalOwe > 0
-                      AND ls.ContractExpiryDate = (
-                          SELECT MAX(ls2.ContractExpiryDate)
-                          FROM learnersubject AS ls2
-                          WHERE ls2.LearnerId = ls.LearnerId
-                      )
-                      AND ls.ContractExpiryDate <= CURDATE()";
-
-                } else {
-                    // Default case if none of the statuses match
-                    echo '<h1>Learners - Unknown Status</h1>';
-                }
-                    
-                $results = $connect->query($sql);
-                while($final = $results->fetch_assoc()) { ?> 
-                <tr>
-                    <td><?php echo $final['LearnerId'] ?></td>
-                    <td><?php echo $final['Name'] ?></td>
-                    <td><?php echo $final['Surname'] ?></td>
-                    <td><?php echo $final['Grade'] ?></td>
-                    <td><?php echo $final['Math'] ?></td>
-                    <td><?php echo $final['Physics'] ?></td>
-                    <td><?php echo $final['TotalFees'] ?></td>
-                    <td><?php echo $final['TotalPaid'] ?></td>
-                    <td> <?php echo $final['TotalOwe'] ?></td>
-
-                </tr>
-                <?php } ?>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <th>StNo</th>
-                    <th>Name</th>
-                    <th>Surname</th>
-                    <th>Grade</th>
-                    <th>Math</th>
-                    <th>Physics</th>
-                    <th>Total Fees</th>
-                    <th>Total Paid</th>
-                    <th>Total Owe</th>
-
-                  </tr>
-                </tfoot>
-              </table>
+                  $results = $connect->query($sql);
+                  while($final = $results->fetch_assoc()) { ?>
+                    <tr>
+                      <td><?php echo htmlspecialchars($final['LearnerId']); ?></td>
+                      <td><?php echo htmlspecialchars($final['Name']); ?></td>
+                      <td><?php echo htmlspecialchars($final['Surname']); ?></td>
+                      <td>R<?php echo number_format($final['TotalFees'], 2); ?></td>
+                      <td>R<?php echo number_format($final['TotalPaid'], 2); ?></td>
+                      <td>R<?php echo number_format($final['Balance'], 2); ?></td>
+                      <td>
+                        <?php 
+                          if (!empty($final['LastPaymentDate'])) {
+                              echo date('d M Y, H:i', strtotime($final['LastPaymentDate']));
+                          } else {
+                              echo "Never";
+                          }
+                        ?>
+                      </td>
+                      <td>
+                        <form action="payhandler.php" method="POST" class="horizontal-container">
+                          <input type="number" class="form-control2" id="newamount" name="newamount" min="-5000" max="5000" required>
+                          <input type="hidden" name="learnerid" value="<?php echo htmlspecialchars($final['LearnerId']); ?>">
+                          <button type="submit" name="updateby" class="btn btn-sm btn-primary py-3 px-4">Pay</button>
+                        </form>
+                      </td>
+                    </tr>
+                  <?php } ?>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <th>StNo</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th>Total Fees</th>
+                      <th>Total Paid</th>
+                      <th>Total Owe</th>
+                      <th>Last Payment</th>
+                      <th>Update By</th>
+                    </tr>
+                  </tfoot>
+                </table>
               </div>
+              <a href="mailparent.php" class="btn btn-block btn-primary">Mail Parents <i class="fa fa-arrow-circle-right"></i></a>
             </div>
           </div>
         </div>
@@ -181,9 +137,11 @@ if (!isset($_SESSION['email'])) {
 
 <script>
   $(function () {
-    $('#example1').DataTable();
+    $('#example1').DataTable({
+      
+    });
   });
 </script>
 
 </body>
-</html>  
+</html>
