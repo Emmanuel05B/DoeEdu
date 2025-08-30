@@ -30,64 +30,64 @@ include(__DIR__ . "/../../partials/connect.php");
 
     <section class="content">
       <?php
-// Fetch totals from finances table
-$sqlTotals = "
-    SELECT 
-        SUM(TotalFees) AS TotalFees,
-        SUM(TotalPaid) AS TotalPaid,
-        SUM(Balance) AS TotalOwe
-    FROM finances
-";
-$resultTotals = $connect->query($sqlTotals);
-$totals = $resultTotals->fetch_assoc();
+      // Fetch totals from finances table
+      $sqlTotals = "
+          SELECT 
+              SUM(TotalFees) AS TotalFees,
+              SUM(TotalPaid) AS TotalPaid,
+              SUM(Balance) AS TotalOwe
+          FROM finances
+      ";
+      $resultTotals = $connect->query($sqlTotals);
+      $totals = $resultTotals->fetch_assoc();
 
-$TotalFees = (float)$totals['TotalFees'];
-$TotalPaid = (float)$totals['TotalPaid'];
-$TotalOwe  = (float)$totals['TotalOwe'];
-$Owe       = 0; // still static if needed
-?>
+      $TotalFees = (float)$totals['TotalFees'];
+      $TotalPaid = (float)$totals['TotalPaid'];
+      $TotalOwe  = (float)$totals['TotalOwe'];
+      $Owe       = 0; // still static if needed
+      ?>
 
-<div class="row">
-    <div class="col-md-3 col-sm-6 col-xs-12">
-        <div class="info-box">
-            <span class="info-box-icon bg-aqua"><i class="fa fa-balance-scale"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Total Paid by Learners</span><br>
-                <span class="info-box-number">R<?php echo number_format($TotalPaid, 2); ?></span>
-            </div>
-        </div>
-    </div>
+      <div class="row">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+              <div class="info-box">
+                  <span class="info-box-icon bg-aqua"><i class="fa fa-balance-scale"></i></span>
+                  <div class="info-box-content">
+                      <span class="info-box-text">Total Paid by Learners</span><br>
+                      <span class="info-box-number">R<?php echo number_format($TotalPaid, 2); ?></span>
+                  </div>
+              </div>
+          </div>
 
-    <div class="col-md-3 col-sm-6 col-xs-12">
-        <div class="info-box">
-            <span class="info-box-icon bg-yellow"><i class="fa fa-money"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Total Amount Expected</span><br>
-                <span class="info-box-number">R<?php echo number_format($TotalFees, 2); ?></span>
-            </div>
-        </div>
-    </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+              <div class="info-box">
+                  <span class="info-box-icon bg-yellow"><i class="fa fa-money"></i></span>
+                  <div class="info-box-content">
+                      <span class="info-box-text">Total Amount Expected</span><br>
+                      <span class="info-box-number">R<?php echo number_format($TotalFees, 2); ?></span>
+                  </div>
+              </div>
+          </div>
 
-    <div class="col-md-3 col-sm-6 col-xs-12">
-        <div class="info-box">
-            <span class="info-box-icon bg-green"><i class="fa fa-dollar"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Amount Due to Us</span><br>
-                <span class="info-box-number">R<?php echo number_format($TotalOwe, 2); ?></span>
-            </div>
-        </div>
-    </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+              <div class="info-box">
+                  <span class="info-box-icon bg-green"><i class="fa fa-dollar"></i></span>
+                  <div class="info-box-content">
+                      <span class="info-box-text">Amount Due to Us</span><br>
+                      <span class="info-box-number">R<?php echo number_format($TotalOwe, 2); ?></span>
+                  </div>
+              </div>
+          </div>
 
-    <div class="col-md-3 col-sm-6 col-xs-12">
-        <div class="info-box">
-            <span class="info-box-icon bg-red"><i class="fa fa-credit-card"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Amount We Owe</span><br>
-                <span class="info-box-number">R<?php echo number_format($Owe, 2); ?></span>
-            </div>
-        </div>
-    </div>
-</div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+              <div class="info-box">
+                  <span class="info-box-icon bg-red"><i class="fa fa-credit-card"></i></span>
+                  <div class="info-box-content">
+                      <span class="info-box-text">Amount We Owe</span><br>
+                      <span class="info-box-number">R<?php echo number_format($Owe, 2); ?></span>
+                  </div>
+              </div>
+          </div>
+      </div>
 
       <!-- Status Links  -->
       <div class="row">
