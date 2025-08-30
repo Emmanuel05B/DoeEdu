@@ -141,6 +141,8 @@ $subjects = $connect->query("
       </div>
       <div class="box-body" style="background-color:#ffffff;">
         <div class="row">
+          <input type="hidden" name="NewSubject[GradeName]" value="<?= htmlspecialchars($learnerGradeName ?? '') ?>">
+
           <div class="col-md-2 mb-2">
             <label>Subject</label>
             <select name="NewSubject[SubjectId]" class="form-control" required>

@@ -62,29 +62,134 @@ if (str_starts_with($action, "UpdateSubject_")) {
 // --------------------
 if ($action === "RegisterNewSubject") {
     $newSub = $_POST['NewSubject'] ?? [];
-    if (!empty($newSub['SubjectId'])) {
+    $subjectId = $newSub['SubjectId'] ?? 0;
+
+    if ($subjectId) {
+        // Check if learner is already registered for this subject
+        $stmtCheck = $connect->prepare("
+            SELECT COUNT(*) AS cnt 
+            FROM learnersubject 
+            WHERE LearnerId = ? AND SubjectId = ?
+        ");
+        $stmtCheck->bind_param("ii", $learnerId, $subjectId);
+        $stmtCheck->execute();
+        $res = $stmtCheck->get_result()->fetch_assoc();
+        $stmtCheck->close();
+
+        if ($res['cnt'] > 0) {
+            // Already registered – redirect with error message
+            header("Location: updatelearner.php?id=$learnerId&error=already_registered");
+            exit();
+        }
+
+        // Insert new subject
+        $Status = 'Active';
+        $gradeName = $newSub['GradeName'];
+
         $stmt = $connect->prepare("
             INSERT INTO learnersubject 
-            (LearnerId, SubjectId, TargetLevel, CurrentLevel, ContractStartDate, ContractExpiryDate, ContractFee) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (LearnerId, SubjectId, TargetLevel, CurrentLevel, ContractStartDate, ContractExpiryDate, ContractFee, Status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->bind_param(
-            "iissd",
+            "iiisssd",
             $learnerId,
-            $newSub['SubjectId'],
+            $subjectId,
             $newSub['TargetLevel'],
             $newSub['CurrentLevel'],
             $newSub['ContractStartDate'],
             $newSub['ContractExpiryDate'],
-            $newSub['ContractFee']
+            $newSub['ContractFee'],
+            $Status
         );
         $stmt->execute();
-        $stmt->close();
+        $stmt->close();   
+
+        //we also have to add him to the actual class
+         // -------------------
+            // CLASS ASSIGNMENT
+            // -------------------
+
+            $stmtSub = $connect->prepare("
+                SELECT DefaultTutorId, MaxClassSize 
+                FROM subjects WHERE SubjectId = ?
+            ");
+            $stmtSub->bind_param("i", $subjectId);
+            $stmtSub->execute();
+            $subRes = $stmtSub->get_result()->fetch_assoc();
+            $stmtSub->close();
+
+            $maxLearnersPerClass = $subRes['MaxClassSize'] ?? 5;
+            $tutorId             = $subRes['DefaultTutorId'] ?? 25;
+
+            $stmtClass = $connect->prepare("
+                SELECT ClassID, CurrentLearnerCount 
+                FROM classes 
+                WHERE SubjectID = ? AND Grade = ? AND Status != 'Full' 
+                ORDER BY CreatedAt ASC 
+                LIMIT 1
+            ");
+            $stmtClass->bind_param("ii", $subjectId, $gradeName);
+            $stmtClass->execute();
+            $resultClass = $stmtClass->get_result();
+
+            if ($resultClass->num_rows > 0) {
+                $class     = $resultClass->fetch_assoc();
+                $classId   = (int)$class['ClassID'];
+                $newCount  = ((int)$class['CurrentLearnerCount']) + 1;
+                $classStat = ($newCount >= $maxLearnersPerClass) ? 'Full' : 'Not Full';
+
+                $update = $connect->prepare("UPDATE classes SET CurrentLearnerCount = ?, Status = ? WHERE ClassID = ?");
+                $update->bind_param("isi", $newCount, $classStat, $classId);
+                $update->execute();
+                $update->close();  
+                    
+            } else {
+                $stmtGroup = $connect->prepare("
+                    SELECT GroupName 
+                    FROM classes 
+                    WHERE SubjectID = ? AND Grade = ? 
+                    ORDER BY GroupName DESC 
+                    LIMIT 1
+                ");
+                $stmtGroup->bind_param("is", $subjectId, $gradeName);
+                $stmtGroup->execute();
+                $groupResult = $stmtGroup->get_result();
+
+                if ($groupResult->num_rows > 0) {
+                    $lastGroupName = $groupResult->fetch_assoc()['GroupName'];
+                    $newGroupName = chr(ord($lastGroupName) + 1); // A → B → C, etc.
+                } else {
+                    $newGroupName = 'A';
+                }
+                $stmtGroup->close();
+
+                $classStat = 'Not Full';
+                $newCount  = 1;
+
+                $insertClass = $connect->prepare("
+                    INSERT INTO classes 
+                        (SubjectID, Grade, GroupName, CurrentLearnerCount, TutorID, Status, CreatedAt) 
+                    VALUES 
+                        (?, ?, ?, ?, ?, ?, NOW())
+                ");
+                $insertClass->bind_param("ississ", $subjectId, $gradeName, $newGroupName, $newCount, $tutorId, $classStat);
+                $insertClass->execute();
+                $classId = $connect->insert_id;
+                $insertClass->close();
+            }
+
+            $assign = $connect->prepare("INSERT INTO learnerclasses (LearnerID, ClassID, AssignedAt) VALUES (?, ?, NOW())");
+            $assign->bind_param("ii", $learnerId, $classId);
+            $assign->execute();
+            $assign->close();
+            
     }
 
     header("Location: updatelearner.php?id=$learnerId&updated=1");
     exit();
 }
+
 
 // --------------------
 // 3. UPDATE PERSONAL INFO
