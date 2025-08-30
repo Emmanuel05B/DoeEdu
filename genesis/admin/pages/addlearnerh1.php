@@ -30,7 +30,7 @@ $errors = [];
 
 $userId = $_SESSION['user_id'];
 
-// Handle form submission for parent details
+// Handle form submission for parent detailss
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Learner info from POST
   $learner_name = $_POST['name'];

@@ -101,7 +101,7 @@ while($row = $gradesResult->fetch_assoc()){
                       <thead>
                         <tr>
                           <th>Subject</th>
-                          <th>Duration</th>
+                          <th>(Click to Register)</th>
                           <th>Current Level</th>
                           <th>Target Level</th>
                         </tr>
@@ -311,18 +311,37 @@ while($row = $gradesResult->fetch_assoc()){
           }
 
           $('#totalCost').text(total.toFixed(2));
+    
+          // Disable confirm button if total is zero
+          
+          if(total === 0){
+              $('#confirmSubmit').prop('disabled', true).attr('title', 'Register at least one subject');
+          } else {
+              $('#confirmSubmit').prop('disabled', false).removeAttr('title');
+          }
+
+
           $('#summaryModal').modal('show');
+
+          
+
       });
 
       // -----------------------
-      // CONFIRM SUBMISSION
+      // CONFIRM SUBMISSION   // 
       // -----------------------
+
       $('#confirmSubmit').click(function(){
+          const total = parseFloat($('#totalCost').text());
+          if(total === 0){
+              alert('Please select at least one subject before confirming.');
+              return; // Stop submission
+          }
           $('#learnerForm')[0].submit();
       });
 
   });
-</script>
+ </script>
 
 
 

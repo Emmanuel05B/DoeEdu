@@ -1,184 +1,234 @@
-<!DOCTYPE html>
-<html>
-    
 <?php
 session_start();
-
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
-  exit();
+    header("Location: ../../common/pages/login.php");
+    exit();
 }
 
-include(__DIR__ . "/../../common/partials/head.php");
+include(__DIR__ . "/../../partials/connect.php");
 
-// Dummy data example: replace with DB query fetching all questions for current level
-$questions = [
-  1 => ['id' => 101, 'text' => 'What is 5 + 7?', 'options' => ['10','11','12','13','14']],
-  2 => ['id' => 102, 'text' => 'What is 8 - 3?', 'options' => ['3','4','5','6']],
-  // ... up to 25 questions
-];
-$totalQuestions = count($questions);
-$level = 'Easy';
+// Learner ID
+$learnerId = intval($_GET['id']);
 
-// Initialize or retrieve learner progress from session or DB
-if (!isset($_SESSION['practice_progress'])) {
-  $_SESSION['practice_progress'] = []; // key=question_id, value=answer given
+// Fetch learner personal info (from users + learners table)
+$learnerData = $connect->query("
+    SELECT u.Name, u.Surname, u.Email, u.Contact,
+           l.ParentName, l.ParentSurname, l.ParentEmail, l.ParentContactNumber
+    FROM users u
+    LEFT JOIN learners l ON u.Id = l.LearnerId
+    WHERE u.Id = $learnerId
+")->fetch_assoc() ?? [];
+
+// Use schoolId = 4 for now
+$learnerSchoolId = 4;
+
+// Fetch learner grade name
+$learnerRow = $connect->query("SELECT Grade FROM learners WHERE LearnerId = $learnerId")->fetch_assoc();
+$learnerGradeName = $learnerRow['Grade'] ?? null;
+
+// Fetch GradeId from grades table
+$learnerGradeId = null;
+if ($learnerGradeName) {
+    $stmt = $connect->prepare("SELECT GradeId FROM grades WHERE GradeName = ? AND SchoolId = ?");
+    $stmt->bind_param("si", $learnerGradeName, $learnerSchoolId);
+    $stmt->execute();
+    $res = $stmt->get_result()->fetch_assoc();
+    $learnerGradeId = $res['GradeId'] ?? null;
+    $stmt->close();
 }
 
-// Handle form submission for current question
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['question_id'], $_POST['answer'])) {
-  $qid = intval($_POST['question_id']);
-  $answer = $_POST['answer'];
-  $_SESSION['practice_progress'][$qid] = $answer;
-
-  // Redirect to avoid form resubmission and show next question
-  header("Location: " . $_SERVER['PHP_SELF']);
-  exit();
+// Fetch subjects for this grade
+$allSubjects = [];
+if ($learnerGradeId) {
+    $stmt = $connect->prepare("SELECT SubjectId, SubjectName FROM subjects WHERE GradeId = ? ORDER BY SubjectName");
+    $stmt->bind_param("i", $learnerGradeId);
+    $stmt->execute();
+    $allSubjects = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
 }
 
-// Find next unanswered question
-$nextQuestionNumber = 1;
-foreach ($questions as $num => $q) {
-  if (!array_key_exists($q['id'], $_SESSION['practice_progress'])) {
-    $nextQuestionNumber = $num;
-    break;
-  }
-  if ($num === $totalQuestions) {
-    $nextQuestionNumber = $totalQuestions + 1; // all done
-  }
-}
-
+// Fetch current subjects of the learner
+$subjects = $connect->query("
+    SELECT ls.LearnerSubjectId, s.SubjectName, ls.ContractStartDate, ls.ContractExpiryDate, 
+           ls.ContractFee, ls.Status
+    FROM learnersubject ls
+    JOIN subjects s ON ls.SubjectId = s.SubjectId
+    WHERE ls.LearnerId = $learnerId
+    ORDER BY s.SubjectName
+")->fetch_all(MYSQLI_ASSOC);
 ?>
-
+<!DOCTYPE html>
+<html>
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
- 
   <?php include(__DIR__ . "/../partials/header.php"); ?>
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
-
+    
     <section class="content-header">
-      <h1>Practice Questions <small>Level: <?php echo htmlspecialchars($level); ?></small></h1>
+      <h1>Update Learner Details <small>Manage Learner profile information</small></h1>
       <ol class="breadcrumb">
         <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Practice Questions</li>
+        <li class="active">Update Learner</li>
       </ol>
+      <small>For now Learner ID: <?= $learnerId ?></small>
     </section>
 
     <section class="content">
-      <div class="row">
-        <div class="col-xs-12">
+      <!-- SUBJECTS FORM -->
+      <form method="POST" action="savelearnerupdates.php">
+        <input type="hidden" name="LearnerId" value="<?= $learnerId ?>">
 
-          <div class="box box-primary">
-            <div class="box-header">
-              <h3 class="box-title">
-                <?php if ($nextQuestionNumber <= $totalQuestions): ?>
-                  Question <?php echo $nextQuestionNumber; ?> of <?php echo $totalQuestions; ?>
-                <?php else: ?>
-                  Results Summary
-                <?php endif; ?>
-              </h3>
-            </div>
-
-            <div class="box-body">
-
-            <?php if ($nextQuestionNumber <= $totalQuestions): 
-              $q = $questions[$nextQuestionNumber];
-            ?>
-
-              <form method="POST" action="">
-                <input type="hidden" name="question_id" value="<?php echo $q['id']; ?>">
-                
-                <div id="question-text" style="font-size:1.3em; margin-bottom: 20px;">
-                  <?php echo htmlspecialchars($q['text']); ?>
+        <!-- Current Subjects -->
+        <div class="row">
+        <?php foreach ($subjects as $sub): ?>
+            <div class="col-md-6 mb-3">
+              <div class="box box-primary" style="border-top:3px solid #3c8dbc;">
+                <div class="box-header with-border" style="background-color:#f0f8ff;">
+                  <h3 class="box-title" style="color:#3c8dbc;"><?= htmlspecialchars($sub['SubjectName']) ?></h3>
                 </div>
-
-                <div class="form-group">
-                  <?php 
-                    $options = $q['options'];
-                    shuffle($options);
-                    foreach ($options as $opt) {
-                      $checked = (isset($_SESSION['practice_progress'][$q['id']]) && $_SESSION['practice_progress'][$q['id']] === $opt) ? 'checked' : '';
-                      echo '<div class="radio"><label>';
-                      echo '<input type="radio" name="answer" value="' . htmlspecialchars($opt) . '" required ' . $checked . '> ' . htmlspecialchars($opt);
-                      echo '</label></div>';
-                    }
-                  ?>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Submit Answer</button>
-              </form>
-
-              <!-- Progress bar -->
-              <div class="progress" style="height: 15px; margin-top: 15px;">
-                <div class="progress-bar progress-bar-success" role="progressbar"
-                  aria-valuenow="<?php echo $nextQuestionNumber - 1; ?>" aria-valuemin="0" aria-valuemax="<?php echo $totalQuestions; ?>"
-                  style="width: <?php echo (($nextQuestionNumber - 1) / $totalQuestions) * 100; ?>%;">
-                  <?php echo round((($nextQuestionNumber - 1) / $totalQuestions) * 100); ?>%
+                <div class="box-body" style="background-color:#ffffff;">
+                  <div class="row">
+                    <div class="col-md-6 form-group">
+                      <label>Contract Start</label>
+                      <input type="date" name="Subjects[<?= $sub['LearnerSubjectId'] ?>][ContractStartDate]" value="<?= $sub['ContractStartDate'] ?>" class="form-control">
+                    </div>
+                    <div class="col-md-6 form-group">
+                      <label>Contract End</label>
+                      <input type="date" name="Subjects[<?= $sub['LearnerSubjectId'] ?>][ContractExpiryDate]" value="<?= $sub['ContractExpiryDate'] ?>" class="form-control">
+                    </div>
+                    <div class="col-md-4 form-group">
+                      <label>Fee</label>
+                      <input type="number" step="0.01" name="Subjects[<?= $sub['LearnerSubjectId'] ?>][ContractFee]" value="<?= $sub['ContractFee'] ?>" class="form-control">
+                    </div>
+                    <div class="col-md-4 form-group">
+                      <label>Status</label>
+                      <select name="Subjects[<?= $sub['LearnerSubjectId'] ?>][Status]" class="form-control">
+                        <option value="Active" <?= $sub['Status']=='Active'?'selected':'' ?>>Active</option>
+                        <option value="Suspended" <?= $sub['Status']=='Suspended'?'selected':'' ?>>Suspended</option>
+                        <option value="Completed" <?= $sub['Status']=='Completed'?'selected':'' ?>>Completed</option>
+                        <option value="Cancelled" <?= $sub['Status']=='Cancelled'?'selected':'' ?>>Cancelled</option>
+                      </select>
+                    </div>
+                    <div class="col-md-4 form-group">
+                      <label>Action</label>
+                      <select name="Subjects[<?= $sub['LearnerSubjectId'] ?>][Action]" class="form-control">
+                        <option value="">-- No Change --</option>
+                        <option value="Deregister">Drop</option>
+                        <option value="Extend">Extend</option>
+                        <option value="CutShort">Cut Short</option>
+                      </select>
+                    </div>
+                    <div class="col-md-12 text-right">
+                      <button type="submit" name="Action" value="UpdateSubject_<?= $sub['LearnerSubjectId'] ?>" class="btn btn-primary" style="width:120px;">Update</button>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-            <?php else: 
-              // Show summary/results
-
-              // Example scoring logic: assume correct answers are hardcoded here (replace with DB check)
-              $correctAnswers = [
-                101 => '12',
-                102 => '5', // Actually '5' is not in options for q2, just an example, adjust accordingly
-                // etc...
-              ];
-
-              $totalCorrect = 0;
-              foreach ($_SESSION['practice_progress'] as $qid => $ans) {
-                if (isset($correctAnswers[$qid]) && $correctAnswers[$qid] === $ans) {
-                  $totalCorrect++;
-                }
-              }
-
-              $percentage = ($totalCorrect / $totalQuestions) * 100;
-            ?>
-
-              <h4>You've completed all questions!</h4>
-              <p>Correct answers: <strong><?php echo $totalCorrect; ?></strong> out of <strong><?php echo $totalQuestions; ?></strong></p>
-              <p>Your score: <strong><?php echo round($percentage, 2); ?>%</strong></p>
-
-              <?php if ($percentage >= 70): ?>
-                <p class="text-success">Congratulations! You passed this level.</p>
-              <?php else: ?>
-                <p class="text-danger">Unfortunately, you did not reach the pass mark. You can retry the level.</p>
-                <form method="POST" action="">
-                  <input type="hidden" name="reset" value="1">
-                  <button type="submit" class="btn btn-warning">Retry Level</button>
-                </form>
-              <?php endif; ?>
-
-              <?php
-              // Reset progress if retry clicked
-              if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset']) && $_POST['reset'] == '1') {
-                $_SESSION['practice_progress'] = [];
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit();
-              }
-              ?>
-
-            <?php endif; ?>
-
             </div>
-
-          </div>
-
+        <?php endforeach; ?>
         </div>
-      </div>
+
+        <!-- Add New Subject -->
+        <div class="box box-success" style="border-top:3px solid #00a65a;">
+          <div class="box-header with-border" style="background-color:#e6ffed;">
+            <h3 class="box-title" style="color:#00a65a;">Add New Subject</h3>
+          </div>
+          <div class="box-body" style="background-color:#ffffff;">
+            <div class="row">
+              <div class="col-md-2 mb-2">
+                <label>Subject</label>
+                <select name="NewSubject[SubjectId]" class="form-control">
+                  <option value="">-- Select Subject --</option>
+                  <?php foreach($allSubjects as $s): ?>
+                    <option value="<?= $s['SubjectId'] ?>"><?= htmlspecialchars($s['SubjectName']) ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+              <div class="col-md-2 mb-2">
+                <label>Current Level</label>
+                <input type="number" name="NewSubject[CurrentLevel]" class="form-control" placeholder="1-7">
+              </div>
+              <div class="col-md-2 mb-2">
+                <label>Target Level</label>
+                <input type="number" name="NewSubject[TargetLevel]" class="form-control" placeholder="1-7">
+              </div>
+              <div class="col-md-2 mb-2">
+                <label>Start Date</label>
+                <input type="date" name="NewSubject[ContractStartDate]" class="form-control">
+              </div>
+              <div class="col-md-2 mb-2">
+                <label>End Date</label>
+                <input type="date" name="NewSubject[ContractExpiryDate]" class="form-control">
+              </div>
+              <div class="col-md-2 mb-2">
+                <label>Fee</label>
+                <input type="number" step="0.01" name="NewSubject[ContractFee]" class="form-control" placeholder="R">
+              </div>
+              <div class="col-md-12 text-right">
+                <button type="submit" name="Action" value="RegisterNewSubject" class="btn btn-success" style="width:120px;">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- PERSONAL INFO FORM -->
+      <form method="POST" action="savelearnerupdates.php" style="margin-top:30px;">
+        <input type="hidden" name="LearnerId" value="<?= $learnerId ?>">
+        <div class="box box-info" style="border-top:3px solid #00c0ef;">
+          <div class="box-header with-border" style="background-color:#e0f7ff;">
+            <h3 class="box-title" style="color:#00c0ef;">Update Personal Information</h3>
+          </div>
+          <div class="box-body">
+            <div class="row">
+              <div class="col-md-3 form-group">
+                <label>First Name</label>
+                <input type="text" name="firstname" class="form-control" value="<?= htmlspecialchars($learnerData['Name'] ?? '') ?>" required>
+              </div>
+              <div class="col-md-3 form-group">
+                <label>Surname</label>
+                <input type="text" name="surname" class="form-control" value="<?= htmlspecialchars($learnerData['Surname'] ?? '') ?>" required>
+              </div>
+              <div class="col-md-3 form-group">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($learnerData['Email'] ?? '') ?>" required>
+              </div>
+              <div class="col-md-3 form-group">
+                <label>Contact Number</label>
+                <input type="tel" name="contactnumber" class="form-control" value="<?= htmlspecialchars($learnerData['Contact'] ?? '') ?>" required>
+              </div>
+              <div class="col-md-3 form-group">
+                <label>Parent First Name</label>
+                <input type="text" name="parentfirstname" class="form-control" value="<?= htmlspecialchars($learnerData['ParentName'] ?? '') ?>" required>
+              </div>
+              <div class="col-md-3 form-group">
+                <label>Parent Surname</label>
+                <input type="text" name="parentsurname" class="form-control" value="<?= htmlspecialchars($learnerData['ParentSurname'] ?? '') ?>" required>
+              </div>
+              <div class="col-md-3 form-group">
+                <label>Parent Email</label>
+                <input type="email" name="parentemail" class="form-control" value="<?= htmlspecialchars($learnerData['ParentEmail'] ?? '') ?>" required>
+              </div>
+              <div class="col-md-3 form-group">
+                <label>Parent Contact Number</label>
+                <input type="tel" name="parentcontactnumber" class="form-control" value="<?= htmlspecialchars($learnerData['ParentContactNumber'] ?? '') ?>" required>
+              </div>
+            </div>
+          </div>
+          <div class="box-footer text-right">
+            <button type="submit" name="Action" value="UpdatePersonalInfo" class="btn btn-info" style="width:150px;">Update Personal Info</button>
+          </div>
+        </div>
+      </form>
+
     </section>
   </div>
-
-  <div class="control-sidebar-bg"></div>
 </div>
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-
 </body>
 </html>

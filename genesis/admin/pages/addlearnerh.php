@@ -37,7 +37,6 @@ try {
     } else {
         $gradeName = "Unknown";  // fallback
     }
-
     $stmtGrade->close();
 
 
@@ -51,6 +50,30 @@ try {
     $ptitle   = $_POST['parenttitle'];
 
     $password = $_POST['password'];  //from the hidden field
+    $errors = [];
+
+    // Validate required fields
+    if (empty($email) || empty($pemail) || empty($grade) || empty($name)) {
+        $errors[] = "All fields are required.";
+    }
+
+    // Validate email format
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Invalid email format.";
+    }
+
+    // Check if the learner already exists
+      $check = $connect->prepare("SELECT Id FROM users WHERE Email = ?");
+      $check->bind_param("s", $email);
+      $check->execute();
+      $check->store_result();
+      if ($check->num_rows > 0) {
+         
+            $_SESSION['error'] = "A learner with this email already exists: ";
+            header("Location: addlearners.php");
+            exit();
+      }
+      $check->close();
 
     $verificationToken = bin2hex(random_bytes(32));
     $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
@@ -81,121 +104,121 @@ try {
         $duration = $_POST['Duration'][$i];
         if($duration > 0){  // check if subject has been registered or not. 
             $currentLevel = $_POST['CurrentLevel'][$i];
-        $targetLevel  = $_POST['TargetLevel'][$i];
+            $targetLevel  = $_POST['TargetLevel'][$i];
 
-        $stmtSub = $connect->prepare("
-            SELECT ThreeMonthsPrice, SixMonthsPrice, TwelveMonthsPrice, DefaultTutorId, MaxClassSize 
-            FROM subjects WHERE SubjectId = ?
-        ");
-        $stmtSub->bind_param("i", $sid);
-        $stmtSub->execute();
-        $subRes = $stmtSub->get_result()->fetch_assoc();
-        $stmtSub->close();
+            $stmtSub = $connect->prepare("
+                SELECT ThreeMonthsPrice, SixMonthsPrice, TwelveMonthsPrice, DefaultTutorId, MaxClassSize 
+                FROM subjects WHERE SubjectId = ?
+            ");
+            $stmtSub->bind_param("i", $sid);
+            $stmtSub->execute();
+            $subRes = $stmtSub->get_result()->fetch_assoc();
+            $stmtSub->close();
 
-        $price = (float)$duration;
-        if ($price == $subRes['ThreeMonthsPrice']) $months = 3;
-        elseif ($price == $subRes['SixMonthsPrice']) $months = 6;
-        elseif ($price == $subRes['TwelveMonthsPrice']) $months = 12;
-        else $months = 0;
+            $price = (float)$duration;
+            if ($price == $subRes['ThreeMonthsPrice']) $months = 3;
+            elseif ($price == $subRes['SixMonthsPrice']) $months = 6;
+            elseif ($price == $subRes['TwelveMonthsPrice']) $months = 12;
+            else $months = 0;
 
-        $contractFee = $price;     
-        $startDate = new DateTime();
-        $endDate = clone $startDate;
-        $endDate->modify("+".($months*30)." days");
+            $contractFee = $price;     
+            $startDate = new DateTime();
+            $endDate = clone $startDate;
+            $endDate->modify("+".($months*30)." days");
 
-        $DiscountAmount = NULL;
-        $Status = 'Active';
+            $DiscountAmount = NULL;
+            $Status = 'Active';
 
-        $contractStartDate = $startDate->format('Y-m-d');       
-        $contractExpiryDate = $endDate->format('Y-m-d'); // make sure $endDate is a DateTime object
+            $contractStartDate = $startDate->format('Y-m-d');       
+            $contractExpiryDate = $endDate->format('Y-m-d'); // make sure $endDate is a DateTime object
 
 
-        $insertLS = $connect->prepare("
-            INSERT INTO learnersubject 
-                (LearnerId, SubjectId, NumberOfTerms, TargetLevel, CurrentLevel, ContractStartDate, ContractExpiryDate, ContractFee, DiscountAmount, Status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
+            $insertLS = $connect->prepare("
+                INSERT INTO learnersubject 
+                    (LearnerId, SubjectId, NumberOfTerms, TargetLevel, CurrentLevel, ContractStartDate, ContractExpiryDate, ContractFee, DiscountAmount, Status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ");
        
-        $insertLS->bind_param("iiissssdds", $learnerId, $sid, $months, $targetLevel, $currentLevel, $contractStartDate, $contractExpiryDate, $contractFee, $DiscountAmount, $Status);
-        $insertLS->execute();
-        $insertLS->close();
+            $insertLS->bind_param("iiissssdds", $learnerId, $sid, $months, $targetLevel, $currentLevel, $contractStartDate, $contractExpiryDate, $contractFee, $DiscountAmount, $Status);
+            $insertLS->execute();
+            $insertLS->close();
 
-        // -------------------
-        // CLASS ASSIGNMENT
-        // -------------------
+            // -------------------
+            // CLASS ASSIGNMENT
+            // -------------------
 
-        // I should use the grade Id, to get the grade Name fro grades
+            // I should use the grade Id, to get the grade Name fro grades
 
-        $maxLearnersPerClass = $subRes['MaxClassSize'] ?? 5;
-        $tutorId             = $subRes['DefaultTutorId'] ?? 25;
+            $maxLearnersPerClass = $subRes['MaxClassSize'] ?? 5;
+            $tutorId             = $subRes['DefaultTutorId'] ?? 25;
 
-        $stmtClass = $connect->prepare("
-            SELECT ClassID, CurrentLearnerCount 
-            FROM classes 
-            WHERE SubjectID = ? AND Grade = ? AND Status != 'Full' 
-            ORDER BY CreatedAt ASC 
-            LIMIT 1
-        ");
-        $stmtClass->bind_param("ii", $sid, $gradeName);
-        $stmtClass->execute();
-        $resultClass = $stmtClass->get_result();
-
-        if ($resultClass->num_rows > 0) {
-            $class     = $resultClass->fetch_assoc();
-            $classId   = (int)$class['ClassID'];
-            $newCount  = ((int)$class['CurrentLearnerCount']) + 1;
-            $classStat = ($newCount >= $maxLearnersPerClass) ? 'Full' : 'Not Full';
-
-            $update = $connect->prepare("UPDATE classes SET CurrentLearnerCount = ?, Status = ? WHERE ClassID = ?");
-            $update->bind_param("isi", $newCount, $classStat, $classId);
-            $update->execute();
-            $update->close();  
-                
-        } else {
-            $stmtGroup = $connect->prepare("
-                SELECT GroupName 
+            $stmtClass = $connect->prepare("
+                SELECT ClassID, CurrentLearnerCount 
                 FROM classes 
-                WHERE SubjectID = ? AND Grade = ? 
-                ORDER BY GroupName DESC 
+                WHERE SubjectID = ? AND Grade = ? AND Status != 'Full' 
+                ORDER BY CreatedAt ASC 
                 LIMIT 1
             ");
-            $stmtGroup->bind_param("is", $sid, $gradeName);
-            $stmtGroup->execute();
-            $groupResult = $stmtGroup->get_result();
+            $stmtClass->bind_param("ii", $sid, $gradeName);
+            $stmtClass->execute();
+            $resultClass = $stmtClass->get_result();
 
-            if ($groupResult->num_rows > 0) {
-                $lastGroupName = $groupResult->fetch_assoc()['GroupName'];
-                $newGroupName = chr(ord($lastGroupName) + 1); // A → B → C, etc.
+            if ($resultClass->num_rows > 0) {
+                $class     = $resultClass->fetch_assoc();
+                $classId   = (int)$class['ClassID'];
+                $newCount  = ((int)$class['CurrentLearnerCount']) + 1;
+                $classStat = ($newCount >= $maxLearnersPerClass) ? 'Full' : 'Not Full';
+
+                $update = $connect->prepare("UPDATE classes SET CurrentLearnerCount = ?, Status = ? WHERE ClassID = ?");
+                $update->bind_param("isi", $newCount, $classStat, $classId);
+                $update->execute();
+                $update->close();  
+                    
             } else {
-                $newGroupName = 'A';
+                $stmtGroup = $connect->prepare("
+                    SELECT GroupName 
+                    FROM classes 
+                    WHERE SubjectID = ? AND Grade = ? 
+                    ORDER BY GroupName DESC 
+                    LIMIT 1
+                ");
+                $stmtGroup->bind_param("is", $sid, $gradeName);
+                $stmtGroup->execute();
+                $groupResult = $stmtGroup->get_result();
+
+                if ($groupResult->num_rows > 0) {
+                    $lastGroupName = $groupResult->fetch_assoc()['GroupName'];
+                    $newGroupName = chr(ord($lastGroupName) + 1); // A → B → C, etc.
+                } else {
+                    $newGroupName = 'A';
+                }
+                $stmtGroup->close();
+
+                $classStat = 'Not Full';
+                $newCount  = 1;
+
+                $insertClass = $connect->prepare("
+                    INSERT INTO classes 
+                        (SubjectID, Grade, GroupName, CurrentLearnerCount, TutorID, Status, CreatedAt) 
+                    VALUES 
+                        (?, ?, ?, ?, ?, ?, NOW())
+                ");
+                $insertClass->bind_param("ississ", $sid, $gradeName, $newGroupName, $newCount, $tutorId, $classStat);
+                $insertClass->execute();
+                $classId = $connect->insert_id;
+                $insertClass->close();
             }
-            $stmtGroup->close();
 
-            $classStat = 'Not Full';
-            $newCount  = 1;
-
-            $insertClass = $connect->prepare("
-                INSERT INTO classes 
-                    (SubjectID, Grade, GroupName, CurrentLearnerCount, TutorID, Status, CreatedAt) 
-                VALUES 
-                    (?, ?, ?, ?, ?, ?, NOW())
-            ");
-            $insertClass->bind_param("ississ", $sid, $gradeName, $newGroupName, $newCount, $tutorId, $classStat);
-            $insertClass->execute();
-            $classId = $connect->insert_id;
-            $insertClass->close();
-        }
-
-        $assign = $connect->prepare("INSERT INTO learnerclasses (LearnerID, ClassID, AssignedAt) VALUES (?, ?, NOW())");
-        $assign->bind_param("ii", $learnerId, $classId);
-        $assign->execute();
-        $assign->close();
-        }
+            $assign = $connect->prepare("INSERT INTO learnerclasses (LearnerID, ClassID, AssignedAt) VALUES (?, ?, NOW())");
+            $assign->bind_param("ii", $learnerId, $classId);
+            $assign->execute();
+            $assign->close();
+            }
         
     } // End of subjects loop
 
     // -------------------
-    // FINANCES (single row per learner)
+    // FINANCES (single row per learner) 
     // -------------------
     $stmtTotal = $connect->prepare("
         SELECT SUM(ContractFee - IFNULL(DiscountAmount,0)) AS TotalFees

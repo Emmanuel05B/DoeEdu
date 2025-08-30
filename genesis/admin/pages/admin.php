@@ -62,7 +62,7 @@ if ($resultSubjects) {
           <ol class="breadcrumb">
             <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
             <li class="active">Administration</li>
-          </ol><br>
+          </ol>
         </section>
         <section class="content">
           <div class="row">
@@ -181,7 +181,7 @@ if ($resultSubjects) {
                                             <td><?php echo htmlspecialchars($final['Grade']) ?></td>
                                             <td class="text-center">
                                               <a href="updatelearner.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-xs btn-warning">Update</a>
-                                              <a href="learnerprofile.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-xs btn-primary">Open Profile</a>
+                                              <a href="learnerprofile.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-xs btn-primary">Profile</a>
                                             </td>
                                           </tr>
                                         <?php endwhile; ?>
@@ -229,7 +229,6 @@ if ($resultSubjects) {
                                       <tr>
                                         <th>First Name</th>
                                         <th>Last Name</th>
-                                        <th>Availability</th>
                                         <th class="text-center">Actions</th>
                                       </tr>
                                     </thead>
@@ -239,10 +238,9 @@ if ($resultSubjects) {
                                           <tr>
                                             <td><?php echo htmlspecialchars($final['Name']) ?></td>
                                             <td><?php echo htmlspecialchars($final['Surname']) ?></td>
-                                            <td><?php echo htmlspecialchars($final['Availability']) ?></td>
                                             <td class="text-center">
                                               <a href="updatetutors.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-xs btn-warning">Update</a>
-                                              <a href="learnerprofile.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-xs btn-primary">Open Profile</a>
+                                              <a href="learnerprofile.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-xs btn-primary">Profile</a>
                                             </td>
                                           </tr>
                                         <?php endwhile; ?>
@@ -256,7 +254,6 @@ if ($resultSubjects) {
                                       <tr>
                                         <th>First Name</th>
                                         <th>Last Name</th>
-                                        <th>Availability</th>
                                         <th class="text-center">Actions</th>
                                       </tr>
                                     </tfoot>
