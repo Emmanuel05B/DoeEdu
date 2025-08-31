@@ -42,10 +42,12 @@ if (str_starts_with($action, "UpdateSubject_")) {
 
         // Handle optional Action
         $subjectAction = $subData['Action'] ?? '';     //Drop, Extend or Cut Short
-        if ($subjectAction === "Deregister") {
+        if ($subjectAction === "Update") {
+            
+        } elseif ($subjectAction === "Deregister") {
             $connect->query("DELETE FROM learnersubject WHERE LearnerSubjectId=$learnerSubjectId AND LearnerId=$learnerId");
             // we might also wanna remove him from the classes as well just to ensure that...
-        } elseif ($subjectAction === "Extend") {
+        }elseif ($subjectAction === "Extend") {
             // Example: extend expiry by 1 month
             $connect->query("UPDATE learnersubject SET ContractExpiryDate = DATE_ADD(ContractExpiryDate, INTERVAL 1 MONTH) WHERE LearnerSubjectId=$learnerSubjectId");
         } elseif ($subjectAction === "CutShort") {
@@ -77,39 +79,42 @@ if ($action === "RegisterNewSubject") {
         $stmtCheck->close();
 
         if ($res['cnt'] > 0) {
-            // Already registered – redirect with error message
             header("Location: updatelearner.php?id=$learnerId&error=already_registered");
             exit();
         }
 
-        // Insert new subject
-        $Status = 'Active';
-        $gradeName = $newSub['GradeName'];
+        try {
+            // Start transaction
+            $connect->begin_transaction();
 
-        $stmt = $connect->prepare("
-            INSERT INTO learnersubject 
-            (LearnerId, SubjectId, TargetLevel, CurrentLevel, ContractStartDate, ContractExpiryDate, ContractFee, Status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-        $stmt->bind_param(
-            "iiisssd",
-            $learnerId,
-            $subjectId,
-            $newSub['TargetLevel'],
-            $newSub['CurrentLevel'],
-            $newSub['ContractStartDate'],
-            $newSub['ContractExpiryDate'],
-            $newSub['ContractFee'],
-            $Status
-        );
-        $stmt->execute();
-        $stmt->close();   
+            // ------------------------
+            // INSERT NEW SUBJECT
+            // ------------------------
+            $Status = 'Active';
+            $gradeName = $newSub['GradeName'];
 
-        //we also have to add him to the actual class
-         // -------------------
+            $stmt = $connect->prepare("
+                INSERT INTO learnersubject 
+                (LearnerId, SubjectId, TargetLevel, CurrentLevel, ContractStartDate, ContractExpiryDate, ContractFee, Status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ");
+            $stmt->bind_param(
+                "iiisssds",
+                $learnerId,
+                $subjectId,
+                $newSub['TargetLevel'],
+                $newSub['CurrentLevel'],
+                $newSub['ContractStartDate'],
+                $newSub['ContractExpiryDate'],
+                $newSub['ContractFee'],
+                $Status
+            );
+            $stmt->execute();
+            $stmt->close();
+
+            // ------------------------
             // CLASS ASSIGNMENT
-            // -------------------
-
+            // ------------------------
             $stmtSub = $connect->prepare("
                 SELECT DefaultTutorId, MaxClassSize 
                 FROM subjects WHERE SubjectId = ?
@@ -183,7 +188,41 @@ if ($action === "RegisterNewSubject") {
             $assign->bind_param("ii", $learnerId, $classId);
             $assign->execute();
             $assign->close();
-            
+
+            // ------------------------
+            // FINANCES
+            // ------------------------
+            $stmtTotal = $connect->prepare("
+                SELECT SUM(ContractFee - IFNULL(DiscountAmount,0)) AS TotalFees
+                FROM learnersubject
+                WHERE LearnerId = ?
+            ");
+            $stmtTotal->bind_param("i", $learnerId);
+            $stmtTotal->execute();
+            $resultTotal = $stmtTotal->get_result()->fetch_assoc();
+            $stmtTotal->close();
+
+            $totalFees = (float)$resultTotal['TotalFees'];
+
+            $insertFin = $connect->prepare("
+                INSERT INTO finances (LearnerId, TotalFees, TotalPaid, PaymentStatus, UpdatedAt) 
+                VALUES (?, ?, 0, 'Unpaid', NOW())
+                ON DUPLICATE KEY UPDATE TotalFees = VALUES(TotalFees)
+            ");
+            $insertFin->bind_param("id", $learnerId, $totalFees);
+            $insertFin->execute();
+            $insertFin->close();
+
+            // Commit transaction
+            $connect->commit();
+
+        } catch (Exception $e) {
+            $connect->rollback(); // Undo all changes
+           
+            $errMsg = urlencode($e->getMessage());
+            header("Location: updatelearner.php?id=$learnerId&error=$errMsg");
+            exit();
+        }
     }
 
     header("Location: updatelearner.php?id=$learnerId&updated=1");

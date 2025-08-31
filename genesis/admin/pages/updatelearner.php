@@ -68,6 +68,8 @@ $subjects = $connect->query("
 <?php include(__DIR__ . "/../partials/header.php"); ?>
 <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
+
+
 <div class="content-wrapper">
 <section class="content-header">
     <h1>Update Learner Details <small>Manage Learner profile information</small></h1>
@@ -119,6 +121,7 @@ $subjects = $connect->query("
                   <label>Action</label>
                   <select name="Subjects[<?= $sub['LearnerSubjectId'] ?>][Action]" class="form-control">
                     <option value="">-- No Change --</option>
+                    <option value="Update">Update</option>
                     <option value="Deregister">Drop</option>
                     <option value="Extend">Extend</option>
                     <option value="CutShort">Cut Short</option>
@@ -235,15 +238,35 @@ $subjects = $connect->query("
 
 <!-- SweetAlert placeholder for alerts -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<?php if(isset($_GET['error'])): ?>
+<script>
+Swal.fire({
+    icon: 'error',
+    title: 'Oops...',
+    text: <?= json_encode($_GET['error']) ?>,
+    confirmButtonText: 'Okay'
+});
+</script>
+<?php endif; ?>
+
+<?php if(isset($_GET['error']) && $_GET['error'] === 'already_registered'): ?>
+<script>
+Swal.fire({
+    icon: 'error',
+    title: 'Oops...',
+    text: 'This learner is already registered for the selected subject. Please update the existing subject instead.',
+    confirmButtonText: 'Okay'
+});
+</script>
+<?php endif; ?>
+
 <?php if(isset($_GET['updated']) && $_GET['updated']==1): ?>
 <script>
 Swal.fire({
   icon: 'success',
   title: 'Update Successful',
   text: 'The learner information has been updated.',
-  timer: 2500,
-  showConfirmButton: false
+  showConfirmButton: true
 });
 </script>
 <?php endif; ?>
