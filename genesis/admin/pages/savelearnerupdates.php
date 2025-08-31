@@ -15,11 +15,10 @@ if (!$learnerId || !$action) {
 }
 
 // --------------------
-// 1. UPDATE EXISTING SUBJECT
-// --------------------
-// --------------------
 // 1. UPDATE OR DEREGISTER EXISTING SUBJECT
 // --------------------
+
+//ok, we have to stop using the combined learnerSubjectId. .. we have LearnerId and SubjectId
 if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "DeregisterSubject_")) {
     $isUpdate = str_starts_with($action, "UpdateSubject_");
     $isDrop   = str_starts_with($action, "DeregisterSubject_");
@@ -28,7 +27,7 @@ if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "Dere
     $subData = $_POST['Subjects'][$learnerSubjectId] ?? [];
 
     if ($isUpdate && $subData) {
-        // Use transaction for safety
+        // Use transaction
         $connect->begin_transaction();
         try {
             $stmt = $connect->prepare("
@@ -64,11 +63,48 @@ if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "Dere
             $stmt->execute();
             $stmt->close();
 
-            // Optionally remove learner from classes
-            $stmt2 = $connect->prepare("DELETE FROM learnerclasses WHERE LearnerID=? AND ClassID IN (SELECT ClassID FROM classes WHERE SubjectID IN (SELECT SubjectID FROM learnersubject WHERE LearnerSubjectId=?))");
-            $stmt2->bind_param("ii", $learnerId, $learnerSubjectId);
-            $stmt2->execute();
-            $stmt2->close();
+            /*/  remove learner from classes
+             */
+
+            // Step 1: Get the ClassID for this learner + subject
+            $stmt = $connect->prepare("
+                SELECT lc.ClassID 
+                FROM learnerclasses lc
+                INNER JOIN classes c ON lc.ClassID = c.ClassID
+                INNER JOIN learnersubject ls ON c.SubjectID = ls.SubjectID
+                WHERE lc.LearnerID = ? AND ls.LearnerSubjectId = ?
+            ");
+            $stmt->bind_param("ii", $learnerId, $learnerSubjectId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            while ($row = $result->fetch_assoc()) {
+                $classId = $row['ClassID'];
+
+                // Step 2: Decrement CurrentLearnerCount
+                $stmt2 = $connect->prepare("UPDATE classes SET CurrentLearnerCount = CurrentLearnerCount - 1 WHERE ClassID = ?");
+                $stmt2->bind_param("i", $classId);
+                $stmt2->execute();
+                $stmt2->close();
+
+                // Step 3: Delete learner from learnerclasses
+                $stmt3 = $connect->prepare("DELETE FROM learnerclasses WHERE LearnerID = ? AND ClassID = ?");
+                $stmt3->bind_param("ii", $learnerId, $classId);
+                $stmt3->execute();
+                $stmt3->close();
+            }
+
+            $stmt->close();
+
+
+            //leaner is not yet fully deleted.. the class creation logic should go in reverse if needed.
+
+            //Im thinking, we need GroupName and subjectId and +Grade Name to decrement CurrentLearnerCount in classes. 
+            // ..then Get ClassId and go use it and Learner Id to delete from learnerclasses table
+
+            // CurrentLearnerCount in classes has to be down by 1
+            //and correclty delete this leaner for this subject from learnerclasses
+            //Id    LearnerID   ClassID    AssignedAt
 
             $connect->commit();
         } catch (Exception $e) {
