@@ -17,47 +17,70 @@ if (!$learnerId || !$action) {
 // --------------------
 // 1. UPDATE EXISTING SUBJECT
 // --------------------
-if (str_starts_with($action, "UpdateSubject_")) {
-    $learnerSubjectId = intval(str_replace("UpdateSubject_", "", $action));   //shouldnt this just be SubjectId??
+// --------------------
+// 1. UPDATE OR DEREGISTER EXISTING SUBJECT
+// --------------------
+if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "DeregisterSubject_")) {
+    $isUpdate = str_starts_with($action, "UpdateSubject_");
+    $isDrop   = str_starts_with($action, "DeregisterSubject_");
+
+    $learnerSubjectId = intval(preg_replace("/^(UpdateSubject_|DeregisterSubject_)/", "", $action));
     $subData = $_POST['Subjects'][$learnerSubjectId] ?? [];
 
-    if ($subData) {
-        // Update contract info
-        $stmt = $connect->prepare("
-            UPDATE learnersubject 
-            SET ContractStartDate=?, ContractExpiryDate=?, ContractFee=?, Status=? 
-            WHERE LearnerSubjectId=? AND LearnerId=?
-        ");
-        $stmt->bind_param(
-            "ssdssi",
-            $subData['ContractStartDate'],
-            $subData['ContractExpiryDate'],
-            $subData['ContractFee'],
-            $subData['Status'],    //'Active','Suspended','Completed','Cancelled') DEFAULT  is 'Active'
-            $learnerSubjectId,
-            $learnerId
-        );
-        $stmt->execute();
-        $stmt->close();
+    if ($isUpdate && $subData) {
+        // Use transaction for safety
+        $connect->begin_transaction();
+        try {
+            $stmt = $connect->prepare("
+                UPDATE learnersubject 
+                SET ContractStartDate=?, ContractExpiryDate=?, ContractFee=?, Status=? 
+                WHERE LearnerSubjectId=? AND LearnerId=?
+            ");
+            $stmt->bind_param(
+                "ssdssi",
+                $subData['ContractStartDate'],
+                $subData['ContractExpiryDate'],
+                $subData['ContractFee'],
+                $subData['Status'],
+                $learnerSubjectId,
+                $learnerId
+            );
+            $stmt->execute();
+            $stmt->close();
 
-        // Handle optional Action
-        $subjectAction = $subData['Action'] ?? '';     //Drop, Extend or Cut Short
-        if ($subjectAction === "Update") {
-            
-        } elseif ($subjectAction === "Deregister") {
-            $connect->query("DELETE FROM learnersubject WHERE LearnerSubjectId=$learnerSubjectId AND LearnerId=$learnerId");
-            // we might also wanna remove him from the classes as well just to ensure that...
-        }elseif ($subjectAction === "Extend") {
-            // Example: extend expiry by 1 month
-            $connect->query("UPDATE learnersubject SET ContractExpiryDate = DATE_ADD(ContractExpiryDate, INTERVAL 1 MONTH) WHERE LearnerSubjectId=$learnerSubjectId");
-        } elseif ($subjectAction === "CutShort") {
-            $connect->query("UPDATE learnersubject SET ContractExpiryDate = CURDATE() WHERE LearnerSubjectId=$learnerSubjectId");
+            $connect->commit();
+        } catch (Exception $e) {
+            $connect->rollback();
+            // handle error if needed
+        }
+    }
+
+    if ($isDrop) {
+        $connect->begin_transaction();
+        try {
+            // Remove subject
+            $stmt = $connect->prepare("DELETE FROM learnersubject WHERE LearnerSubjectId=? AND LearnerId=?");
+            $stmt->bind_param("ii", $learnerSubjectId, $learnerId);
+            $stmt->execute();
+            $stmt->close();
+
+            // Optionally remove learner from classes
+            $stmt2 = $connect->prepare("DELETE FROM learnerclasses WHERE LearnerID=? AND ClassID IN (SELECT ClassID FROM classes WHERE SubjectID IN (SELECT SubjectID FROM learnersubject WHERE LearnerSubjectId=?))");
+            $stmt2->bind_param("ii", $learnerId, $learnerSubjectId);
+            $stmt2->execute();
+            $stmt2->close();
+
+            $connect->commit();
+        } catch (Exception $e) {
+            $connect->rollback();
+            // handle error if needed
         }
     }
 
     header("Location: updatelearner.php?id=$learnerId&updated=1");
     exit();
 }
+
 
 // --------------------
 // 2. REGISTER NEW SUBJECT
