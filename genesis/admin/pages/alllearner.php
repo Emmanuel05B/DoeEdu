@@ -162,7 +162,7 @@ if (!isset($_SESSION['email'])) {
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header" style="background-color:#f44336; color:#fff;">
-        <h5 class="modal-title" id="expiredModalLabel">Expired Contract Learners</h5>
+        <h5 class="modal-title" id="expiredModalLabel">Cancelled / Completed Learners</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff;">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -172,25 +172,26 @@ if (!isset($_SESSION['email'])) {
           <table class="table table-bordered table-hover">
             <thead style="background-color: #fdd;">
               <tr>
-                <th>StNo.</th>
+                
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Grade</th>
                 <th>Group</th>
-                <th>Contract Expiry</th>
+                <th>Status</th>
+                <th>Contract Ended On</th>
               </tr>
             </thead>
             <tbody>
               <?php
-              // Query expired learners
+              // Query learners whose subjects are Cancelled or Completed
               $sqlExpired = "
-                  SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName, ls.ContractExpiryDate
+                  SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName, ls.Status, ls.ContractExpiryDate
                   FROM learners lt
                   INNER JOIN users u ON lt.LearnerId = u.Id
                   LEFT JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
                   LEFT JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
                   LEFT JOIN classes c ON lc.ClassID = c.ClassID
-                  WHERE 1
+                  WHERE ls.Status IN ('Cancelled','Completed')
               ";
 
               if ($subjectId > 0) {
@@ -202,9 +203,6 @@ if (!isset($_SESSION['email'])) {
               if ($group !== '') {
                   $sqlExpired .= " AND c.GroupName = ?";
               }
-
-              // Expired contracts
-              $sqlExpired .= " AND ls.ContractExpiryDate <= CURDATE()";
 
               $stmtExp = $connect->prepare($sqlExpired);
 
@@ -226,19 +224,19 @@ if (!isset($_SESSION['email'])) {
                   while ($row = $expiredResults->fetch_assoc()):
               ?>
               <tr>
-                <td><?php echo htmlspecialchars($row['LearnerId']); ?></td>
                 <td><?php echo htmlspecialchars($row['Name']); ?></td>
                 <td><?php echo htmlspecialchars($row['Surname']); ?></td>
                 <td><?php echo htmlspecialchars($row['Grade']); ?></td>
                 <td><?php echo htmlspecialchars($row['GroupName']); ?></td>
-                <td><?php echo htmlspecialchars($row['ContractExpiryDate']); ?></td>
+                <td><?php echo htmlspecialchars($row['Status']); ?></td>
+                <td><?php echo htmlspecialchars(date('Y-m-d', strtotime($row['ContractExpiryDate']))); ?></td>
               </tr>
               <?php
                   endwhile;
               else:
               ?>
               <tr>
-                <td colspan="6" class="text-center">No expired contracts found.</td>
+                <td colspan="6" class="text-center">No learners found.</td>
               </tr>
               <?php endif; ?>
             </tbody>
@@ -251,6 +249,7 @@ if (!isset($_SESSION['email'])) {
     </div>
   </div>
 </div>
+
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
