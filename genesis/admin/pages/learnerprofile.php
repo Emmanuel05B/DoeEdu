@@ -105,7 +105,7 @@ if (!isset($_SESSION['email'])) {
         $results = $stmt->get_result();
         $final = $results->fetch_assoc();
 
-        // Get subjects for this learner
+        // Get subjects for this learner 
         $subSql = "
           SELECT s.SubjectId, s.SubjectName 
           FROM learnersubject ls
@@ -252,8 +252,10 @@ if (!isset($_SESSION['email'])) {
             <!-- Support Me -->
             <div class="tab-pane" id="supportme">
               <!-- Your existing support info HTML remains unchanged -->
-              ... (keep as in your current code)
+              
+              
             </div>
+            
 
             <!-- Record Marks -->
             <div class="tab-pane" id="record">
@@ -306,17 +308,194 @@ if (!isset($_SESSION['email'])) {
 
             <!-- Goals Tab -->
             <div class="tab-pane" id="goals">
-              <!-- Keep existing Goals HTML as-is -->
-              ... (keep as in your current code)jnjk
+              
+             <?php
+              // Function to map average mark to level 1–7
+              function getLevelFromMark($avgMark) {
+                if ($avgMark < 30) return 1;       // <30%
+                if ($avgMark < 40) return 2;       // 30–39%
+                if ($avgMark < 50) return 3;       // 40–49%
+                if ($avgMark < 60) return 4;       // 50–59%
+                if ($avgMark < 70) return 5;       // 60–69%
+                if ($avgMark < 80) return 6;       // 70–79%
+                return 7;                           // 80–100%
+              }
+
+              // Fetch subjects and levels
+              $query = $connect->prepare("
+                  SELECT s.SubjectName, ls.CurrentLevel, ls.TargetLevel, ls.LearnerSubjectId
+                  FROM learnersubject ls
+                  JOIN subjects s ON ls.SubjectId = s.SubjectId
+                  WHERE ls.LearnerId = ?
+              ");
+              $query->bind_param("i", $learnerId);
+              $query->execute();
+              $result = $query->get_result();
+
+              while ($goal = $result->fetch_assoc()):
+                  $learnerSubjectId = $goal['LearnerSubjectId'];
+
+                  // --- Average Mark ---
+                  $activity_sql = "
+                      SELECT lam.MarksObtained, a.MaxMarks
+                      FROM learneractivitymarks lam
+                      JOIN activities a ON lam.ActivityId = a.ActivityId
+                      WHERE lam.LearnerId = ? AND a.SubjectId = (
+                          SELECT SubjectId FROM learnersubject WHERE LearnerSubjectId = ?
+                      )
+                  ";
+                  $stmtAct = $connect->prepare($activity_sql);
+                  $stmtAct->bind_param("ii", $learnerId, $learnerSubjectId);
+                  $stmtAct->execute();
+                  $resAct = $stmtAct->get_result();
+
+                  $totalMarks = 0;
+                  $totalMax = 0;
+                  while ($rowAct = $resAct->fetch_assoc()) {
+                      $totalMarks += (float)$rowAct['MarksObtained'];
+                      $totalMax += (float)$rowAct['MaxMarks'];
+                  }
+                  $averageMark = ($totalMax > 0) ? ($totalMarks / $totalMax) * 100 : 0;
+
+                  // --- Attendance Rate ---
+                  $attendance_sql = "
+                      SELECT lam.Attendance
+                      FROM learneractivitymarks lam
+                      JOIN activities a ON lam.ActivityId = a.ActivityId
+                      WHERE lam.LearnerId = ? AND a.SubjectId = (
+                          SELECT SubjectId FROM learnersubject WHERE LearnerSubjectId = ?
+                      )
+                  ";
+                  $stmtAtt = $connect->prepare($attendance_sql);
+                  $stmtAtt->bind_param("ii", $learnerId, $learnerSubjectId);
+                  $stmtAtt->execute();
+                  $resAtt = $stmtAtt->get_result();
+
+                  $totalActivities = $resAtt->num_rows;
+                  $absentCount = 0;
+                  while ($rowAtt = $resAtt->fetch_assoc()) {
+                      if ($rowAtt['Attendance'] === 'absent') $absentCount++;
+                  }
+                  $attendanceRate = ($totalActivities > 0) ? (($totalActivities - $absentCount)/$totalActivities)*100 : 0;
+
+                  // --- Levels ---
+                  $startLevel = $goal['CurrentLevel']; // DB CurrentLevel
+                  $targetLevel = $goal['TargetLevel']; // DB TargetLevel
+                  $nowLevel = getLevelFromMark($averageMark); // calculated from average marks
+
+                  // Progress %
+                  $progressPercent = ($targetLevel > $startLevel) ? (($nowLevel - $startLevel) / ($targetLevel - $startLevel)) * 100 : 0;
+                  if ($progressPercent < 0) $progressPercent = 0;
+                  if ($progressPercent > 100) $progressPercent = 100;
+
+                  $expectedLevel = $targetLevel; // For display
+              ?>
+              <div class="profile-personal-info">
+                  <div class="profile-skills border-bottom mb-4 pb-2">
+                      <h4 class="text-primary mb-3"><?= htmlspecialchars($goal['SubjectName']) ?></h4>
+
+                      <div class="bubble-container row" style="margin-bottom: 15px;">
+                          <div class="bubble col-md-2">Start Level: <span class="label label-primary"><?= $startLevel ?></span></div>
+                          <div class="bubble col-md-2">Current Level: <span class="label label-warning"><?= $nowLevel ?></span></div>
+                          <div class="bubble col-md-2">Target Level: <span class="label label-success"><?= $targetLevel ?></span></div>
+                          <div class="bubble col-md-2">Average Mark: <span class="label label-danger"><?= round($averageMark, 2) ?>%</span></div>
+                          <div class="bubble col-md-2">Attendance Rate: <span class="label label-default"><?= round($attendanceRate, 2) ?>%</span></div>
+                      </div>
+
+                      
+                      <label>Progress Toward Goal:</label>
+                      <div class="progress" style="height: 20px;">
+                          <div class="progress-bar progress-bar-info progress-bar-striped active"
+                              role="progressbar" style="width: <?= $progressPercent ?>%;">
+                              Level <?= $nowLevel ?> of <?= $targetLevel ?>
+                          </div>
+                      </div>
+
+                      <div class="callout callout-info" style="margin-top: 20px;">
+                          <h5>Goal Tracker</h5>
+                          <p>Based on current average, learner is expected to reach Level <?= $expectedLevel ?> by term end.</p>
+                      </div>
+                  </div>
+              </div>
+              <?php endwhile; ?>
+
+
+
             </div>
 
             
 
-
             <!-- Practice Q Progress -->
             <div class="tab-pane" id="zzz">
               <!-- Keep current HTML as-is -->
-              ... (keep as in your current code)
+              <div class="profile-personal-info">
+                    <div class="profile-skills border-bottom mb-4 pb-2">
+                      <h4 class="text-primary mb-3">Practice Question Progress</h4>
+
+                      <!-- Level Breakdown Table -->
+                      <div class="table-responsive">
+                        <table class="table table-condensed table-bordered">
+                          <thead>
+                            <tr class="bg-gray">
+                              <th>Level</th>
+                              <th>Attempts</th>
+                              <th>Avg Score</th>
+                              <th>Best Score</th>
+                              <th>Status</th>
+                              <th>Time Spent</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>Easy</td>
+                              <td>3</td>
+                              <td>68%</td>
+                              <td>76%</td>
+                              <td><span class="label label-success">Passed</span></td>
+                              <td>13 min</td>
+                            </tr>
+                            <tr>
+                              <td>Medium</td>
+                              <td>1</td>
+                              <td>54%</td>
+                              <td>54%</td>
+                              <td><span class="label label-danger">Failed</span></td>
+                              <td>8 min</td>
+                            </tr>
+                            <tr>
+                              <td>Hard</td>
+                              <td>0</td>
+                              <td>-</td>
+                              <td>-</td>
+                              <td><span class="label label-default">Not Attempted</span></td>
+                              <td>-</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <!-- Pattern Analysis (Optional but Insightful) -->
+                      <div class="box box-default box-solid">
+                        <div class="box-header with-border">
+                          <h5 class="box-title">Tutor Observations</h5>
+                        </div>
+                        <div class="box-body">
+                          <ul style="margin-left: 20px;">
+                            <li>Struggles with Medium-level logic questions (avg score below pass mark).</li>
+                            <li>Completes levels faster than peers (avg time per level: ~10 min).</li>
+                            <li>Performs better on conceptual questions vs. memory-based ones.</li>
+                            <li>Shows improvement with each Easy-level attempt.</li>
+                          </ul>
+                        </div>
+                      </div>
+
+                      <!-- Additional Tutor Note -->
+                      <div class="form-group mt-2">
+                        <label>Tutor Note (Private)</label>
+                        <textarea name="note" class="form-control input-sm" rows="2" placeholder="e.g. Consider giving extra support on algebra-based problems."></textarea>
+                      </div>
+                    </div>
+                  </div>
             </div>
 
           </div>
