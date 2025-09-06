@@ -35,7 +35,8 @@ include(__DIR__ . "/../../partials/connect.php");
           SELECT 
               SUM(TotalFees) AS TotalFees,
               SUM(TotalPaid) AS TotalPaid,
-              SUM(Balance) AS TotalOwe
+              SUM(Balance) AS TotalOwe,
+              SUM(CASE WHEN Balance < 0 THEN Balance ELSE 0 END) AS AmountWeOwe
           FROM finances
       ";
       $resultTotals = $connect->query($sqlTotals);
@@ -44,7 +45,8 @@ include(__DIR__ . "/../../partials/connect.php");
       $TotalFees = (float)$totals['TotalFees'];
       $TotalPaid = (float)$totals['TotalPaid'];
       $TotalOwe  = (float)$totals['TotalOwe'];
-      $Owe       = 0; // still static if needed
+      $AmountWeOwe = (float)$totals['AmountWeOwe'];
+
       ?>
 
       <div class="row">
@@ -83,7 +85,7 @@ include(__DIR__ . "/../../partials/connect.php");
                   <span class="info-box-icon bg-red"><i class="fa fa-credit-card"></i></span>
                   <div class="info-box-content">
                       <span class="info-box-text">Amount We Owe</span><br>
-                      <span class="info-box-number">R<?php echo number_format($Owe, 2); ?></span>
+                      <span class="info-box-number">R<?php echo number_format($AmountWeOwe, 2); ?></span>
                   </div>
               </div>
           </div>

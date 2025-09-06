@@ -122,15 +122,6 @@ if ($resultSubjects) {
                           </div>
                         </div>
 
-                        <!-- V2 -->
-                        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
-                          <div class="small-box" style="background-color:#f3e6fa; color:#6c4a97;">
-                            <div class="inner text-center">
-                              <h5>V2</h5>
-                            </div>
-                            <a href="addlearnersv2.php" class="small-box-footer" style="color:#6c4a97;">Go <i class="fa fa-arrow-circle-right"></i></a>
-                          </div>
-                        </div>
 
                       </div>
 
