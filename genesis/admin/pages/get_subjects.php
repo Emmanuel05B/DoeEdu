@@ -1,0 +1,24 @@
+<?php
+include(__DIR__ . "/../../partials/connect.php");
+
+if(isset($_GET['grade']) && !empty($_GET['grade'])){
+    $gradeName = $_GET['grade'];
+
+    $stmt = $connect->prepare("
+        SELECT s.SubjectId, s.SubjectName
+        FROM subjects s
+        JOIN grades g ON s.GradeId = g.GradeId
+        WHERE g.GradeName = ?
+        ORDER BY s.SubjectName
+    ");
+    $stmt->bind_param("s", $gradeName);
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+    $subjects = [];
+    while($row = $res->fetch_assoc()){
+        $subjects[] = $row;
+    }
+
+    echo json_encode($subjects);
+}

@@ -211,7 +211,7 @@ if (!isset($_SESSION['email'])) {
             <li><a href="#supportme" data-toggle="tab">Support Me</a></li>
             <li><a href="#record" data-toggle="tab">Record Marks</a></li>
             <li><a href="#goals" data-toggle="tab">Goals</a></li>
-            <li><a href="#zzz" data-toggle="tab">Practice Q Progress</a></li>
+            <li><a href="#practicequestionsprogress" data-toggle="tab">Practice Q Progress</a></li>
           </ul>
 
           <div class="tab-content">
@@ -308,195 +308,292 @@ if (!isset($_SESSION['email'])) {
 
             <!-- Goals Tab -->
             <div class="tab-pane" id="goals">
-              
-             <?php
-              // Function to map average mark to level 1–7
-              function getLevelFromMark($avgMark) {
-                if ($avgMark < 30) return 1;       // <30%
-                if ($avgMark < 40) return 2;       // 30–39%
-                if ($avgMark < 50) return 3;       // 40–49%
-                if ($avgMark < 60) return 4;       // 50–59%
-                if ($avgMark < 70) return 5;       // 60–69%
-                if ($avgMark < 80) return 6;       // 70–79%
-                return 7;                           // 80–100%
-              }
 
-              // Fetch subjects and levels
-              $query = $connect->prepare("
-                  SELECT s.SubjectName, ls.CurrentLevel, ls.TargetLevel, ls.LearnerSubjectId
-                  FROM learnersubject ls
-                  JOIN subjects s ON ls.SubjectId = s.SubjectId
-                  WHERE ls.LearnerId = ?
-              ");
-              $query->bind_param("i", $learnerId);
-              $query->execute();
-              $result = $query->get_result();
-
-              while ($goal = $result->fetch_assoc()):
-                  $learnerSubjectId = $goal['LearnerSubjectId'];
-
-                  // --- Average Mark ---
-                  $activity_sql = "
-                      SELECT lam.MarksObtained, a.MaxMarks
-                      FROM learneractivitymarks lam
-                      JOIN activities a ON lam.ActivityId = a.ActivityId
-                      WHERE lam.LearnerId = ? AND a.SubjectId = (
-                          SELECT SubjectId FROM learnersubject WHERE LearnerSubjectId = ?
-                      )
-                  ";
-                  $stmtAct = $connect->prepare($activity_sql);
-                  $stmtAct->bind_param("ii", $learnerId, $learnerSubjectId);
-                  $stmtAct->execute();
-                  $resAct = $stmtAct->get_result();
-
-                  $totalMarks = 0;
-                  $totalMax = 0;
-                  while ($rowAct = $resAct->fetch_assoc()) {
-                      $totalMarks += (float)$rowAct['MarksObtained'];
-                      $totalMax += (float)$rowAct['MaxMarks'];
+              <?php
+                  // Function to map average mark to level 1–7
+                  function getLevelFromMark($avgMark) {
+                      if ($avgMark < 30) return 1;       // <30%
+                      if ($avgMark < 40) return 2;       // 30–39%
+                      if ($avgMark < 50) return 3;       // 40–49%
+                      if ($avgMark < 60) return 4;       // 50–59%
+                      if ($avgMark < 70) return 5;       // 60–69%
+                      if ($avgMark < 80) return 6;       // 70–79%
+                      return 7;                           // 80–100%
                   }
-                  $averageMark = ($totalMax > 0) ? ($totalMarks / $totalMax) * 100 : 0;
 
-                  // --- Attendance Rate ---
-                  $attendance_sql = "
-                      SELECT lam.Attendance
-                      FROM learneractivitymarks lam
-                      JOIN activities a ON lam.ActivityId = a.ActivityId
-                      WHERE lam.LearnerId = ? AND a.SubjectId = (
-                          SELECT SubjectId FROM learnersubject WHERE LearnerSubjectId = ?
-                      )
-                  ";
-                  $stmtAtt = $connect->prepare($attendance_sql);
-                  $stmtAtt->bind_param("ii", $learnerId, $learnerSubjectId);
-                  $stmtAtt->execute();
-                  $resAtt = $stmtAtt->get_result();
+                  // Fetch subjects and levels
+                  $query = $connect->prepare("
+                      SELECT s.SubjectName, ls.CurrentLevel, ls.TargetLevel, ls.LearnerSubjectId
+                      FROM learnersubject ls
+                      JOIN subjects s ON ls.SubjectId = s.SubjectId
+                      WHERE ls.LearnerId = ?
+                  ");
+                  $query->bind_param("i", $learnerId);
+                  $query->execute();
+                  $result = $query->get_result();
 
-                  $totalActivities = $resAtt->num_rows;
-                  $absentCount = 0;
-                  while ($rowAtt = $resAtt->fetch_assoc()) {
-                      if ($rowAtt['Attendance'] === 'absent') $absentCount++;
-                  }
-                  $attendanceRate = ($totalActivities > 0) ? (($totalActivities - $absentCount)/$totalActivities)*100 : 0;
+                while ($goal = $result->fetch_assoc()):
+                    $learnerSubjectId = $goal['LearnerSubjectId'];
 
-                  // --- Levels ---
-                  $startLevel = $goal['CurrentLevel']; // DB CurrentLevel
-                  $targetLevel = $goal['TargetLevel']; // DB TargetLevel
-                  $nowLevel = getLevelFromMark($averageMark); // calculated from average marks
+                    // --- Average Mark ---
+                    $activity_sql = "
+                        SELECT lam.MarksObtained, a.MaxMarks
+                        FROM learneractivitymarks lam
+                        JOIN activities a ON lam.ActivityId = a.ActivityId
+                        WHERE lam.LearnerId = ? AND a.SubjectId = (
+                            SELECT SubjectId FROM learnersubject WHERE LearnerSubjectId = ?
+                        )
+                    ";
+                    $stmtAct = $connect->prepare($activity_sql);
+                    $stmtAct->bind_param("ii", $learnerId, $learnerSubjectId);
+                    $stmtAct->execute();
+                    $resAct = $stmtAct->get_result();
 
-                  // Progress %
-                  $progressPercent = ($targetLevel > $startLevel) ? (($nowLevel - $startLevel) / ($targetLevel - $startLevel)) * 100 : 0;
-                  if ($progressPercent < 0) $progressPercent = 0;
-                  if ($progressPercent > 100) $progressPercent = 100;
+                    $totalMarks = 0;
+                    $totalMax = 0;
+                    while ($rowAct = $resAct->fetch_assoc()) {
+                        $totalMarks += (float)$rowAct['MarksObtained'];
+                        $totalMax += (float)$rowAct['MaxMarks'];
+                    }
+                    $averageMark = ($totalMax > 0) ? ($totalMarks / $totalMax) * 100 : 0;
 
-                  $expectedLevel = $targetLevel; // For display
-              ?>
-              <div class="profile-personal-info">
-                  <div class="profile-skills border-bottom mb-4 pb-2">
-                      <h4 class="text-primary mb-3"><?= htmlspecialchars($goal['SubjectName']) ?></h4>
+                    // --- Attendance Rate ---
+                    $attendance_sql = "
+                        SELECT lam.Attendance
+                        FROM learneractivitymarks lam
+                        JOIN activities a ON lam.ActivityId = a.ActivityId
+                        WHERE lam.LearnerId = ? AND a.SubjectId = (
+                            SELECT SubjectId FROM learnersubject WHERE LearnerSubjectId = ?
+                        )
+                    ";
+                    $stmtAtt = $connect->prepare($attendance_sql);
+                    $stmtAtt->bind_param("ii", $learnerId, $learnerSubjectId);
+                    $stmtAtt->execute();
+                    $resAtt = $stmtAtt->get_result();
 
-                      <div class="bubble-container row" style="margin-bottom: 15px;">
-                          <div class="bubble col-md-2">Start Level: <span class="label label-primary"><?= $startLevel ?></span></div>
-                          <div class="bubble col-md-2">Current Level: <span class="label label-warning"><?= $nowLevel ?></span></div>
-                          <div class="bubble col-md-2">Target Level: <span class="label label-success"><?= $targetLevel ?></span></div>
-                          <div class="bubble col-md-2">Average Mark: <span class="label label-danger"><?= round($averageMark, 2) ?>%</span></div>
-                          <div class="bubble col-md-2">Attendance Rate: <span class="label label-default"><?= round($attendanceRate, 2) ?>%</span></div>
-                      </div>
+                    $totalActivities = $resAtt->num_rows;
+                    $absentCount = 0;
+                    while ($rowAtt = $resAtt->fetch_assoc()) {
+                        if ($rowAtt['Attendance'] === 'absent') $absentCount++;
+                    }
+                    $attendanceRate = ($totalActivities > 0) ? (($totalActivities - $absentCount) / $totalActivities) * 100 : 0;
 
-                      
-                      <label>Progress Toward Goal:</label>
-                      <div class="progress" style="height: 20px;">
-                          <div class="progress-bar progress-bar-info progress-bar-striped active"
-                              role="progressbar" style="width: <?= $progressPercent ?>%;">
-                              Level <?= $nowLevel ?> of <?= $targetLevel ?>
-                          </div>
-                      </div>
+                    // --- Levels ---
+                    $startLevel = $goal['CurrentLevel']; // DB CurrentLevel
+                    $targetLevel = $goal['TargetLevel']; // DB TargetLevel
+                    $nowLevel = getLevelFromMark($averageMark); // calculated from average marks
 
-                      <div class="callout callout-info" style="margin-top: 20px;">
-                          <h5>Goal Tracker</h5>
-                          <p>Based on current average, learner is expected to reach Level <?= $expectedLevel ?> by term end.</p>
-                      </div>
-                  </div>
-              </div>
-              <?php endwhile; ?>
+                    // Progress %
+                    $progressPercent = ($targetLevel > $startLevel) ? (($nowLevel - $startLevel) / ($targetLevel - $startLevel)) * 100 : 0;
+                    if ($progressPercent < 0) $progressPercent = 0;
+                    if ($progressPercent > 100) $progressPercent = 100;
 
+                    $expectedLevel = $targetLevel; // For display
+                ?>
 
+                    <div class="profile-personal-info">
+                        <div class="profile-skills border-bottom mb-4 pb-2">
+                            <h4 class="text-primary mb-3"><?= htmlspecialchars($goal['SubjectName']) ?></h4>
+
+                            <div class="bubble-container row" style="margin-bottom: 15px;">
+                                <div class="bubble col-md-2">Start Level: <span class="label label-primary"><?= $startLevel ?></span></div>
+                                <div class="bubble col-md-2">Current Level: <span class="label label-warning"><?= $nowLevel ?></span></div>
+                                <div class="bubble col-md-2">Target Level: <span class="label label-success"><?= $targetLevel ?></span></div>
+                                <div class="bubble col-md-2">Average Mark: <span class="label label-danger"><?= round($averageMark, 2) ?>%</span></div>
+                                <div class="bubble col-md-2">Attendance Rate: <span class="label label-default"><?= round($attendanceRate, 2) ?>%</span></div>
+                            </div>
+
+                            <label>Progress Toward Goal:</label>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar progress-bar-info progress-bar-striped active"
+                                    role="progressbar" style="width: <?= $progressPercent ?>%;">
+                                    Level <?= $nowLevel ?> of <?= $targetLevel ?>
+                                </div>
+                            </div>
+
+                            <div class="callout callout-info" style="margin-top: 20px;">
+                                <h5>Goal Tracker</h5>
+                                <p>Based on current average, learner is expected to reach Level <?= $expectedLevel ?> by term end.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                <?php endwhile; ?>
 
             </div>
+
 
             
 
             <!-- Practice Q Progress -->
-            <div class="tab-pane" id="zzz">
-              <!-- Keep current HTML as-is -->
-              <div class="profile-personal-info">
-                    <div class="profile-skills border-bottom mb-4 pb-2">
-                      <h4 class="text-primary mb-3">Practice Question Progress</h4>
+            <div class="tab-pane" id="practicequestionsprogress">
 
-                      <!-- Level Breakdown Table -->
-                      <div class="table-responsive">
-                        <table class="table table-condensed table-bordered">
-                          <thead>
-                            <tr class="bg-gray">
-                              <th>Level</th>
-                              <th>Attempts</th>
-                              <th>Avg Score</th>
-                              <th>Best Score</th>
-                              <th>Status</th>
-                              <th>Time Spent</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>Easy</td>
-                              <td>3</td>
-                              <td>68%</td>
-                              <td>76%</td>
-                              <td><span class="label label-success">Passed</span></td>
-                              <td>13 min</td>
-                            </tr>
-                            <tr>
-                              <td>Medium</td>
-                              <td>1</td>
-                              <td>54%</td>
-                              <td>54%</td>
-                              <td><span class="label label-danger">Failed</span></td>
-                              <td>8 min</td>
-                            </tr>
-                            <tr>
-                              <td>Hard</td>
-                              <td>0</td>
-                              <td>-</td>
-                              <td>-</td>
-                              <td><span class="label label-default">Not Attempted</span></td>
-                              <td>-</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
+                  <?php
+                  foreach($subjectOptions as $sub):
+                      $subjectId = $sub['SubjectId'];
+                      $subjectName = $sub['SubjectName'];
+                      // Fetch GradeName for this subject
+                      $subjectInfoSql = "
+                          SELECT g.GradeName
+                          FROM subjects s
+                          JOIN grades g ON s.GradeId = g.GradeId
+                          WHERE s.SubjectId = ?
+                          LIMIT 1
+                      ";
+                      $subjectStmt = $connect->prepare($subjectInfoSql);
+                      if (!$subjectStmt) {
+                          die("Prepare failed: " . $connect->error);
+                      }
+                      $subjectStmt->bind_param("i", $subjectId);
+                      $subjectStmt->execute();
+                      $subjectRes = $subjectStmt->get_result();
+                      $subjectInfo = $subjectRes->fetch_assoc();
+                      $subjectStmt->close();
 
-                      <!-- Pattern Analysis (Optional but Insightful) -->
-                      <div class="box box-default box-solid">
-                        <div class="box-header with-border">
-                          <h5 class="box-title">Tutor Observations</h5>
-                        </div>
-                        <div class="box-body">
-                          <ul style="margin-left: 20px;">
-                            <li>Struggles with Medium-level logic questions (avg score below pass mark).</li>
-                            <li>Completes levels faster than peers (avg time per level: ~10 min).</li>
-                            <li>Performs better on conceptual questions vs. memory-based ones.</li>
-                            <li>Shows improvement with each Easy-level attempt.</li>
-                          </ul>
-                        </div>
-                      </div>
+                      $gradeName = $subjectInfo['GradeName'] ?? 'N/A';
 
-                      <!-- Additional Tutor Note -->
-                      <div class="form-group mt-2">
-                        <label>Tutor Note (Private)</label>
-                        <textarea name="note" class="form-control input-sm" rows="2" placeholder="e.g. Consider giving extra support on algebra-based problems."></textarea>
+                      // Fetch chapters and levels for this subject
+                      $chaptersSql = "
+                          SELECT Chapter, LevelId
+                          FROM practicequestions
+                          WHERE SubjectName = ? AND GradeName = ?
+                          ORDER BY Chapter, LevelId
+                      ";
+                      $stmt = $connect->prepare($chaptersSql);
+                      $stmt->bind_param("ss", $subjectName, $gradeName);
+                      $stmt->execute();
+                      $res = $stmt->get_result();
+
+                      $chapters = [];
+                      while($row = $res->fetch_assoc()) {
+                          $chapter = $row['Chapter'];
+                          $levelId = $row['LevelId'];
+
+                          if(!isset($chapters[$chapter])) {
+                              $chapters[$chapter] = ['Easy'=>null,'Medium'=>null,'Hard'=>null];
+                          }
+
+                          if($levelId==1) $chapters[$chapter]['Easy'] = $levelId;
+                          if($levelId==2) $chapters[$chapter]['Medium'] = $levelId;
+                          if($levelId==3) $chapters[$chapter]['Hard'] = $levelId;
+                      }
+                      $stmt->close();
+
+                      // Fetch learner's completion for this subject
+                      $learnerLevelsStmt = $connect->prepare("
+                          SELECT LevelId, ChapterName, Complete
+                          FROM learnerlevel
+                          WHERE LearnerId=? 
+                      ");
+                      $learnerLevelsStmt->bind_param("i", $learnerId);
+                      $learnerLevelsStmt->execute();
+                      $resLevels = $learnerLevelsStmt->get_result();
+                      $learnerLevels = [];
+                      while($row = $resLevels->fetch_assoc()){
+                          $learnerLevels[$row['ChapterName']][$row['LevelId']] = $row['Complete'];
+                      }
+                      $learnerLevelsStmt->close();
+                  ?>
+                  <div class="profile-personal-info">
+                      <h4 class="text-primary mb-2"><?= htmlspecialchars($subjectName) ?>, <?= htmlspecialchars($gradeName) ?></h4>
+
+                      <div class="box box-default">
+                          
+                          
+                              <div class="table-responsive">
+                                  <table class="table table-bordered table-hover table-condensed">
+                                      <thead>
+                                          <tr>
+                                              <th>Chapter</th>
+                                              <th class="text-center">Easy</th>
+                                              <th class="text-center">Medium</th>
+                                              <th class="text-center">Hard</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                        <?php if(empty($chapters)): ?>
+                                            <tr><td colspan="4" class="text-center">No chapters found.</td></tr>
+                                        <?php else: ?>
+                                            <?php foreach($chapters as $chapterName => $levels): ?>
+                                                <tr>
+                                                    <td><?= htmlspecialchars($chapterName) ?></td>
+                                                    <?php foreach(['Easy'=>1,'Medium'=>2,'Hard'=>3] as $levelName=>$lvlId): ?>
+                                                        <td class="text-center">
+                                                            <?php 
+                                                                if($levels[$levelName]){
+                                                                    $isCompleted = !empty($learnerLevels[$chapterName][$lvlId]) && $learnerLevels[$chapterName][$lvlId]==1;
+                                                                    $labelClass = $isCompleted ? 'success' : 'default';
+                                                                    $symbol = $isCompleted ? '✔' : '○'; // ✔ = Completed, ○ = Not completed
+                                                                    ?>
+                                                                    <button type="button" class="btn btn-xs btn-<?= $labelClass ?>" 
+                                                                        data-toggle="modal" data-target="#levelModal"
+                                                                        data-subject="<?= htmlspecialchars($subjectName) ?>"
+                                                                        data-chapter="<?= htmlspecialchars($chapterName) ?>"
+                                                                        data-level="<?= $levelName ?>"
+                                                                        title="<?= $isCompleted ? 'Completed' : 'Not Completed' ?>"
+                                                                    >
+                                                                        <?= $symbol ?>
+                                                                    </button>
+                                                                <?php 
+                                                                } else {
+                                                                    echo '<span class="text-muted">N/A</span>';
+                                                                }
+                                                            ?>
+                                                        </td>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                      </tbody>
+
+                                  </table>
+                              </div>
+                          
                       </div>
-                    </div>
+                    
                   </div>
+                  <?php endforeach; ?>
+                
             </div>
+
+<!-- Static Modal -->
+<div class="modal fade" id="levelModal" tabindex="-1" role="dialog" aria-labelledby="levelModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="levelModalLabel">Level Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Static content for now -->
+        <p>Level details will be displayed here.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Optional JS to update modal title dynamically -->
+<script>
+$('#levelModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget); 
+  var subject = button.data('subject');
+  var chapter = button.data('chapter');
+  var level = button.data('level');
+  var modal = $(this);
+  modal.find('.modal-title').text(subject + " — " + chapter + " (" + level + ")");
+});
+</script>
+
+
+
+
+
+            
 
           </div>
         </div>
