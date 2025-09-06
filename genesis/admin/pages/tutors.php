@@ -78,7 +78,7 @@ if ($result) {
                 <?php else: ?>
                     <?php foreach ($tutors as $tutor): ?>
                         <div class="col-md-4">
-                            <div class="box box-primary" style="min-height: 380px;">
+                            <div class="box box-primary" style="min-height: 350px;">
                                 <div class="box-header with-border text-center">
                                     <img 
                                         src="<?= !empty($tutor['ProfilePicture']) ? '../' . htmlspecialchars($tutor['ProfilePicture']) : '../../uploads/doe.jpg' ?>" 
@@ -94,9 +94,7 @@ if ($result) {
                                 </div>
                                 <div class="box-body text-center">
                                     <p><strong>Name:</strong> <?= htmlspecialchars($tutor['Name']) . ' ' . htmlspecialchars($tutor['Surname']) ?></p>
-                                    <p><strong>Email:</strong> <?= htmlspecialchars($tutor['Email']) ?></p>
-                                    <p><strong>Contact:</strong> <?= htmlspecialchars($tutor['Contact']) ?></p>
-                                    <p><strong>Availability:</strong> <?= htmlspecialchars($tutor['Availability']) ?: 'Not specified' ?></p>
+                                    <p><strong>Email:</strong> <?= htmlspecialchars($tutor['Email']) ?></p>                                    <p><strong>Availability:</strong> <?= htmlspecialchars($tutor['Availability']) ?: 'Not specified' ?></p>
                                     <hr>
                                     <div class="btn-group">
                                         <a href="updatetutors.php?id=<?= $tutor['TutorId'] ?>" class="btn btn-sm btn-info">View / Update</a>

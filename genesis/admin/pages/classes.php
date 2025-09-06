@@ -88,7 +88,10 @@ include(__DIR__ . "/../../partials/connect.php");
               <h3 class="box-title" style="margin:10px auto;"><?php echo $grade; ?></h3>
               <p><i class="fa fa-book"></i> <?php echo $subjectName; ?> - Group <?php echo $group; ?></p>
               <p><i class="fa fa-users"></i> <strong><?php echo $learnerCount; ?> learner<?php echo $learnerCount != 1 ? 's' : ''; ?></strong></p>
-              <p><i class="fa fa-circle text-<?php echo $status == 'Full' ? 'red' : 'green'; ?>"></i> <?php echo $status; ?></p>
+              <p>
+                <i class="fa fa-circle text-<?php echo $row['Status'] == 'Full' ? 'red' : 'green'; ?>"></i> 
+                <?php echo $row['Status']; ?>
+              </p>            
             </div>
             <div class="box-body text-center" style="background-color:#a3bffa;">
               <!-- Button that triggers modal -->

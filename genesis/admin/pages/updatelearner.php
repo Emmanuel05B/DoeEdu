@@ -48,15 +48,51 @@ if ($learnerGradeId) {
     $stmt->close();
 }
 
-// Fetch current subjects
+// Fetch current subjects        //WHERE Status is 'Active' 
 $subjects = $connect->query("
     SELECT ls.LearnerSubjectId, s.SubjectName, ls.ContractStartDate, ls.ContractExpiryDate, 
            ls.ContractFee, ls.Status
     FROM learnersubject ls
     JOIN subjects s ON ls.SubjectId = s.SubjectId
-    WHERE ls.LearnerId = $learnerId
+    WHERE ls.LearnerId = $learnerId 
+      AND (ls.Status = 'Active' OR ls.Status = 'Suspended')
     ORDER BY s.SubjectName
 ")->fetch_all(MYSQLI_ASSOC);
+
+// Fetch current cancelledsubjects        //WHERE Status is 'Cancelled'
+$cancelledsubjects = $connect->query("
+    SELECT ls.LearnerSubjectId, s.SubjectName, ls.ContractStartDate, ls.ContractExpiryDate, 
+           ls.ContractFee, ls.Status
+    FROM learnersubject ls
+    JOIN subjects s ON ls.SubjectId = s.SubjectId
+    WHERE ls.LearnerId = $learnerId 
+      AND (ls.Status = 'Cancelled' OR ls.Status = 'Completed')
+    ORDER BY s.SubjectName
+")->fetch_all(MYSQLI_ASSOC);
+
+ /*
+      function fetchSubjectsByStatus($connect, $learnerId, $status) {
+        $stmt = $connect->prepare("
+            SELECT ls.LearnerSubjectId, s.SubjectName, ls.ContractStartDate, ls.ContractExpiryDate, 
+                  ls.ContractFee, ls.Status
+            FROM learnersubject ls
+            JOIN subjects s ON ls.SubjectId = s.SubjectId
+            WHERE ls.LearnerId = ? AND ls.Status = ?
+            ORDER BY s.SubjectName
+        ");
+        $stmt->bind_param("is", $learnerId, $status);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    $subjects = fetchSubjectsByStatus($connect, $learnerId, "Active");
+    $cancelledsubjects = fetchSubjectsByStatus($connect, $learnerId, "Cancelled");
+
+
+ */
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -83,11 +119,14 @@ $subjects = $connect->query("
   <section class="content">
 
     <!-- SUBJECTS FORM -->
+
+    
     <div class="row">
       <?php foreach ($subjects as $sub): ?>
           <div class="col-md-6 mb-3">
               <form method="POST" action="savelearnerupdates.php" class="subject-form">
                   <input type="hidden" name="LearnerId" value="<?= $learnerId ?>">
+                  
                   <input type="hidden" name="Subjects[GradeName]" value="<?= htmlspecialchars($learnerGradeName ?? '') ?>">
 
                   <div class="box box-primary" style="border-top:3px solid #3c8dbc;">
@@ -101,9 +140,11 @@ $subjects = $connect->query("
                                   <input type="date" name="Subjects[<?= $sub['LearnerSubjectId'] ?>][ContractStartDate]" value="<?= $sub['ContractStartDate'] ?>" class="form-control" required>
                               </div>
                               <div class="col-md-6 form-group">
-                                  <label>Contract End</label>
-                                  <input type="date" name="Subjects[<?= $sub['LearnerSubjectId'] ?>][ContractExpiryDate]" value="<?= $sub['ContractExpiryDate'] ?>" class="form-control" required>
-                              </div>
+                                  <label>Contract To End On</label>
+                                  <input type="date" 
+                                        name="Subjects[<?= $sub['LearnerSubjectId'] ?>][ContractExpiryDate]" 
+                                        value="<?= date('Y-m-d', strtotime($sub['ContractExpiryDate'])) ?>" 
+                                        class="form-control" required>                              </div>
                               <div class="col-md-4 form-group">
                                   <label>Fee</label>
                                   <input type="number" step="0.01" name="Subjects[<?= $sub['LearnerSubjectId'] ?>][ContractFee]" value="<?= $sub['ContractFee'] ?>" class="form-control" required>
@@ -113,8 +154,7 @@ $subjects = $connect->query("
                                   <select name="Subjects[<?= $sub['LearnerSubjectId'] ?>][Status]" class="form-control">
                                       <option value="Active" <?= $sub['Status']=='Active'?'selected':'' ?>>Active</option>
                                       <option value="Suspended" <?= $sub['Status']=='Suspended'?'selected':'' ?>>Suspended</option>
-                                      <option value="Completed" <?= $sub['Status']=='Completed'?'selected':'' ?>>Completed</option>
-                                      <option value="Cancelled" <?= $sub['Status']=='Cancelled'?'selected':'' ?>>Cancelled</option>
+                                      
                                   </select>
                               </div>
                           </div>
@@ -128,8 +168,72 @@ $subjects = $connect->query("
               </form>
           </div>
       <?php endforeach; ?>
+
+      <?php foreach ($cancelledsubjects as $sub): ?>
+        <div class="col-md-6 mb-3">
+            <form method="POST" action="savelearnerupdates.php" class="subject-form">
+                <input type="hidden" name="LearnerId" value="<?= $learnerId ?>">
+                <input type="hidden" name="Subjects[GradeName]" value="<?= htmlspecialchars($learnerGradeName ?? '') ?>">
+
+                <div class="box box-danger" style="border-top:3px solid #dd4b39;">
+                    <div class="box-header with-border" style="background-color:#fdecea;">
+                        <h3 class="box-title" style="color:#dd4b39;">
+                            <?= htmlspecialchars($sub['SubjectName']) ?> 
+                            <small style="font-size:13px; color:#a94442;">(Deregistered)</small>
+                        </h3>
+                    </div>
+                    <div class="box-body" style="background-color:#ffffff;">
+                        
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Contract Start</label>
+                                <input type="date" 
+                                      name="Subjects[<?= $sub['LearnerSubjectId'] ?>][ContractStartDate]" 
+                                      value="<?= $sub['ContractStartDate'] ?>" 
+                                      class="form-control" required>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Contract Ended On</label>
+                                <input type="date" 
+                                      name="Subjects[<?= $sub['LearnerSubjectId'] ?>][ContractExpiryDate]" 
+                                      value="<?= date('Y-m-d', strtotime($sub['ContractExpiryDate'])) ?>" 
+                                      class="form-control" required>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label>New Fee</label>
+                                <input type="number" step="0.01" 
+                                      name="Subjects[<?= $sub['LearnerSubjectId'] ?>][ContractFee]" 
+                                      value="<?= $sub['ContractFee'] ?>" 
+                                      class="form-control" required>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label>Status</label>
+                                <select name="Subjects[<?= $sub['LearnerSubjectId'] ?>][Status]" class="form-control">
+                                    <option value="Completed" <?= $sub['Status']=='Completed'?'selected':'' ?>>Completed</option>
+                                    <option value="Cancelled" <?= $sub['Status']=='Cancelled'?'selected':'' ?>>Cancelled</option>
+                                </select>
+                            </div>
+                            
+                        </div>
+
+                        <div class="col-md-12 text-right mt-2">
+                            <button type="submit" 
+                                    name="Action" 
+                                    value="UpdateSubject_<?= $sub['LearnerSubjectId'] ?>" 
+                                    class="btn btn-danger btn-sm" 
+                                    style="width:120px;">
+                                Update
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+      <?php endforeach; ?>
+
     </div>
 
+    <!-- alerrt for dropping a sub -->
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       document.querySelectorAll('.drop-btn').forEach(btn => {
@@ -139,7 +243,7 @@ $subjects = $connect->query("
 
               Swal.fire({
                   title: 'Are you sure?',
-                  text: "This will deregister the subject for the learner!",
+                  text: "This will deregister the subject for the learner!. DONT FORGET TO ADJUST THE FEE!",
                   icon: 'warning',
                   showCancelButton: true,
                   confirmButtonColor: '#d33',
@@ -160,7 +264,6 @@ $subjects = $connect->query("
           });
       });
     </script>
-
 
 
 
@@ -284,7 +387,7 @@ Swal.fire({
 Swal.fire({
     icon: 'error',
     title: 'Oops...',
-    text: 'This learner is already registered for the selected subject. Please update the existing subject instead.',
+    text: 'Learner is already registered / was registered for this subject. Please update the existing subject instead.',
     confirmButtonText: 'Okay'
 });
 </script>

@@ -70,49 +70,37 @@ if (!isset($_SESSION['email'])) {
                   </thead>
                   <tbody>
                     <?php
-                    // Working query: only active learners (contract not expired)
+                    // Working query: only active learners (contract not expired) ... for this grade, subject and group
+
                     $sql = "
-                        SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
+                        SELECT 
+                            lt.LearnerId,
+                            lt.Grade,
+                            u.Name,
+                            u.Surname,
+                            c.GroupName
                         FROM learners lt
                         INNER JOIN users u ON lt.LearnerId = u.Id
-                        LEFT JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
-                        LEFT JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
-                        LEFT JOIN classes c ON lc.ClassID = c.ClassID
-                        WHERE 1
+                        INNER JOIN learnersubject ls 
+                            ON lt.LearnerId = ls.LearnerId 
+                            AND ls.ContractExpiryDate > CURDATE()
+                        INNER JOIN learnerclasses lc 
+                            ON lt.LearnerId = lc.LearnerID
+                        INNER JOIN classes c 
+                            ON lc.ClassID = c.ClassID
+                            AND c.SubjectID = ls.SubjectID
+                        WHERE ls.SubjectId = ? AND lt.Grade = ? AND c.GroupName = ?
                     ";
 
-                    $params = [];
-                    $types = "";
-
-                    if ($subjectId > 0) {
-                        $sql .= " AND ls.SubjectId = ?";
-                        $types .= "i";
-                        $params[] = $subjectId;
-                    }
-                    if ($grade !== '') {
-                        $sql .= " AND lt.Grade = ?";
-                        $types .= "s";
-                        $params[] = $grade;
-                    }
-                    if ($group !== '') {
-                        $sql .= " AND c.GroupName = ?";
-                        $types .= "s";
-                        $params[] = $group;
-                    }
-
-                    // Only active contracts
-                    $sql .= " AND ls.ContractExpiryDate > CURDATE()";
-
                     $stmt = $connect->prepare($sql);
-                    if ($params) {
-                        $stmt->bind_param($types, ...$params);
-                    }
+                    $stmt->bind_param("iss", $subjectId, $grade, $group);
                     $stmt->execute();
                     $results = $stmt->get_result();
 
                     if ($results && $results->num_rows > 0):
-                      while ($final = $results->fetch_assoc()):
+                        while ($final = $results->fetch_assoc()):
                     ?>
+
                     <tr>
                       <td><?php echo htmlspecialchars($final['LearnerId']); ?></td>
                       <td><?php echo htmlspecialchars($final['Name']); ?></td>

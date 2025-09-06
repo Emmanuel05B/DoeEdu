@@ -166,8 +166,8 @@ if ($resultSubjects) {
                                   <table id="learnersTable" class="table table-bordered table-hover">
                                     <thead style="background-color: #d1d9ff;">
                                       <tr>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
+                                        <th>Name</th>
+                                        <th>Surname</th>
                                         <th>Grade</th>
                                         <th class="text-center">Actions</th>
                                       </tr>
@@ -193,8 +193,8 @@ if ($resultSubjects) {
                                     </tbody>
                                     <tfoot style="background-color: #f9f9f9;">
                                       <tr>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
+                                        <th>Name</th>
+                                        <th>Surname</th>
                                         <th>Grade</th>
                                         <th class="text-center">Actions</th>
                                       </tr>
@@ -227,8 +227,8 @@ if ($resultSubjects) {
                                   <table id="tutorsTable" class="table table-bordered table-hover">
                                     <thead style="background-color: #d1d9ff;">
                                       <tr>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
+                                        <th>Name</th>
+                                        <th>Surname</th>
                                         <th class="text-center">Actions</th>
                                       </tr>
                                     </thead>
@@ -252,8 +252,8 @@ if ($resultSubjects) {
                                     </tbody>
                                     <tfoot style="background-color: #f9f9f9;">
                                       <tr>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
+                                        <th>Name</th>
+                                        <th>Surname</th>
                                         <th class="text-center">Actions</th>
                                       </tr>
                                     </tfoot>

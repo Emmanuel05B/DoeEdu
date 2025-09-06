@@ -26,6 +26,8 @@ if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "Dere
     $learnerSubjectId = intval(preg_replace("/^(UpdateSubject_|DeregisterSubject_)/", "", $action));
     $subData = $_POST['Subjects'][$learnerSubjectId] ?? [];
 
+    
+
     if ($isUpdate && $subData) {
         // Use transaction
         $connect->begin_transaction();
@@ -47,6 +49,30 @@ if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "Dere
             $stmt->execute();
             $stmt->close();
 
+            // ------------------------
+            // FINANCES   for editing a new subject.... 
+            // ------------------------
+            $stmtTotal = $connect->prepare("
+                SELECT SUM(ContractFee - IFNULL(DiscountAmount,0)) AS TotalFees
+                FROM learnersubject
+                WHERE LearnerId = ?
+            ");
+            $stmtTotal->bind_param("i", $learnerId);
+            $stmtTotal->execute();
+            $resultTotal = $stmtTotal->get_result()->fetch_assoc();
+            $stmtTotal->close();
+
+            $totalFees = (float)$resultTotal['TotalFees'];
+
+            $insertFin = $connect->prepare("
+                INSERT INTO finances (LearnerId, TotalFees, TotalPaid, UpdatedAt) 
+                VALUES (?, ?, 0, NOW())
+                ON DUPLICATE KEY UPDATE TotalFees = VALUES(TotalFees)
+            ");
+            $insertFin->bind_param("id", $learnerId, $totalFees);
+            $insertFin->execute();
+            $insertFin->close();
+
             $connect->commit();
         } catch (Exception $e) {
             $connect->rollback();
@@ -57,59 +83,79 @@ if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "Dere
     if ($isDrop) {
         $connect->begin_transaction();
         try {
-            // Remove subject
-            $stmt = $connect->prepare("DELETE FROM learnersubject WHERE LearnerSubjectId=? AND LearnerId=?");
+            // Step 1: Get SubjectId before updating
+            $stmt = $connect->prepare("SELECT SubjectID FROM learnersubject WHERE LearnerSubjectId=? AND LearnerId=?");
             $stmt->bind_param("ii", $learnerSubjectId, $learnerId);
             $stmt->execute();
+            $stmt->bind_result($subjectId);
+            $stmt->fetch();
             $stmt->close();
 
-            /*/  remove learner from classes
-             */
+            if ($subjectId) {
+                // Step 2: Find the ClassID for this learner + subject
+                $stmt = $connect->prepare("
+                    SELECT lc.ClassID
+                    FROM learnerclasses lc
+                    INNER JOIN classes c ON lc.ClassID = c.ClassID
+                    WHERE lc.LearnerID = ? AND c.SubjectID = ?
+                    LIMIT 1
+                ");
+                $stmt->bind_param("ii", $learnerId, $subjectId);
+                $stmt->execute();
+                $result = $stmt->get_result();
 
-            // Step 1: Get the ClassID for this learner + subject
-            $stmt = $connect->prepare("
-                SELECT lc.ClassID 
-                FROM learnerclasses lc
-                INNER JOIN classes c ON lc.ClassID = c.ClassID
-                INNER JOIN learnersubject ls ON c.SubjectID = ls.SubjectID
-                WHERE lc.LearnerID = ? AND ls.LearnerSubjectId = ?
-            ");
-            $stmt->bind_param("ii", $learnerId, $learnerSubjectId);
-            $stmt->execute();
-            $result = $stmt->get_result();
+                if ($row = $result->fetch_assoc()) {
+                    $classId = $row['ClassID'];
 
-            while ($row = $result->fetch_assoc()) {
-                $classId = $row['ClassID'];
+                    // Step 3: Decrement class count
 
-                // Step 2: Decrement CurrentLearnerCount
-                $stmt2 = $connect->prepare("UPDATE classes SET CurrentLearnerCount = CurrentLearnerCount - 1 WHERE ClassID = ?");
-                $stmt2->bind_param("i", $classId);
-                $stmt2->execute();
-                $stmt2->close();
+                    $stmt2 = $connect->prepare("
+                        UPDATE classes 
+                        SET CurrentLearnerCount = CurrentLearnerCount - 1,
+                        Status = 'Not Full'
+                        
+                        WHERE ClassID = ?
+                    ");
+                    $stmt2->bind_param("i", $classId);
+                    $stmt2->execute();
+                    $stmt2->close();
 
-                // Step 3: Delete learner from learnerclasses
-                $stmt3 = $connect->prepare("DELETE FROM learnerclasses WHERE LearnerID = ? AND ClassID = ?");
-                $stmt3->bind_param("ii", $learnerId, $classId);
-                $stmt3->execute();
-                $stmt3->close();
+                    // Step 4: Remove from learnerclasses
+                    $stmt3 = $connect->prepare("DELETE FROM learnerclasses WHERE LearnerID = ? AND ClassID = ?");
+                    $stmt3->bind_param("ii", $learnerId, $classId);
+                    $stmt3->execute();
+                    $stmt3->close();
+
+                    // Step stmt2a: Delete class if no learners remain
+                    $stmt2a = $connect->prepare("
+                        DELETE FROM classes 
+                        WHERE ClassID = ? AND CurrentLearnerCount = 0
+                    ");
+                    $stmt2a->bind_param("i", $classId);
+                    $stmt2a->execute();
+                    $stmt2a->close();
+
+                }
+                $stmt->close();
+
+                $newStatus = "Cancelled";
+               
+                //Step 5: update subject after handling classes
+                $stmt = $connect->prepare("
+                    UPDATE learnersubject
+                    SET Status = ?
+                    WHERE LearnerSubjectId = ? AND LearnerId = ?
+                ");
+                $stmt->bind_param("sii", $newStatus, $learnerSubjectId, $learnerId);
+                $stmt->execute();
+                $stmt->close();
+
             }
-
-            $stmt->close();
-
-
-            //leaner is not yet fully deleted.. the class creation logic should go in reverse if needed.
-
-            //Im thinking, we need GroupName and subjectId and +Grade Name to decrement CurrentLearnerCount in classes. 
-            // ..then Get ClassId and go use it and Learner Id to delete from learnerclasses table
-
-            // CurrentLearnerCount in classes has to be down by 1
-            //and correclty delete this leaner for this subject from learnerclasses
-            //Id    LearnerID   ClassID    AssignedAt
 
             $connect->commit();
         } catch (Exception $e) {
             $connect->rollback();
-            // handle error if needed
+            throw $e;
         }
     }
 
@@ -322,4 +368,4 @@ if ($action === "UpdatePersonalInfo") {
 // --------------------
 // UNKNOWN ACTION
 // --------------------
-die("Unknown action.");
+die("Unknown action. Died");
