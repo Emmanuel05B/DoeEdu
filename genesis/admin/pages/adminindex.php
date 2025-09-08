@@ -215,14 +215,22 @@
                 </div>
               </div>
               <div class="box-body">
-                <form action="quickmail.php" method="post">
-                  <div class="form-group"><input type="email" class="form-control" name="emailto" placeholder="Email to:"></div>
-                  <div class="form-group"><input type="text" class="form-control" name="subject" placeholder="Subject"></div>
+                <form action="emailsuperhandler.php" method="post">
+                  <div class="form-group">
+                    <input type="email" class="form-control" name="emailto" placeholder="Email to:">
+                  </div>
+                  <div class="form-group">
+                    <input type="text" class="form-control" name="subject" placeholder="Subject">
+                  </div>
                   <div>
                     <textarea class="textarea" name="message" placeholder="Message" style="width: 100%; height: 125px; border: 1px solid #ddd;"></textarea>
                   </div>
+                  <!-- Optional hidden inputs for email type / redirect -->
+                  <input type="hidden" name="action" value="general">
+                  <input type="hidden" name="redirect" value="adminindex.php">
                   <input type="submit" class="btn btn-primary" value="Submit" name="btnsend">
                 </form>
+
               </div>
             </div>
 
@@ -238,6 +246,39 @@
   <!-- Scripts -->
 
   <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+
+  <?php
+    if (isset($_SESSION['success'])) {
+        $msg = $_SESSION['success'];
+        unset($_SESSION['success']);
+        echo "
+        <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Email Sent',
+                text: '". addslashes($msg) ."',
+                confirmButtonText: 'OK'
+            });
+        </script>";
+    }
+
+    if (isset($_SESSION['error'])) {
+        $msg = $_SESSION['error'];
+        unset($_SESSION['error']);
+        echo "
+        <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to Send',
+                text: '". addslashes($msg) ."',
+                confirmButtonText: 'OK'
+            });
+        </script>";
+    }
+  ?>
+
 
   <?php
     //include('../partials/connect.php');

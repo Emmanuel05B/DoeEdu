@@ -1,202 +1,299 @@
+for handling custom emails to single person.
+<?php
+session_start();
+include(__DIR__ . "/../../partials/connect.php");
+
+// PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+require __DIR__ . '/../../../vendor/autoload.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $emailto   = filter_var($_POST["emailto"], FILTER_SANITIZE_EMAIL);
+    $subject   = filter_var($_POST["subject"], FILTER_SANITIZE_STRING);
+    $message   = filter_var($_POST["message"], FILTER_SANITIZE_STRING);
+    $emailType = $_POST['email_type'] ?? 'tutor'; // tutor or parent
+    $redirect  = $_POST['redirect'] ?? 'adminindex.php'; // page to redirect after sending
+
+    // Optional: Customize message for parent/tutor
+    if ($emailType === 'parent') {
+        $message = "<p>Dear Parent,</p>" . $message . "<p>Regards,<br>School Team</p>";
+    } else {
+        $message = "<p>Dear Tutor,</p>" . $message . "<p>Regards,<br>School Team</p>";
+    }
+
+    $mail = new PHPMailer(true);
+
+    try {
+        // SMTP config
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'thedistributorsofedu@gmail.com';
+        $mail->Password   = 'xxx xxx xx xx xx'; // app password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port       = 465;
+
+        // Recipients
+        $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
+        $mail->addAddress($emailto);
+        $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis');
+
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body    = $message;
+
+        $mail->send();
+
+        $_SESSION['success'] = "Email successfully sent to " . htmlspecialchars($emailto) . "!";
+        header("Location: " . $redirect);
+        exit();
+
+    } catch (Exception $e) {
+        $_SESSION['error'] = "Email could not be sent to " . htmlspecialchars($emailto) . ". Mailer Error: {$mail->ErrorInfo}";
+        header("Location: " . $redirect);
+        exit();
+    }
+
+} else {
+    die("Invalid request.");
+}
+
+
+
+
+
+
+
+
+
+handler for sending an invite
+
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
+  header("Location: ../../common/pages/login.php");
     exit();
 }
-include(__DIR__ . "/../../common/partials/head.php");
+
 include(__DIR__ . "/../../partials/connect.php");
 
-// Fetch distinct existing question sets grouped by Grade, Subject, Chapter, Level
-$query = "
-    SELECT DISTINCT GradeName, SubjectName, Chapter, LevelName
-    FROM practicequestions 
-    JOIN level ON practicequestions.LevelId = level.Id
-    ORDER BY GradeName, SubjectName, Chapter, LevelName
-";
-$result = $connect->query($query);
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-$existingSets = [];
-while ($row = $result->fetch_assoc()) {
-    $existingSets[] = $row;
+// Load Composer's autoloader
+require __DIR__ . '/../../../vendor/autoload.php';
+
+if (!isset($_GET['id'])) {
+    $_SESSION['error_message'] = "Invalid invite request ID.";
+    header('Location: manage_inviterequests.php');
+    exit;
 }
+
+$invite_id = intval($_GET['id']);
+
+$stmt = $connect->prepare("SELECT * FROM inviterequests WHERE id = ?");
+$stmt->bind_param("i", $invite_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$request = $result->fetch_assoc();
+$stmt->close();
+
+if (!$request) {
+    $_SESSION['error_message'] = "Invite request not found.";
+    header('Location: manage_inviterequests.php');
+    exit;
+}
+
+if ($request['IsAccepted']) {
+    $_SESSION['error_message'] = "Invite already accepted.";
+    header('Location: manage_inviterequests.php');
+    exit;
+}
+
+// Generate a unique token
+$token = bin2hex(random_bytes(32));
+$expiresAt = date('Y-m-d H:i:s', strtotime('+7 days'));
+
+// Insert token
+$insertStmt = $connect->prepare("INSERT INTO invitetokens (InviteRequestId, Token, Email, ExpiresAt) VALUES (?, ?, ?, ?)");
+$insertStmt->bind_param("isss", $invite_id, $token, $request['email'], $expiresAt);
+
+if (!$insertStmt->execute()) {
+    echo '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body>
+        <script>
+            Swal.fire({
+                icon: "error",
+                title: "Token Creation Failed",
+                text: "Could not create invite token.",
+                confirmButtonText: "OK"
+            }).then(() => {
+                window.location.href = "manage_inviterequests.php";
+            });
+        </script>
+    </body>
+    </html>';
+    exit;
+}
+$insertStmt->close();
+
+function sendInviteEmail($learner_email, $learner_name, $token) {
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'thedistributorsofedu@gmail.com';
+        $mail->Password = 'xx x x x x x x x x x'; // Consider moving this to a secure config
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port = 465;
+
+        $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
+        $mail->addAddress($learner_email, $learner_name);
+        $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis');
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Your Invitation to Register at DoE Genesis';
+
+        $invite_link = "http://localhost/DoeEdu/genesis/common/register.php?token=$token";
+
+        $mail->Body = "
+        <p>Dear $learner_name,</p>
+        <p>You have been invited to register at DoE Genesis.</p>
+        <p>Please click the button below to complete your registration:</p>
+        <a href='$invite_link' style='background-color: #008CBA; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Register Now</a>
+        <p>This link will expire in 7 days and can only be used once.</p>
+        <br><p>Best regards,</p><p><strong>DoE Team</strong></p>";
+
+        $mail->send();
+        return true;
+
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+if (sendInviteEmail($request['email'], $request['name'], $token)) {
+    // Mark as accepted/recieved
+    $updateStmt = $connect->prepare("UPDATE inviterequests SET IsAccepted = 1 WHERE id = ?");
+    $updateStmt->bind_param("i", $invite_id);
+    $updateStmt->execute();
+    $updateStmt->close();
+
+    echo '
+
+                icon: "success",
+                title: "Invite Sent",
+                text: "An invitation link has been sent to ' . htmlspecialchars($request["email"]) . '",
+       
+    </html>';
+    exit;
+} else {
+  
+            }).then(() => {
+                window.location.href = "manage_inviterequests.php";
+            });
+   
+    exit;
+}
+
+
+
+
+for sending reminders
+
+<?php
+session_start();
+if (!isset($_SESSION['email'])) {
+  header("Location: ../../common/pages/login.php");
+    exit();
+}
+
+include(__DIR__ . "/../../partials/connect.php");
+
+require __DIR__ . '/../../../vendor/autoload.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+if (!isset($_GET['id'])) {
+    $_SESSION['error_message'] = "Invalid learner ID.";
+    header('Location: pendingverifications.php');
+    exit();
+}
+
+$learner_id = intval($_GET['id']);
+$stmt = $connect->prepare("SELECT Name, Surname, Email, VerificationToken, IsVerified FROM users WHERE Id = ? AND UserType = '2'");
+$stmt->bind_param("i", $learner_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$learner = $result->fetch_assoc();
+$stmt->close();
+
+if (!$learner) {
+    $_SESSION['error_message'] = "Learner not found.";
+    header('Location: pendingverifications.php');
+    exit();
+}
+
+if ($learner['IsVerified']) {
+    $_SESSION['error_message'] = "Learner is already verified.";
+    header('Location: pendingverifications.php');
+    exit();
+}
+
+function sendEmailToLearner($learner_email, $learner_name, $verificationToken) {
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'thedistributorsofedu@gmail.com';
+        $mail->Password = 'xxx x x x xx x x ';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port = 465;
+
+        $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
+        $mail->addAddress($learner_email, $learner_name);
+        $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis');
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Reminder: Please Verify Your DoE Account';
+
+        $verify_link = "http://localhost/DoeEdu/genesis/common/verification.php?token=$verificationToken";
+
+        $mail->Body = "
+        <p>Dear $learner_name,</p>
+        <p>This is a friendly reminder to verify your email address to activate your DoE Genesis learner account.</p>
+        <p>Please click the button below to verify:</p>
+        <a href='$verify_link' style='background-color: #008CBA; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify Email</a>
+        <p>If you’ve already verified, you can ignore this message.</p>
+        <br><p>Best regards,</p><p><strong>DoE Team</strong></p>";
+
+        return $mail->send();
+
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+if (sendEmailToLearner($learner['Email'], $learner['Name'], $learner['VerificationToken'])) {
+    $_SESSION['success_message'] = "Reminder sent to {$learner['Email']}.";
+} else {
+    $_SESSION['error_message'] = "Failed to send reminder to {$learner['Email']}.";
+}
+
+header("Location: pendingverifications.php");
+exit();
 ?>
-
-<body class="hold-transition skin-blue sidebar-mini">
-<div class="wrapper">
-    <?php include(__DIR__ . "/../partials/header.php"); ?>
-    <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
-
-    <div class="content-wrapper">
-        <section class="content-header">
-            <h1>Practice Questions Setup <small>Select details before creating questions</small></h1>
-            <ol class="breadcrumb">
-                <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
-                <li class="active">Practice Questions Setup</li>
-            </ol>
-        </section>
-
-        <section class="content">
-            <div class="box box-primary" style="border-top: 3px solid #3c8dbc;">
-                <div class="box-header with-border" style="background-color:#f0f8ff;">
-                    <h3 class="box-title" style="color:#3c8dbc;">
-                        <i class="fa fa-cogs"></i> Select Details
-                    </h3>
-                </div>
-                <div class="box-body">
-                    <div class="row">
-                        <!-- Left side: Smaller form -->
-                        <div class="col-md-6">
-                            <form action="create_questions.php" method="POST">
-                                <div class="form-group">
-                                    <label>Grade</label>
-                                    <select name="grade" class="form-control" required>
-                                        <option value="">Select Grade</option>
-                                        <option value="Grade 8">Grade 8(***Make Dynamic)</option>
-                                        <option value="Grade 9">Grade 9</option>
-                                        <option value="Grade 10">Grade 10</option>
-                                        <option value="Grade 11">Grade 11</option>
-                                        <option value="Grade 12">Grade 12</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Subject</label>
-                                    <select name="subject" class="form-control" required>
-                                        <option value="">Select Subject</option>
-                                        <option value="Mathematics">Mathematics</option>
-                                        <option value="Physical Sciences">Physical Sciences</option>
-                                        <option value="Life Sciences">Life Sciences</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Chapter</label>
-                                    <input type="text" name="chapter" class="form-control" placeholder="Enter chapter name" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Level</label>
-                                    <select name="level" class="form-control" required>
-                                        <option value="">Select Level</option>
-                                        <option value="Easy">Easy</option>
-                                        <option value="Medium">Medium</option>
-                                        <option value="Hard">Hard</option>
-                                    </select>
-                                </div>
-
-                                <div class="text-right">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fa fa-arrow-right"></i> Continue
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Right side: Info panel -->
-                        <div class="col-md-6">
-                            <div class="callout callout-info">
-                                <h4><i class="fa fa-info-circle"></i> About This Page</h4>
-                                <p>This setup page allows you to define the key details for your practice questions before creating them. Once you select a grade, subject, chapter, and difficulty level, you can proceed to add the questions.</p>
-                                <p>You can also edit existing sets of questions by clicking the <strong>Edit</strong> button in the table below.</p>
-                            </div>
-
-                            <div class="box box-solid">
-                                <div class="box-header with-border">
-                                    <h3 class="box-title">Tips for Creating Good Questions</h3>
-                                </div>
-                                <div class="box-body">
-                                    <ul>
-                                        <li>Keep the question clear and concise.</li>
-                                        <li>Match difficulty level to learners’ capabilities.</li>
-                                        <li>Use relevant and up-to-date examples.</li>
-                                        <li>Attach diagrams or supporting files when needed.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Existing question sets list -->
-            <div class="box box-warning" style="border-top: 3px solid #f39c12; margin-top: 20px;">
-  <div class="box-header with-border" style="background-color:#fff8e1;">
-    <h3 class="box-title" style="color:#f39c12;">
-      <i class="fa fa-folder-open"></i> Existing Practice Question Sets
-    </h3>
-  </div>
-  <div class="box-body">
-    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-      <?php if (empty($existingSets)): ?>
-        <p>No existing question sets found.</p>
-      <?php else: ?>
-        <table id="example1" class="table table-bordered table-hover table-condensed">
-          <thead style="background-color: #f9f9f9;">
-            <tr>
-              <th>Grade</th>
-              <th>Subject</th>
-              <th>Chapter</th>
-              <th>Level</th>
-              <th class="text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($existingSets as $set): ?>
-              <tr>
-                <td><?= htmlspecialchars($set['GradeName']) ?></td>
-                <td><?= htmlspecialchars($set['SubjectName']) ?></td>
-                <td><?= htmlspecialchars($set['Chapter']) ?></td>
-                <td><?= htmlspecialchars($set['LevelName']) ?></td>
-                <td class="text-center">
-                  <a href="create_questions.php?grade=<?= urlencode($set['GradeName']) ?>&subject=<?= urlencode($set['SubjectName']) ?>&chapter=<?= urlencode($set['Chapter']) ?>&level=<?= urlencode($set['LevelName']) ?>" 
-                     class="btn btn-xs btn-warning">
-                     <i class="fa fa-edit"></i> Edit
-                  </a>
-                </td>
-              </tr>
-            <?php endforeach; ?>
-          </tbody>
-          <tfoot style="background-color: #f9f9f9;">
-            <tr>
-              <th>Grade</th>
-              <th>Subject</th>
-              <th>Chapter</th>
-              <th>Level</th>
-              <th class="text-center">Action</th>
-            </tr>
-          </tfoot>
-        </table>
-      <?php endif; ?>
-    </div>
-  </div>
-</div>
-
-
-
-
-        </section>
-    </div>
-
-    <div class="control-sidebar-bg"></div>
-</div>
-
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-
-<!-- DataTables initialization script -->
-<script>
-  $(function () {
-    $('#example1').DataTable({
-      paging: true,
-      lengthChange: true,
-      searching: true,
-      ordering: true,
-      info: true,
-      autoWidth: false,
-      responsive: true
-    });
-  });
-</script>
-
-</body>
-</html>

@@ -559,6 +559,10 @@ if ($resultSubjects) {
                                     <label>Default Resource Storage Limit (MB)</label>
                                     <input type="number" class="form-control" placeholder="e.g. 500">
                                   </div>
+                                  <div class="form-group">
+                                    <label>Email Password(DONT TOUCH)</label>
+                                    <input type="text" class="form-control" placeholder="e.g. sdf dsfsd fsdf dsf">
+                                  </div>
                                   <!-- Add more default values here if needed -->
                                 </div>
                               </div>

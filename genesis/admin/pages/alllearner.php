@@ -36,7 +36,7 @@ if (!isset($_SESSION['email'])) {
               $grade     = isset($_GET['grade']) ? $_GET['grade'] : '';
               $group     = isset($_GET['group']) ? $_GET['group'] : '';
 
-              // Get subject name
+              // Get subject name 
               $subjectName = '';
               if ($subjectId > 0) {
                   $stmtSub = $connect->prepare("SELECT SubjectName FROM subjects WHERE SubjectId = ?");

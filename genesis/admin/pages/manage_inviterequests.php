@@ -43,14 +43,14 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
         </div>
         <div class="box-body">
           <div class="table-responsive">
-            <table id="inviteTable" class="table table-bordered table-striped">
+            <table id="example1" class="table table-bordered table-hover">
               <thead style="background-color:#d1d9ff;">
                 <tr>
                   <th>Name</th>
                   <th>Surname</th>
                   <th>Email</th>
                   <th>Message</th>
-                  <th>Requested At</th>
+                  <th>Requested On</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -71,9 +71,15 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
                       <?php endif; ?>
                     </td>
                     <td>
+                      
+
                       <?php if (!$req['IsAccepted']): ?>
-                        <a href="send_invite.php?id=<?= $req['id'] ?>"
-                           class="btn btn-success btn-xs swal-send">Send Invite</a>
+                        <form action="emailsuperhandler.php" method="post" style="display:inline;">
+                            <input type="hidden" name="action" value="invite">
+                            <input type="hidden" name="id" value="<?= $req['id'] ?>">
+                            <input type="hidden" name="redirect" value="manage_inviterequests.php">
+                            <button type="submit" class="btn btn-primary btn-xs swal-send">Send Invite</button>
+                        </form>
                       <?php endif; ?>
                       <button class="btn btn-danger btn-xs swal-delete"
                               data-id="<?= $req['id'] ?>"
@@ -106,18 +112,21 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
 
 <!-- JS Libraries -->
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
 <script>
   $(function () {
-    $('#inviteTable').DataTable({
+
+    $('#example1').DataTable({
       "paging": true,
       "lengthChange": true,
       "searching": true,
       "ordering": true,
-      "autoWidth": false
+      "info": true,
+      "autoWidth": false,
+      "responsive": true
     });
 
     // Delete with SweetAlert
@@ -141,16 +150,31 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
     });
 
     // Success alert (after redirect)
-    <?php if (isset($_SESSION['success_message'])): ?>
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: '<?= $_SESSION['success_message'] ?>',
-        confirmButtonText: 'OK'
-      });
-      <?php unset($_SESSION['success_message']); ?>
+    // Alerts for emailsuperhandler
+    <?php if (isset($_SESSION['success'])): ?>
+        Swal.fire({
+            icon: 'success',
+            title: 'Email Sent',
+            text: '<?= addslashes($_SESSION['success']) ?>',
+            confirmButtonText: 'OK'
+        });
+        <?php unset($_SESSION['success']); ?>
     <?php endif; ?>
+
+    <?php if (isset($_SESSION['error'])): ?>
+        Swal.fire({
+            icon: 'error',
+            title: 'Failed to Send',
+            text: '<?= addslashes($_SESSION['error']) ?>',
+            confirmButtonText: 'OK'
+        });
+        <?php unset($_SESSION['error']); ?>
+    <?php endif; ?>
+
+
   });
 </script>
+
+
 </body>
 </html>

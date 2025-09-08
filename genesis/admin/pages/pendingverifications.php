@@ -16,23 +16,31 @@ $requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserTy
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
+    
     <section class="content-header">
-      <h1>Manage Pending Verifications</h1>
+        <h1>Pending Verifications <small>manage verifications</small></h1>
+        <ol class="breadcrumb">
+            <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Verifications Manegement</li>
+        </ol>
     </section>
 
     <section class="content">
       <div class="box box-info">
         <div class="box-header with-border d-flex justify-content-between align-items-center" style="display: flex; justify-content: space-between; align-items: center;">
         <h3 class="box-title">Unverified Learners</h3>
-        <a href="#" id="sendAllBtn" class="btn btn-warning btn-sm">
-            Send Reminder to All
-        </a>
+       
+        <form id="sendAllForm" action="emailsuperhandler.php" method="post" style="display: inline;">
+          <input type="hidden" name="action" value="reminder_all">
+          <input type="hidden" name="redirect" value="pendingverifications.php">
+          <button type="submit" id="sendAllBtn" class="btn btn-warning btn-sm">Send Reminder to All</button>
+        </form>
         </div>
 
         <div class="box-body">
           <div class="table-responsive">
             
-            <table id="inviteTable" class="table table-bordered table-striped">
+            <table id="example1" class="table table-bordered table-hover">
               <thead style="background-color:#d1d9ff;">
                 <tr>
                   <th>Name</th>
@@ -52,8 +60,15 @@ $requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserTy
                     <td><?= htmlspecialchars($req['RegistrationDate']) ?></td>
                     <td><span class="label label-warning">Not Verified</span></td>
                     <td>
-                      <a href="send_reminder.php?id=<?= $req['Id'] ?>" class="btn btn-primary btn-xs">Send Reminder</a>
+                      <form action="emailsuperhandler.php" method="post" style="display:inline;">
+                        <input type="hidden" name="action" value="reminder">
+                        <input type="hidden" name="redirect" value="pendingverifications.php">
+                        <input type="hidden" name="id" value="<?= $req['Id'] ?>">
+                        <button type="submit" class="btn btn-primary btn-xs btn-send-reminder">Send Reminder</button>
+                      </form>
                     </td>
+                    <td>
+
                   </tr>
                 <?php endwhile; ?>
               </tbody>
@@ -81,51 +96,82 @@ $requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserTy
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
-  document.getElementById("sendAllBtn").addEventListener("click", function(e) {
-    e.preventDefault(); // Prevent link from following
-
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'This will send a reminder email to ALL unverified learners!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, send them!',
-      cancelButtonText: 'Cancel'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.href = "send_all_reminders.php";
-      }
-    });
+  // Single reminder confirmation
+  $('.send-reminder-form').on('submit', function(e){
+      e.preventDefault();
+      const form = this;
+      Swal.fire({
+          title: 'Send Reminder?',
+          text: 'This will send a verification reminder to this learner.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, send it!',
+          cancelButtonText: 'Cancel'
+      }).then((result) => {
+          if(result.isConfirmed){
+              form.submit();
+          }
+      });
   });
+
+  // Reminder to all confirmation
+  $('#sendAllForm').on('submit', function(e){
+      e.preventDefault();
+      const form = this;
+      Swal.fire({
+          title: 'Send to all?',
+          text: 'This will send a verification reminder to all unverified learners.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, send all!',
+          cancelButtonText: 'Cancel'
+      }).then((result) => {
+          if(result.isConfirmed){
+              form.submit();
+          }
+      });
+  });
+
 </script>
 
 
 <script>
   $(function () {
-    $('#inviteTable').DataTable({
+    $('#example1').DataTable({
       "paging": true,
       "lengthChange": true,
       "searching": true,
       "ordering": true,
-      "autoWidth": false
+      "info": true,
+      "autoWidth": false,
+      "responsive": true
     });
-
-    <?php if (isset($_SESSION['success_message'])): ?>
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: '<?= $_SESSION['success_message'] ?>',
-        confirmButtonText: 'OK'
-      });
-      <?php unset($_SESSION['success_message']); ?>
-    <?php endif; ?>
   });
+
+  // Alerts for success or error
+  <?php if(isset($_SESSION['success'])): ?>
+    Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: '<?= addslashes($_SESSION['success']) ?>',
+      confirmButtonText: 'OK'
+    });
+    <?php unset($_SESSION['success']); ?>
+  <?php endif; ?>
+
+  <?php if(isset($_SESSION['error'])): ?>
+    Swal.fire({
+      icon: 'error',
+      title: 'Failed to Send',
+      text: '<?= addslashes($_SESSION['error']) ?>',
+      confirmButtonText: 'OK'
+    });
+    <?php unset($_SESSION['error']); ?>
+  <?php endif; ?>
 </script>
+
+
 
 </body>
 </html>

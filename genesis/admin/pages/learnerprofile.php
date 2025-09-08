@@ -150,9 +150,19 @@ if (!isset($_SESSION['email'])) {
               <div class="row justify-content-center" style="gap: 5px;">
                 
                 <div class="col-auto">
-                  <a href="mcomposeparent.php?pid=<?php echo $final['LearnerId'] ?>" 
-                    class="btn btn-primary btn-sm" style="min-width: 180px;"> Contact Parent
-                  </a>
+                  
+                  <button 
+                      type="button" 
+                      class="btn btn-primary btn-sm" 
+                      data-toggle="modal" 
+                      data-target="#modal-contact-parent"
+                      data-email="<?php echo htmlspecialchars($final['ParentEmail'] ?? ''); ?>"
+                      data-name="<?php echo htmlspecialchars($final['ParentName'] ?? ''); ?>"
+                      style="min-width: 180px;"
+                  >
+                      Contact Parent
+                  </button>
+
                 </div>
             
                 <div class="col-auto">
@@ -190,12 +200,7 @@ if (!isset($_SESSION['email'])) {
                 <div class="col-auto">
                   <a href="updatelearner.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-danger btn-sm" style="min-width: 180px;"> Update Details</a>
                 </div>
-                <div class="col-auto">
-                  <a href="updatelearner.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-danger btn-sm" style="min-width: 180px;"> Disable Learner</a>
-                </div>
-                <div class="col-auto">
-                  <a href="updatelearner.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-danger btn-sm" style="min-width: 180px;"> Deregister Learner</a>
-                </div>
+                
 
               </div>
             </div>
@@ -422,9 +427,7 @@ if (!isset($_SESSION['email'])) {
 
             </div>
 
-
-            
-
+            <!-- //////////////////////////////////////////////////////////////////////////////////////////////  -->
             <!-- Practice Q Progress -->
             <div class="tab-pane" id="practicequestionsprogress">
 
@@ -556,45 +559,40 @@ if (!isset($_SESSION['email'])) {
                 
             </div>
 
-<!-- Static Modal -->
-<div class="modal fade" id="levelModal" tabindex="-1" role="dialog" aria-labelledby="levelModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="levelModalLabel">Level Details</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <!-- Static content for now -->
-        <p>Level details will be displayed here.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+            <!-- Static Modal -->
+            <div class="modal fade" id="levelModal" tabindex="-1" role="dialog" aria-labelledby="levelModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="levelModalLabel">Level Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <!-- Static content for now -->
+                    <p>Level details will be displayed here.</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-<!-- Optional JS to update modal title dynamically -->
-<script>
-$('#levelModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget); 
-  var subject = button.data('subject');
-  var chapter = button.data('chapter');
-  var level = button.data('level');
-  var modal = $(this);
-  modal.find('.modal-title').text(subject + " — " + chapter + " (" + level + ")");
-});
-</script>
-
-
-
-
-
-            
-
+            <!-- Optional JS to update modal title dynamically -->
+            <script>
+            $('#levelModal').on('show.bs.modal', function (event) {
+              var button = $(event.relatedTarget); 
+              var subject = button.data('subject');
+              var chapter = button.data('chapter');
+              var level = button.data('level');
+              var modal = $(this);
+              modal.find('.modal-title').text(subject + " — " + chapter + " (" + level + ")");
+            });
+            </script>
+            <!-- /////////////////////////////////////////////////////////////////////////////////////////////// -->
+          
           </div>
         </div>
       </div>
@@ -606,6 +604,89 @@ $('#levelModal').on('show.bs.modal', function (event) {
   </div>
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+
+<!-- Contact Parent Modal -->
+<!-- Contact Parent Modal -->
+<div class="modal fade" id="modal-contact-parent" tabindex="-1" role="dialog" aria-labelledby="contactParentLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header bg-info">
+        <h4 class="modal-title" id="contactParentLabel">Contact Parent: <span id="contactParentNameHeader"></span></h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <form action="emailsuperhandler.php" method="post">
+          <div class="form-group">
+            <input type="email" id="contactParentEmail" class="form-control" name="emailto" placeholder="Email to:" required>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" name="subject" placeholder="Subject" required>
+          </div>
+          <div class="form-group">
+            <textarea class="textarea" name="message" placeholder="Message" style="width: 100%; height: 125px; border: 1px solid #ddd;" required></textarea>
+          </div>
+
+          <!-- Hidden inputs for the handler -->
+          <input type="hidden" name="action" value="general">
+          <input type="hidden" name="redirect" value="learnerprofile.php?id=<?php echo $learnerId; ?>">
+
+          <input type="submit" class="btn btn-primary" value="Submit" name="btnsend">
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Back</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<?php
+    if (isset($_SESSION['success'])) {
+        $msg = $_SESSION['success'];
+        unset($_SESSION['success']);
+        echo "
+        <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Email Sent',
+                text: '". addslashes($msg) ."',
+                confirmButtonText: 'OK'
+            });
+        </script>";
+    }
+
+    if (isset($_SESSION['error'])) {
+        $msg = $_SESSION['error'];
+        unset($_SESSION['error']);
+        echo "
+        <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to Send',
+                text: '". addslashes($msg) ."',
+                confirmButtonText: 'OK'
+            });
+        </script>";
+    }
+  ?>
+
+
+<script>
+$('#modal-contact-parent').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); 
+    var email = button.data('email');  
+    var name = button.data('name'); 
+    var modal = $(this);
+    modal.find('#contactParentEmail').val(email); // populate email input
+    modal.find('#contactParentNameHeader').text(name); // populate header with parent name
+});
+</script>
 
 </body>
 </html>

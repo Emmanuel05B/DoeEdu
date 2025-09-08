@@ -242,13 +242,14 @@ try {
     $insertFin->close();
 
     // Commit transaction
+    sendEmailToLearner($email, $name, $verificationToken);
     $connect->commit();
 
     //sendEmailToParent($parent_email, $parent_name, $learner_name);
     //sendEmailToLearner($learner_email, $learner_name, $verificationToken);
 
 
-    $_SESSION['success'] = "Learner registered successfully!";
+    $_SESSION['success'] = "Learner registered successfully!  and Email sent tot he Learner to verify";
     header("Location: addlearners.php");
     exit();
 
@@ -261,26 +262,26 @@ try {
 
 
 /*/ Send email to parent
-function sendEmailToParent($parent_email, $parent_name, $learner_name) {
+function sendEmailToParent($pemail, $pname, $name) {
   $mail = new PHPMailer(true);
   try {
       $mail->isSMTP();
       $mail->Host = 'smtp.gmail.com';
       $mail->SMTPAuth = true;
       $mail->Username = 'thedistributorsofedu@gmail.com';
-      $mail->Password = 'bxuxtebkzbibtvej';
+      $mail->Password = 'ngkl jnkr yvja ynio';
       $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
       $mail->Port = 465;
 
       $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
-      $mail->addAddress($parent_email, $parent_name);
+      $mail->addAddress($pemail, $pname);
       $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis');
 
       $mail->isHTML(true);
       $mail->Subject = 'Your Child is Registered with DoE';
       $mail->Body = "
       <p>Dear $parent_name,</p>
-      <p>Your child <strong>$learner_name</strong> has been successfully registered with the Distributors of Education.</p>
+      <p>Your child <strong>$name</strong> has been successfully registered with the Distributors of Education.</p>
       <p>You will be updated with progress reports, announcements, and upcoming sessions.</p>
       <p>Thank you for choosing us to support your child's learning journey.</p>
       <br><p>Warm regards,</p><p><strong>DoE Team</strong></p>";
@@ -291,89 +292,45 @@ function sendEmailToParent($parent_email, $parent_name, $learner_name) {
   }
 }
 */
-/*
+
 // Send email to learner with verification link
-function sendEmailToLearner($learner_email, $learner_name, $verificationToken) {
+
+function sendEmailToLearner($email, $name, $verificationToken) {
   $mail = new PHPMailer(true);
   try {
       $mail->isSMTP();
       $mail->Host = 'smtp.gmail.com';
       $mail->SMTPAuth = true;
       $mail->Username = 'thedistributorsofedu@gmail.com';
-      $mail->Password = 'bxuxtebkzbibtvej';
+      $mail->Password = 'ngkl jnkr yvja ynio';
       $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
       $mail->Port = 465;
 
       $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
-      $mail->addAddress($learner_email, $learner_name);
+      $mail->addAddress($email, $name);
       $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis');
 
       $mail->isHTML(true);
       $mail->Subject = 'Welcome to DoE - Please Verify Your Email';
       $mail->Body = "
-      <p>Dear $learner_name,</p>
+      <p>Dear $name,</p>
       <p>Welcome to the Distributors of Education! You have been successfully registered.</p>
       <p>Please verify your email address to activate your account:</p>
       <a href='http://localhost/DoeEdu/genesis/common/verification.php?token=$verificationToken' style='background-color: #008CBA; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify Email</a>
       <p>If you have any questions, feel free to contact us.</p>
       <br><p>Best regards,</p><p><strong>DoE Team</strong></p>";
 
-      if ($mail->send()) {
+      $mail->send();
 
-        echo '<!DOCTYPE html>
-          <html>
-          <head>
-            <title>Success</title>
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-          </head>
-          <body>
-          <script>
-            Swal.fire({
-                icon: "success",
-                title: "Registration Successful",
-                text: "Emails sent to both parent and learner.",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "addlearners.php";
-                }
-            });
-          </script>
-          </body>
-          </html>';
 
-          exit;
-
-      }
+      
 
   } catch (Exception $e) {
 
-    echo '<!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <title>Email Send Failed</title>
-          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      </head>
-      <body>
-          <script>
-              document.addEventListener("DOMContentLoaded", function () {
-                  Swal.fire({
-                      icon: "error",
-                      title: "Email Send Failed",
-                      text: "There was an issue sending the email to learner.",
-                      confirmButtonText: "OK"
-                  }).then(function () {
-                      window.location.href = "addlearners.php";
-                  });
-              });
-          </script>
-      </body>
-      </html>';
-      exit;
+    $_SESSION['error'] = "Email Send Failed " . $e->getMessage();
+    header("Location: addlearners.php");
+    exit();
 
   }
 }
 
-*/

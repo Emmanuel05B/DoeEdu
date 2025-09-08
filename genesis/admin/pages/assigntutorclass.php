@@ -11,7 +11,6 @@ include(__DIR__ . "/../../partials/connect.php");
 
 
 // ------------------ HANDLER ------------------
-// ------------------ HANDLER ------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tutorId'], $_POST['classId'])) {
     $tutorId = intval($_POST['tutorId']);
     $classId = intval($_POST['classId']);
@@ -46,8 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tutorId'], $_POST['cl
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
+    
     <section class="content-header">
-      <h1>Assign Tutor to Class</h1>
+        <h1>Tutor_Class Pairing <small>Select tutor and a class to pair</small></h1>
+        <ol class="breadcrumb">
+            <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Tutor Assignment</li>
+        </ol>
     </section>
 
     <section class="content">
