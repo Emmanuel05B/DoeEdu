@@ -109,9 +109,11 @@ try {
             $invite_link = "http://localhost/DoeEdu/genesis/common/register.php?token=$token";
             $mail->Body = "<p>Dear {$request['name']},</p>
                            <p>You have been invited to register at DoE Genesis.</p>
+                           <p>Please click the button below to complete your registration:</p>
                            <p><a href='$invite_link' style='background-color: #008CBA; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Register Now</a></p>
-                           <p>This link expires in 7 days.</p>
+                           <p>This link expires in 7 days and can only be used once.</p>
                            <p>Best regards,<br><strong>DoE Team</strong></p>";
+
             $mail->send();
 
             $updateStmt = $connect->prepare("UPDATE inviterequests SET IsAccepted=1 WHERE id=?");
@@ -141,9 +143,11 @@ try {
             $mail->Subject = 'Reminder: Please Verify Your DoE Account';
             $verify_link = "http://localhost/DoeEdu/genesis/common/verification.php?token={$learner['VerificationToken']}";
             $mail->Body = "<p>Dear {$learner['Name']},</p>
-                           <p>Please verify your account:</p>
+                           <p>This is a friendly reminder to verify your email address to activate your DoE Genesis learner account.</p>
                            <a href='$verify_link' style='background-color: #008CBA; color: white; padding: 10px 20px;'>Verify Email</a>
+                           <p>If you’ve already verified, you can ignore this message.</p>
                            <p>Best regards,<br><strong>DoE Team</strong></p>";
+
             $mail->send();
 
             $_SESSION['success'] = "Reminder sent to {$learner['Email']}.";
@@ -151,75 +155,128 @@ try {
 
         // 4. reminder all
         case 'reminder_all':
-        $stmt = $connect->query("SELECT Id, Name, Email, VerificationToken FROM users WHERE IsVerified=0 AND UserType='2'");
-        $successCount = 0;
-        $failures = [];
+            $stmt = $connect->query("SELECT Id, Name, Email, VerificationToken FROM users WHERE IsVerified=0 AND UserType='2'");
+            $successCount = 0;
+            $failures = [];
 
-        while ($learner = $stmt->fetch_assoc()) {
-            try {
-                $mail = initMailer();
-                $mail->addAddress($learner['Email'], $learner['Name']);
-                $mail->Subject = 'Reminder: Please Verify Your DoE Account';
-                $verify_link = "http://localhost/DoeEdu/genesis/common/verification.php?token={$learner['VerificationToken']}";
-                $mail->Body = "<p>Dear {$learner['Name']},</p>
-                            <p>Please verify your account:</p>
-                            <a href='$verify_link' style='background-color: #008CBA; color: white; padding: 10px 20px;'>Verify Email</a>
-                            <p>Best regards,<br><strong>DoE Team</strong></p>";
-                
-                $mail->send();
-                $successCount++;
-            } catch (Exception $e) {
-                $failures[] = $learner['Email'];
+            while ($learner = $stmt->fetch_assoc()) {
+                try {
+                    $mail = initMailer();
+                    $mail->addAddress($learner['Email'], $learner['Name']);
+                    $mail->Subject = 'Reminder: Please Verify Your DoE Account';
+                    $verify_link = "http://localhost/DoeEdu/genesis/common/verification.php?token={$learner['VerificationToken']}";
+                    $mail->Body = "<p>Dear {$learner['Name']},</p>
+                                <p>This is a friendly reminder to verify your email address to activate your DoE Genesis learner account:</p>
+                                <a href='$verify_link' style='background-color: #008CBA; color: white; padding: 10px 20px;'>Verify Email</a>
+                                <p>If you’ve already verified, you can ignore this message.</p>
+                                <p>Best regards,<br><strong>DoE Team</strong></p>";
+                    
+                    $mail->send();
+                    $successCount++;
+                } catch (Exception $e) {
+                    $failures[] = $learner['Email'];
+                }
             }
-        }
 
-        $_SESSION['success'] = "$successCount reminder(s) sent successfully.";
-        if (!empty($failures)) {
-            $_SESSION['error'] = count($failures) . " reminder(s) failed to send: " . implode(', ', $failures);
-        }
-        break;
+            $_SESSION['success'] = "$successCount reminder(s) sent successfully.";
+            if (!empty($failures)) {
+                $_SESSION['error'] = count($failures) . " reminder(s) failed to send: " . implode(', ', $failures);
+            }
+            break;
 
 
+        
         // 5. Feedback emails to parents for non-submissions
+        case 'feedback':
+            // 5. Feedback emails to parents for non-submissions
         case 'feedback':
             $activityId = intval($_POST['activityId'] ?? 0);
             if (!$activityId) throw new Exception("Invalid activity ID.");
 
-            $stmt = $connect->prepare("
-                SELECT u.Name as LearnerName, u.Surname, p.Email as ParentEmail, p.Name as ParentName
-                FROM learners l
-                JOIN users u ON l.LearnerId=u.Id
-                JOIN users p ON u.ParentId=p.Id
-                LEFT JOIN learneronlineactivity loa ON loa.LearnerId=u.Id AND loa.ActivityId=?
-                WHERE loa.Id IS NULL
-            ");
+            // 1️⃣ Get activity info
+            $stmt = $connect->prepare("SELECT Title, LastFeedbackSent FROM onlineactivities WHERE Id = ?");
             $stmt->bind_param("i", $activityId);
             $stmt->execute();
+            $activity = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+            if (!$activity) throw new Exception("Activity not found.");
+
+            $activityTitle = $activity['Title'];
+
+            // 2️⃣ Get learners assigned to this activity
+            $learnerIds = [];
+            $stmt = $connect->prepare("
+                SELECT DISTINCT lt.LearnerId, u.Name AS LearnerName, u.Surname AS LearnerSurname, 
+                    l.ParentName, l.ParentEmail
+                FROM learners lt
+                JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
+                JOIN users u ON lt.LearnerId = u.Id
+                JOIN learners l ON lt.LearnerId = l.LearnerId
+                WHERE ls.SubjectId = (SELECT SubjectId FROM onlineactivities WHERE Id = ?) 
+                AND lt.Grade = (SELECT Grade FROM onlineactivities WHERE Id = ?)
+                AND ls.ContractExpiryDate > CURDATE()
+            ");
+            $stmt->bind_param("ii", $activityId, $activityId);
+            $stmt->execute();
             $result = $stmt->get_result();
+
+            $learnersToEmail = [];
+            while ($row = $result->fetch_assoc()) {
+                // 3️⃣ Check if learner submitted
+                $checkStmt = $connect->prepare("SELECT COUNT(*) FROM learneranswers WHERE UserId = ? AND ActivityId = ?");
+                $checkStmt->bind_param("ii", $row['LearnerId'], $activityId);
+                $checkStmt->execute();
+                $checkStmt->bind_result($answerCount);
+                $checkStmt->fetch();
+                $checkStmt->close();
+
+                if ($answerCount == 0) {
+                    $learnersToEmail[] = $row;
+                }
+            }
             $stmt->close();
 
+            // 4️⃣ Send emails
             $successCount = 0;
-            $failCount = 0;
             $failures = [];
 
-            while ($row = $result->fetch_assoc()) {
-                $mail = initMailer();
-                $mail->addAddress($row['ParentEmail'], $row['ParentName']);
-                $mail->Subject = "Feedback: {$row['LearnerName']} did not submit activity";
-                $mail->Body = "<p>Dear {$row['ParentName']},</p>
-                               <p>Your child <strong>{$row['LearnerName']}</strong> did not submit the activity.</p>
-                               <p>Please follow up accordingly.</p>
-                               <p>Best regards,<br><strong>DoE Team</strong></p>";
-                if ($mail->send()) $successCount++;
-                else {
-                    $failCount++;
+            foreach ($learnersToEmail as $row) {
+                try {
+                    $mail = initMailer();
+                    $mail->addAddress($row['ParentEmail'], $row['ParentName']);
+                    $mail->Subject = "Feedback: {$row['LearnerName']} did not submit activity";
+                    $mail->Body = "
+                        <p>Dear {$row['ParentName']},</p>
+                        <p>Your child <strong>{$row['LearnerName']} {$row['LearnerSurname']}</strong> did not submit the activity titled <strong>{$activityTitle}</strong> before the due date.</p>
+                        <p>Please encourage them to participate in future activities to support their academic progress.</p>
+                        <br><p>Warm regards,</p><p><strong>DoE Team</strong></p>
+                    ";
+                    $mail->send();
+                    $successCount++;
+                } catch (Exception $e) {
                     $failures[] = $row['ParentEmail'];
                 }
             }
 
+            // 5️⃣ Update LastFeedbackSent
+            if ($successCount > 0) {
+                $updateStmt = $connect->prepare("UPDATE onlineactivities SET LastFeedbackSent = NOW() WHERE Id = ?");
+                $updateStmt->bind_param("i", $activityId);
+                $updateStmt->execute();
+                $updateStmt->close();
+            }
+
             $_SESSION['success'] = "$successCount feedback email(s) sent.";
-            if ($failCount) $_SESSION['error'] = "$failCount failed: " . implode(', ', $failures);
+            if (!empty($failures)) {
+                $_SESSION['error'] = count($failures) . " failed: " . implode(', ', $failures);
+            }
             break;
+
+            
+            
+
+
+
 
         default:
             throw new Exception("Unknown email action.");

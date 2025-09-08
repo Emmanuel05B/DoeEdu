@@ -138,6 +138,7 @@ $requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserTy
 
 <script>
   $(function () {
+
     $('#example1').DataTable({
       "paging": true,
       "lengthChange": true,
@@ -147,6 +148,7 @@ $requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserTy
       "autoWidth": false,
       "responsive": true
     });
+
   });
 
   // Alerts for success or error

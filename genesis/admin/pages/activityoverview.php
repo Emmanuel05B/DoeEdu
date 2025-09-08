@@ -31,7 +31,7 @@ $grade = $activity['Grade'];
 $last_feedback_date = $activity['LastFeedbackSent'];
 $group = $activity['GroupName'];
 
-// Get learner IDs..... we have to update this part to get them by group also
+// Get learner IDs..... we have to update this part to get them by group also and not Suspended/cancelledd.. only active
 $learnerIds = [];
 
 
@@ -41,8 +41,13 @@ $learnerStmt = $connect->prepare("
   JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
   JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
   JOIN classes c ON lc.ClassID = c.ClassID
-  WHERE lt.Grade = ? AND ls.SubjectId = ? AND c.GroupName = ? AND ls.ContractExpiryDate > CURDATE()
+  WHERE lt.Grade = ? 
+    AND ls.SubjectId = ? 
+    AND c.GroupName = ? 
+    AND ls.ContractExpiryDate > CURDATE()
+    AND ls.Status = 'Active'
 ");
+
 $learnerStmt->bind_param("iis", $grade, $subjectId, $group);
 $learnerStmt->execute();
 
@@ -181,9 +186,15 @@ $isClosed = $now > $dueDate;
         <div class="box-body table-responsive">
 
           <!-- Feedback section -->
+
+
           <?php if ($isClosed): ?>
-            <form id="feedbackForm" action="send_feedback.php" method="post">
+            <form id="feedbackForm" action="emailsuperhandler.php" method="post">
+              
+              <input type="hidden" name="action" value="feedback">
+              <input type="hidden" name="redirect" value="activityoverview.php?activityId=<?= $activityId ?>">
               <input type="hidden" name="activityId" value="<?= $activityId ?>">
+            
               <div class="row">
                 <div class="col-md-6">
                   <button type="button" class="btn btn-danger" id="sendFeedbackBtn" style="margin-bottom: 15px;">
@@ -204,6 +215,8 @@ $isClosed = $now > $dueDate;
                 </div>
               </div>
             </form>
+
+
           <?php else: ?>
             <div class="alert alert-warning">
               <i class="fa fa-info-circle"></i> Feedback is only available after the due date has passed.
@@ -297,7 +310,39 @@ $isClosed = $now > $dueDate;
 </script>
 
 
+
+
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+
+<?php
+    if (isset($_SESSION['success'])) {
+        $msg = $_SESSION['success'];
+        unset($_SESSION['success']);
+        echo "
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Email Sent',
+                text: '". addslashes($msg) ."',
+                confirmButtonText: 'OK'
+            });
+        </script>";
+    }
+
+    if (isset($_SESSION['error'])) {
+        $msg = $_SESSION['error'];
+        unset($_SESSION['error']);
+        echo "
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to Send',
+                text: '". addslashes($msg) ."',
+                confirmButtonText: 'OK'
+            });
+        </script>";
+    }
+  ?>
 
 </body>
 </html>

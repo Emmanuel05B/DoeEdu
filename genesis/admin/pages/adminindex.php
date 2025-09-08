@@ -217,13 +217,13 @@
               <div class="box-body">
                 <form action="emailsuperhandler.php" method="post">
                   <div class="form-group">
-                    <input type="email" class="form-control" name="emailto" placeholder="Email to:">
+                    <input type="email" class="form-control" name="emailto" placeholder="Email to:" required>
                   </div>
                   <div class="form-group">
-                    <input type="text" class="form-control" name="subject" placeholder="Subject">
+                    <input type="text" class="form-control" name="subject" placeholder="Subject" required>
                   </div>
                   <div>
-                    <textarea class="textarea" name="message" placeholder="Message" style="width: 100%; height: 125px; border: 1px solid #ddd;"></textarea>
+                    <textarea class="textarea" name="message" placeholder="Message" style="width: 100%; height: 125px; border: 1px solid #ddd;" ></textarea>
                   </div>
                   <!-- Optional hidden inputs for email type / redirect -->
                   <input type="hidden" name="action" value="general">
