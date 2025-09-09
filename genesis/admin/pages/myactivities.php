@@ -36,7 +36,7 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
   
   <div class="content-wrapper">
     <section class="content-header">
-       <h1>My Activities <small>List of all your created activities</small></h1>
+       <h1>Master Activities <small>List of all your created activities</small></h1>
         <ol class="breadcrumb">
           <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
           <li class="active">Activities</li>
@@ -56,14 +56,14 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                 <th>Topic</th>
                 <th>Grade</th>
                 <th>Subject</th>
-                <th>Due Date</th>
+                <th>Created On</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
               <?php
               $stmt = $connect->prepare("
-                SELECT oa.Id, oa.Title, oa.Topic, oa.Grade, s.SubjectName, oa.DueDate
+                SELECT oa.Id, oa.Title, oa.Topic, oa.Grade, s.SubjectName, oa.CreatedAt
                 FROM onlineactivities oa
                 INNER JOIN subjects s ON oa.SubjectId = s.SubjectId
                 WHERE oa.TutorId = ?
@@ -83,18 +83,23 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                     <td>" . htmlspecialchars($row['Topic']) . "</td>
                     <td>" . htmlspecialchars($row['Grade']) . "</td>
                     <td>" . htmlspecialchars($row['SubjectName']) . "</td>
-                    <td>" . htmlspecialchars($row['DueDate']) . "</td>
+                    <td>" . htmlspecialchars($row['CreatedAt']) . "</td>
                    <td>
-            <a href='viewactivity.php?activityId=" . $activityId . " ' class='btn btn-xs btn-primary' title='Edit'>
-                <i class='fa fa-pencil'></i>
-            </a>
-            <a href='#' class='btn btn-xs btn-danger delete-activity-btn' data-id='" . intval($row['Id']) . "' title='Delete'>
-                <i class='fa fa-trash'></i>
-            </a>
-            <a href='activityoverview.php?activityId=" . $activityId . "' class='btn btn-xs btn-info' title='Overview'>
-                <i class='fa fa-info-circle'></i>
-            </a>
-        </td>
+                    <a href='viewactivity.php?activityId=" . $activityId . " ' class='btn btn-xs btn-primary' title='Edit'>
+                        <i class='fa fa-pencil'></i>
+                    </a>
+                    <a href='#' class='btn btn-xs btn-danger delete-activity-btn' data-id='" . intval($row['Id']) . "' title='Delete'>
+                        <i class='fa fa-trash'></i>
+                    </a>
+                    <a href='masteractivityoverview.php?activityId=" . $activityId . "' class='btn btn-xs btn-info' title='Overview'>
+                        <i class='fa fa-info-circle'></i>
+                    </a>
+                    <a href='#' class='btn btn-xs btn-warning view-classes-btn' 
+                    data-activity='<?= $activityId ?>' title='View Assigned Classes'>
+                      <i class='fa fa-users'></i>
+                    </a>
+
+                  </td>
                     
                 </tr>";
 

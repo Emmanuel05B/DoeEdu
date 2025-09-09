@@ -17,7 +17,7 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor
 
 // Fetch activity details including SubjectId
 $stmt = $connect->prepare("
-    SELECT TutorId, SubjectId, Grade, Topic, Title, Instructions, MemoPath, TotalMarks, DueDate, CreatedAt, ImagePath
+    SELECT TutorId, SubjectId, Grade, Topic, Title, Instructions, MemoPath, TotalMarks, CreatedAt, ImagePath
     FROM onlineactivities 
     WHERE Id = ?
 ");

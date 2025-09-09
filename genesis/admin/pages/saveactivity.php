@@ -18,8 +18,8 @@ $subject  = $_POST['subject'] ?? ''; // now assuming this is SubjectId
 $chapter  = $_POST['chapter'] ?? '';
 $group    = $_POST['group'] ?? '';
 $title    = $_POST['activity_title'] ?? '';
-$dueDate  = $_POST['due_date'] ?? '';
-$dueTime  = $_POST['due_time'] ?? '';
+// $dueDate  = $_POST['due_date'] ?? '';   //out
+// $dueTime  = $_POST['due_time'] ?? '';   //out
 $questions = $_POST['questions'] ?? [];
 $instructions = $_POST['instructions'] ?? "This quiz must be completed in one sitting. Answer all questions before submitting. Once completed, you can access the memo. Ensure you read each question carefully. No external help allowed.";
 
@@ -53,7 +53,9 @@ if (isset($_FILES['memo_file']) && $_FILES['memo_file']['error'] === 0) {
 
     $fileExt = strtolower(pathinfo($_FILES['memo_file']['name'], PATHINFO_EXTENSION));
     if ($fileExt !== 'pdf') {
-        die("Only PDF files are allowed for the memo.");
+        
+        header("Location: generateactivity.php?gra=" . urlencode($grade) . "&cha=" . urlencode($chapter) . "&group=" . urlencode($group) . "&sub=" . urlencode($subject) . "&memo=1");
+
     }
 
     $memoFilename = time() . '_' . basename($_FILES['memo_file']['name']);
@@ -63,6 +65,7 @@ if (isset($_FILES['memo_file']) && $_FILES['memo_file']['error'] === 0) {
         $memoPath = $memoFilepath;
     } else {
         die("Failed to upload memo file.");
+
     }
 }
 
@@ -77,16 +80,16 @@ try {
     // Insert into onlineactivities
     $stmt = $connect->prepare("
         INSERT INTO onlineactivities 
-        (TutorId, SubjectId, Grade, Topic, Title, Instructions, TotalMarks, DueDate, CreatedAt, ImagePath, MemoPath, GroupName) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (TutorId, SubjectId, Grade, Topic, Title, Instructions, TotalMarks, CreatedAt, ImagePath, MemoPath, GroupName) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
     if (!$stmt) {
         throw new Exception("Prepare failed: (" . $connect->errno . ") " . $connect->error);
     }
 
-    $dueDateTime = $dueDate . ' ' . ($dueTime ?? '00:00:00'); // combine date and time
+    // $dueDateTime = $dueDate . ' ' . ($dueTime ?? '00:00:00'); // combine date and time    out
     $stmt->bind_param(
-        "iissssssssss",
+        "iisssssssss",
         $tutorId,
         $subject,     // SubjectId
         $grade,
@@ -94,11 +97,11 @@ try {
         $title,
         $instructions,
         $totalMarks,
-        $dueDateTime,
+        // $dueDateTime,   out
         $createdAt,
         $imagePath,
         $memoPath,
-        $group        // <-- store the group here
+        $group       
     );
 
     if (!$stmt->execute()) {
@@ -144,16 +147,9 @@ try {
     $connect->rollback();
     error_log("Error saving activity: " . $e->getMessage());
 
-    echo "<script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Failed to save activity',
-            text: 'Please try again later.',
-            confirmButtonText: 'OK'
-        }).then(() => {
-            window.location = 'classes.php';
-        });
-    </script>";
+    header("Location: generateactivity.php?gra=" . urlencode($grade) . "&cha=" . urlencode($chapter) . "&group=" . urlencode($group) . "&sub=" . urlencode($subject) . "&saveerror=1");
+    exit; 
+    
 }
 
 $connect->close();

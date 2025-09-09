@@ -62,7 +62,7 @@ $stmt->close();
   
   <div class="content-wrapper">
     <section class="content-header">
-       <h1>My Activities <small>Assigned to <?php echo htmlspecialchars($grade . " - " . $SubjectName . " - " . $group); ?></small></h1>
+       <h1>Current Activities <small>Assigned to <?php echo htmlspecialchars($grade . " - " . $SubjectName . " - " . $group); ?></small></h1>
         <ol class="breadcrumb">
           <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
           <li class="active">Activities</li>
@@ -75,7 +75,7 @@ $stmt->close();
 
             <div class="box-header with-border">
             <h3 class="box-title">
-                Activities List for Grade <?php echo htmlspecialchars($grade); ?>, <?php echo htmlspecialchars($SubjectName); ?>, <?php echo htmlspecialchars($group); ?>
+                Activities List
             </h3>
             <div class="box-tools pull-right">
                 <!-- Assign Activity Button -->
@@ -158,9 +158,12 @@ $stmt->close();
                             <a href='#' class='btn btn-xs btn-warning unassign-activity-btn' data-id='$activityId' title='Unassign from Class'>
                                 <i class='fa fa-unlink'></i>
                             </a>
-                            <a href='activityoverview.php?activityId=$activityId' class='btn btn-xs btn-info' title='Overview'>
+                            <a href='activityoverview.php?activityId=$activityId&gra=" . urlencode($grade) . "&group=" . urlencode($group) . "' 
+                              class='btn btn-xs btn-info' 
+                              title='Overview'>
                                 <i class='fa fa-info-circle'></i>
                             </a>
+
                         </td>
                     </tr>";
                     }

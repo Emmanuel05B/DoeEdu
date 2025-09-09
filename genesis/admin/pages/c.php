@@ -1,152 +1,410 @@
+<!DOCTYPE html>
+<html>
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-  header("Location: ../common/login.php");
-  exit();
+    header("Location: ../../common/pages/login.php");
+    exit();
 }
+include(__DIR__ . "/../../common/partials/head.php"); 
+include(__DIR__ . "/../../partials/connect.php");
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-require '../../vendor/autoload.php';
-require('../partials/connect.php');
-
-// Helper function to send email
-function sendEmailToParent($parent_email, $parent_name, $learner_name, $activity_title) {
-  $mail = new PHPMailer(true);
-  try {
-    $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = 'thedistributorsofedu@gmail.com';
-    $mail->Password = 'bxuxtebkzbibtvej';
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-    $mail->Port = 465;
-
-    $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
-    $mail->addAddress($parent_email, $parent_name);
-    $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoE-Genesis');
-
-    $mail->isHTML(true);
-    $mail->Subject = 'Activity Submission Alert - DoE';
-
-    $mail->Body = "
-      <p>Dear $parent_name,</p>
-      <p>We would like to inform you that your child <strong>$learner_name</strong> did <strong>not</strong> submit the activity titled <strong>\"$activity_title\"</strong> before the due date.</p>
-      <p>Please encourage them to participate in future activities to support their academic progress.</p>
-      <br><p>Warm regards,</p><p><strong>DoE Team</strong></p>
-    ";
-
-    $mail->send();
-    
-  } catch (Exception $e) {
-    // You may log this error
-  }
+// Get activity ID
+if (!isset($_GET['activityId'])) {
+    echo "<h3 class='text-center text-danger'>No activity selected.</h3>";
+    exit();
 }
+$activityId = intval($_GET['activityId']);
 
-// Get activity ID from POST
-if (!isset($_POST['activityId'])) {
-  echo "<script>alert('No activity selected.'); history.back();</script>";
-  exit();
+// Get activity details including last feedback date
+$actStmt = $connect->prepare("SELECT Title, Grade, Topic, Instructions, CreatedAt, TotalMarks, SubjectId, LastFeedbackSent, GroupName
+FROM onlineactivities WHERE Id = ?");
+$actStmt->bind_param("i", $activityId);
+$actStmt->execute();
+$activity = $actStmt->get_result()->fetch_assoc();
+$actStmt->close();
+
+$subjectId = $activity['SubjectId'];   
+$grade = $activity['Grade'];
+$last_feedback_date = $activity['LastFeedbackSent'];
+
+// Get ClassID for this grade, subject, and group
+$group = $activity['GroupName']; // We'll override this later if needed
+
+$classStmt = $connect->prepare("SELECT ClassID, GroupName FROM classes WHERE Grade = ? AND SubjectId = ? LIMIT 1");
+$classStmt->bind_param("ii", $grade, $subjectId);
+$classStmt->execute();
+$classResult = $classStmt->get_result();
+if ($classRow = $classResult->fetch_assoc()) {
+    $classId = $classRow['ClassID'];
+    $group = $classRow['GroupName']; // use the actual group in class table
+} else {
+    die("<h3 class='text-center text-danger'>Class not found for Grade $grade, Subject $subjectId.</h3>");
 }
+$classStmt->close();
 
-$activityId = intval($_POST['activityId']);
+// Get due date for this activity and class
 
-// Get activity info
-$stmt = $connect->prepare("SELECT Title, Grade, SubjectName FROM onlineactivities WHERE Id = ?");
-$stmt->bind_param("i", $activityId);
-$stmt->execute();
-$activity = $stmt->get_result()->fetch_assoc();
-$stmt->close();
 
-$subjectId = $activity['SubjectName'];
-$activityTitle = $activity['Title'];
+$assignedAt = null;
+$dueDate = null;
+$dueStmt = $connect->prepare("
+    SELECT DueDate, AssignedAt
+    FROM onlineactivitiesassignments 
+    WHERE OnlineActivityId = ? AND ClassID = ? LIMIT 1
+");
+$dueStmt->bind_param("ii", $activityId, $classId);
+$dueStmt->execute();
+$dueResult = $dueStmt->get_result();
 
-// Get all learners assigned to this subject
+if ($row = $dueResult->fetch_assoc()) {
+    $dueDate = $row['DueDate'];
+    $assignedAt = $row['AssignedAt'];
+} else {
+    die("<h3 class='text-center text-danger'>
+        This activity is not assigned to Grade $grade, Group $group.
+    </h3>");
+}
+$dueStmt->close();
+
+
+
+
+
+
+
+
+
+// Get learner IDs assigned to this specific class/group
+$learnerStmt = $connect->prepare("
+    SELECT DISTINCT lt.LearnerId
+    FROM learners lt
+    JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
+    JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
+    WHERE lc.ClassID = ? 
+      AND ls.Status = 'Active' 
+      AND ls.ContractExpiryDate > CURDATE()
+");
+$learnerStmt->bind_param("i", $classId);
+$learnerStmt->execute();
+$result = $learnerStmt->get_result();
+
 $learnerIds = [];
-$stmt = $connect->prepare("SELECT LearnerId FROM learnersubject WHERE SubjectId = ?");
-$stmt->bind_param("i", $subjectId);
-$stmt->execute();
-$result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
-  $learnerIds[] = $row['LearnerId'];
+    $learnerIds[] = $row['LearnerId'];
 }
-$stmt->close();
+$learnerStmt->close();
 
-if (empty($learnerIds)) {
-  echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-    <script>
-      Swal.fire({
-        icon: 'info',
-        title: 'No learners found',
-        text: 'There are no learners assigned to this subject.',
-      }).then(() => { history.back(); });
-    </script>";
-  exit();
+$totalAssigned = count($learnerIds);
+
+// Get learner details
+if (!empty($learnerIds)) {
+    $placeholders = implode(',', array_fill(0, count($learnerIds), '?'));
+    $types = str_repeat('i', count($learnerIds));
+    $learnerQuery = $connect->prepare("SELECT Id, Name, Surname FROM users WHERE Id IN ($placeholders)");
+    $learnerQuery->bind_param($types, ...$learnerIds);
+    $learnerQuery->execute();
+    $learners = $learnerQuery->get_result();
+} else {
+    $learners = false;
 }
 
-// Find learners who have NOT submitted the activity
-$notSubmittedIds = [];
 
+/*
+// Get learner IDs assigned to this class/group
+$learnerStmt = $connect->prepare("
+
+
+  SELECT DISTINCT lt.LearnerId
+  FROM learners lt
+  JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
+  JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
+  WHERE lc.ClassID = ? AND ls.Status = 'Active' AND ls.ContractExpiryDate > CURDATE()
+");
+$learnerStmt->bind_param("i", $classId);
+$learnerStmt->execute();
+$result = $learnerStmt->get_result();
+
+$learnerIds = [];
+while ($row = $result->fetch_assoc()) {
+    $learnerIds[] = $row['LearnerId'];
+}
+$learnerStmt->close();
+
+$totalAssigned = count($learnerIds);
+
+// Get learner details
+if (!empty($learnerIds)) {
+    $placeholders = implode(',', array_fill(0, count($learnerIds), '?'));
+    $types = str_repeat('i', count($learnerIds));
+    $learnerQuery = $connect->prepare("SELECT Id, Name, Surname FROM users WHERE Id IN ($placeholders)");
+    $learnerQuery->bind_param($types, ...$learnerIds);
+    $learnerQuery->execute();
+    $learners = $learnerQuery->get_result();
+} else {
+    $learners = false;
+}
+
+*/
+
+
+
+
+
+
+// Score calculation
+$completed = 0;
+$totalScores = [];
 foreach ($learnerIds as $userId) {
-  $stmt = $connect->prepare("SELECT COUNT(*) FROM learneranswers WHERE UserId = ? AND ActivityId = ?");
-  $stmt->bind_param("ii", $userId, $activityId);
-  $stmt->execute();
-  $stmt->bind_result($answerCount);
-  $stmt->fetch();
-  $stmt->close();
-
-  if ($answerCount == 0) {
-    $notSubmittedIds[] = $userId;
-  }
+    $answerStmt = $connect->prepare("SELECT oq.CorrectAnswer, la.SelectedAnswer 
+        FROM learneranswers la 
+        JOIN onlinequestions oq ON la.QuestionId = oq.Id 
+        WHERE la.UserId = ? AND la.ActivityId = ?");
+    $answerStmt->bind_param("ii", $userId, $activityId);
+    $answerStmt->execute();
+    $answers = $answerStmt->get_result();
+    $correct = 0;
+    $total = 0;
+    while ($row = $answers->fetch_assoc()) {
+        $total++;
+        if ($row['SelectedAnswer'] === $row['CorrectAnswer']) $correct++;
+    }
+    if ($total > 0) {
+        $completed++;
+        $totalScores[] = round(($correct / $total) * 100);
+    }
+    $answerStmt->close();
 }
 
-// Send emails to the parents of learners who did not submit
-if (!empty($notSubmittedIds)) {
-  $placeholders = implode(',', array_fill(0, count($notSubmittedIds), '?'));
-  $types = str_repeat('i', count($notSubmittedIds));
+$notSubmitted = $totalAssigned - $completed;
+$completionRate = $totalAssigned > 0 ? round(($completed / $totalAssigned) * 100) : 0;
+$averageScore = count($totalScores) > 0 ? round(array_sum($totalScores) / count($totalScores)) : 0;
+$highestScore = count($totalScores) > 0 ? max($totalScores) : 0;
+$lowestScore = count($totalScores) > 0 ? min($totalScores) : 0;
 
-  $query = "
-    SELECT u.Name AS LearnerName, u.Surname AS LearnerSurname, l.ParentName, l.ParentSurname, l.ParentEmail
-    FROM users u
-    JOIN learners l ON u.Id = l.LearnerId
-    WHERE u.Id IN ($placeholders)
-  ";
-
-  $stmt = $connect->prepare($query);
-  $stmt->bind_param($types, ...$notSubmittedIds);
-  $stmt->execute();
-  $result = $stmt->get_result();
-
-  while ($row = $result->fetch_assoc()) {
-    $learnerName = $row['LearnerName'] . ' ' . $row['LearnerSurname'];
-    $parentName = $row['ParentName'];
-    $parentEmail = $row['ParentEmail'];
-
-    sendEmailToParent($parentEmail, $parentName, $learnerName, $activityTitle);
-  }
-  $stmt->close();
-
-  // ✅ Update the LastFeedbackSent column with current timestamp
-  $updateStmt = $connect->prepare("UPDATE onlineactivities SET LastFeedbackSent = NOW() WHERE Id = ?");
-  $updateStmt->bind_param("i", $activityId);
-  $updateStmt->execute();
-  $updateStmt->close();
-}
-
-// Show SweetAlert and return
-echo "
-  <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-  <script>
-    window.onload = function() {
-      Swal.fire({
-        icon: 'success',
-        title: 'Feedback Sent',
-        text: 'Emails successfully sent to parents of learners who did not submit.',
-      }).then(() => {
-        window.history.back();
-      });
-    };
-  </script>
-";
+$now = new DateTime();
+$isClosed = $now > new DateTime($dueDate);
 ?>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+<?php include(__DIR__ . "/../partials/header.php"); ?>
+<?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>Activity Overview<small class="text-muted">Summary for: <strong><?= htmlspecialchars($activity['Title']) ?> - <?= $grade ?>, Group <?= $group ?></strong></small></h1>
+        <ol class="breadcrumb">
+            <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Study Resources</li>
+        </ol>
+    </section>
+
+    <section class="content">
+        <!-- Activity Info Box -->
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-info-circle"></i> Activity Details</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <p><strong>Topic:</strong> <?= htmlspecialchars($activity['Topic']) ?></p>
+                        <p><strong>Instructions:</strong> <?= nl2br(htmlspecialchars($activity['Instructions'])) ?></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Due Date:</strong> <?= date("F j, Y", strtotime($dueDate)) ?></p>
+                        <p><strong>Assigned At:</strong> <?= date("F j, Y", strtotime($assignedAt)) ?></p>
+
+                        <p><strong>Total Marks:</strong> <?= $activity['TotalMarks'] ?></p>
+                        <p><strong>Status:</strong>
+                            <?= $isClosed
+                              ? '<span class="label label-danger">Closed/Past Due</span>'
+                              : '<span class="label label-success">Open/Available</span>';
+                            ?>
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Assigned Learners:</strong> <?= $totalAssigned ?></p>
+                        <p><strong>Completed:</strong> <?= $completed ?></p>
+                        <p><strong>Not Submitted:</strong> <?= $notSubmitted ?></p>
+                        <p><strong>Completion Rate:</strong> <?= $completionRate ?>%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score Cards -->
+        <div class="row" style="margin-bottom: 30px;">
+            <div class="col-md-4">
+                <div class="box box-solid box-primary text-center">
+                    <div class="box-header"><h3 class="box-title"><i class="fa fa-bar-chart"></i> Average Score</h3></div>
+                    <div class="box-body"><h2><?= $averageScore ?>%</h2><p class="text-muted">From completed learners</p></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="box box-solid box-success text-center">
+                    <div class="box-header"><h3 class="box-title"><i class="fa fa-trophy"></i> Highest Score</h3></div>
+                    <div class="box-body"><h2><?= $highestScore ?>%</h2><p class="text-muted">Top performer</p></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="box box-solid box-danger text-center">
+                    <div class="box-header"><h3 class="box-title"><i class="fa fa-exclamation-triangle"></i> Lowest Score</h3></div>
+                    <div class="box-body"><h2><?= $lowestScore ?>%</h2><p class="text-muted">Lowest performer</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learner Table + Feedback -->
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-users"></i> Learner Performance Summary</h3>
+            </div>
+            <div class="box-body table-responsive">
+            <!-- Feedback section -->
+            <?php if ($isClosed): ?>
+                <form id="feedbackForm" action="emailsuperhandler.php" method="post">
+                    <input type="hidden" name="action" value="feedback">
+                    <input type="hidden" name="redirect" value="activityoverview.php?activityId=<?= $activityId ?>">
+                    <input type="hidden" name="activityId" value="<?= $activityId ?>">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-danger" id="sendFeedbackBtn" style="margin-bottom: 15px;">
+                                <i class="fa fa-envelope"></i> Send Feedback to Parents (Not Submitted)
+                            </button>
+                        </div>
+                        <div class="col-md-6 text-right" style="padding-top: 10px;">
+                            <?php if (!empty($last_feedback_date)): ?>
+                                <div style="color: #555;">
+                                    <i class="fa fa-calendar"></i> Last feedback sent on:
+                                    <strong><?= date('d M Y, H:i', strtotime($last_feedback_date)) ?></strong>
+                                </div>
+                            <?php else: ?>
+                                <div style="color: #777;">
+                                    <i class="fa fa-info-circle"></i> No feedback has been sent yet.
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </form>
+            <?php else: ?>
+                <div class="alert alert-warning">
+                    <i class="fa fa-info-circle"></i> Feedback is only available after the due date has passed.
+                </div>
+            <?php endif; ?>
+
+            <table class="table table-bordered table-striped table-hover">
+                <thead style="background-color: #3c8dbc; color: white;">
+                    <tr>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Score</th>
+                        <th class="text-center">Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    if ($learners && $learners->num_rows > 0) {
+                        while ($learner = $learners->fetch_assoc()) {
+                            $uid = $learner['Id'];
+                            $scoreStmt = $connect->prepare("
+                                SELECT oq.CorrectAnswer, la.SelectedAnswer 
+                                FROM learneranswers la
+                                JOIN onlinequestions oq ON la.QuestionId = oq.Id
+                                WHERE la.UserId = ? AND la.ActivityId = ?
+                            ");
+                            $scoreStmt->bind_param("ii", $uid, $activityId);
+                            $scoreStmt->execute();
+                            $answers = $scoreStmt->get_result();
+
+                            $correct = 0;
+                            $answered = 0;
+                            while ($a = $answers->fetch_assoc()) {
+                                $answered++;
+                                if ($a['CorrectAnswer'] === $a['SelectedAnswer']) $correct++;
+                            }
+                            $scoreStmt->close();
+
+                            $status = $answered > 0 ? "<span class='badge bg-green'>Completed</span>" : "<span class='badge bg-warning'>Not Submitted</span>";
+                            $scoreDisplay = $answered > 0
+                                ? "<div class='progress' style='height: 18px; margin-bottom: 0;'><div class='progress-bar progress-bar-success' role='progressbar' style='width: " . round(($correct / $answered) * 100) . "%;'>" . round(($correct / $answered) * 100) . "%</div></div>"
+                                : "-";
+
+                            echo "<tr>
+                                    <td>" . htmlspecialchars($learner['Name']) . "</td>
+                                    <td>" . htmlspecialchars($learner['Surname']) . "</td>
+                                    <td class='text-center'>$status</td>
+                                    <td class='text-center'><div style='font-weight: bold;'>$correct / $answered</div></td>
+                                    <td class='text-center'>$scoreDisplay</td>
+                                  </tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='5' class='text-center'>No learners assigned to this activity in this class/group.</td></tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="control-sidebar-bg"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.getElementById('sendFeedbackBtn')?.addEventListener('click', function () {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'This will send feedback to the parents of all learners who did not submit the activity.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, send it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            this.disabled = true;
+            document.getElementById('feedbackForm').submit();
+        }
+    });
+});
+</script>
+
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+
+<?php
+if (isset($_SESSION['success'])) {
+    $msg = $_SESSION['success'];
+    unset($_SESSION['success']);
+    echo "
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Email Sent',
+            text: '". addslashes($msg) ."',
+            confirmButtonText: 'OK'
+        });
+    </script>";
+}
+
+if (isset($_SESSION['error'])) {
+    $msg = $_SESSION['error'];
+    unset($_SESSION['error']);
+    echo "
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Failed to Send',
+            text: '". addslashes($msg) ."',
+            confirmButtonText: 'OK'
+        });
+    </script>";
+}
+?>
+</body>
+</html>
