@@ -17,10 +17,11 @@ $activityId = $_POST['activityId'] ?? null;
 $grade      = $_POST['grade'] ?? '';
 $subjectId  = $_POST['subject'] ?? '';
 $group      = $_POST['group'] ?? '';
+$dueDate    = $_POST['dueDate'] ?? '';
 
 // Validate input
-if (!$activityId || !$grade || !$subjectId || !$group) {
-    die("Missing required fields.");
+if (!$activityId || !$grade || !$subjectId || !$group || !$dueDate) {
+    die("Missing required fields. date");
 }
 
 // Find ClassID for this grade, subject, and group
@@ -50,21 +51,21 @@ $stmt->close();
 
 // Insert assignment into onlineactivitiesassignments
 $stmt = $connect->prepare("
-    INSERT INTO onlineactivitiesassignments (OnlineActivityId, ClassID) 
-    VALUES (?, ?)
+    INSERT INTO onlineactivitiesassignments (OnlineActivityId, ClassID, DueDate)
+    VALUES (?, ?, ?)
 ");
 
 if (!$stmt) {
     die("Prepare failed: (" . $connect->errno . ") " . $connect->error);
 }
 
-$stmt->bind_param("ii", $activityId, $classId);
+$stmt->bind_param("iis", $activityId, $classId, $dueDate);
 
 if ($stmt->execute()) {
     $stmt->close();
     $connect->close();
 
-    header("Location: generateactivity.php?gra=$grade&sub=$subjectId&group=$group&assigned=1");
+    header("Location: assignedquizzes.php?gra=$grade&sub=$subjectId&group=$group&assigned=1");
 
     exit();
 } else {
