@@ -52,7 +52,7 @@ if (isset($_POST["submit"])) {
     ");
 
     $insertStmt->bind_param(
-        "siisiss",
+        "siissss",
         $activityname,
         $subject,
         $activitytotal,
