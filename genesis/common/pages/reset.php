@@ -1,7 +1,94 @@
 <?php
 session_start();
 include '../../partials/Connect.php';
+
+if (isset($_POST["Submit"])) {
+
+    $resetCode = trim($_POST["reset_code"]);
+    $newPassword = trim($_POST["new_password"]);
+    $confirmPassword = trim($_POST["confirm_password"]);
+
+    // Basic validation
+    if ($newPassword !== $confirmPassword) {
+        $_SESSION['error_message'] = "The new passwords do not match.";
+        header('Location: reset.php');
+        exit;
+    }
+
+    // Additional password rules
+    $uppercase = preg_match('@[A-Z]@', $newPassword);
+    $lowercase = preg_match('@[a-z]@', $newPassword);
+    $number    = preg_match('@[0-9]@', $newPassword);
+    $specialChars = preg_match('@[^\w]@', $newPassword);
+
+    if(strlen($newPassword) < 8 || !$uppercase || !$lowercase || !$number || !$specialChars) {
+        $_SESSION['error_message'] = "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.";
+        header('Location: reset.php');
+        exit;
+    }
+
+    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+    // Start transaction
+    $connect->begin_transaction();
+
+    try {
+        // 1. Find the user by verifying hashed ResetCode
+        $stmt = $connect->prepare("SELECT Id, UserPassword, ResetCode FROM users WHERE ResetCode IS NOT NULL");
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $userFound = false;
+        while ($row = $result->fetch_assoc()) {
+            if (password_verify($resetCode, $row['ResetCode'])) {
+                $userId = $row['Id'];
+                $previousHashedPassword = $row['UserPassword'];
+                $userFound = true;
+                break;
+            }
+        }
+
+        if (!$userFound) {
+            throw new Exception("InvalidCode");
+        }
+
+        // 2. Prevent reuse of previous password
+        if (password_verify($newPassword, $previousHashedPassword)) {
+            throw new Exception("PasswordReuse");
+        }
+
+        // 3. Update password and clear reset code & timestamp
+        $updateStmt = $connect->prepare(
+            "UPDATE users SET UserPassword = ?, ResetCode = NULL, ResetTimestamp = NULL WHERE Id = ?"
+        );
+        $updateStmt->bind_param("si", $hashedPassword, $userId);
+
+        if (!$updateStmt->execute()) {
+            throw new Exception("UpdateFailed");
+        }
+
+        // 4. Commit transaction
+        $connect->commit();
+
+        // Set success message and stay on the same page
+        $_SESSION['success_message'] = "Your password has been reset successfully. You can now to login page.";
+
+    } catch (Exception $e) {
+        $connect->rollback();
+
+        if ($e->getMessage() === "PasswordReuse") {
+            $_SESSION['error_message'] = "Please choose a different password from your previous one.";
+        } elseif ($e->getMessage() === "InvalidCode") {
+            $_SESSION['error_message'] = "Invalid reset code.";
+        } else {
+            $_SESSION['error_message'] = "Password reset failed. Please try again later.";
+        }
+    }
+
+    $connect->close();
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,7 +186,6 @@ include '../../partials/Connect.php';
 
   .back-link:hover { text-decoration: underline; }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <div class="login-container">
@@ -109,9 +195,14 @@ include '../../partials/Connect.php';
     <p>Enter your reset code and new password below.</p>
 
     <?php
-    if (isset($_SESSION['reset_message'])) {
-        echo '<div class="success-message">' . $_SESSION['reset_message'] . '</div>';
-        unset($_SESSION['reset_message']);
+    if (isset($_SESSION['error_message'])) {
+        echo '<div class="error-message">' . $_SESSION['error_message'] . '</div>';
+        unset($_SESSION['error_message']);
+    }
+
+    if (isset($_SESSION['success_message'])) {
+        echo '<div class="success-message">' . $_SESSION['success_message'] . '</div>';
+        unset($_SESSION['success_message']);
     }
     ?>
 
@@ -128,63 +219,20 @@ include '../../partials/Connect.php';
       <div class="container">
         <input type="submit" name="Submit" value="Reset Password" class="loginbtn">
       </div>
-        <div style="text-align: center; margin-top: 10px;">
-          <label style="font-size: 13px;">
-            Back to  
-            <a href="login.php" class="back-link">Login</a>
-          </label>
-        </div>
-      
+      <div style="text-align: center; margin-top: 10px;">
+        <label style="font-size: 13px;">
+          Back to <a href="login.php" class="back-link">Login</a>
+        </label>
+      </div>
     </form>
   </div>
 </div>
-
-<?php
-if (isset($_POST["Submit"])) {
-    $resetCode = $_POST["reset_code"];
-    $newPassword = $_POST["new_password"];
-    $confirmPassword = $_POST["confirm_password"];
-
-    if ($newPassword !== $confirmPassword) {
-        echo "<script>
-            Swal.fire({icon: 'error', title: 'Password Mismatch', text: 'The new passwords do not match.', confirmButtonText: 'OK'})
-            .then(()=>{window.location='reset.php';});
-        </script>";
-        exit;
-    }
-
-    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-
-    $sql = "SELECT UserPassword FROM users WHERE ResetCode = '$resetCode'";
-    $result = $connect->query($sql);
-
-    if ($result->num_rows == 1) {
-        $row = $result->fetch_assoc();
-        $previousHashedPassword = $row["UserPassword"];
-        if (password_verify($hashedPassword, $previousHashedPassword)) {
-            echo "<script>
-                Swal.fire({icon: 'error', title: 'Password Reuse', text: 'Choose a different password.', confirmButtonText: 'OK'})
-                .then(()=>{window.location='reset.php';});
-            </script>";
-            exit;
-        }
-    }
-
-    $updateSql = "UPDATE users SET UserPassword='$hashedPassword' WHERE ResetCode='$resetCode'";
-    if ($connect->query($updateSql) === TRUE) {
-        echo "<script>
-            Swal.fire({icon:'success', title:'Password Reset Successful', text:'Your password has been reset.', confirmButtonText:'OK'})
-            .then(()=>{window.location='login.php';});
-        </script>";
-    } else {
-        echo "<script>
-            Swal.fire({icon:'error', title:'Error', text:'Password reset failed. Try again later.', confirmButtonText:'OK'})
-            .then(()=>{window.location='reset.php';});
-        </script>";
-    }
-
-    $connect->close();
-}
-?>
 </body>
 </html>
+
+
+
+
+
+
+

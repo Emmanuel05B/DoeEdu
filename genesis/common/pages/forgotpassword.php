@@ -149,90 +149,105 @@ session_start();
 </div>
 
 <?php
-    include '../../partials/Connect.php';
+session_start();
+include '../../partials/Connect.php';
 
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1); // set to 0 in production
-    error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\SMTP;
-    use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require '../../../vendor/autoload.php';
 
-    require '../../../vendor/autoload.php';
+if (isset($_POST['Submit'])) {
+    $email = filter_var($_POST["email"], FILTER_SANITIZE_EMAIL);
 
-    if (isset($_POST['Submit'])) {
-        $email = filter_var($_POST["email"], FILTER_SANITIZE_EMAIL);
+    $stmt = $connect->prepare("SELECT Id, Email, Surname, Gender FROM users WHERE Email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->bind_result($id, $email, $surname, $title);
+    $stmt->fetch();
+    $stmt->close();
 
-        $stmt = $connect->prepare("SELECT Id, Email, Surname FROM users WHERE Email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->bind_result($id, $email, $surname);
-        $stmt->fetch();
-        $stmt->close();
+    if ($id) {
+        // Generate 6-character reset code
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $randomCode = '';
+        for ($i = 0; $i < 6; $i++) {
+            $randomCode .= $characters[rand(0, strlen($characters) - 1)];
+        }
 
-        if ($id) {
-            $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            $randomCode = '';
-            for ($i = 0; $i < 6; $i++) {
-                $randomCode .= $characters[rand(0, strlen($characters) - 1)];
-            }
+        // Begin transaction
+        $connect->begin_transaction();
+
+        try {
+            // 1. Update reset code in DB
             $hashedResetCode = password_hash($randomCode, PASSWORD_BCRYPT);
             $timestamp = date("Y-m-d H:i:s");
-            $updateQuery = "UPDATE users SET ResetCode = '$hashedResetCode', ResetTimestamp = '$timestamp' WHERE Email = '$email'";
+            $updateQuery = "UPDATE users SET ResetCode = ?, ResetTimestamp = ? WHERE Email = ?";
+            $stmt = $connect->prepare($updateQuery);
+            $stmt->bind_param("sss", $hashedResetCode, $timestamp, $email);
 
-            if (mysqli_query($connect, $updateQuery)) {
-                $mail = new PHPMailer(true);
-
-                try {
-                    $mail->isSMTP();
-                    $mail->Host = 'smtp.gmail.com';
-                    $mail->SMTPAuth = true;
-                    $mail->Username = 'thedistributorsofedu@gmail.com'; // DoE sender email
-                    $mail->Password = 'bxuxtdgfhjkfghjnej'; // App-specific password
-                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-                    $mail->Port = 465;
-
-                    $mail->setFrom('thedistributorsofedu@gmail.com', 'Distributors of Education');
-                    $mail->addAddress($email, $surname);
-                    $mail->addReplyTo('thedistributorsofedu@gmail.com', 'Distributors of Education');
-
-                    $mail->isHTML(true);
-                    $mail->Subject = 'Your Password Reset Code - Distributors of Education';
-                    $mail->Body = "
-                        <p>Dear Mr/Ms $surname,</p>
-
-                        <p>We received a request to reset your password on the Distributors of Education system.</p>
-
-                        <p><strong>Your password reset code is:</strong></p>
-                        <h2 style='color: #007BFF;'>$randomCode</h2>
-
-                        <p>Please use this code on the password reset page. If you did not request this, feel free to ignore this message.</p>
-
-                        <br>
-                        <p>Best regards,</p>
-                        <p><strong>DoE Team</strong></p>
-                        <p>Email: info@doeconnect.org.za</p>
-                    ";
-
-                    $mail->send();
-                    $_SESSION['reset_message'] = "A reset code has been sent to your email address. Please check your inbox.";
-                    header('Location: reset.php');
-                    exit;
-                } catch (Exception $e) {
-                    echo 'Mailer Error: ' . $mail->ErrorInfo;
-                }
-            } else {
-                echo "Error updating reset code: " . mysqli_error($connect);
+            if (!$stmt->execute()) {
+                throw new Exception("Error updating reset code in database.");
             }
-        } else {
-            $_SESSION['error_message'] = "User not found or not verified.";
+
+            // 2. Send email
+            $mail = new PHPMailer(true);
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'thedistributorsofedu@gmail.com';
+            $mail->Password = 'dytn yizm aszo jptc'; 
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port = 465;
+
+            $mail->setFrom('thedistributorsofedu@gmail.com', 'Distributors of Education');
+            $mail->addAddress($email, $surname);
+            $mail->addReplyTo('thedistributorsofedu@gmail.com', 'Distributors of Education');
+
+            $mail->isHTML(true);
+            $mail->Subject = 'Your Password Reset Code - Distributors of Education';
+            $mail->Body = "
+                <p>Dear $title $surname,</p>
+                <p>We received a request to reset your password on the Distributors of Education system.</p>
+                <p><strong>Your password reset code is:</strong></p>
+                <h2 style='color: #007BFF;'>$randomCode</h2>
+                <p>Please use this code on the password reset page. If you did not request this, feel free to ignore this message.</p>
+                <p>_</p>
+                <p>Best regards,</p>
+                <p><strong>DoE Team</strong></p>
+                <p>Email: thedistributorsofedu@gmail.com</p>
+            ";
+
+            $mail->send();
+
+            // 3. Commit transaction
+            $connect->commit();
+
+            $_SESSION['reset_message'] = "A reset code has been sent to your email address. Please check your inbox.";
+            header('Location: reset.php');
+            exit;
+
+        } catch (Exception $e) {
+            // Rollback if anything fails
+            $connect->rollback();
+            $_SESSION['error_message'] = $e->getMessage();
             header('Location: forgotpassword.php');
             exit;
         }
-    }
 
-    mysqli_close($connect);
+    } else {
+        $_SESSION['error_message'] = "User not found or not verified.";
+        header('Location: forgotpassword.php');
+        exit;
+    }
+}
+
+$connect->close();
 ?>
+
+
 </body>
 </html>
