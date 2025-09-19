@@ -167,142 +167,142 @@ include(__DIR__ . "/../../partials/connect.php");
           </div>
   
           <div class="box-body">
-    <form id="learnerForm" action="class.php" method="post">
+            <form id="learnerForm" action="class.php" method="post">
 
-        <div class="table-responsive">
-            <table id="example1" class="table table-bordered table-striped table-hover">
-                <thead style="background-color:#d1d9ff;">
-                    <tr>
-                        <th>StNo.</th>
-                        <th>Name</th>
-                        <th>Surname</th>
-                        <th>Attendance</th>
-                        <th>Attendance Reason</th>
-                        <th>Marks</th>
-                        <th>Submitted</th>
-                        <th>Submission Reason</th>
-                    </tr>
-                </thead>
+                <div class="table-responsive">
+                    <table id="example1" class="table table-bordered table-striped table-hover">
+                        <thead style="background-color:#d1d9ff;">
+                            <tr>
+                                <th>StNo.</th>
+                                <th>Name</th>
+                                <th>Surname</th>
+                                <th>Attendance</th>
+                                <th>Attendance Reason</th>
+                                <th>Marks</th>
+                                <th>Submitted</th>
+                                <th>Submission Reason</th>
+                            </tr>
+                        </thead>
 
-                <tbody>
-                <?php
-                // Get subject details
-                $subjectQuery = "SELECT SubjectName FROM subjects WHERE SubjectId = ?";
-                $stmtSub = $connect->prepare($subjectQuery);
-                $stmtSub->bind_param("i", $subjectId);
-                $stmtSub->execute();
-                $resultSub = $stmtSub->get_result();
-                if ($resultSub && $rowSub = $resultSub->fetch_assoc()) {
-                    $subjectName = $rowSub['SubjectName'];
-                } else {
-                    die("Invalid subject.");
-                }
+                        <tbody>
+                        <?php
+                        // Get subject details
+                        $subjectQuery = "SELECT SubjectName FROM subjects WHERE SubjectId = ?";
+                        $stmtSub = $connect->prepare($subjectQuery);
+                        $stmtSub->bind_param("i", $subjectId);
+                        $stmtSub->execute();
+                        $resultSub = $stmtSub->get_result();
+                        if ($resultSub && $rowSub = $resultSub->fetch_assoc()) {
+                            $subjectName = $rowSub['SubjectName'];
+                        } else {
+                            die("Invalid subject.");
+                        }
 
-                // Heading
-                echo "<h4>{$grade} {$subjectName} Group-{$group} Learners</h4><br>";
+                        // Heading
+                        echo "<h4>{$grade} {$subjectName} Group-{$group} Learners</h4><br>";
 
-                // Query learners
-                $sql = "
-                    SELECT DISTINCT 
-                        lt.LearnerId,
-                        lt.Grade,
-                        u.Name,
-                        u.Surname,
-                        c.GroupName
-                    FROM learners lt
-                    JOIN learnersubject ls 
-                        ON lt.LearnerId = ls.LearnerId
-                        AND ls.ContractExpiryDate > CURDATE()
-                        AND ls.Status = 'Active'
-                        AND ls.SubjectId = ?
-                    JOIN users u 
-                        ON lt.LearnerId = u.Id
-                    JOIN learnerclasses lc 
-                        ON lt.LearnerId = lc.LearnerID
-                    JOIN classes c 
-                        ON lc.ClassID = c.ClassID
-                        AND c.SubjectID = ls.SubjectID
-                    WHERE lt.Grade = ? 
-                      AND c.GroupName = ?
-                ";
-                $stmt = $connect->prepare($sql);
-                $stmt->bind_param("iss", $subjectId, $grade, $group);
-                $stmt->execute();
-                $results = $stmt->get_result();
+                        // Query learners
+                        $sql = "
+                            SELECT DISTINCT 
+                                lt.LearnerId,
+                                lt.Grade,
+                                u.Name,
+                                u.Surname,
+                                c.GroupName
+                            FROM learners lt
+                            JOIN learnersubject ls 
+                                ON lt.LearnerId = ls.LearnerId
+                                AND ls.ContractExpiryDate > CURDATE()
+                                AND ls.Status = 'Active'
+                                AND ls.SubjectId = ?
+                            JOIN users u 
+                                ON lt.LearnerId = u.Id
+                            JOIN learnerclasses lc 
+                                ON lt.LearnerId = lc.LearnerID
+                            JOIN classes c 
+                                ON lc.ClassID = c.ClassID
+                                AND c.SubjectID = ls.SubjectID
+                            WHERE lt.Grade = ? 
+                            AND c.GroupName = ?
+                        ";
+                        $stmt = $connect->prepare($sql);
+                        $stmt->bind_param("iss", $subjectId, $grade, $group);
+                        $stmt->execute();
+                        $results = $stmt->get_result();
 
-                while ($final = $results->fetch_assoc()) { 
-                ?>
-                    <tr>
-                        <td><?php echo $final['LearnerId'] ?></td>
-                        <td>
-                            <?php echo $final['Name'] ?>
-                            <input type="hidden" name="learnerFakeids[]" value="<?php echo $final['LearnerId'] ?>">
-                            <input type="hidden" name="activityIds[]" value="<?php echo $finalres['ActivityId'] ?>">
-                        </td>
-                        <td><?php echo $final['Surname'] ?></td>
-                        <td>
-                            <select name="attendances[]" class="form-control input-sm">
-                                <option value="present" selected>Present</option>
-                                <option value="absent">Absent</option>
-                                <option value="late">Late</option>
-                            </select>
-                        </td>
-                        <td>
-                            <select name="attendancereasons[]" class="form-control input-sm">
-                                <option value="None" selected>None Provided</option>
-                                <option value="Other">Other</option>
-                                <option value="Data Issues">Data Issues</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input type="number" name="marks[]" class="form-control input-sm" placeholder="Marks" min="0" max="<?php echo $finalres['MaxMarks'] ?>" required>
-                        </td>
-                        <td>
-                            <select name="submitted[]" class="form-control input-sm">
-                                <option value="Yes" selected>Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </td>
-                        <td>
-                            <select name="submissionreasons[]" class="form-control input-sm">
-                                <option value="None" selected>None Provided</option>
-                                <option value="Other">Other</option>
-                                <option value="Data Issues">Data Issues</option>
-                                <option value="Did Not Write">Did Not Write</option>
-                            </select>
-                        </td>
-                    </tr>
-                <?php } ?>
-                </tbody>
+                        while ($final = $results->fetch_assoc()) { 
+                        ?>
+                            <tr>
+                                <td><?php echo $final['LearnerId'] ?></td>
+                                <td>
+                                    <?php echo $final['Name'] ?>
+                                    <input type="hidden" name="learnerFakeids[]" value="<?php echo $final['LearnerId'] ?>">
+                                    <input type="hidden" name="activityIds[]" value="<?php echo $finalres['ActivityId'] ?>">
+                                </td>
+                                <td><?php echo $final['Surname'] ?></td>
+                                <td>
+                                    <select name="attendances[]" class="form-control input-sm">
+                                        <option value="present" selected>Present</option>
+                                        <option value="absent">Absent</option>
+                                        <option value="late">Late</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="attendancereasons[]" class="form-control input-sm">
+                                        <option value="None" selected>None Provided</option>
+                                        <option value="Other">Other</option>
+                                        <option value="Data Issues">Data Issues</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" name="marks[]" class="form-control input-sm" placeholder="Marks" min="0" max="<?php echo $finalres['MaxMarks'] ?>" required>
+                                </td>
+                                <td>
+                                    <select name="submitted[]" class="form-control input-sm">
+                                        <option value="Yes" selected>Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="submissionreasons[]" class="form-control input-sm">
+                                        <option value="None" selected>None Provided</option>
+                                        <option value="Other">Other</option>
+                                        <option value="Data Issues">Data Issues</option>
+                                        <option value="Did Not Write">Did Not Write</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                        </tbody>
 
-                <tfoot style="background-color:#d1d9ff;">
-                    <tr>
-                        <th>StNo.</th>
-                        <th>Name</th>
-                        <th>Surname</th>
-                        <th>Attendance</th>
-                        <th>Attendance Reason</th>
-                        <th>Marks</th>
-                        <th>Submitted</th>
-                        <th>Submission Reason</th>
-                    </tr>
-                </tfoot>
-            </table>
-        </div> <!-- /.table-responsive -->
+                        <tfoot style="background-color:#d1d9ff;">
+                            <tr>
+                                <th>StNo.</th>
+                                <th>Name</th>
+                                <th>Surname</th>
+                                <th>Attendance</th>
+                                <th>Attendance Reason</th>
+                                <th>Marks</th>
+                                <th>Submitted</th>
+                                <th>Submission Reason</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div> <!-- /.table-responsive -->
 
-        <div class="form-group mt-3 d-flex justify-content-between">
-            <button type="submit" name="submit" class="btn btn-primary">
-                <i class="fa fa-save"></i> Submit Learner Data
-            </button>
-            <button type="reset" class="btn btn-default">
-                <i class="fa fa-refresh"></i> Reset Form
-            </button>
+                <div class="form-group mt-3 d-flex justify-content-between">
+                    <button type="submit" name="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Submit Learner Data
+                    </button>
+                    <button type="reset" class="btn btn-default">
+                        <i class="fa fa-refresh"></i> Reset Form
+                    </button>
+                </div>
+                <a href="feedback.php" class="btn btn-block btn-primary">
+                    <i class="fa fa-commenting"></i> Provide feedback to Parents
+                </a>
+            </form>
         </div>
-        <a href="feedback.php" class="btn btn-block btn-primary">
-            <i class="fa fa-commenting"></i> Provide feedback to Parents
-        </a>
-    </form>
-</div>
 
 
 

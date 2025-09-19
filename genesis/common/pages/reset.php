@@ -1,78 +1,144 @@
 <?php
 session_start();
-
-include '../partials/Connect.php';
+include '../../partials/Connect.php';
 ?>
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Password Reset</title>
-    <meta charset="utf-8">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="Images/Logo3.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="Images/Logo3.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="./fontawesome-free-6.4.0-web\fontawesome-free-6.4.0-web\css\all.css">
-    <link rel="stylesheet" type="text/css" href="Partials\style.css">
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reset Password</title>
 <style>
-    html,
-    body {
-        height: 100%;
-    }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e8eff1;
+    margin: 0;
+    padding: 0;
+  }
 
-    body {
-        display: -ms-flexbox;
-        display: -webkit-box;
-        display: flex;
-        -ms-flex-align: center;
-        -ms-flex-pack: center;
-        -webkit-box-align: center;
-        align-items: center;
-        -webkit-box-pack: center;
-        justify-content: center;
-        background-color: #f5f5f5;
-    }
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
 
-    form {
-        padding-top: 10px;
-        font-size: 14px;
-        margin-top: 30px;
-    }
+  .login-box {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    width: 70%;
+    max-width: 450px;
+    overflow: hidden;
+    padding: 30px;
+    text-align: center;
+  }
 
-    .card-title {
-        font-weight: 300;
-    }
+  .login-box img {
+    width: 170px;
+    height: auto;
+    margin-bottom: 15px;
+    max-height: 200px;
+  }
 
-    .btn {
-        font-size: 14px;
-        margin-top: 20px;
-    }
+  .login-box h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+  }
 
-    .login-form {
-        width: 320px;
-        margin: 20px;
-    }
+  .login-box p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 20px;
+  }
 
-    .sign-up {
-        text-align: center;
-        padding: 20px 0 0;
-    }
+  .container {
+    margin-bottom: 15px;
+    text-align: left;
+  }
 
-    span {
-        font-size: 14px;
-    }
+  input[type="text"], input[type="password"], input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+  }
+
+  input:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+
+  .loginbtn {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .loginbtn:hover {
+    background-color: #0056b3;
+  }
+
+  .error-message, .success-message {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+  .error-message { color: red; }
+  .success-message { color: green; }
+
+  .back-link:hover { text-decoration: underline; }
 </style>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
 <body>
+<div class="login-container">
+  <div class="login-box">
+    <img src="../../admin/images/westtt.png" alt="Reset Password">
+    <h2>Reset Password</h2>
+    <p>Enter your reset code and new password below.</p>
+
+    <?php
+    if (isset($_SESSION['reset_message'])) {
+        echo '<div class="success-message">' . $_SESSION['reset_message'] . '</div>';
+        unset($_SESSION['reset_message']);
+    }
+    ?>
+
+    <form method="POST" action="">
+      <div class="container">
+        <input type="text" name="reset_code" placeholder="Reset Code" required>
+      </div>
+      <div class="container">
+        <input type="password" name="new_password" placeholder="New Password" required>
+      </div>
+      <div class="container">
+        <input type="password" name="confirm_password" placeholder="Confirm New Password" required>
+      </div>
+      <div class="container">
+        <input type="submit" name="Submit" value="Reset Password" class="loginbtn">
+      </div>
+        <div style="text-align: center; margin-top: 10px;">
+          <label style="font-size: 13px;">
+            Back to  
+            <a href="login.php" class="back-link">Login</a>
+          </label>
+        </div>
+      
+    </form>
+  </div>
+</div>
+
 <?php
 if (isset($_POST["Submit"])) {
     $resetCode = $_POST["reset_code"];
@@ -80,121 +146,45 @@ if (isset($_POST["Submit"])) {
     $confirmPassword = $_POST["confirm_password"];
 
     if ($newPassword !== $confirmPassword) {
-        // Passwords do not match, display an error message using SweetAlert
         echo "<script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Password Mismatch',
-                text: 'The new passwords do not match.',
-                confirmButtonText: 'OK'
-            }).then(function() {
-                window.location = 'reset.php';
-            });
+            Swal.fire({icon: 'error', title: 'Password Mismatch', text: 'The new passwords do not match.', confirmButtonText: 'OK'})
+            .then(()=>{window.location='reset.php';});
         </script>";
         exit;
     }
-    // Hash the new password
-      $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-    // Retrieve the previous hashed password from  database
+
+    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
     $sql = "SELECT UserPassword FROM users WHERE ResetCode = '$resetCode'";
     $result = $connect->query($sql);
 
     if ($result->num_rows == 1) {
         $row = $result->fetch_assoc();
         $previousHashedPassword = $row["UserPassword"];
-
-        // Compare the new password with the previous hashed password
         if (password_verify($hashedPassword, $previousHashedPassword)) {
-            
             echo "<script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Password Reuse',
-                    text: 'Please choose a different password from your previous one.',
-                    confirmButtonText: 'OK'
-                }).then(function() {
-                    window.location = 'reset.php'; 
-                });
+                Swal.fire({icon: 'error', title: 'Password Reuse', text: 'Choose a different password.', confirmButtonText: 'OK'})
+                .then(()=>{window.location='reset.php';});
             </script>";
             exit;
         }
     }
- 
 
-    $updateSql = "UPDATE users SET UserPassword = '$hashedPassword' WHERE ResetCode = '$resetCode'";
+    $updateSql = "UPDATE users SET UserPassword='$hashedPassword' WHERE ResetCode='$resetCode'";
     if ($connect->query($updateSql) === TRUE) {
-      
         echo "<script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Password Reset Successful',
-                text: 'Your password has been reset.',
-                confirmButtonText: 'OK'
-            }).then(function() {
-                window.location = 'login.php'; 
-            });
+            Swal.fire({icon:'success', title:'Password Reset Successful', text:'Your password has been reset.', confirmButtonText:'OK'})
+            .then(()=>{window.location='login.php';});
         </script>";
     } else {
         echo "<script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Password reset failed. Please try again later.',
-                confirmButtonText: 'OK'
-            }).then(function() {
-                window.location = 'reset.php'; 
-            });
+            Swal.fire({icon:'error', title:'Error', text:'Password reset failed. Try again later.', confirmButtonText:'OK'})
+            .then(()=>{window.location='reset.php';});
         </script>";
     }
 
     $connect->close();
 }
 ?>
-
-    <div class="container d-flex flex-column">
-        <div class="row align-items-center justify-content-center
-          min-vh-100">
-            <div class="col-12 col-md-8 col-lg-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <div class="mb-4">
-                            <h5>Reset Password</h5>
-                    <?php
-                    if (isset($_SESSION['reset_message'])) {
-                        echo '<div class="alert alert-success rounded-pill text-center" style="border-color: #4CAF50; height: 90px;">';
-                        echo '<p style="">' . $_SESSION['reset_message'] . '</p>';
-                        echo '</div>';
-                        unset($_SESSION['reset_message']);
-                    }
-                    ?>
-                        </div>
-                        <form method="POST" action="reset.php">
-                            <div class="mb-3">
-                                <label for="reset_code" class="form-label">Reset Code</label>
-                                <input type="text" id="reset_code" class="form-control" name="reset_code" placeholder="Enter Reset Code" required="">
-                            </div>
-                            <div class="mb-3">
-                                <label for="new_password" class="form-label">New Password</label>
-                                <input type="password" id="new_password" class="form-control" name="new_password" placeholder="Enter New Password" required="">
-                            </div>
-                            <div class="mb-3">
-                                <label for="confirm_password" class="form-label">Confirm Password</label>
-                                <input type="password" id="confirm_password" class="form-control" name="confirm_password" placeholder="Confirm New Password" required="">
-                            </div>
-                            <div class="d-grid gap-2 mt-3">
-                                <input type="submit" name="Submit" value="Reset Password" class="btn" style="background-color: blue; color:white;">
-                            </div>
-                        </form>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

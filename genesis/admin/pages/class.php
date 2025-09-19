@@ -112,6 +112,7 @@ include(__DIR__ . "/../../partials/connect.php");
       $insertStmt->close();
 
       if ($success) {
+        
           echo '<script>
               Swal.fire({
                   icon: "success",
