@@ -15,6 +15,8 @@ if (isset($_POST["Submit"])) {
         exit;
     }
 
+    //$_SESSION['reset_message'] = "If an account with this email exists, a reset link has been sent.";
+
     // Additional password rules
     $uppercase = preg_match('@[A-Z]@', $newPassword);
     $lowercase = preg_match('@[a-z]@', $newPassword);

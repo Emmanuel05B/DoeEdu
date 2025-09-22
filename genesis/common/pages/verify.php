@@ -3,7 +3,7 @@
 
 <?php
 session_start();
-include('../partials/connect.php');
+include('../../partials/connect.php');
 ?>
 
 <?php include("adminpartials/head.php"); ?>

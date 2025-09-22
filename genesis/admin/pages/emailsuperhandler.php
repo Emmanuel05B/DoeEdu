@@ -17,14 +17,14 @@ if (!$action) {
     exit();
 }
 
-// --- PHPMailer Setup Function ---
+// --- PHPMailer Setup Function --
 function initMailer() {
     $mail = new PHPMailer(true);
     $mail->isSMTP();
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
     $mail->Username   = 'thedistributorsofedu@gmail.com';
-    $mail->Password   = 'YOUR_APP_PASSWORD'; // secure storage recommended
+    $mail->Password   = 'dytn yizm aszo jptc'; // secure storage recommended
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
     $mail->Port       = 465;
     $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
@@ -106,7 +106,7 @@ try {
             $mail = initMailer();
             $mail->addAddress($request['email'], $request['name']);
             $mail->Subject = "Your Invitation to Register at DoE Genesis";
-            $invite_link = "http://localhost/DoeEdu/genesis/common/register.php?token=$token";
+            $invite_link = "http://localhost/DoE_Genesis/DoeEdu/genesis/common/pages/registration.php?token=$token";
             $mail->Body = "<p>Dear {$request['name']},</p>
                            <p>You have been invited to register at DoE Genesis.</p>
                            <p>Please click the button below to complete your registration:</p>

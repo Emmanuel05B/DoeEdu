@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('../partials/connect.php');
+include('../../partials/connect.php');
 
 if (!isset($_GET['token'])) {
     die("Invalid verification link.");
@@ -31,7 +31,7 @@ if ($result->num_rows === 0) {
         text: 'This verification link is invalid or expired.',
         confirmButtonText: 'Go to Login'
     }).then(() => {
-        window.location.href = '../common/login.php';
+        window.location.href = 'login.php';
     });
     </script>
     </body>
@@ -59,7 +59,7 @@ if ($user['IsVerified']) {
         text: 'Your account was already verified. You will be redirected to the login page.',
         confirmButtonText: 'Go to Login'
     }).then(() => {
-        window.location.href = '../common/login.php';
+        window.location.href = 'login.php';
     });
     </script>
     </body>
@@ -88,10 +88,10 @@ $stmt->close();
 Swal.fire({
     icon: 'success',
     title: 'Account Verified',
-    text: 'You are now officially part of the student community.',
+    text: 'The learner is officially part of the student community.',
     confirmButtonText: 'Go to Login'
 }).then(() => {
-    window.location.href = '../common/login.php';
+    window.location.href = 'login.php';
 });
 </script>
 

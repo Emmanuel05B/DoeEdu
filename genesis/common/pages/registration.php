@@ -1,12 +1,48 @@
+
+
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
-    exit();
+session_start(); // must be first line
+include(__DIR__ . "/../partials/queries.php");
+
+include(__DIR__ . "/../partials/head.php");
+include(__DIR__ . "/../../partials/connect.php");
+
+if (!isset($_GET['token']) || empty($_GET['token'])) {
+    die("Invalid invite link. No token provided.");
 }
 
-include(__DIR__ . "/../../common/partials/head.php");
-include(__DIR__ . "/../../partials/connect.php");
+$token = $_GET['token'];
+
+$stmt = $connect->prepare("SELECT Id, Email, IsUsed, ExpiresAt FROM invitetokens WHERE Token = ? LIMIT 1");
+$stmt->bind_param("s", $token);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) die("Invalid invite token.");
+
+$invite = $result->fetch_assoc();
+
+if ($invite['IsUsed']) die("This invite link has already been used.");
+
+if (strtotime($invite['ExpiresAt']) < time()) die("This invite link has expired.");
+
+$invitedEmail = $invite['Email'];
+
+// Use prepared statements (safer)
+$stmt = $connect->prepare("SELECT name, surname FROM inviterequests WHERE Email = ? LIMIT 1");
+$stmt->bind_param("s", $invitedEmail);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($row = $result->fetch_assoc()) {
+    $Name = $row['name'];
+    $Surname = $row['surname'];
+} else {
+    $Name = "";
+    $Surname = "";
+}
+
+
 
 // Hardcoded SchoolId
 $schoolId = 4;
@@ -21,54 +57,79 @@ while($row = $gradesResult->fetch_assoc()){
     $grades[] = $row;
 }
 ?>
-<body class="hold-transition skin-blue sidebar-mini">
-  <div class="wrapper">
-    <?php include(__DIR__ . "/../partials/header.php"); ?>
-    <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
-    <div class="content-wrapper">
-      <section class="content-header">
-        <h1>Learner Registration <small>Form</small></h1>
-        <ol class="breadcrumb">
-          <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
-          <li class="active">Administration</li>
-        </ol>
-      </section>
 
+<!DOCTYPE html>
+<html>
+<style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #e8eff1 !important;
+      margin: 0; padding: 0;
+    }
+    .container {
+      max-width: 950px;
+      margin: 30px auto;
+      background: white;
+      padding: 5px;
+      border-radius: 8px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .image-box img {
+      width: 170px;
+      height: auto;
+      
+    }
+
+</style>
+
+<body>
+   <!-- form here -->
+    <div class="container">
+      
       <section class="content">
         <div class="row">
+          <div class="image-box">
+          <img src="../../admin/images/westtt.png" alt="fghhjk kj">
+        </div>
+
           <div class="col-xs-12">
             <div class="box">
               <div class="box-body">
-                <form action="addlearnerh.php" method="post" id="learnerForm">
+                <form action="handler.php" method="post" id="learnerForm">
+                  <input type="hidden" name="invite_token" value="<?php echo htmlspecialchars($token); ?>">
 
+                <h2>Registration Form</h2><br>
                   <!-- Learner Info -->
                   <fieldset class="tab">
                     <legend>Learner Info</legend>
                     <div class="form-group row">
-                      <div class="col-md-6">
+                      <div class="col-md-3">
                         <label>First Name</label>
-                        <input type="text" class="form-control" name="name" required>
+                        <input type="text" class="form-control" name="name" value="<?php echo $Name; ?>" readonly>
                       </div>
                       <div class="col-md-3">
                         <label>Surname</label>
-                        <input type="text" class="form-control" name="surname" required>
+                        <input type="text" class="form-control" name="surname" value="<?php echo $Surname; ?>" readonly>
                       </div>
-                      <div class="col-md-3">
-                        <label>School Name</label>
-                        <input type="text" class="form-control" name="schoolname" value="DOE" readonly>
-                      </div>
-                    </div>
-                    <div class="form-group row">
                       <div class="col-md-3">
                         <label>Email</label>
-                        <input type="email" class="form-control" name="email" required>
+                        <input type="email" class="form-control" name="email" value="<?php echo $invitedEmail; ?>" readonly>
+
                       </div>
                       <div class="col-md-3">
                         <label>Contact Number</label>
                         <input type="tel" class="form-control" name="contactnumber" pattern="[0-9]{10}" maxlength="10" required>
-                        
                       </div>
+                      <!--
+                      <div class="col-md-2">
+                        <label>School Name</label>
+                        <input type="text" class="form-control" name="schoolname" value="DOE" readonly>
+                      </div>
+                       -->
+                    </div>
+                    <div class="form-group row">
+                      
                       <div class="col-md-2">
                         <label>Title</label>
                         <select class="form-control" name="learnertitle" required>
@@ -90,13 +151,24 @@ while($row = $gradesResult->fetch_assoc()){
                       <div class="col-md-2">
                         <label>Knockout Time</label>
                         <input type="time" class="form-control" name="knockout_time" required>
+                        
                       </div>
+                      <div class="col-md-3">
+                        <label>Set Password</label>
+                        <input type="password" class="form-control" name="new_password" placeholder="New Password" required>
+
+                      </div>
+                      <div class="col-md-3">
+                        <label>Confirm Password</label>
+                        <input type="password" class="form-control" name="confirm_password" placeholder="Confirm New Password" required>
+                      </div>
+                      
                     </div>
                   </fieldset><br>
 
                   <!-- Subjects, Duration & Levels -->
                   <fieldset class="tab">
-                    <legend>Select Subjects, Duration & Levels</legend>
+                    <legend>Register Subjects, Duration & Levels</legend>
                     <table class="table table-bordered">
                       <thead>
                         <tr>
@@ -114,7 +186,7 @@ while($row = $gradesResult->fetch_assoc()){
 
                   <!-- Parent Info -->
                   <fieldset class="tab">
-                    <legend>Parent Info</legend>
+                    <legend>Guardian Info</legend>
                     <div class="form-group row">
                       <div class="col-md-3">
                         <label>First Name</label>
@@ -128,7 +200,7 @@ while($row = $gradesResult->fetch_assoc()){
                         <label>Email</label>
                         <input type="email" class="form-control" name="parentemail" required>
                       </div>
-                      <div class="col-md-2">
+                      <div class="col-md-3">
                         <label>Cell No:</label>
                         <input type="tel" class="form-control" name="parentcontact" pattern="[0-9]{10}" maxlength="10" required>
                       </div>
@@ -160,37 +232,36 @@ while($row = $gradesResult->fetch_assoc()){
           </div>
         </div>
       </section>
+
     </div>
-    <div class="control-sidebar-bg"></div>
-  </div>
 
- <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-  $(document).ready(function(){
-      <?php if(isset($_SESSION['success'])): ?>
-          Swal.fire({
-              icon: 'success',
-              title: 'Success!',
-              html: `<?= $_SESSION['success'] ?>`,
-              confirmButtonText: 'OK'
-          });
-          <?php unset($_SESSION['success']); ?>
-      <?php endif; ?>
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    $(document).ready(function(){
+        <?php if(isset($_SESSION['success'])): ?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                html: `<?= $_SESSION['success'] ?>`,
+                confirmButtonText: 'OK'
+            });
+            <?php unset($_SESSION['success']); ?>
+        <?php endif; ?>
 
-      <?php if(isset($_SESSION['error'])): ?>
-          Swal.fire({
-              icon: 'error',
-              title: 'Error!',
-              html: `<?= $_SESSION['error'] ?>`,
-              confirmButtonText: 'OK'
-          });
-          <?php unset($_SESSION['error']); ?>
-      <?php endif; ?>
-  });
-  </script>
+        <?php if(isset($_SESSION['error'])): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                html: `<?= $_SESSION['error'] ?>`,
+                confirmButtonText: 'OK'
+            });
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
+    });
+    </script>
 
-  <!-- SUMMARY MODAL -->
+
+   <!-- SUMMARY MODAL -->
   <div class="modal fade" id="summaryModal" tabindex="-1" role="dialog" aria-labelledby="summaryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -289,7 +360,48 @@ while($row = $gradesResult->fetch_assoc()){
       // -----------------------
       // SUMMARY MODAL
       // -----------------------
+      
+
       $('#learnerForm').on('submit', function(e){
+          const newPassword = $('input[name="new_password"]').val();
+          const confirmPassword = $('input[name="confirm_password"]').val();
+
+          if(newPassword !== confirmPassword){
+              e.preventDefault();
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Oops!',
+                  text: 'Passwords do not match. Please re-enter.',
+                  confirmButtonText: 'OK'
+              });
+              return false;
+          }
+           // Check basic strength (optional, can mirror PHP rules)
+          const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w]).{8,}$/;
+          if(!strongRegex.test(newPassword)){
+              e.preventDefault();
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Weak Password!',
+                  text: 'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.',
+                  confirmButtonText: 'OK'
+              });
+              return false;
+          }
+
+          /*/ Check total cost before submission
+          const total = parseFloat($('#totalCost').text());
+          if(total === 0){
+              e.preventDefault();
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Select Duration!',
+                  text: 'Please select at least one subject before confirming..',
+                  confirmButtonText: 'OK'
+              });
+              return false;
+          }   */
+
           e.preventDefault();
           const tbody = $('#summaryTable tbody');
           tbody.empty();
@@ -342,6 +454,10 @@ while($row = $gradesResult->fetch_assoc()){
 
   });
  </script>
+
+</body>
+</html>
+
 
 
 

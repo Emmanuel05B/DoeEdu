@@ -1,9 +1,6 @@
 <?php
+
 session_start();
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
-    exit();
-}
 
 include(__DIR__ . "/../../partials/connect.php");
 
@@ -20,8 +17,7 @@ try {
     // Collect learner details
     $name      = $_POST['name'];
     $surname   = $_POST['surname'];
-
-    $email     = $_POST['email'];
+    $email     = $_POST['email'];////
     $contact   = $_POST['contactnumber'];
     $learnertitle    = $_POST['learnertitle'];
     $grade     = (int)$_POST['grade'];   //this is grade ID, i need grade name
@@ -49,11 +45,34 @@ try {
     $pemail    = $_POST['parentemail'];
     $ptitle   = $_POST['parenttitle'];
 
-    $password = 'DoEPass@2025'; 
+
+    $password = trim($_POST["new_password"]);
+    $confirmPassword = trim($_POST["confirm_password"]);
+    $token = $_POST["invite_token"];
+
     $errors = [];
+    // Basic validation
+    if ($password !== $confirmPassword) {
+        $errors[] = "The passwords do not match";
+    }
+
+    // Additional password rules
+    $uppercase = preg_match('@[A-Z]@', $password);
+    $lowercase = preg_match('@[a-z]@', $password);
+    $number    = preg_match('@[0-9]@', $password);
+    $specialChars = preg_match('@[^\w]@', $password);
+
+    if(strlen($password) < 8 || !$uppercase || !$lowercase || !$number || !$specialChars) {
+       $_SESSION['error'] = "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.";
+        header('Location: registration.php?token=' . $token);
+        exit();
+    }
+
+
+    
 
     // Validate required fields
-    if (empty($email) || empty($pemail) || empty($grade) || empty($name)) {
+    if (empty($email) || empty($pemail) || empty($grade) || empty($name) || empty($password) || empty($confirmPassword)) {
         $errors[] = "All fields are required.";
     }
 
@@ -69,8 +88,8 @@ try {
       $check->store_result();
       if ($check->num_rows > 0) {
          
-            $_SESSION['error'] = "A learner with this email already exists: ";
-            header("Location: addlearners.php");
+            $_SESSION['error'] = "This email has already registred: ";
+            header('Location: registration.php?token=' . $token);
             exit();
       }
       $check->close();
@@ -243,24 +262,25 @@ try {
 
     // Commit transaction
     sendEmailToLearner($email, $name, $verificationToken);
+    
+
+    sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $connect, $learnerId);
     $connect->commit();
 
-    //sendEmailToParent($parent_email, $parent_name, $learner_name);
-
-
-    $_SESSION['success'] = "Learner registered successfully!  and Email sent tot he Learner to verify";
-    header("Location: addlearners.php");
+    $_SESSION['success'] = "Registered successfully! One final step — a verification email has been sent to the parent. You’ll be able to log in once they approve.";
+    header('Location: registration.php?token=' . $token);
     exit();
 
 } catch (Exception $e) {
     $connect->rollback();
     $_SESSION['error'] = "Error registering learner: " . $e->getMessage();
-    header("Location: addlearners.php");
+    header('Location: registration.php?token=' . $token);
+
     exit();
 }
 
 
-/*/ Send email to parent
+/* Send email to parent
 function sendEmailToParent($pemail, $pname, $name) {
   $mail = new PHPMailer(true);
   try {
@@ -268,7 +288,7 @@ function sendEmailToParent($pemail, $pname, $name) {
       $mail->Host = 'smtp.gmail.com';
       $mail->SMTPAuth = true;
       $mail->Username = 'thedistributorsofedu@gmail.com';
-      $mail->Password = 'ngkl jnkr yvja ynio';
+      $mail->Password = 'sfdd';
       $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
       $mail->Port = 465;
 
@@ -281,18 +301,136 @@ function sendEmailToParent($pemail, $pname, $name) {
       $mail->Body = "
       <p>Dear $parent_name,</p>
       <p>Your child <strong>$name</strong> has been successfully registered with the Distributors of Education.</p>
+      <p>Please verify/sigh to activate $name account:</p>
+      <a href='http://localhost/DoE_Genesis/DoeEdu/genesis/common/pages/registration.php?token=$verificationToken' style='background-color: #008CBA; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify/Sign</a>
       <p>You will be updated with progress reports, announcements, and upcoming sessions.</p>
       <p>Thank you for choosing us to support your child's learning journey.</p>
       <br><p>Warm regards,</p><p><strong>DoE Team</strong></p>";
 
-      $mail->send();
-  } catch (Exception $e) {
-      // You could log errors if needed
-  }
-}
+      
+
+        <p>Dear <?= $parent_name ?>,</p>
+
+        <p>We’re excited to let you know that your child, <strong><?= $name ?></strong>, has been successfully registered with the Distributors of Education.</p>
+
+        <p>To activate <?= $name ?>'s account, please verify it by clicking the button below:</p>
+
+        <p style="text-align:center;">
+        <a href="http://localhost/DoeEdu/genesis/common/verification.php?token=<?= $verificationToken ?>" 
+            style="background-color: #008CBA; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+            Verify & Activate Account
+        </a>
+        </p>
+
+        <p>Once verified, you will receive updates on your child's progress, upcoming sessions, and important announcements.</p>
+
+        <p>If you did not expect this email or the link does not work, please contact us so we can assist you.</p>
+
+        <br>
+        <p>Warm regards,</p>
+        <p><strong>DoE Team</strong></p>
+
+
+
+      
+
+        $mail->send();
+    } catch (Exception $e) {
+        // You could log errors if needed
+    }
+    }
 */
 
-// Send email to learner with verification link
+function sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $connect, $learnerId) {
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'thedistributorsofedu@gmail.com';
+        $mail->Password = 'dytn yizm aszo jptc';  // update with correct password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port = 465;
+
+        $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
+        $mail->addAddress($pemail, $pname);
+        $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis');
+
+        // Fetch learner subjects and fees
+        $stmt = $connect->prepare("
+            SELECT s.SubjectName, ls.NumberOfTerms, ls.ContractFee
+            FROM learnersubject ls
+            JOIN subjects s ON ls.SubjectId = s.SubjectId
+            WHERE ls.LearnerId = ?
+        ");
+        $stmt->bind_param("i", $learnerId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $subjectRows = "";
+        $totalFees = 0;
+        while ($row = $result->fetch_assoc()) {
+            $subjectRows .= "<tr>
+                                <td>{$row['SubjectName']}</td>
+                                <td>{$row['NumberOfTerms']} months</td>
+                                <td>R {$row['ContractFee']}</td>
+                             </tr>";
+            $totalFees += (float)$row['ContractFee'];
+        }
+        $stmt->close();
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Your Child Registration & Fees Approval - DoE';
+
+        $mail->Body = "
+        <p>Dear $pname,</p>
+        <p>Your child <strong>$learnerName</strong> has been successfully registered with the Distributors of Education.</p>
+
+        <p>Please review the subjects and fees below. By verifying, you acknowledge awareness of the costs and approve your child's registration:</p>
+
+        <table border='1' cellpadding='8' cellspacing='0' style='border-collapse: collapse;'>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Duration</th>
+                    <th>Fee</th>
+                </tr>
+            </thead>
+            <tbody>
+                $subjectRows
+                <tr>
+                    <td colspan='2'><strong>Total</strong></td>
+                    <td><strong>R $totalFees</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style='text-align:center; margin:20px 0;'>
+            <a href='http://localhost/DoE_Genesis/DoeEdu/genesis/common/pages/verification.php?token=$verificationToken' 
+               style='background-color: #008CBA; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>
+               Verify & Approve Registration
+            </a>
+        </p>
+
+        <p>Once verified, you will receive updates on your child's progress, upcoming sessions, and announcements.</p>
+        <p>If you did not expect this email or the link does not work, please contact us so we can assist you.</p>
+
+        <br>
+        <p>Warm regards,</p>
+        <p><strong>DoE Team</strong></p>
+        ";
+
+        $mail->send();
+
+    } catch (Exception $e) {
+        // Optional: log error or handle failure
+    }
+}
+
+
+
+
+// Send email to learner with info telling them to let their parents to verify them. ese they wont be able to login.
 
 function sendEmailToLearner($email, $name, $verificationToken) {
   $mail = new PHPMailer(true);
@@ -301,7 +439,7 @@ function sendEmailToLearner($email, $name, $verificationToken) {
       $mail->Host = 'smtp.gmail.com';
       $mail->SMTPAuth = true;
       $mail->Username = 'thedistributorsofedu@gmail.com';
-      $mail->Password = 'jj j j  j';
+      $mail->Password = 'dytn yizm aszo jptc';
       $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
       $mail->Port = 465;
 
@@ -310,12 +448,20 @@ function sendEmailToLearner($email, $name, $verificationToken) {
       $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis');
 
       $mail->isHTML(true);
-      $mail->Subject = 'Welcome to DoE - Please Verify Your Email';
+      $mail->Subject = 'Welcome to DoE';
       $mail->Body = "
       <p>Dear $name,</p>
-      <p>Welcome to the Distributors of Education! You have been successfully registered.</p>
-      <p>Please verify your email address to activate your account:</p>
-      <a href='http://localhost/DoeEdu/genesis/common/verification.php?token=$verificationToken' style='background-color: #008CBA; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify Email</a>
+      <p>🎉 Welcome to the Distributors of Education! Your registration was successful.</p>
+      <p>
+        There’s just <strong>one final step</strong> ✅ — your guardian needs to approve your account.  
+        They have received an email with a verification link sent to the address you provided during registration.  
+        Once they complete it, you’ll be able to log in and start attending classes 📚.
+      </p>
+    
+      <p>
+        If your guardian doesn’t receive the email, please contact us and provide the correct parent/guardian email address  
+        so that we can resend the approval link.
+      </p>
       <p>If you have any questions, feel free to contact us.</p>
       <br><p>Best regards,</p><p><strong>DoE Team</strong></p>";
 
@@ -327,9 +473,11 @@ function sendEmailToLearner($email, $name, $verificationToken) {
   } catch (Exception $e) {
 
     $_SESSION['error'] = "Email Send Failed " . $e->getMessage();
-    header("Location: addlearners.php");
+    header('Location: registration.php?token=' . $token);
+
     exit();
 
   }
 }
+
 

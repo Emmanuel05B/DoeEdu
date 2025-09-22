@@ -226,7 +226,7 @@ if (isset($_POST['Submit'])) {
             // 3. Commit transaction
             $connect->commit();
 
-            $_SESSION['reset_message'] = "A reset code has been sent to your email address. Please check your inbox.";
+            //$_SESSION['reset_message'] = "If an account with this email exists, a reset link has been sent.";
             header('Location: reset.php');
             exit;
 
@@ -239,7 +239,8 @@ if (isset($_POST['Submit'])) {
         }
 
     } else {
-        $_SESSION['error_message'] = "User not found or not verified.";
+        $_SESSION['reset_message'] = "If an account with this email exists, a reset link has been sent.";
+
         header('Location: forgotpassword.php');
         exit;
     }

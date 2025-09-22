@@ -16,22 +16,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($surname)) $errors[] = "Surname is required.";
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "A valid Email is required.";
     if (!$agreed) $errors[] = "You must agree to the Rules & Pricing before submitting.";
-
+    
     if (empty($errors)) {
-        $sql = "INSERT INTO inviterequests (name, surname, email, message) VALUES (?, ?, ?, ?)";
-        if ($stmt = $connect->prepare($sql)) {
-            $stmt->bind_param("ssss", $name, $surname, $email, $message);
-            if ($stmt->execute()) {
-                $success = "Your invite request has been submitted. Please keep an eye on your email — we’ll be in touch shortly.";
-                $name = $surname = $email = $message = '';
+    // Check if email already exists
+    $checkSql = "SELECT 1 FROM inviterequests WHERE email = ? LIMIT 1";
+    if ($checkStmt = $connect->prepare($checkSql)) {
+        $checkStmt->bind_param("s", $email);
+        $checkStmt->execute();
+        $checkStmt->store_result();
+
+        if ($checkStmt->num_rows > 0) {
+            $errors[] = "This email has already been used to request an invite.";
+        } else {
+            // Safe to insert new request
+            $sql = "INSERT INTO inviterequests (name, surname, email, message) VALUES (?, ?, ?, ?)";
+            if ($stmt = $connect->prepare($sql)) {
+                $stmt->bind_param("ssss", $name, $surname, $email, $message);
+                if ($stmt->execute()) {
+                    $success = "Your invite request has been submitted. Please keep an eye on your email — we’ll be in touch shortly.";
+                    $name = $surname = $email = $message = '';
+                } else {
+                    $errors[] = "Database error. Please try again later.";
+                }
+                $stmt->close();
             } else {
                 $errors[] = "Database error. Please try again later.";
             }
-            $stmt->close();
-        } else {
-            $errors[] = "Database error. Please try again later.";
         }
+        $checkStmt->close();
+    } else {
+        $errors[] = "Database error. Please try again later.";
     }
+}
+
 }
 ?>
 
@@ -220,7 +237,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <input type="email" name="email" placeholder="Email *" value="<?php echo htmlspecialchars($email ?? ''); ?>" required>
-        <textarea name="message" placeholder="Message (optional)"><?php echo htmlspecialchars($message ?? ''); ?></textarea>
+        <textarea name="message" placeholder="Why you would like to join us. (Optional)"><?php echo htmlspecialchars($message ?? ''); ?></textarea>
 
         <label class="checkbox-wrapper" id="checkboxWrapper">
             <input type="checkbox" name="agree" id="agreeCheckbox" disabled>
