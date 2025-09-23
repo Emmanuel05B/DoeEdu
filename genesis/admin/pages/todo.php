@@ -113,20 +113,14 @@ include(__DIR__ . "/../../partials/connect.php");
                                         <input type="hidden" name="graid" value="<?php echo 10; ?>">
                                         <input type="hidden" name="subid" value="<?php echo 2; ?>">
                                         <input type="hidden" name="chaid" value="<?php echo 5; ?>">
-
-                                        <!-- Due Date -->
                                         <tr>
                                             <td>Date</td>
                                             <td><input type="date" name="due_date" required></td>
                                         </tr>
-
-                                        <!-- Time -->
                                         <tr>
                                             <td>Time</td>
                                             <td><input type="time" name="due_time" required></td>
                                         </tr>
-
-                                        <!-- Priority -->
                                         <tr>
                                             <td>Priority</td>
                                             <td>

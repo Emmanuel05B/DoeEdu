@@ -46,30 +46,32 @@ while($row = $gradesResult->fetch_assoc()){
                   <fieldset class="tab">
                     <legend>Learner Info</legend>
                     <div class="form-group row">
-                      <div class="col-md-6">
+                      <div class="col-md-3">
                         <label>First Name</label>
-                        <input type="text" class="form-control" name="name" required>
+                        <input type="text" class="form-control" name="name" placeholder="Enter Name" required>
                       </div>
                       <div class="col-md-3">
                         <label>Surname</label>
-                        <input type="text" class="form-control" name="surname" required>
+                        <input type="text" class="form-control" name="surname" placeholder="Enter Surname" required>
                       </div>
-                      <div class="col-md-3">
-                        <label>School Name</label>
-                        <input type="text" class="form-control" name="schoolname" value="DOE" readonly>
-                      </div>
-                    </div>
-                    <div class="form-group row">
                       <div class="col-md-3">
                         <label>Email</label>
-                        <input type="email" class="form-control" name="email" required>
+                        <input type="email" class="form-control" name="email" placeholder="learner@gmail.com" required>
                       </div>
                       <div class="col-md-3">
                         <label>Contact Number</label>
-                        <input type="tel" class="form-control" name="contactnumber" pattern="[0-9]{10}" maxlength="10" required>
-                        
+                        <input type="tel" class="form-control" name="contactnumber" pattern="[0-9]{10}" maxlength="10" placeholder="0123456789" required>
                       </div>
-                      <div class="col-md-2">
+
+                      <!-- <div class="col-md-3">
+                        <label>School Name</label>
+                        <input type="text" class="form-control" name="schoolname" value="DOE" readonly>
+                        </div>  
+                      -->
+                    </div>
+                    <div class="form-group row">
+                      
+                      <div class="col-md-3">
                         <label>Title</label>
                         <select class="form-control" name="learnertitle" required>
                           <option value="">Select Title</option>
@@ -78,7 +80,7 @@ while($row = $gradesResult->fetch_assoc()){
                           <option value="Ms">Ms.</option>
                         </select>
                       </div>
-                      <div class="col-md-2">
+                      <div class="col-md-3">
                         <label>Grade</label>
                         <select class="form-control" name="grade" id="gradeSelect" required>
                           <option value="" disabled selected>Select Grade</option>
@@ -87,9 +89,13 @@ while($row = $gradesResult->fetch_assoc()){
                           <?php endforeach; ?>
                         </select>
                       </div>
-                      <div class="col-md-2">
+                      <div class="col-md-3">
                         <label>Knockout Time</label>
                         <input type="time" class="form-control" name="knockout_time" required>
+                      </div>
+                      <div class="col-md-3">
+                        <label>Set Password</label>
+                        <input type="password" class="form-control" name="password" placeholder="Password" required>
                       </div>
                     </div>
                   </fieldset><br>
@@ -118,19 +124,19 @@ while($row = $gradesResult->fetch_assoc()){
                     <div class="form-group row">
                       <div class="col-md-3">
                         <label>First Name</label>
-                        <input type="text" class="form-control" name="parentname" required>
+                        <input type="text" class="form-control" name="parentname" placeholder="Enter Name" required>
                       </div>
                       <div class="col-md-3">
                         <label>Surname</label>
-                        <input type="text" class="form-control" name="parentsurname" required>
+                        <input type="text" class="form-control" name="parentsurname" placeholder="Enter Surname" required>
                       </div>
                       <div class="col-md-3">
                         <label>Email</label>
-                        <input type="email" class="form-control" name="parentemail" required>
+                        <input type="email" class="form-control" name="parentemail" placeholder="Enter Email" required>
                       </div>
                       <div class="col-md-2">
                         <label>Cell No:</label>
-                        <input type="tel" class="form-control" name="parentcontact" pattern="[0-9]{10}" maxlength="10" required>
+                        <input type="tel" class="form-control" name="parentcontact" pattern="[0-9]{10}" maxlength="10" placeholder="01234556789" required>
                       </div>
                       <div class="col-md-2">
                         <label>Title</label>
@@ -199,6 +205,7 @@ while($row = $gradesResult->fetch_assoc()){
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
+          <?= $grade['GradeName'] // needs come work?>
           <table class="table table-bordered" id="summaryTable">
             <thead>
               <tr>
@@ -244,6 +251,7 @@ while($row = $gradesResult->fetch_assoc()){
                                   <!-- Hidden input for SubjectID[] -->
                                   <input type="hidden" name="SubjectID[]" value="${sub.SubjectId}">
                               </td>
+                              
                               <td>
                                   <!-- Duration[] array -->
                                   <select name="Duration[]" class="form-control subject-duration" required>

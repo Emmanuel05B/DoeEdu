@@ -117,7 +117,7 @@ public class OrderProcessor {
         // Use a try-catch block to handle file parsing and IO exceptions
         try {
             // 1. Load the XML file
-            File xmlFile = new File("orders.xml");
+            File xmlFile = new File("orders.xml");                 //check out file class for more methods like .exists();
             if (!xmlFile.exists()) {
                 System.out.println("Error: orders.xml file not found!");
                 return; // Exit program if file missing
@@ -163,8 +163,8 @@ public class OrderProcessor {
             }
 
             // 7. Write summary to file
-            FileWriter fw = new FileWriter("order_summary.txt");
-            BufferedWriter bw = new BufferedWriter(fw);
+            FileWriter fw = new FileWriter("order_summary.txt");  // why not print writer ..same but no formatting methods like println..just print
+            BufferedWriter bw = new BufferedWriter(fw);    
 
             bw.write(String.format("Total Revenue: R%.2f%n", totalRevenue));
             // For each service type, write count (if missing, show 0)
@@ -269,7 +269,7 @@ for (Order order : orders) {
 
 
 
-
+ 
 
 
 ...................CSV..................
@@ -332,3 +332,15 @@ while ((line = br.readLine()) != null) {
     System.out.println(order.getName());
 }
 br.close();
+
+
+
+
+
+
+FrOM my Notes. 
+
+
+Text I/O
+Binary I/O 
+Object I/O     

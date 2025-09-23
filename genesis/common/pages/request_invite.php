@@ -229,15 +229,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form action="request_invite.php" method="post" novalidate>
         <div class="name-surname-row">
             <div>
-                <input type="text" name="name" placeholder="Name *" value="<?php echo htmlspecialchars($name ?? ''); ?>" required>
+                <input type="text" name="name" maxlength="150" placeholder="Name *" value="<?php echo htmlspecialchars($name ?? ''); ?>" required>
             </div>
             <div>
-                <input type="text" name="surname" placeholder="Surname *" value="<?php echo htmlspecialchars($surname ?? ''); ?>" required>
+                <input type="text" name="surname" maxlength="150" placeholder="Surname *" value="<?php echo htmlspecialchars($surname ?? ''); ?>" required>
             </div>
         </div>
 
-        <input type="email" name="email" placeholder="Email *" value="<?php echo htmlspecialchars($email ?? ''); ?>" required>
-        <textarea name="message" placeholder="Why you would like to join us. (Optional)"><?php echo htmlspecialchars($message ?? ''); ?></textarea>
+        <input type="email" name="email" maxlength="100" placeholder="Email *" value="<?php echo htmlspecialchars($email ?? ''); ?>" required>
+        <textarea name="message" maxlength="500" placeholder="Why you would like to join us. (Optional)"><?php echo htmlspecialchars($message ?? ''); ?></textarea>
 
         <label class="checkbox-wrapper" id="checkboxWrapper">
             <input type="checkbox" name="agree" id="agreeCheckbox" disabled>

@@ -137,9 +137,31 @@ $stmt->close();
         text-align: center;
     }
 
+    #payment-info {
+        background-color: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 15px;
+        font-size: 14px;
+    }
+
+    #payment-info h4 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    #payment-info p {
+        margin: 5px 0;
+    }
+
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<?php 
+ include(__DIR__ . "/../partials/queries.php");   //included in queries is src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+ ?>
+
 </head>
 <body>
 
@@ -170,6 +192,18 @@ $stmt->close();
             </tr>
         </tbody>
     </table>
+    <div id="payment-info">
+        <h4>Payment Options</h4>
+        <p>✅ Monthly instalments from R150/month.</p>
+        <p>✅ Pay once-off or split into monthly payments.</p>
+        <p>✅ Custom plans available upon request.</p>
+        <p>🏦 Account Number: FNB - <strong>1234567890</strong></p>
+        <h4>Contact</h4>
+        <p>📧 thedistributorsofedu@gmail.com</p>
+        <p>📞 +27 8XXXXXXXXX</p>
+        
+    </div>
+
 
     <div id="acknowledge">
         By verifying, you acknowledge awareness of the fees above and approve your child's registration.
@@ -189,8 +223,11 @@ Swal.fire({
     icon: 'success',
     title: 'Verification Successful!',
     html: 'You have approved <strong><?= htmlspecialchars($learnerName) ?></strong>\'s registration.<br>Total fees: R <?= number_format($totalFees, 2) ?>',
-    confirmButtonText: 'OK'
+    confirmButtonText: 'OK',
 });
+
+
+
 </script>
 
 </body>

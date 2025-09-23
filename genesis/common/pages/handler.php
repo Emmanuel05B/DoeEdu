@@ -263,7 +263,6 @@ try {
     // Commit transaction
     sendEmailToLearner($email, $name, $verificationToken);
     
-
     sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $connect, $learnerId);
     $connect->commit();
 
@@ -280,66 +279,7 @@ try {
 }
 
 
-/* Send email to parent
-function sendEmailToParent($pemail, $pname, $name) {
-  $mail = new PHPMailer(true);
-  try {
-      $mail->isSMTP();
-      $mail->Host = 'smtp.gmail.com';
-      $mail->SMTPAuth = true;
-      $mail->Username = 'thedistributorsofedu@gmail.com';
-      $mail->Password = 'sfdd';
-      $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-      $mail->Port = 465;
-
-      $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
-      $mail->addAddress($pemail, $pname);
-      $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis');
-
-      $mail->isHTML(true);
-      $mail->Subject = 'Your Child is Registered with DoE';
-      $mail->Body = "
-      <p>Dear $parent_name,</p>
-      <p>Your child <strong>$name</strong> has been successfully registered with the Distributors of Education.</p>
-      <p>Please verify/sigh to activate $name account:</p>
-      <a href='http://localhost/DoE_Genesis/DoeEdu/genesis/common/pages/registration.php?token=$verificationToken' style='background-color: #008CBA; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify/Sign</a>
-      <p>You will be updated with progress reports, announcements, and upcoming sessions.</p>
-      <p>Thank you for choosing us to support your child's learning journey.</p>
-      <br><p>Warm regards,</p><p><strong>DoE Team</strong></p>";
-
-      
-
-        <p>Dear <?= $parent_name ?>,</p>
-
-        <p>We’re excited to let you know that your child, <strong><?= $name ?></strong>, has been successfully registered with the Distributors of Education.</p>
-
-        <p>To activate <?= $name ?>'s account, please verify it by clicking the button below:</p>
-
-        <p style="text-align:center;">
-        <a href="http://localhost/DoeEdu/genesis/common/verification.php?token=<?= $verificationToken ?>" 
-            style="background-color: #008CBA; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-            Verify & Activate Account
-        </a>
-        </p>
-
-        <p>Once verified, you will receive updates on your child's progress, upcoming sessions, and important announcements.</p>
-
-        <p>If you did not expect this email or the link does not work, please contact us so we can assist you.</p>
-
-        <br>
-        <p>Warm regards,</p>
-        <p><strong>DoE Team</strong></p>
-
-
-
-      
-
-        $mail->send();
-    } catch (Exception $e) {
-        // You could log errors if needed
-    }
-    }
-*/
+// Send email to parent
 
 function sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $connect, $learnerId) {
     $mail = new PHPMailer(true);
@@ -426,8 +366,6 @@ function sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $c
         // Optional: log error or handle failure
     }
 }
-
-
 
 
 // Send email to learner with info telling them to let their parents to verify them. ese they wont be able to login.

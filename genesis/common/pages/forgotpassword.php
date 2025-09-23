@@ -226,8 +226,8 @@ if (isset($_POST['Submit'])) {
             // 3. Commit transaction
             $connect->commit();
 
-            //$_SESSION['reset_message'] = "If an account with this email exists, a reset link has been sent.";
-            header('Location: reset.php');
+            $_SESSION['reset_message'] = "If an account exists, a Reset Code has been sent to it.";
+            header("Location: reset.php");
             exit;
 
         } catch (Exception $e) {
@@ -239,10 +239,13 @@ if (isset($_POST['Submit'])) {
         }
 
     } else {
-        $_SESSION['reset_message'] = "If an account with this email exists, a reset link has been sent.";
+      
 
-        header('Location: forgotpassword.php');
+        // After sending the reset code email (or even if email not found)
+        $_SESSION['reset_message'] = "If an account exists, a Reset Code has been sent to it.";
+        header("Location: reset.php");
         exit;
+
     }
 }
 

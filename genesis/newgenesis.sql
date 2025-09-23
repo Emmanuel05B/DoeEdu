@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 20, 2025 at 12:28 PM
+-- Generation Time: Sep 23, 2025 at 01:20 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -34,7 +34,7 @@ CREATE TABLE `activities` (
   `ActivityDate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `MaxMarks` decimal(10,2) DEFAULT NULL,
   `Creator` varchar(255) DEFAULT NULL,
-  `Grade` int(3) NOT NULL,
+  `Grade` varchar(10) NOT NULL,
   `ChapterName` varchar(50) NOT NULL,
   `GroupName` varchar(5) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -44,9 +44,8 @@ CREATE TABLE `activities` (
 --
 
 INSERT INTO `activities` (`ActivityId`, `ActivityName`, `SubjectId`, `ActivityDate`, `MaxMarks`, `Creator`, `Grade`, `ChapterName`, `GroupName`) VALUES
-(2, 'activity 1111', 6, '2025-08-18 00:27:25', 30.00, 'Director', 12, 'Organic Chemistry', 'A'),
-(3, 'activity 1111', 3, '2025-08-18 00:35:51', 25.00, 'Director', 12, 'Functions', 'A'),
-(4, 'activity 222', 3, '2025-08-18 00:38:17', 25.00, 'Director', 12, 'Functions', 'A');
+(22, 'activity 1', 1, '2025-09-10 20:46:33', 25.00, 'Director', 'Grade 10', 'Statistics', 'B'),
+(23, 'activity 1', 1, '2025-09-10 20:55:14', 25.00, 'Director', 'Grade 10', 'Statistics', 'B');
 
 -- --------------------------------------------------------
 
@@ -70,37 +69,12 @@ CREATE TABLE `classes` (
 --
 
 INSERT INTO `classes` (`ClassID`, `SubjectID`, `Grade`, `GroupName`, `CurrentLearnerCount`, `TutorID`, `Status`, `CreatedAt`) VALUES
-(20, 2, '11', 'A', 1, 21, 'Not Full', '2025-07-24 09:21:52'),
-(21, 1, '10', 'A', 15, 2, 'Full', '2025-07-24 09:37:39'),
-(22, 4, '10', 'A', 7, 21, 'Not Full', '2025-07-24 09:37:40'),
-(23, 1, '10', 'B', 2, 2, 'Not Full', '2025-07-24 16:41:09'),
-(24, 3, '12', 'A', 1, 25, 'Not Full', '2025-08-04 15:08:20'),
-(25, 6, '12', 'A', 1, 25, 'Not Full', '2025-08-04 15:08:20');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `directorsubjects`
---
-
-CREATE TABLE `directorsubjects` (
-  `Id` int(11) NOT NULL,
-  `DirectorId` int(11) NOT NULL,
-  `SubjectId` int(11) DEFAULT NULL,
-  `SubjectName` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `directorsubjects`
---
-
-INSERT INTO `directorsubjects` (`Id`, `DirectorId`, `SubjectId`, `SubjectName`) VALUES
-(1, 1, 1, 'Mathematics_10'),
-(2, 1, 2, 'Mathematics_11'),
-(3, 1, 3, 'Mathematics_12'),
-(4, 1, 4, 'Physical Sciences_10'),
-(5, 1, 5, 'Physical Sciences_11'),
-(6, 1, 6, 'Physical Sciences_12');
+(57, 1, 'Grade 10', 'A', 4, 25, 'Not Full', '2025-09-05 18:06:00'),
+(58, 4, 'Grade 10', 'A', 5, 25, 'Full', '2025-09-05 18:06:00'),
+(59, 1, 'Grade 10', 'B', 2, 25, 'Not Full', '2025-09-05 18:11:06'),
+(64, 3, 'Grade 12', 'A', 3, 25, 'Not Full', '2025-09-06 16:23:49'),
+(65, 6, 'Grade 12', 'A', 2, 25, 'Not Full', '2025-09-06 18:38:02'),
+(66, 2, 'Grade 11', 'A', 3, 25, 'Not Full', '2025-09-22 08:44:10');
 
 -- --------------------------------------------------------
 
@@ -123,40 +97,39 @@ CREATE TABLE `feedbacklog` (
 
 CREATE TABLE `finances` (
   `FinanceId` int(11) NOT NULL,
-  `LearnerId` int(11) DEFAULT NULL,
-  `Name` varchar(100) DEFAULT NULL,
-  `Surname` varchar(100) DEFAULT NULL,
-  `Grade` int(3) DEFAULT NULL,
-  `TotalFees` decimal(10,2) DEFAULT NULL,
-  `TotalPaid` decimal(10,2) DEFAULT NULL,
-  `Math` decimal(15,2) DEFAULT NULL,
-  `Physics` decimal(15,2) DEFAULT NULL
+  `LearnerId` int(11) NOT NULL,
+  `TotalFees` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `TotalPaid` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `Balance` decimal(10,2) GENERATED ALWAYS AS (`TotalFees` - `TotalPaid`) STORED,
+  `PaymentStatus` enum('Unpaid','Partial','Paid','Overdue') DEFAULT 'Unpaid',
+  `DueDate` date DEFAULT NULL,
+  `LastPaymentDate` datetime DEFAULT NULL,
+  `Notes` text DEFAULT NULL,
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `UpdatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `finances`
 --
 
-INSERT INTO `finances` (`FinanceId`, `LearnerId`, `Name`, `Surname`, `Grade`, `TotalFees`, `TotalPaid`, `Math`, `Physics`) VALUES
-(22, 38, NULL, NULL, 11, 750.00, 0.00, 750.00, 0.00),
-(23, 39, NULL, NULL, 10, 1500.00, 0.00, 750.00, 750.00),
-(24, 40, NULL, NULL, 10, 2398.00, 0.00, 1199.00, 1199.00),
-(25, 41, NULL, NULL, 10, 1949.00, 0.00, 750.00, 1199.00),
-(26, 42, NULL, NULL, 10, 1949.00, 0.00, 750.00, 1199.00),
-(27, 43, NULL, NULL, 10, 1500.00, 0.00, 750.00, 750.00),
-(28, 44, NULL, NULL, 10, 1500.00, 0.00, 750.00, 750.00),
-(29, 45, NULL, NULL, 10, 750.00, 0.00, 750.00, 0.00),
-(30, 46, NULL, NULL, 10, 750.00, 0.00, 750.00, 0.00),
-(31, 47, NULL, NULL, 10, 750.00, 0.00, 750.00, 0.00),
-(32, 48, NULL, NULL, 10, 750.00, 0.00, 750.00, 0.00),
-(33, 49, NULL, NULL, 10, 750.00, 0.00, 750.00, 0.00),
-(34, 50, NULL, NULL, 10, 750.00, 0.00, 750.00, 0.00),
-(35, 51, NULL, NULL, 10, 750.00, 0.00, 750.00, 0.00),
-(36, 52, NULL, NULL, 10, 750.00, 0.00, 750.00, 0.00),
-(37, 53, NULL, NULL, 10, 750.00, 0.00, 750.00, 0.00),
-(38, 54, NULL, NULL, 10, 750.00, 0.00, 750.00, 0.00),
-(39, 60, NULL, NULL, 10, 1949.00, 0.00, 750.00, 1199.00),
-(40, 61, NULL, NULL, 12, 1500.00, 0.00, 750.00, 750.00);
+INSERT INTO `finances` (`FinanceId`, `LearnerId`, `TotalFees`, `TotalPaid`, `PaymentStatus`, `DueDate`, `LastPaymentDate`, `Notes`, `CreatedAt`, `UpdatedAt`) VALUES
+(38, 105, 1800.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:06:00', '2025-09-05 18:06:00'),
+(39, 106, 1200.00, 1500.00, 'Unpaid', NULL, '2025-09-06 11:52:48', NULL, '2025-09-05 18:06:59', '2025-09-06 09:52:48'),
+(40, 107, 600.00, 200.00, 'Unpaid', NULL, '2025-09-05 22:03:26', NULL, '2025-09-05 18:07:57', '2025-09-06 08:54:18'),
+(41, 108, 900.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:09:09', '2025-09-05 18:09:09'),
+(42, 109, 4200.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:10:08', '2025-09-06 09:14:46'),
+(43, 110, 1500.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:11:06', '2025-09-06 08:41:56'),
+(44, 111, 300.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:15:06', '2025-09-05 18:15:06'),
+(46, 112, 600.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:44:03', '2025-09-05 18:44:03'),
+(72, 113, 600.00, 750.00, 'Unpaid', NULL, '2025-09-06 11:44:56', NULL, '2025-09-06 09:25:35', '2025-09-06 09:44:56'),
+(74, 114, 300.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-06 16:23:49', '2025-09-06 16:23:49'),
+(75, 115, 1500.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-06 18:38:02', '2025-09-06 18:38:02'),
+(81, 121, 300.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-07 13:07:50', '2025-09-07 13:07:50'),
+(82, 122, 300.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-22 08:44:10', '2025-09-22 08:44:10'),
+(84, 124, 600.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-22 09:17:59', '2025-09-22 09:17:59'),
+(85, 125, 1800.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-22 09:38:50', '2025-09-22 09:38:50'),
+(86, 126, 600.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-22 10:06:45', '2025-09-22 10:06:45');
 
 -- --------------------------------------------------------
 
@@ -179,10 +152,7 @@ INSERT INTO `grades` (`GradeId`, `SchoolId`, `GradeName`, `CreatedAt`) VALUES
 (1, 4, 'Grade 10', '2025-08-08 15:58:08'),
 (2, 4, 'Grade 11', '2025-08-08 15:58:08'),
 (3, 4, 'Grade 12', '2025-08-08 15:58:08'),
-(33, 14, 'Grade 10', '2025-08-08 18:05:42'),
-(34, 14, 'Grade 11', '2025-08-08 18:05:42'),
-(35, 15, 'Grade 10', '2025-08-11 11:11:04'),
-(36, 15, 'Grade 11', '2025-08-11 11:11:04');
+(37, 16, '8', '2025-09-21 14:02:58');
 
 -- --------------------------------------------------------
 
@@ -205,9 +175,9 @@ CREATE TABLE `inviterequests` (
 --
 
 INSERT INTO `inviterequests` (`id`, `name`, `surname`, `email`, `message`, `created_at`, `IsAccepted`) VALUES
-(1, 'Sipho', 'Mbule', 'emahlwele05@gmail.com', 'Hi, I am interested in joining the program.', '2025-07-25 16:46:19', 0),
-(4, 'Thandi', 'Nkosi', 'thandi.nkosi@example.com', 'I would love to join your learning platform.', '2025-07-24 08:15:00', 1),
-(18, 'Boshielo', 'Boshielo', 'emahlwele05@gmail.com', '', '2025-08-07 11:50:36', 0);
+(21, 'Walter', 'Jones', 'thedistributorsofedu@gmail.com', '', '2025-09-22 08:37:28', 0),
+(22, 'DOE', 'DoE2018', 'distributorsdoe@gmail.com', '', '2025-09-22 08:38:29', 1),
+(24, 'Reneilwe', 'Letsholonyane', 'emahlwele05@gmail.com', '', '2025-09-22 09:35:09', 1);
 
 -- --------------------------------------------------------
 
@@ -230,8 +200,8 @@ CREATE TABLE `invitetokens` (
 --
 
 INSERT INTO `invitetokens` (`Id`, `InviteRequestId`, `Token`, `Email`, `IsUsed`, `CreatedAt`, `ExpiresAt`) VALUES
-(2, 1, '392496c901a6763dd2144ecadb8a91199b7cf5ad7006a162b8f80c39fa58d540', 'emahlwele05@gmail.com', 0, '2025-07-25 19:47:41', '2025-08-01 19:47:41'),
-(8, 4, 'da38169ed253b53943796f7766fe679ea786efdbb41c8e4345a00aabd2a8c8f4', 'thandi.nkosi@example.com', 0, '2025-07-28 15:32:52', '2025-08-04 15:32:52');
+(21, 24, '5ed8d9c7874a51cdd903d895738404ff62f833818ce707bc3be1d6222efffd74', 'emahlwele05@gmail.com', 0, '2025-09-22 11:36:00', '2025-09-29 11:36:00'),
+(22, 22, '830ae63eea008090f879168e68299c6b14bbd018c19b499907ecf2239b5b7bf6', 'distributorsdoe@gmail.com', 0, '2025-09-22 12:05:33', '2025-09-29 12:05:33');
 
 -- --------------------------------------------------------
 
@@ -257,29 +227,10 @@ CREATE TABLE `learneractivitymarks` (
 --
 
 INSERT INTO `learneractivitymarks` (`Id`, `LearnerId`, `ActivityId`, `MarkerId`, `MarksObtained`, `DateAssigned`, `Attendance`, `AttendanceReason`, `Submission`, `SubmissionReason`) VALUES
-(26, 38, 32, 1, 24, '2025-07-24 18:57:42', 'present', 'None', 'Yes', 'None'),
-(27, 54, 34, 1, 21, '2025-07-24 19:15:33', 'present', 'None', 'Yes', 'None'),
-(28, 39, 35, 1, 18, '2025-07-24 19:41:53', 'present', 'None', 'Yes', 'None'),
-(29, 40, 35, 1, 17, '2025-07-24 19:41:54', 'present', 'None', 'Yes', 'None'),
-(30, 41, 35, 1, 20, '2025-07-24 19:41:54', 'present', 'None', 'Yes', 'None'),
-(31, 42, 35, 1, 25, '2025-07-24 19:41:55', 'present', 'None', 'Yes', 'None'),
-(32, 43, 35, 1, 24, '2025-07-24 19:41:55', 'present', 'None', 'Yes', 'None'),
-(33, 44, 35, 1, 21, '2025-07-24 19:41:55', 'present', 'None', 'Yes', 'None'),
-(34, 54, 36, 1, 23, '2025-07-24 20:25:44', 'present', 'None', 'Yes', 'None'),
-(35, 38, 37, 1, 21, '2025-07-25 09:58:36', 'present', 'None', 'Yes', 'None'),
-(36, 38, 38, 1, 20, '2025-07-25 17:01:15', 'present', 'None', 'Yes', 'None'),
-(37, 38, 39, 1, 15, '2025-07-27 16:40:35', 'present', 'None', 'Yes', 'None'),
-(38, 38, 40, 1, 20, '2025-07-30 15:46:28', 'present', 'None', 'Yes', 'None'),
-(39, 61, 41, 1, 17, '2025-08-16 18:33:53', 'present', 'None', 'Yes', 'None'),
-(40, 61, 41, 1, 20, '2025-08-16 18:40:02', 'present', 'None', 'Yes', 'None'),
-(41, 61, 41, 1, 14, '2025-08-16 18:47:19', 'present', 'None', 'Yes', 'None'),
-(42, 61, 41, 1, 14, '2025-08-16 18:48:15', 'present', 'None', 'Yes', 'None'),
-(43, 61, 41, 1, 20, '2025-08-16 18:51:33', 'present', 'None', 'Yes', 'None'),
-(44, 61, 41, 1, 20, '2025-08-16 18:52:11', 'present', 'None', 'Yes', 'None'),
-(45, 61, 41, 1, 14, '2025-08-16 18:53:35', 'present', 'None', 'Yes', 'None'),
-(46, 61, 2, 1, 21, '2025-08-18 00:29:43', 'present', 'None', 'Yes', 'None'),
-(47, 61, 3, 1, 20, '2025-08-18 00:36:17', 'present', 'None', 'Yes', 'None'),
-(48, 61, 4, 1, 23, '2025-08-18 00:38:24', 'present', 'None', 'Yes', 'None');
+(59, 110, 22, 1, 19, '2025-09-09 22:00:00', 'present', 'None', 'Yes', 'None'),
+(60, 111, 22, 1, 18, '2025-09-09 22:00:00', 'present', 'None', 'Yes', 'None'),
+(61, 110, 23, 1, 10, '2025-09-09 22:00:00', 'present', 'None', 'Yes', 'None'),
+(62, 111, 23, 1, 5, '2025-09-09 22:00:00', 'present', 'None', 'Yes', 'None');
 
 -- --------------------------------------------------------
 
@@ -295,117 +246,6 @@ CREATE TABLE `learneranswers` (
   `SelectedAnswer` char(1) NOT NULL,
   `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `learneranswers`
---
-
-INSERT INTO `learneranswers` (`Id`, `UserId`, `ActivityId`, `QuestionId`, `SelectedAnswer`, `CreatedAt`) VALUES
-(20, 42, 14, 24, 'B', '2025-07-24 21:00:35'),
-(21, 42, 14, 25, 'A', '2025-07-24 21:00:36'),
-(22, 42, 15, 26, 'A', '2025-07-24 21:02:36'),
-(23, 42, 3, 4, 'B', '2025-07-25 10:04:44'),
-(24, 42, 16, 27, 'B', '2025-07-25 12:04:09'),
-(25, 42, 16, 28, 'C', '2025-07-25 12:04:09'),
-(26, 42, 16, 29, 'A', '2025-07-25 12:04:10'),
-(27, 42, 16, 30, 'C', '2025-07-25 12:04:10'),
-(28, 42, 16, 31, 'C', '2025-07-25 12:04:10'),
-(29, 42, 16, 32, 'C', '2025-07-25 12:04:10'),
-(30, 42, 16, 33, 'B', '2025-07-25 12:04:10'),
-(31, 42, 16, 34, 'C', '2025-07-25 12:04:10'),
-(32, 42, 16, 35, 'B', '2025-07-25 12:04:10'),
-(33, 42, 16, 36, 'C', '2025-07-25 12:04:10'),
-(34, 43, 16, 27, 'A', '2025-07-25 12:06:15'),
-(35, 43, 16, 28, 'A', '2025-07-25 12:06:15'),
-(36, 43, 16, 29, 'C', '2025-07-25 12:06:15'),
-(37, 43, 16, 30, 'D', '2025-07-25 12:06:16'),
-(38, 43, 16, 31, 'C', '2025-07-25 12:06:16'),
-(39, 43, 16, 32, 'D', '2025-07-25 12:06:16'),
-(40, 43, 16, 33, 'D', '2025-07-25 12:06:16'),
-(41, 43, 16, 34, 'C', '2025-07-25 12:06:16'),
-(42, 43, 16, 35, 'A', '2025-07-25 12:06:16'),
-(43, 43, 16, 36, 'C', '2025-07-25 12:06:16'),
-(44, 44, 16, 27, 'A', '2025-07-25 12:07:15'),
-(45, 44, 16, 28, 'B', '2025-07-25 12:07:15'),
-(46, 44, 16, 29, 'B', '2025-07-25 12:07:15'),
-(47, 44, 16, 30, 'C', '2025-07-25 12:07:15'),
-(48, 44, 16, 31, 'B', '2025-07-25 12:07:15'),
-(49, 44, 16, 32, 'B', '2025-07-25 12:07:15'),
-(50, 44, 16, 33, 'C', '2025-07-25 12:07:15'),
-(51, 44, 16, 34, 'C', '2025-07-25 12:07:15'),
-(52, 44, 16, 35, 'C', '2025-07-25 12:07:15'),
-(53, 44, 16, 36, 'C', '2025-07-25 12:07:15'),
-(54, 45, 16, 27, 'A', '2025-07-25 12:08:55'),
-(55, 45, 16, 28, 'A', '2025-07-25 12:08:55'),
-(56, 45, 16, 29, 'B', '2025-07-25 12:08:55'),
-(57, 45, 16, 30, 'A', '2025-07-25 12:08:55'),
-(58, 45, 16, 31, 'B', '2025-07-25 12:08:55'),
-(59, 45, 16, 32, 'A', '2025-07-25 12:08:55'),
-(60, 45, 16, 33, 'B', '2025-07-25 12:08:55'),
-(61, 45, 16, 34, 'B', '2025-07-25 12:08:55'),
-(62, 45, 16, 35, 'B', '2025-07-25 12:08:55'),
-(63, 45, 16, 36, 'C', '2025-07-25 12:08:55'),
-(64, 46, 16, 27, 'B', '2025-07-25 12:11:01'),
-(65, 46, 16, 28, 'C', '2025-07-25 12:11:01'),
-(66, 46, 16, 29, 'C', '2025-07-25 12:11:02'),
-(67, 46, 16, 30, 'C', '2025-07-25 12:11:02'),
-(68, 46, 16, 31, 'C', '2025-07-25 12:11:02'),
-(69, 46, 16, 32, 'C', '2025-07-25 12:11:02'),
-(70, 46, 16, 33, 'C', '2025-07-25 12:11:02'),
-(71, 46, 16, 34, 'B', '2025-07-25 12:11:02'),
-(72, 46, 16, 35, 'B', '2025-07-25 12:11:02'),
-(73, 46, 16, 36, 'C', '2025-07-25 12:11:02'),
-(74, 50, 16, 27, 'B', '2025-07-25 12:11:52'),
-(75, 50, 16, 28, 'C', '2025-07-25 12:11:52'),
-(76, 50, 16, 29, 'C', '2025-07-25 12:11:52'),
-(77, 50, 16, 30, 'A', '2025-07-25 12:11:52'),
-(78, 50, 16, 31, 'C', '2025-07-25 12:11:52'),
-(79, 50, 16, 32, 'B', '2025-07-25 12:11:52'),
-(80, 50, 16, 33, 'C', '2025-07-25 12:11:52'),
-(81, 50, 16, 34, 'A', '2025-07-25 12:11:52'),
-(82, 50, 16, 35, 'C', '2025-07-25 12:11:53'),
-(83, 50, 16, 36, 'C', '2025-07-25 12:11:53'),
-(84, 40, 16, 27, 'B', '2025-07-25 12:16:50'),
-(85, 40, 16, 28, 'C', '2025-07-25 12:16:50'),
-(86, 40, 16, 29, 'C', '2025-07-25 12:16:51'),
-(87, 40, 16, 30, 'A', '2025-07-25 12:16:51'),
-(88, 40, 16, 31, 'C', '2025-07-25 12:16:51'),
-(89, 40, 16, 32, 'A', '2025-07-25 12:16:51'),
-(90, 40, 16, 33, 'A', '2025-07-25 12:16:51'),
-(91, 40, 16, 34, 'D', '2025-07-25 12:16:51'),
-(92, 40, 16, 35, 'B', '2025-07-25 12:16:51'),
-(93, 40, 16, 36, 'C', '2025-07-25 12:16:51'),
-(94, 41, 16, 27, 'B', '2025-07-25 12:17:47'),
-(95, 41, 16, 28, 'B', '2025-07-25 12:17:47'),
-(96, 41, 16, 29, 'C', '2025-07-25 12:17:47'),
-(97, 41, 16, 30, 'A', '2025-07-25 12:17:47'),
-(98, 41, 16, 31, 'C', '2025-07-25 12:17:47'),
-(99, 41, 16, 32, 'B', '2025-07-25 12:17:47'),
-(100, 41, 16, 33, 'A', '2025-07-25 12:17:47'),
-(101, 41, 16, 34, 'C', '2025-07-25 12:17:47'),
-(102, 41, 16, 35, 'A', '2025-07-25 12:17:47'),
-(103, 41, 16, 36, 'C', '2025-07-25 12:17:47'),
-(104, 39, 16, 27, 'B', '2025-07-25 12:18:53'),
-(105, 39, 16, 28, 'B', '2025-07-25 12:18:53'),
-(106, 39, 16, 29, 'C', '2025-07-25 12:18:53'),
-(107, 39, 16, 30, 'B', '2025-07-25 12:18:53'),
-(108, 39, 16, 31, 'B', '2025-07-25 12:18:53'),
-(109, 39, 16, 32, 'D', '2025-07-25 12:18:53'),
-(110, 39, 16, 33, 'A', '2025-07-25 12:18:53'),
-(111, 39, 16, 34, 'A', '2025-07-25 12:18:54'),
-(112, 39, 16, 35, 'B', '2025-07-25 12:18:54'),
-(113, 39, 16, 36, 'C', '2025-07-25 12:18:54'),
-(114, 42, 13, 23, 'B', '2025-08-13 19:22:35'),
-(115, 42, 4, 5, 'A', '2025-08-16 17:49:38'),
-(116, 42, 6, 11, 'B', '2025-08-16 18:12:00'),
-(117, 42, 6, 12, 'B', '2025-08-16 18:12:00'),
-(118, 42, 2, 3, 'A', '2025-08-16 18:22:25'),
-(119, 42, 9, 19, 'B', '2025-08-16 18:24:28'),
-(120, 42, 8, 18, 'A', '2025-08-16 18:26:40'),
-(121, 42, 1, 1, 'B', '2025-08-16 18:28:07'),
-(122, 42, 1, 2, 'B', '2025-08-16 18:28:07'),
-(123, 61, 18, 38, 'B', '2025-08-16 22:57:30'),
-(124, 61, 18, 39, 'C', '2025-08-16 22:57:30');
 
 -- --------------------------------------------------------
 
@@ -425,33 +265,25 @@ CREATE TABLE `learnerclasses` (
 --
 
 INSERT INTO `learnerclasses` (`Id`, `LearnerID`, `ClassID`, `AssignedAt`) VALUES
-(19, 38, 20, '2025-07-24 09:21:52'),
-(20, 39, 21, '2025-07-24 09:37:39'),
-(21, 39, 22, '2025-07-24 09:37:40'),
-(22, 40, 21, '2025-07-24 16:25:16'),
-(23, 40, 22, '2025-07-24 16:25:16'),
-(24, 41, 21, '2025-07-24 16:28:41'),
-(25, 41, 22, '2025-07-24 16:28:41'),
-(26, 42, 21, '2025-07-24 16:29:36'),
-(27, 42, 22, '2025-07-24 16:29:36'),
-(28, 43, 21, '2025-07-24 16:30:38'),
-(29, 43, 22, '2025-07-24 16:30:38'),
-(30, 44, 21, '2025-07-24 16:31:39'),
-(31, 44, 22, '2025-07-24 16:31:39'),
-(32, 45, 21, '2025-07-24 16:32:26'),
-(33, 46, 21, '2025-07-24 16:33:18'),
-(34, 47, 21, '2025-07-24 16:34:20'),
-(35, 48, 21, '2025-07-24 16:35:02'),
-(36, 49, 21, '2025-07-24 16:35:43'),
-(37, 50, 21, '2025-07-24 16:36:35'),
-(38, 51, 21, '2025-07-24 16:37:37'),
-(39, 52, 21, '2025-07-24 16:38:55'),
-(40, 53, 21, '2025-07-24 16:39:24'),
-(41, 54, 23, '2025-07-24 16:41:09'),
-(42, 60, 23, '2025-07-27 14:52:25'),
-(43, 60, 22, '2025-07-27 14:52:25'),
-(44, 61, 24, '2025-08-04 15:08:20'),
-(45, 61, 25, '2025-08-04 15:08:20');
+(109, 105, 58, '2025-09-05 18:06:00'),
+(110, 106, 57, '2025-09-05 18:06:59'),
+(111, 106, 58, '2025-09-05 18:06:59'),
+(113, 108, 57, '2025-09-05 18:09:09'),
+(114, 108, 58, '2025-09-05 18:09:09'),
+(116, 109, 58, '2025-09-05 18:10:08'),
+(117, 110, 59, '2025-09-05 18:11:06'),
+(119, 111, 59, '2025-09-05 18:15:06'),
+(121, 112, 58, '2025-09-05 18:44:03'),
+(128, 113, 57, '2025-09-06 09:25:35'),
+(129, 114, 64, '2025-09-06 16:23:49'),
+(130, 115, 64, '2025-09-06 18:38:02'),
+(131, 115, 65, '2025-09-06 18:38:02'),
+(137, 121, 57, '2025-09-07 13:07:50'),
+(138, 122, 66, '2025-09-22 08:44:10'),
+(140, 124, 66, '2025-09-22 09:17:59'),
+(141, 125, 64, '2025-09-22 09:38:49'),
+(142, 125, 65, '2025-09-22 09:38:49'),
+(143, 126, 66, '2025-09-22 10:06:45');
 
 -- --------------------------------------------------------
 
@@ -466,32 +298,6 @@ CREATE TABLE `learnerhomeworkresults` (
   `Score` decimal(5,2) NOT NULL,
   `SubmittedAt` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `learnerhomeworkresults`
---
-
-INSERT INTO `learnerhomeworkresults` (`Id`, `UserId`, `ActivityId`, `Score`, `SubmittedAt`) VALUES
-(11, 42, 14, 50.00, '2025-07-24 21:00:36'),
-(12, 42, 15, 100.00, '2025-07-24 21:02:36'),
-(13, 42, 3, 0.00, '2025-07-25 10:04:45'),
-(14, 42, 16, 50.00, '2025-07-25 12:04:10'),
-(15, 43, 16, 30.00, '2025-07-25 12:06:16'),
-(16, 44, 16, 20.00, '2025-07-25 12:07:15'),
-(17, 45, 16, 50.00, '2025-07-25 12:08:56'),
-(18, 46, 16, 80.00, '2025-07-25 12:11:02'),
-(19, 50, 16, 70.00, '2025-07-25 12:11:53'),
-(20, 40, 16, 80.00, '2025-07-25 12:16:52'),
-(21, 41, 16, 50.00, '2025-07-25 12:17:47'),
-(22, 39, 16, 40.00, '2025-07-25 12:18:54'),
-(23, 42, 13, 0.00, '2025-08-13 19:22:35'),
-(24, 42, 4, 100.00, '2025-08-16 17:49:38'),
-(25, 42, 6, 0.00, '2025-08-16 18:12:00'),
-(26, 42, 2, 100.00, '2025-08-16 18:22:25'),
-(27, 42, 9, 0.00, '2025-08-16 18:24:28'),
-(28, 42, 8, 100.00, '2025-08-16 18:26:40'),
-(29, 42, 1, 50.00, '2025-08-16 18:28:07'),
-(30, 61, 18, 0.00, '2025-08-16 22:57:30');
 
 -- --------------------------------------------------------
 
@@ -517,17 +323,25 @@ CREATE TABLE `learnerlevel` (
 --
 
 INSERT INTO `learnerlevel` (`Id`, `LearnerId`, `LevelId`, `ChapterName`, `Complete`, `Mark`, `NumberAttempts`, `TotalTimeTaken`, `NumberQuestionsComplete`, `NumberQuestionsLeft`) VALUES
-(17, 61, 1, 'Functions', 1, 1.00, 3, 28, 1, 0),
-(18, 61, 1, 'Finances', 1, 4.00, 2, 89, 6, 0),
-(19, 61, 1, 'Probability', 1, 9.00, 2, 161, 12, 0),
-(20, 61, 1, 'Calculus', 1, 4.00, 4, 320, 5, 0),
-(21, 61, 1, 'Trigonometry', 1, 1.00, 1, 32, 4, 0),
-(22, 61, 2, 'Trigonometry', 0, 0.00, 5, 212, 1, 2),
-(23, 61, 1, 'Analytical Geometry', 0, 0.00, 4, 97, 2, 3),
-(24, 61, 1, 'Sequences & Series', 1, 5.00, 6, 177, 5, 0),
-(25, 61, 1, 'Statistics', 0, 7.00, 3, 220, 9, 1),
-(26, 61, 2, 'Finances', 1, 1.00, 3, 9, 1, 0),
-(27, 61, 2, 'Probability', 1, 5.00, 2, 34, 5, 0);
+(31, 115, 1, 'Electrostatics', 1, 1.00, 1, 3, 1, 0),
+(32, 115, 1, 'Analytical Geometry', 1, 4.00, 1, 58, 5, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `learneronlineactivities`
+--
+
+CREATE TABLE `learneronlineactivities` (
+  `LearnerOnlineActivityId` int(11) NOT NULL,
+  `LearnerId` int(11) NOT NULL,
+  `OnlineActivityId` int(11) NOT NULL,
+  `IsCompleted` tinyint(1) DEFAULT 0,
+  `Score` int(11) DEFAULT NULL,
+  `CompletedAt` datetime DEFAULT NULL,
+  `Feedback` text DEFAULT NULL,
+  `LastUpdated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -547,57 +361,12 @@ CREATE TABLE `learnerpracticequestions` (
 --
 
 INSERT INTO `learnerpracticequestions` (`Id`, `LearnerId`, `QuestionId`, `Status`) VALUES
-(105, 61, 21, 'complete'),
-(109, 61, 16, 'complete'),
-(110, 61, 23, 'complete'),
-(111, 61, 24, 'complete'),
-(122, 61, 25, 'complete'),
-(123, 61, 26, 'complete'),
-(124, 61, 27, 'complete'),
-(125, 61, 28, 'complete'),
-(126, 61, 29, 'complete'),
-(127, 61, 30, 'complete'),
-(128, 61, 31, 'complete'),
-(129, 61, 32, 'complete'),
-(130, 61, 33, 'complete'),
-(131, 61, 34, 'complete'),
-(147, 61, 19, 'complete'),
-(160, 61, 12, 'complete'),
-(176, 61, 102, 'complete'),
-(177, 61, 103, 'complete'),
-(178, 61, 87, 'complete'),
-(179, 61, 88, 'complete'),
-(180, 61, 89, 'complete'),
-(181, 61, 90, 'complete'),
-(182, 61, 91, 'complete'),
-(204, 61, 19, 'complete'),
-(205, 61, 19, 'complete'),
-(206, 61, 19, 'complete'),
-(207, 61, 25, 'complete'),
-(210, 61, 25, 'complete'),
-(211, 61, 16, 'complete'),
-(212, 61, 16, 'complete'),
-(213, 61, 16, 'complete'),
-(218, 61, 52, 'complete'),
-(219, 61, 53, 'complete'),
-(220, 61, 54, 'complete'),
-(221, 61, 55, 'complete'),
-(222, 61, 56, 'complete'),
-(225, 61, 17, 'complete'),
-(231, 61, 40, 'complete'),
-(232, 61, 41, 'complete'),
-(233, 61, 42, 'complete'),
-(234, 61, 43, 'complete'),
-(235, 61, 44, 'complete'),
-(254, 61, 57, 'complete'),
-(255, 61, 58, 'complete'),
-(256, 61, 59, 'complete'),
-(257, 61, 60, 'complete'),
-(258, 61, 61, 'complete'),
-(259, 61, 62, 'complete'),
-(260, 61, 63, 'complete'),
-(261, 61, 64, 'complete'),
-(262, 61, 65, 'complete');
+(286, 115, 120, 'complete'),
+(287, 115, 102, 'complete'),
+(288, 115, 103, 'complete'),
+(289, 115, 104, 'complete'),
+(290, 115, 105, 'complete'),
+(291, 115, 106, 'complete');
 
 -- --------------------------------------------------------
 
@@ -622,11 +391,6 @@ CREATE TABLE `learners` (
   `Grade` varchar(20) DEFAULT NULL,
   `RegistrationDate` date DEFAULT NULL,
   `LearnerKnockoffTime` time DEFAULT NULL,
-  `Math` decimal(10,2) DEFAULT 0.00,
-  `Physics` decimal(10,2) DEFAULT 0.00,
-  `TotalFees` decimal(10,2) DEFAULT 0.00,
-  `TotalPaid` decimal(10,2) DEFAULT 0.00,
-  `TotalOwe` decimal(10,2) GENERATED ALWAYS AS (`TotalFees` - `TotalPaid`) STORED,
   `ParentTitle` varchar(10) DEFAULT NULL,
   `ParentName` varchar(100) DEFAULT NULL,
   `ParentSurname` varchar(100) DEFAULT NULL,
@@ -639,26 +403,23 @@ CREATE TABLE `learners` (
 -- Dumping data for table `learners`
 --
 
-INSERT INTO `learners` (`LearnerId`, `Grade`, `RegistrationDate`, `LearnerKnockoffTime`, `Math`, `Physics`, `TotalFees`, `TotalPaid`, `ParentTitle`, `ParentName`, `ParentSurname`, `ParentEmail`, `ParentContactNumber`, `LastUpdated`) VALUES
-(38, '11', '2025-07-24', '00:00:17', 750.00, 0.00, 750.00, 65.00, 'Mrs', 'MotherSolo', 'Solo', 'msolo@gmail.com', '5552525458', '2025-08-17 00:44:40'),
-(39, '10', '2025-07-24', '00:00:18', 750.00, 750.00, 1250.00, 200.00, 'Dr', 'MotherSisdod', 'Solo', 'msisdod@gmail.com', '5552525452', '2025-08-17 00:43:50'),
-(40, '10', '2025-07-24', '00:00:12', 1199.00, 1199.00, 1950.00, 0.00, 'Mr', 'MotherRAshford', 'Rashford', 'rashfordd@gmail.com', '5552525458', NULL),
-(41, '10', '2025-07-24', '00:00:12', 750.00, 1199.00, 1949.00, 0.00, 'Ms', 'MotherMessi', 'Messi', 'mlio@gmail.com', '5552525458', NULL),
-(42, '10', '2025-07-24', '00:00:12', 750.00, 1199.00, 1949.00, 200.00, 'Ms', 'MotherIniesta', 'Messi', 'mIniesta@gmail.com', '5552525458', '2025-07-25 12:01:39'),
-(43, '10', '2025-07-24', '00:00:12', 750.00, 750.00, 1250.00, 0.00, 'Ms', 'MotherHernandes', 'Hernandes', 'mHernandes@gmail.com', '5552525458', NULL),
-(44, '10', '2025-07-24', '00:00:12', 750.00, 750.00, 1250.00, 0.00, 'Ms', 'MotherIbrah', 'Ibrah', 'mIbrah@gmail.com', '5552525458', NULL),
-(45, '10', '2025-07-24', '00:00:12', 750.00, 0.00, 750.00, 0.00, 'Ms', 'MotherToure', 'Toure', 'mToure@gmail.com', '5552525458', NULL),
-(46, '10', '2025-07-24', '00:00:12', 750.00, 0.00, 750.00, 50.00, 'Ms', 'MotherSuarez', 'Suarez', 'mSuarez@gmail.com', '5552525458', '2025-08-17 00:43:02'),
-(47, '10', '2025-07-24', '00:00:12', 750.00, 0.00, 750.00, 0.00, 'Ms', 'MotherBusi', 'Busq', 'mBusi@gmail.com', '5552525458', NULL),
-(48, '10', '2025-07-24', '00:00:12', 750.00, 0.00, 750.00, 100.00, 'Ms', 'MotherPuyol', 'Puyol', 'mPuyoli@gmail.com', '5552525458', '2025-07-27 18:52:04'),
-(49, '10', '2025-07-24', '00:00:12', 750.00, 0.00, 750.00, 0.00, 'Ms', 'MotherAlves', 'Alves', 'mAlvesl@gmail.com', '5552525458', NULL),
-(50, '10', '2025-07-24', '00:00:12', 750.00, 0.00, 750.00, 54.00, 'Ms', 'MotherVilla', 'Villa', 'mVilla@gmail.com', '5552525458', '2025-08-17 00:43:15'),
-(51, '10', '2025-07-24', '00:00:12', 750.00, 0.00, 750.00, 0.00, 'Ms', 'MotherPique', 'SomethingPique', 'mpiq@gmail.com', '5552525458', NULL),
-(52, '10', '2025-07-24', '00:00:12', 750.00, 0.00, 750.00, 0.00, 'Ms', 'MotherGaucho', 'Gaucho', 'mGaucho@gmail.com', '5552525458', NULL),
-(53, '10', '2025-07-24', '00:00:12', 750.00, 0.00, 750.00, 0.00, 'Ms', 'MotherEtoo', 'Etoo', 'mEtoo@gmail.com', '5552525458', NULL),
-(54, '10', '2025-07-24', '00:00:12', 750.00, 0.00, 750.00, 0.00, 'Ms', 'MotherRamos', 'Ramos', 'mRamos@gmail.com', '5552525458', NULL),
-(60, '10', '2025-07-27', '00:00:17', 750.00, 1199.00, 1949.00, 1000.00, 'Ms', 'MotherModric', 'Modric', 'mmodri@gmail.com', '0548854124', '2025-08-17 00:50:54'),
-(61, '12', '2025-08-04', '00:00:06', 750.00, 750.00, 1250.00, 0.00, 'Ms', 'MotherKante', 'Kante', 'mkante@gmail.com', '0548787787', NULL);
+INSERT INTO `learners` (`LearnerId`, `Grade`, `RegistrationDate`, `LearnerKnockoffTime`, `ParentTitle`, `ParentName`, `ParentSurname`, `ParentEmail`, `ParentContactNumber`, `LastUpdated`) VALUES
+(105, 'Grade 10', NULL, '17:32:00', 'Ms', 'sdc', 'legend', 'dcdscf@gmail.com', '0795674125', NULL),
+(106, 'Grade 10', NULL, '17:32:00', 'Prof', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
+(107, 'Grade 10', NULL, '05:07:00', 'Mrs', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
+(108, 'Grade 10', NULL, '21:08:00', 'Ms', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
+(109, 'Grade 10', NULL, '21:06:00', 'Dr', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
+(110, 'Grade 10', NULL, '20:06:00', 'Ms', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
+(111, 'Grade 10', NULL, '20:46:00', 'Mr', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
+(112, 'Grade 10', NULL, '20:06:00', 'Ms', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
+(113, 'Grade 10', NULL, '20:54:00', 'Ms', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
+(114, 'Grade 12', NULL, '06:23:00', 'Ms', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
+(115, 'Grade 12', NULL, '16:51:00', 'Mrs', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
+(121, 'Grade 10', NULL, '04:52:00', 'Mr', 'Fugaku', 'Uchiha', 'fukaku@gmail.com', '8652465312', NULL),
+(122, 'Grade 11', NULL, '20:06:00', 'Mrs', 'Marry', 'Mguni', 'emah@gmail.com', '4512465445', NULL),
+(124, 'Grade 11', NULL, '16:10:00', 'Mr', 'Marry', 'Boshielo555', 'distributorsdoe@gmail.com', '4512465445', NULL),
+(125, 'Grade 12', NULL, '20:45:00', 'Mrs', 'Dolly', 'Letsholonyane', 'distributorsdoe@gmail.com', '4512465445', NULL),
+(126, 'Grade 11', NULL, '19:05:00', 'Ms', 'Anna', 'Letsholonyane', 'distributorsdoe@gmail.com', '4512465445', NULL);
 
 -- --------------------------------------------------------
 
@@ -673,42 +434,42 @@ CREATE TABLE `learnersubject` (
   `TargetLevel` int(11) DEFAULT NULL,
   `CurrentLevel` int(11) DEFAULT NULL,
   `NumberOfTerms` int(11) DEFAULT NULL,
+  `ContractStartDate` date DEFAULT NULL,
   `ContractExpiryDate` datetime DEFAULT NULL,
-  `Status` varchar(50) DEFAULT NULL
+  `ContractFee` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `DiscountAmount` decimal(10,2) DEFAULT 0.00,
+  `Status` enum('Active','Suspended','Completed','Cancelled') DEFAULT 'Active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `learnersubject`
 --
 
-INSERT INTO `learnersubject` (`LearnerSubjectId`, `LearnerId`, `SubjectId`, `TargetLevel`, `CurrentLevel`, `NumberOfTerms`, `ContractExpiryDate`, `Status`) VALUES
-(31, 38, 2, 6, 2, 2, '2026-01-24 11:21:52', 'Active'),
-(32, 39, 1, 6, 2, 2, '2026-01-24 11:37:39', 'Active'),
-(33, 39, 4, 7, 2, 2, '2026-01-24 11:37:39', 'Active'),
-(34, 40, 1, 6, 1, 3, '2026-07-24 18:25:16', 'Active'),
-(35, 40, 4, 5, 1, 3, '2026-07-24 18:25:16', 'Active'),
-(36, 41, 1, 5, 1, 2, '2026-01-24 18:28:41', 'Active'),
-(37, 41, 4, 5, 2, 3, '2026-07-24 18:28:41', 'Active'),
-(38, 42, 1, 5, 1, 2, '2026-01-24 18:29:36', 'Active'),
-(39, 42, 4, 5, 2, 3, '2026-07-24 18:29:36', 'Active'),
-(40, 43, 1, 5, 1, 2, '2026-01-24 18:30:38', 'Active'),
-(41, 43, 4, 5, 2, 2, '2026-01-24 18:30:38', 'Active'),
-(42, 44, 1, 7, 1, 2, '2026-01-24 18:31:39', 'Active'),
-(43, 44, 4, 7, 4, 2, '2026-01-24 18:31:39', 'Active'),
-(44, 45, 1, 7, 1, 2, '2026-01-24 18:32:25', 'Active'),
-(45, 46, 1, 7, 1, 2, '2026-01-24 18:33:18', 'Active'),
-(46, 47, 1, 7, 1, 2, '2026-01-24 18:34:20', 'Active'),
-(47, 48, 1, 7, 1, 2, '2026-01-24 18:35:02', 'Active'),
-(48, 49, 1, 7, 1, 2, '2026-01-24 18:35:42', 'Active'),
-(49, 50, 1, 7, 1, 2, '2026-01-24 18:36:35', 'Active'),
-(50, 51, 1, 7, 1, 2, '2026-01-24 18:37:37', 'Active'),
-(51, 52, 1, 7, 1, 2, '2026-01-24 18:38:55', 'Active'),
-(52, 53, 1, 7, 1, 2, '2026-01-24 18:39:24', 'Active'),
-(53, 54, 1, 7, 1, 2, '2026-01-24 18:41:09', 'Active'),
-(54, 60, 1, 5, 1, 2, '2026-01-27 16:52:25', 'Active'),
-(55, 60, 4, 4, 1, 3, '2026-07-27 16:52:25', 'Active'),
-(56, 61, 3, 5, 1, 2, '2026-02-04 17:08:20', 'Active'),
-(57, 61, 6, 5, 1, 2, '2026-02-04 17:08:20', 'Active');
+INSERT INTO `learnersubject` (`LearnerSubjectId`, `LearnerId`, `SubjectId`, `TargetLevel`, `CurrentLevel`, `NumberOfTerms`, `ContractStartDate`, `ContractExpiryDate`, `ContractFee`, `DiscountAmount`, `Status`) VALUES
+(120, 105, 1, 7, 1, 6, '2025-09-05', '2026-03-04 00:00:00', 600.00, NULL, 'Completed'),
+(121, 105, 4, 7, 1, 12, '2025-09-05', '2026-08-31 00:00:00', 1200.00, NULL, 'Active'),
+(122, 106, 1, 7, 1, 6, '2025-09-05', '2026-03-04 00:00:00', 600.00, NULL, 'Active'),
+(123, 106, 4, 7, 1, 6, '2025-09-05', '2026-03-04 00:00:00', 600.00, NULL, 'Active'),
+(125, 108, 1, 7, 1, 3, '2025-09-05', '2025-12-04 00:00:00', 300.00, NULL, 'Active'),
+(126, 108, 4, 7, 1, 6, '2025-09-05', '2025-10-11 00:00:00', 600.00, NULL, 'Completed'),
+(127, 109, 1, 7, 1, 3, '2025-09-05', '2025-12-04 00:00:00', 3000.00, NULL, 'Cancelled'),
+(128, 109, 4, 7, 1, 12, '2025-09-05', '2026-08-31 00:00:00', 1200.00, NULL, 'Active'),
+(129, 110, 1, 7, 1, 3, '2025-09-05', '2025-12-04 00:00:00', 300.00, NULL, 'Active'),
+(131, 111, 1, 7, 1, 3, '2025-09-05', '2025-12-04 00:00:00', 300.00, NULL, 'Active'),
+(133, 112, 4, NULL, NULL, 6, '2025-09-05', '2026-03-04 00:00:00', 600.00, NULL, 'Active'),
+(137, 107, 1, 3, 2, NULL, '2025-09-06', '2025-10-04 00:00:00', 150.00, 0.00, 'Cancelled'),
+(138, 107, 4, 7, 2, NULL, '2025-05-04', '2025-10-11 00:00:00', 450.00, 0.00, 'Cancelled'),
+(139, 110, 4, 7, 2, NULL, '2025-09-06', '2025-10-11 00:00:00', 1200.00, 0.00, 'Cancelled'),
+(140, 113, 1, 7, 1, 6, '2025-09-06', '2026-03-05 00:00:00', 600.00, NULL, 'Active'),
+(141, 114, 3, 7, 1, 3, '2025-09-06', '2025-12-05 00:00:00', 300.00, NULL, 'Active'),
+(142, 115, 3, 7, 3, 3, '2025-09-06', '2025-12-05 00:00:00', 300.00, NULL, 'Active'),
+(143, 115, 6, 7, 4, 12, '2025-09-06', '2026-09-01 00:00:00', 1200.00, NULL, 'Active'),
+(149, 121, 1, 7, 1, 3, '2025-09-07', '2025-12-06 00:00:00', 300.00, NULL, 'Active'),
+(150, 122, 2, 7, 1, 3, '2025-09-22', '2025-12-21 00:00:00', 300.00, NULL, 'Active'),
+(152, 124, 2, 7, 1, 6, '2025-09-22', '2026-03-21 00:00:00', 600.00, NULL, 'Active'),
+(153, 125, 3, 7, 2, 6, '2025-09-22', '2026-03-21 00:00:00', 600.00, NULL, 'Active'),
+(154, 125, 6, 7, 4, 12, '2025-09-22', '2026-09-17 00:00:00', 1200.00, NULL, 'Active'),
+(155, 126, 2, 7, 1, 6, '2025-09-22', '2026-03-21 00:00:00', 600.00, NULL, 'Active');
 
 -- --------------------------------------------------------
 
@@ -781,43 +542,54 @@ CREATE TABLE `notices` (
 --
 
 INSERT INTO `notices` (`NoticeNo`, `Title`, `Content`, `Date`, `ExpiryDate`, `IsOpened`, `CreatedBy`, `CreatedFor`) VALUES
-(1, 'Welcome Back to Term 3', 'Dear learners and tutors, Term 3 has officially started. Please check your schedules and submit all pending assignments on time.', '2025-07-09 20:38:47', NULL, 1, 1, 12),
-(2, 'System Maintenance Notification', 'The system will be down for maintenance on Saturday from 10 PM to 2 AM. Please save your work accordingly.', '2025-07-09 20:38:47', NULL, 1, 2, 12),
-(4, 'Title', 'This is the first nitice from the form', '2025-07-09 20:56:09', NULL, 1, 1, 12),
+(1, 'Welcome Back to Term 3', 'Dear learners and tutors, Term 3 has officially started. Please check your schedules and submit all pending assignments on time.', '2025-07-09 20:38:47', NULL, 0, 1, 12),
+(2, 'System Maintenance Notification', 'The system will be down for maintenance on Saturday from 10 PM to 2 AM. Please save your work accordingly.', '2025-07-09 20:38:47', '2025-09-20', 0, 2, 12),
+(4, 'Title', 'This is the first nitice from the form', '2025-07-09 20:56:09', NULL, 0, 1, 12),
 (5, 'Mid-Year Exams Preparation', 'Dear Learners, please begin preparing for your mid-year exams scheduled for next month. Study guides have been uploaded.', '2025-07-09 21:08:43', NULL, 0, 1, 1),
-(6, 'New Resources Available', 'New Maths and Science videos are now available in your Resources tab.', '2025-07-09 21:08:44', NULL, 1, 1, 1),
-(7, 'Friday Q&A Session', 'Join our live Q&A session this Friday at 4PM for help with your homework and recent topics.', '2025-07-09 21:08:44', NULL, 1, 1, 1),
+(6, 'New Resources Available', 'New Maths and Science videos are now available in your Resources tab.', '2025-07-09 21:08:44', NULL, 0, 1, 1),
+(7, 'Friday Q&A Session', 'Join our live Q&A session this Friday at 4PM for help with your homework and recent topics.', '2025-07-09 21:08:44', NULL, 0, 1, 1),
 (8, 'Mark Submission Reminder', 'Tutors, please submit all learner marks for the week by Friday 17:00.', '2025-07-09 21:08:44', NULL, 0, 1, 2),
 (9, 'Mandatory Tutor Meeting', 'All tutors are required to attend an online meeting this Thursday at 18:00 to discuss Term 3 planning.', '2025-07-09 21:08:44', NULL, 0, 1, 2),
 (10, 'New Notice after updates', 'asdasd sfs fds ds fdsf df dfd fdfsdf sdfds fdsf', '2025-07-25 09:49:14', '2025-10-11', 0, 1, 12),
 (11, 'Second Notice after updates', 'sssa s dsdf gd dg', '2025-07-25 09:51:14', '2025-08-08', 0, 1, 12),
 (12, 'Second Notice after updates', 'sssa s dsdf gd dg', '2025-07-25 09:51:28', '2025-08-08', 0, 1, 12),
 (13, '22222222222222', '3333333333333', '2025-07-25 10:20:19', '2025-08-09', 0, 1, 1),
-(14, 'Emmanuel Emmanuel', '\"Exam Timetable Updated - Please download the latest PDF from the resources page.\"', '2025-08-11 00:16:04', '2025-08-30', 0, 1, 12);
+(14, 'Emmanuel Emmanuel', '\"Exam Timetable Updated - Please download the latest PDF from the resources page.\"', '2025-08-11 00:16:04', '2025-08-30', 0, 1, 12),
+(15, 'Title d f d f', 'ef w few ew few', '2025-08-20 23:01:46', '2025-08-30', 0, 1, 12),
+(16, 'Title 444s', 'r6ftgyuhijkol gbuhnjkml', '2025-09-03 18:10:09', '2025-09-27', 0, 1, 12);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `oldsubjects`
+-- Table structure for table `notifications`
 --
 
-CREATE TABLE `oldsubjects` (
-  `SubjectId` int(11) NOT NULL,
-  `SubjectName` varchar(255) NOT NULL,
-  `Grade` varchar(10) NOT NULL
+CREATE TABLE `notifications` (
+  `NotificationId` int(11) NOT NULL,
+  `Title` varchar(255) NOT NULL,
+  `Content` text NOT NULL,
+  `SubjectName` varchar(100) DEFAULT NULL,
+  `Grade` varchar(50) DEFAULT NULL,
+  `CreatedBy` int(11) NOT NULL,
+  `CreatedFor` tinyint(4) NOT NULL COMMENT '1 = Learners, 2 = Tutors, 12 = Both',
+  `CreatedAt` datetime NOT NULL DEFAULT current_timestamp(),
+  `ExpiryDate` date DEFAULT NULL,
+  `IsAutomatic` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0 = manual, 1 = auto-generated',
+  `Link` varchar(255) DEFAULT NULL,
+  `Priority` tinyint(4) DEFAULT 2 COMMENT '1 = high, 2 = medium, 3 = low',
+  `NotificationType` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `oldsubjects`
+-- Dumping data for table `notifications`
 --
 
-INSERT INTO `oldsubjects` (`SubjectId`, `SubjectName`, `Grade`) VALUES
-(1, 'Mathematics_10', '10'),
-(2, 'Mathematics_11', '11'),
-(3, 'Mathematics_12', '12'),
-(4, 'Physical Sciences_10', '10'),
-(5, 'Physical Sciences_11', '11'),
-(6, 'Physical Sciences_12', '12');
+INSERT INTO `notifications` (`NotificationId`, `Title`, `Content`, `SubjectName`, `Grade`, `CreatedBy`, `CreatedFor`, `CreatedAt`, `ExpiryDate`, `IsAutomatic`, `Link`, `Priority`, `NotificationType`) VALUES
+(1, 'The first manual notification', 'This is the first manual notification which im using for testing.', NULL, NULL, 1, 12, '2025-08-20 23:13:57', '2025-11-08', 0, NULL, 0, NULL),
+(2, 'The Second manual notification', 'This is the first manual notification which im using for testing.', NULL, NULL, 1, 12, '2025-08-20 23:24:32', '2025-11-08', 0, NULL, 0, NULL),
+(3, 'Welcome Back!', 'We hope you are ready for a productive term! Check out the latest resources in your dashboard.', NULL, NULL, 1, 1, '2025-08-20 23:27:31', '2025-09-19', 0, NULL, 2, NULL),
+(4, 'System Maintenance', 'The platform will undergo maintenance this weekend. Expect brief downtime.', NULL, NULL, 1, 12, '2025-08-20 23:27:34', '2025-08-27', 0, NULL, 2, NULL),
+(5, 'Title 444s', 'x x  xxxx x x x', NULL, NULL, 1, 12, '2025-09-03 18:09:38', '2025-09-27', 0, NULL, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -828,50 +600,60 @@ INSERT INTO `oldsubjects` (`SubjectId`, `SubjectName`, `Grade`) VALUES
 CREATE TABLE `onlineactivities` (
   `Id` int(11) NOT NULL,
   `TutorId` int(11) NOT NULL,
-  `SubjectName` varchar(100) NOT NULL,
+  `SubjectId` int(11) NOT NULL,
   `Grade` varchar(20) NOT NULL,
   `Topic` varchar(100) NOT NULL,
   `Title` varchar(255) NOT NULL,
   `Instructions` text DEFAULT NULL,
   `TotalMarks` int(11) NOT NULL,
-  `DueDate` date DEFAULT NULL,
   `CreatedAt` datetime DEFAULT current_timestamp(),
   `ImagePath` varchar(255) DEFAULT NULL,
   `LastFeedbackSent` datetime DEFAULT NULL,
-  `GroupName` varchar(5) DEFAULT NULL
+  `MemoPath` varchar(255) DEFAULT NULL,
+  `GroupName` char(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `onlineactivities`
 --
 
-INSERT INTO `onlineactivities` (`Id`, `TutorId`, `SubjectName`, `Grade`, `Topic`, `Title`, `Instructions`, `TotalMarks`, `DueDate`, `CreatedAt`, `ImagePath`, `LastFeedbackSent`, `GroupName`) VALUES
-(1, 1, '1', '10', 'Algebraic Expressions', 'Quiz 2', 'Default instructions here', 2, '2025-07-04', '2025-06-30 18:37:04', '../uploads/1751301424_7.png', NULL, 'A'),
-(2, 1, '1', '10', 'Algebraic Expressions', 'Test 2', 'Default instructions here', 1, '2025-07-11', '2025-06-30 18:40:10', '../uploads/1751301610_4.png', NULL, 'A'),
-(3, 1, '1', '10', 'Functions', 'Test 1', 'Default instructions here', 1, '2025-07-04', '2025-06-30 18:56:36', NULL, NULL, 'A'),
-(4, 2, '1', '10', 'Trigonometry', 'Quiz', 'Default instructions here', 1, '2025-07-16', '2025-07-01 18:20:39', NULL, '2025-07-16 22:18:55', 'A'),
-(5, 2, '1', '10', 'Statistics', 'Activity', 'Default instructions here', 5, '2025-08-09', '2025-07-01 19:06:29', '../uploads/1751389589_7.png', NULL, 'A'),
-(6, 1, '1', '10', 'Finance and Growth', 'Finances', 'Default instructions here', 2, '2025-07-24', '2025-07-01 19:19:31', NULL, NULL, 'A'),
-(7, 1, '4', '10', 'Magnetism', 'Quiz 1', 'Default instructions here', 5, '2025-08-09', '2025-07-15 11:34:10', NULL, NULL, 'A'),
-(8, 2, '1', '10', 'Probability', 'Quiz 1111', 'Default instructions here', 1, '2025-07-14', '2025-07-15 18:13:27', NULL, NULL, 'A'),
-(9, 2, '1', '10', 'Probability', 'Quiz 22222', 'Default instructions here', 1, '2025-07-14', '2025-07-15 18:15:23', NULL, NULL, 'A'),
-(10, 2, '5', '11', 'Newtons Laws', 'Quiz 22222', 'Default instructions here', 1, '2025-07-25', '2025-07-15 18:19:07', NULL, NULL, 'A'),
-(11, 2, '5', '11', 'Quantitative Aspects Of Chemical Change', 'Quiz 9999', 'Default instructions here', 1, '2025-08-01', '2025-07-16 21:31:48', NULL, NULL, 'A'),
-(12, 2, '5', '11', 'Electric Circuits', 'Quiz 9999', 'Default instructions here', 1, '2025-07-15', '2025-07-16 21:33:01', NULL, NULL, 'A'),
-(13, 2, '1', '10', 'Trigonometry', 'Test 1', 'Default instructions here', 1, '2025-04-21', '2025-07-19 15:27:26', '../uploads/1752931646_3.png', NULL, 'A'),
-(14, 1, '1', '10', 'Statistics', 'The first quiz with Groups', 'Default instructions here', 2, '2025-05-24', '2025-07-24 22:13:26', '../uploads/1753388006_Picture5.jpg', NULL, 'B'),
-(15, 1, '1', '10', 'Statistics', 'The second quiz with Groups', 'Default instructions here', 1, '2025-05-24', '2025-07-24 22:16:54', '../uploads/1753388214_Picture5.jpg', NULL, 'A'),
-(16, 1, '1', '10', 'Statistics', 'Demo Quiz', 'Default instructions here', 10, '2025-07-24', '2025-07-17 13:58:53', NULL, NULL, 'A'),
-(17, 1, '2', '11', 'Functions', 'LAst o0', 'Default instructions here', 1, '2025-08-09', '2025-07-30 17:47:25', NULL, NULL, 'A'),
-(18, 1, '3', '12', 'Functions', 'Quiz dsdfhgj', 'Default instructions here', 2, '2025-08-30', '2025-08-16 23:09:54', NULL, NULL, 'A'),
-(19, 1, '3', '12', 'Probability', 'Quiz dsdfhgj hjgjk', 'Default instructions here', 1, '2025-07-12', '2025-08-16 23:40:56', NULL, NULL, 'A'),
-(20, 1, '3', '12', 'Probability', 'Quiz dsdfhgj hjgjkgerg reg', 'Default instructions here', 1, '2025-07-12', '2025-08-16 23:42:34', NULL, NULL, 'A'),
-(21, 1, '3', '12', 'Statistics', 'quiz xxxxx', 'Default instructions here', 1, '2025-08-31', '2025-08-16 23:47:23', NULL, NULL, 'A'),
-(22, 1, '3', '12', 'Measurement', 'quiz xxxxx', 'Default instructions here', 1, '2025-10-04', '2025-08-16 23:54:42', NULL, NULL, 'A'),
-(23, 1, '3', '12', 'Analytical Geometry', 'quizyyyy', 'Default instructions here', 1, '2025-09-06', '2025-08-17 00:01:19', NULL, NULL, 'A'),
-(24, 1, '3', '12', 'Analytical Geometry', 'quizyyyy', 'Default instructions here', 1, '2025-08-27', '2025-08-17 00:03:01', NULL, NULL, 'A'),
-(25, 1, '3', '12', 'Analytical Geometry', 'quizyyyy', 'Default instructions here', 1, '2025-08-27', '2025-08-17 00:05:09', NULL, NULL, 'A'),
-(26, 1, '3', '12', 'Sequences and Series', 'quizyyyy', 'Default instructions here', 1, '2025-08-28', '2025-08-17 00:07:48', NULL, NULL, 'A');
+INSERT INTO `onlineactivities` (`Id`, `TutorId`, `SubjectId`, `Grade`, `Topic`, `Title`, `Instructions`, `TotalMarks`, `CreatedAt`, `ImagePath`, `LastFeedbackSent`, `MemoPath`, `GroupName`) VALUES
+(47, 1, 3, 'Grade 12', 'Stati Stati', 'Quiz 10000020000 11dd', '3 3 3 3 3 3 3 3 444 4 4 4 4', 5, '2025-08-22 19:48:27', 'uploads/images/activity_47_1755890044.png', NULL, NULL, 'A'),
+(49, 1, 1, 'Grade 10', 'Stati Stati', '77777777666666newly', '', 1, '2025-09-03 18:28:33', NULL, NULL, NULL, 'A'),
+(50, 1, 1, 'Grade 10', 'Sequences & Series', 'Quiz zxzxzxzzxzx', 'hhgf hf jh jh jh hj jg gj jhj h hj hj hj', 1, '2025-09-08 22:35:46', NULL, NULL, NULL, 'A'),
+(51, 1, 1, 'Grade 10', 'Finances', 'Quiz Class B', '', 1, '2025-09-08 22:40:42', NULL, NULL, NULL, 'B'),
+(52, 1, 3, 'Grade 12', 'Finances  for 12', 'Quiz Class A', 'erth', 1, '2025-09-08 23:05:57', NULL, NULL, NULL, 'A'),
+(53, 1, 1, 'Grade 10', 'Analytical  for 10', 'tghjkm', '', 1, '2025-09-09 14:23:27', NULL, NULL, NULL, 'A'),
+(54, 1, 1, 'Grade 10', 'Analytical  for 10', 'tghjkm', 'This isthd d', 1, '2025-09-09 14:24:37', '../uploads/1757420677_2024-removebg-preview.png', NULL, '../uploads/memos/1757420677_Diesel Mech N4.pdf', 'A'),
+(55, 1, 1, 'Grade 10', 'Analytical Geo  for 10', 'dfd rf er', '', 1, '2025-09-09 14:27:58', NULL, NULL, NULL, 'A'),
+(56, 1, 4, 'Grade 10', 'Elec  for 10', 'Physics 10 fdgd', '', 1, '2025-09-10 21:12:20', NULL, NULL, NULL, 'A');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `onlineactivitiesassignments`
+--
+
+CREATE TABLE `onlineactivitiesassignments` (
+  `AssignmentId` int(11) NOT NULL,
+  `ClassID` int(11) NOT NULL,
+  `OnlineActivityId` int(11) NOT NULL,
+  `AssignedAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `DueDate` date DEFAULT NULL,
+  `LastFeedBackSent` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `onlineactivitiesassignments`
+--
+
+INSERT INTO `onlineactivitiesassignments` (`AssignmentId`, `ClassID`, `OnlineActivityId`, `AssignedAt`, `DueDate`, `LastFeedBackSent`) VALUES
+(15, 57, 50, '2025-09-09 10:37:50', '2025-10-11', NULL),
+(20, 57, 49, '2025-09-09 11:40:34', '2025-09-08', NULL),
+(21, 57, 51, '2025-09-09 12:26:41', '2025-09-09', NULL),
+(22, 59, 51, '2025-09-09 13:45:32', '2025-09-09', NULL),
+(23, 59, 49, '2025-09-09 14:32:00', '2025-09-27', NULL),
+(24, 58, 56, '2025-09-10 19:12:33', '2025-09-27', NULL);
 
 -- --------------------------------------------------------
 
@@ -895,53 +677,19 @@ CREATE TABLE `onlinequestions` (
 --
 
 INSERT INTO `onlinequestions` (`Id`, `ActivityId`, `QuestionText`, `OptionA`, `OptionB`, `OptionC`, `OptionD`, `CorrectAnswer`) VALUES
-(1, 1, 'This is also an edited question.', '5', '12', 'Ampere', '7', 'B'),
-(2, 1, 'Lets edit this one as well.', 'aaaa', 'bbb', 'ccc', 'ddd', 'A'),
-(3, 2, 'Question edited to make it make sense', '5', '12', 'Ampere', '7', 'A'),
-(4, 3, 'frte tt ht hy th gtr', '5', '12', 'Ampere', '7', 'A'),
-(5, 4, 'This is an edited question 22', '5', '12', 'Ampere', '7', 'A'),
-(6, 5, 'What is the mean of the following data set?\nData: 6, 8, 10, 4, 12', '7', '8', '9', '10', 'B'),
-(7, 5, 'Which value represents the median of this data set?\nData: 15, 10, 20, 25, 5', '10', '15', '20', '25', 'B'),
-(8, 5, 'What is the mode of the following set of numbers?\r\nData: 3, 7, 3, 5, 8, 3, 2', '3', '5', '7', '2', 'A'),
-(9, 5, 'What does the range of a data set measure?\r\n', 'The most frequent value', 'The difference between highest and lowest values', 'The average of all values', 'The middle value', 'B'),
-(10, 5, 'The marks of 6 students in a test are: 70, 65, 80, 75, 90, 70. What is the mode?\r\n', '70', '80', '75', '90', 'A'),
-(11, 6, 'Simple Interest\r\nThabo invests R5,000 in a savings account that pays 6% simple interest per annum. How much interest will he earn after 3 years?', 'R900', 'R800', 'R1,200', 'R750', 'A'),
-(12, 6, 'Budgeting\r\nLebo earns R3,500 per month. She spends 30% on groceries, 25% on transport, and 20% on school fees. How much money does she have left after these expenses?', 'R875', 'R1,000', 'R1,225', 'R1,200', 'C'),
-(13, 7, 'Which of the following materials is magnetic? fkrehjlt;k;rl4mwvrhtjlhe5', 'Copper', 'Aluminum', 'Iron', 'Plastic', 'C'),
-(14, 7, 'What happens when like poles of two magnets are brought close together?', 'They attract each other', 'They repel each other', 'They become neutral', 'They lose magnetism', 'B'),
-(15, 7, 'The region around a magnet where magnetic forces can be detected is called:', ' Electric field', 'Magnetic domain', 'Magnetic field', 'Current field', 'C'),
-(16, 7, 'Which instrument is commonly used to show the direction of a magnetic field?', 'Voltmeter', 'Ammeter', 'Compass', 'Thermometer', 'C'),
-(17, 7, 'When a magnet is broken into two pieces, what happens?\r\n', 'Only one piece remains magnetic', 'The magnet loses its properties', 'Each piece becomes a smaller magnet with two poles', 'The pieces attract each other permanently', 'C'),
-(18, 8, 'ertyr fh rtht jtyj tyj tyjtyj', 'Copper', 'Aluminum', 'Iron', 'Plastic', 'A'),
-(19, 9, 'ertyr fh rtht jtyj tyj tyjtyj', 'Copper', 'Aluminum', 'Iron', 'Plastic', 'A'),
-(20, 10, 'aesrtrhy ghy gt hty yt h ty', 'Copper', 'Aluminum', 'Iron', 'Plastic', 'A'),
-(21, 11, 'ase sdfr frg regege regre g regre', 'Copper', 'Aluminum', 'Iron', 'Plastic', 'A'),
-(22, 12, 'sdfg grg rg reg er hrege', 'Copper', 'Aluminum', 'Iron', 'Plastic', 'B'),
-(23, 13, 'hdghjfydb dggf d dr  kj', '5', 'dsf', 'sdfg', 'dfsd', 'A'),
-(24, 14, 'This is the first question of this first online quiz of the group.', '5', '44', 's5', 'sd', 'A'),
-(25, 14, 'This is the second question of this first online quiz of the group.', 'R875', 'R1,000', 'R1,225', 'R1,200', 'A'),
-(26, 15, 'This is the first question of this second online quiz of the group.', '5', '44', 's5', 'sd', 'A'),
-(27, 16, 'What is the mode of the data set: 2, 4, 4, 6, 7, 4, 9? ?', '2', '4', '6', '9', 'B'),
-(28, 16, ' The median of the numbers 10, 15, 12, 17, 14 is:', '12', '13', '14', '15', 'C'),
-(29, 16, 'If the mean of 5 numbers is 20, what is their total?', '20', '25', '100', '120', 'C'),
-(30, 16, ' Which of the following is a measure of central tendency?', 'Mean', 'Range', 'Variance', 'Standard deviation', 'A'),
-(31, 16, 'What is the range of the data set: 3, 8, 10, 15, 21?', '12', '15', '18', '21', 'C'),
-(32, 16, 'In a histogram, what is represented by the height of each bar?', 'Frequency', 'Class width', 'Mean', 'Median', 'A'),
-(33, 16, 'Which of the following is affected most by extreme values (outliers)?', 'Mode', 'Median', 'Mean', 'Frequency', 'C'),
-(34, 16, 'A student scored the following marks: 60, 65, 70, 75, 80. What is the mean?', '65', '70', '75', '80', 'B'),
-(35, 16, 'What is the probability of selecting a red card from a standard deck of 52 cards?', '1/4', '1/2', '1/3', '1/52', 'B'),
-(36, 16, 'If the frequency of a class is 10 and the class width is 5, what is the class interval?', '5–10', ' 0–5', 'Cannot be determined', '10', 'C'),
-(37, 17, 'a a a  a a a aa a', 'dfg', 'dfg', 'fg', 'fg', 'A'),
-(38, 18, '354,m5,m5m,56 5 6r 6tu6 u6u65', 'Volt', 'Aluminum', 'Ampere', 'Watt', 'A'),
-(39, 18, '65e  66y 5y 5 5  e6 ', 'R875', 'R1,000', 'R1,225', 'R1,200', 'A'),
-(40, 19, 'ewtry r gft gtfh h hd', 'Volt', 'Aluminum', 'Ampere', 'Watt', 'A'),
-(41, 20, 'ewtry r gft gtfh h hd', 'Volt', 'Aluminum', 'Ampere', 'Watt', 'A'),
-(42, 21, 'This is the first questionThis is the first question', 'Volt', 'Aluminum', 'Ampere', 'Watt', 'A'),
-(43, 22, 'af grg g rgrg', 'Volt', 'Aluminum', 'Ampere', 'Watt', 'A'),
-(44, 23, 'dsfg gtr re rg erfr', 'Volt', 'Aluminum', 'Ampere', 'Watt', 'A'),
-(45, 24, 'sdfghyj', 'Volt', 'Aluminum', 'Ampere', 'Watt', 'A'),
-(46, 25, 'sdfghyj', 'Volt', 'Aluminum', 'Ampere', 'Watt', 'A'),
-(47, 26, 'jhjgukhlj lkj  fvf fdgd f rf', 'Volt', 'Aluminum', 'Ampere', 'Watt', 'A');
+(72, 47, 'sfg arrrrrrrrrrrrrrrrrrrr ghre htr tr g  tr tr trh thtr h tr ds s', '5', 'Ohm', '44', 'Plastic', 'A'),
+(73, 47, '1111111111111111thtr h trsfg arrrrrrrrrrrrrrrrrrrr ghre htr tr g  tr tr trh thtr h trsfg arrrrrrrrrrrrrrrrrrrr ghre htr tr g  tr tr trh thtr h tr', 'Albert Einstein', 'Isaac Newton', 'Galileo Galilei', 'Nikola Tesla', 'A'),
+(74, 47, 'sfg arrrrrrrrrrrrrrrrrrrr ghre htr tr g  tr tr trh thtr h trsfg arrrrrrrrrrrrrrrrrrrr ghre htr tr g  tr tr trh thtr h trsfg arrrrrrrrrrrrrrrrrrrr ghre htr tr g  tr tr trh thtr h tr', 'sedf', 'fd', '7', '9 m/s²', 'A'),
+(75, 47, 'sfg arrrrrrrrrrrrrrrrrrrr ghre htr tr g  tr tr trh thtr h trsfg arrrrrrrrrrrrrrrrrrrr ghre htr tr g  tr tr trh thtr h tr', 'The most frequent value', 'The difference between highest and lowest values', 'The average of all values', 'fdsf', 'A'),
+(76, 47, 'sfg arrrrrrrrrrrrrrrrrrrr ghre htr tr g  tr tr trh thtr h tr', '70', 'sadvfbg', 'asdfvasfesf', 'asdsfv', 'A'),
+(78, 49, '676  7687y 89 889', 'Copper', '12', 'Iron', '7', 'A'),
+(79, 50, 'SDfghjk lk  kl jl jjl kl kjkl jl kjkl j k;l lk', 'Copper', 'Aluminum', '44', 'Watt', 'A'),
+(80, 51, 'erthyj uhijou hijok uhilj', 'Copper', 'Aluminum', '44', 'Watt', 'A'),
+(81, 52, 'awf fsfsdgdfddg ', 'Copper', 'Aluminum', '44', 'Watt', 'A'),
+(82, 53, 'e fewf', 'Copper', 'Aluminum', '44', 'Watt', 'A'),
+(83, 54, 'df grg re r ', 'Copper', 'Aluminum', '44', 'Watt', 'A'),
+(84, 55, ' sdfg rb rbh ', 'Copper', 'Aluminum', '44', 'Watt', 'A'),
+(85, 56, 'fd bfd bf bgf', 'Copper', 'Aluminum', '44', 'Watt', 'A');
 
 -- --------------------------------------------------------
 
@@ -1084,7 +832,12 @@ INSERT INTO `practicequestions` (`Id`, `Text`, `OptionA`, `OptionB`, `OptionC`, 
 (113, 'Find the equation of the circle with center (2,3) and radius 4.', '(x-2)² + (y-3)² = 16', '(x+2)² + (y+3)² = 4', 'x² + y² = 16', '(x-4)² + (y-3)² = 2', 'A', 3, 'Analytical Geometry', 'Mathematics', 'Grade 12', NULL),
 (114, 'The equation of the perpendicular bisector of the line joining (2,2) and (6,4) is:', 'y - 3 = -2(x - 4)', 'y - 3 = 2(x - 4)', 'y = 2x + 1', 'y = -1/2x + 3', 'A', 3, 'Analytical Geometry', 'Mathematics', 'Grade 12', NULL),
 (115, 'If a line passes through (1,2) and has slope -3, its equation is:', 'y - 2 = -3(x - 1)', 'y = -3x + 1', 'y - 1 = -3(x - 2)', 'y = -3x - 2', 'A', 3, 'Analytical Geometry', 'Mathematics', 'Grade 12', NULL),
-(116, 'The equation of a line with slope 2 and passing through (3,4) is: ggg', 'y - 4 = 2(x - 3)', 'y = 2x + 4', 'y - 3 = 2(x - 4)', 'y = 2x - 3', 'A', 3, 'Analytical Geometry', 'Mathematics', 'Grade 12', NULL);
+(116, 'The equation of a line with slope 2 and passing through (3,4) is: ggg', 'y - 4 = 2(x - 3)', 'y = 2x + 4', 'y - 3 = 2(x - 4)', 'y = 2x - 3', 'A', 3, 'Analytical Geometry', 'Mathematics', 'Grade 12', NULL),
+(117, 'dfjhdsmf kj he hkfew ljkflkj ewf', 'etgre', 'etrghtregerghtserght', 'ertghsr', 'rethjyae5sh', 'B', 2, 'Analytical Geometry', 'Mathematics', 'Grade 12', NULL),
+(118, 'etryfgjhk', '13', '345', '24', '52', 'C', 2, 'Calculus', 'Mathematics', 'Grade 12', NULL),
+(119, 'sdrf re r gr re err', '3w45', 'rgvr', 'sfdvfgrdbv', 'vdfgreb', 'C', 1, 'Electricity', 'Physical Sciences', 'Grade 10', NULL),
+(120, 'dgg tr tr tr trgtr', '3w45', 'rgvr', 'sfdvfgrdbv', 'vdfgreb', 'B', 1, 'Electrostatics', 'Physical Sciences', 'Grade 12', NULL),
+(121, 'dfbgnhm htr trh', '3w45', 'rgvr', 'sfdvfgrdbv', 'vdfgreb', 'A', 2, 'Electrostatics', 'Physical Sciences', 'Grade 12', NULL);
 
 -- --------------------------------------------------------
 
@@ -1127,14 +880,6 @@ CREATE TABLE `resourceassignments` (
   `AssignedAt` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `resourceassignments`
---
-
-INSERT INTO `resourceassignments` (`AssignmentID`, `ResourceID`, `ClassID`, `AssignedBy`, `AssignedAt`) VALUES
-(8, 5, 21, 1, '2025-07-30 17:20:15'),
-(9, 20, 23, 1, '2025-08-17 00:36:35');
-
 -- --------------------------------------------------------
 
 --
@@ -1159,15 +904,10 @@ CREATE TABLE `resources` (
 --
 
 INSERT INTO `resources` (`ResourceID`, `Title`, `FilePath`, `ResourceType`, `SubjectID`, `Grade`, `Description`, `Visibility`, `UploadedBy`, `UploadedAt`) VALUES
-(4, 'First Vid', '688a0230dbc62_2025-07-28_18-49-40.mp4', 'Video', 1, '10', '', 'private', 1, '2025-07-30 13:29:52'),
-(5, 'First Slides', '688a027a03901_g11_Trig_Rules.pptx', 'Slides', 1, '10', '', 'private', 1, '2025-07-30 13:31:06'),
-(18, 'First ima', '688a2eb136f8c_7.png', 'image', 2, '11', '', 'private', 1, '2025-07-30 16:39:45'),
-(19, 'Calculus P1', '688a51734a570_2025-01-25_00-26-52.mp4', 'video', 1, '10', '', 'private', 1, '2025-07-30 19:08:03'),
-(20, 'Calculus P2', '688a51871b3ca_2025-01-25_00-26-52.mp4', 'video', 1, '10', '', 'private', 1, '2025-07-30 19:08:23'),
-(21, 'Probability Memo', '688a534ca7dc1_MyJAVA_Notes.pdf', 'pdf', 1, '10', '', 'private', 1, '2025-07-30 19:15:56'),
-(22, 'Finances Cheat Sheet', '688a5379c8ae6_Java_String_Class_Cheat_Sheet.pdf', 'pdf', 1, '10', '', 'private', 1, '2025-07-30 19:16:41'),
-(23, 'Question 2 explanation', '688a543de744f_Childrens_World.mp3', 'audio', 1, '10', '', 'private', 1, '2025-07-30 19:19:57'),
-(24, 'Question 7 explanation', '688a54ee2e410_There_Is_Still_Pain_Left_Laolu_Remix.mp3', 'audio', 1, '10', '', 'private', 1, '2025-07-30 19:22:54');
+(37, 'The first resource', '68aeef854ef25_Diesel_Mech_N4.pdf', 'pdf', 1, 'Grade 10', '', 'private', 1, '2025-08-27 13:44:05'),
+(38, 'The second resource', '68aeefbf4f553_R_Kelly__The_Worlds_Greatest.mp3', 'audio', 4, 'Grade 10', '', 'private', 1, '2025-08-27 13:45:03'),
+(39, 'First zip', '68b867758c4d9_Lewis_Capaldi__Someone_You_Loved.mp3', 'audio', 4, 'Grade 10', '', 'private', 1, '2025-09-03 18:06:13'),
+(40, 'dfghhhh', '68b8679f357e5_mathematics-grade-12-easy-finances_1755360432.pdf', 'pdf', 2, 'Grade 11', '', 'private', 1, '2025-09-03 18:06:55');
 
 -- --------------------------------------------------------
 
@@ -1191,7 +931,8 @@ CREATE TABLE `schools` (
 INSERT INTO `schools` (`SchoolId`, `SchoolName`, `Address`, `ContactNumber`, `Email`, `CreatedAt`) VALUES
 (4, 'The DoE', 'Terrace Road, Bertrams', '0795674125', 'distributorsdoe@gmail.com', '2025-08-08 13:58:08'),
 (14, 'School 100', '', '', '', '2025-08-08 16:05:42'),
-(15, 'School 200', '', '', '', '2025-08-11 09:11:04');
+(15, 'School 200', '', '', '', '2025-08-11 09:11:04'),
+(16, 'School 500', '', '', '', '2025-09-21 12:02:58');
 
 -- --------------------------------------------------------
 
@@ -1218,8 +959,7 @@ INSERT INTO `subjectnotices` (`NoticeId`, `Title`, `Content`, `SubjectName`, `Gr
 (1, 'Title 222', 'This only applies to maths 10 learners', 'Mathematics', '10', 2, '2025-07-09 21:38:20', 0),
 (2, 'Title 101010', 'This is the tenth message for the grade 10 Maths learners', 'Mathematics', '10', 2, '2025-07-09 21:52:35', 0),
 (7, 'Reminder: Assignment Deadline Approaching', 'Please remember to submit your Algebra assignments by Friday. Late submissions will not be accepted. Reach out if you need any help.', 'Mathematics', '10', 2, '2025-07-09 22:14:08', 0),
-(8, 'Extra Tutoring Sessions Available', 'Starting next week, extra tutoring sessions will be held every Wednesday after school in room 12. All Grade 10 Mathematics learners are encouraged to attend.', 'Mathematics', '10', 2, '2025-07-09 22:14:36', 0),
-(11, 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'Today today today', 'Mathematics_10', '10', 2, '2025-07-20 20:01:46', 0);
+(8, 'Extra Tutoring Sessions Available', 'Starting next week, extra tutoring sessions will be held every Wednesday after school in room 12. All Grade 10 Mathematics learners are encouraged to attend.', 'Mathematics', '10', 2, '2025-07-09 22:14:36', 0);
 
 -- --------------------------------------------------------
 
@@ -1232,6 +972,7 @@ CREATE TABLE `subjects` (
   `GradeId` int(11) NOT NULL,
   `SubjectName` varchar(100) NOT NULL,
   `MaxClassSize` int(11) DEFAULT 30,
+  `DefaultTutorId` int(11) DEFAULT NULL,
   `ThreeMonthsPrice` decimal(10,2) DEFAULT NULL,
   `SixMonthsPrice` decimal(10,2) DEFAULT NULL,
   `TwelveMonthsPrice` decimal(10,2) DEFAULT NULL,
@@ -1242,21 +983,15 @@ CREATE TABLE `subjects` (
 -- Dumping data for table `subjects`
 --
 
-INSERT INTO `subjects` (`SubjectId`, `GradeId`, `SubjectName`, `MaxClassSize`, `ThreeMonthsPrice`, `SixMonthsPrice`, `TwelveMonthsPrice`, `CreatedAt`) VALUES
-(1, 1, 'Mathematics', 15, NULL, NULL, NULL, '2025-08-08 15:58:08'),
-(2, 2, 'Mathematics', 30, NULL, NULL, NULL, '2025-08-08 15:58:08'),
-(3, 3, 'Mathematics', 30, NULL, NULL, NULL, '2025-08-08 15:58:08'),
-(4, 1, 'Physical Sciences', 30, NULL, NULL, NULL, '2025-08-08 15:58:08'),
-(5, 2, 'Physical Sciences', 30, NULL, NULL, NULL, '2025-08-08 15:58:08'),
-(6, 3, 'Physical Sciences', 30, NULL, NULL, NULL, '2025-08-08 15:58:08'),
-(39, 33, 'Accounting', 30, NULL, NULL, NULL, '2025-08-08 18:05:42'),
-(40, 34, 'Accounting', 30, NULL, NULL, NULL, '2025-08-08 18:05:42'),
-(41, 33, 'Agricultural Sciences', 30, NULL, NULL, NULL, '2025-08-08 18:05:42'),
-(42, 33, 'Business Studies', 30, NULL, NULL, NULL, '2025-08-08 18:05:42'),
-(43, 35, 'Mathematics', 30, NULL, NULL, NULL, '2025-08-11 11:11:04'),
-(44, 36, 'Mathematics', 30, NULL, NULL, NULL, '2025-08-11 11:11:04'),
-(45, 35, 'Physical Sciences', 30, NULL, NULL, NULL, '2025-08-11 11:11:04'),
-(46, 36, 'Physical Sciences', 30, NULL, NULL, NULL, '2025-08-11 11:11:04');
+INSERT INTO `subjects` (`SubjectId`, `GradeId`, `SubjectName`, `MaxClassSize`, `DefaultTutorId`, `ThreeMonthsPrice`, `SixMonthsPrice`, `TwelveMonthsPrice`, `CreatedAt`) VALUES
+(1, 1, 'Mathematics', 5, 25, 300.00, 600.00, 1200.00, '2025-08-08 15:58:08'),
+(2, 2, 'Mathematics', 5, 25, 300.00, 600.00, 1200.00, '2025-08-08 15:58:08'),
+(3, 3, 'Mathematics', 5, 25, 300.00, 600.00, 1200.00, '2025-08-08 15:58:08'),
+(4, 1, 'Physical Sciences', 5, 25, 300.00, 600.00, 1200.00, '2025-08-08 15:58:08'),
+(6, 3, 'Physical Sciences', 5, 25, 300.00, 600.00, 1200.00, '2025-08-08 15:58:08'),
+(47, 37, 'English First Additional Language', 30, NULL, NULL, NULL, NULL, '2025-09-21 14:02:58'),
+(48, 37, 'Afrikaans First Additional Language', 30, NULL, NULL, NULL, NULL, '2025-09-21 14:02:58'),
+(49, 37, 'Creative Arts', 30, NULL, NULL, NULL, NULL, '2025-09-21 14:02:58');
 
 -- --------------------------------------------------------
 
@@ -1282,17 +1017,14 @@ CREATE TABLE `todolist` (
 --
 
 INSERT INTO `todolist` (`TodoId`, `CreatorId`, `TaskText`, `CreationDate`, `DueDate`, `Priority`, `Status`, `TimeSpent`, `CompletionDate`, `Category`) VALUES
-(2, 1, 'Fix the reset password page', '2025-07-05 19:33:19', '2025-06-04 17:20:00', 'Low', 0, NULL, NULL, 'General'),
-(7, 1, 'Work on resources pages for both the learner and the Tutors/Director', '2025-07-15 14:09:19', '2025-05-21 14:11:00', 'Low', 0, NULL, NULL, 'General'),
-(8, 1, 'make overview.php dynamic', '2025-07-15 16:49:23', '2025-08-01 21:08:00', 'Low', 0, NULL, NULL, 'General'),
-(9, 1, 'Work on the Main Sidebar color', '2025-07-16 10:11:52', '2025-08-09 22:11:00', 'Low', 0, NULL, NULL, 'General'),
-(10, 1, 'Work on the feedback for the parents', '2025-07-16 18:14:44', '2025-05-20 17:06:00', 'Low', 0, NULL, NULL, 'General'),
 (11, 1, 'work on the tutor perfomance button', '2025-07-19 19:47:46', '0000-00-00 00:00:00', 'Low', 0, NULL, NULL, 'General'),
-(12, 1, 'Update the Direcor\'s activity overview page with that of a Tutor', '2025-07-19 19:49:45', '2025-08-02 12:59:00', 'Low', 0, NULL, NULL, 'General'),
-(13, 1, 'Work on the Announcement modal, No mark as read', '2025-07-19 20:31:12', '2025-07-31 11:59:00', 'High', 0, NULL, NULL, 'General'),
-(15, 1, 'Work on the learner Help & Support', '2025-07-19 20:50:42', '2025-11-29 12:58:00', 'Low', 0, NULL, NULL, 'General'),
-(16, 1, 'Work on the learner \'Student Voices\' page', '2025-07-19 20:51:23', '2025-08-01 11:59:00', 'Low', 0, NULL, NULL, 'General'),
-(17, 1, 'Work on the learner home page(Dynamic)', '2025-07-19 20:52:24', '2025-08-09 08:52:00', 'Low', 0, NULL, NULL, 'General');
+(20, 1, 'Make the Email Password Dynamic in the settings', '2025-09-07 15:14:48', '2025-10-11 20:45:00', 'Low', 0, NULL, NULL, 'General'),
+(23, 1, 'Quiz Management overview modal page', '2025-09-10 21:14:12', '2025-09-25 08:45:00', 'Low', 0, NULL, NULL, 'General'),
+(24, 1, 'Student voices to be made dynamic', '2025-09-10 21:15:44', '2025-09-26 21:15:00', 'Low', 0, NULL, NULL, 'General'),
+(25, 1, 'work on sending emails to parents for leaners who did not submit', '2025-09-10 21:16:28', '2025-09-17 09:16:00', 'Low', 0, NULL, NULL, 'General'),
+(26, 1, 'Improve the addtutor.php; Grades) to be dynamic', '2025-09-10 21:19:10', '2025-09-26 21:22:00', 'Low', 0, NULL, NULL, 'General'),
+(27, 1, 'Not forgetting the learner profile', '2025-09-10 22:44:59', '2025-09-27 22:49:00', 'Low', 0, NULL, NULL, 'General'),
+(28, 1, 'Modal for Level details of Practice Q ...in learnerprofile', '2025-09-23 12:44:16', '2025-08-30 20:46:00', 'Low', 0, NULL, NULL, 'General');
 
 -- --------------------------------------------------------
 
@@ -1331,6 +1063,33 @@ CREATE TABLE `tutordateexceptions` (
   `CustomEnd` time DEFAULT NULL,
   `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tutorpayments`
+--
+
+CREATE TABLE `tutorpayments` (
+  `PaymentId` int(11) NOT NULL,
+  `TutorId` int(11) NOT NULL,
+  `Amount` decimal(10,2) NOT NULL,
+  `PaymentDate` datetime NOT NULL DEFAULT current_timestamp(),
+  `PaymentMethod` varchar(50) DEFAULT 'Cash',
+  `Notes` varchar(255) DEFAULT NULL,
+  `CreatedAt` datetime DEFAULT current_timestamp(),
+  `UpdatedAt` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tutorpayments`
+--
+
+INSERT INTO `tutorpayments` (`PaymentId`, `TutorId`, `Amount`, `PaymentDate`, `PaymentMethod`, `Notes`, `CreatedAt`, `UpdatedAt`) VALUES
+(1, 2, 250.00, '2025-08-30 22:56:14', 'Cash', 'Jan Pay', '2025-08-30 22:56:14', '2025-08-30 22:56:14'),
+(2, 2, 300.00, '2025-08-30 22:56:29', 'Cash', 'Feb Pay', '2025-08-30 22:56:29', '2025-08-30 22:56:29'),
+(3, 21, 1500.00, '2025-08-30 22:57:19', 'Cash', 'Jan Payment', '2025-08-30 22:57:19', '2025-08-30 22:57:19'),
+(4, 2, 80000.00, '2025-09-03 17:54:31', 'Cash', 'march Pay', '2025-09-03 17:54:31', '2025-09-03 17:54:31');
 
 -- --------------------------------------------------------
 
@@ -1401,10 +1160,9 @@ CREATE TABLE `tutorsubject` (
 INSERT INTO `tutorsubject` (`TutorId`, `SubjectId`, `Active`, `AvgRating`) VALUES
 (2, 1, 1, 0.00),
 (2, 3, 1, 0.00),
-(2, 5, 1, 0.00),
+(2, 4, 1, 0.00),
 (19, 1, 1, 0.00),
 (19, 2, 1, 0.00),
-(19, 5, 1, 0.00),
 (20, 1, 1, 0.00),
 (20, 4, 1, 0.00),
 (21, 1, 1, 0.00),
@@ -1453,62 +1211,45 @@ CREATE TABLE `users` (
   `ResetTimestamp` timestamp NULL DEFAULT current_timestamp(),
   `VerificationToken` varchar(64) NOT NULL,
   `RegistrationDate` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UserType` int(5) NOT NULL
+  `UserType` int(5) NOT NULL,
+  `FailedAttempts` int(11) DEFAULT 0,
+  `LastFailedAttempt` datetime DEFAULT NULL,
+  `PermanentlyBlocked` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`Id`, `Surname`, `Name`, `UserPassword`, `Gender`, `Contact`, `AlternativeContact`, `Email`, `IsVerified`, `ResetCode`, `ResetTimestamp`, `VerificationToken`, `RegistrationDate`, `UserType`) VALUES
-(1, 'Director', 'DOE', '$2y$10$2wdu5zdWMu.wG.wa.JxuMed9QzPuYlif1w7wIxlk7RSdZlAZFpGgG', 'Male', 1234567890, NULL, 'distributorsdoe@gmail.com', 1, '$2y$10$ayEYoSGc9mNzw6awXvmWgOY0Ye6LOh..osu6A3bO0HMHhftKecoWG', '2025-06-30 11:18:57', 'f3659d1c92546274b30c2ade4b5e3012da1cfabc13f04bb3b9cf9a76007090eb', '2025-06-30 11:18:57', 0),
-(2, 'Malesela', 'Shirley', '$2y$10$t2VD2G8anvVZ/8IQ5f43RO9fq33OI38c8WU3gfNnn/EEHCy9rRL7G', 'Ms', 2048567858, NULL, 'shirley@gmail.com', 1, '', '2025-06-30 11:32:56', 'f9c5c52aee8b1fd0a72553256e2a425ef8aece59d855a99b710cc1fe0dbf0f52', '2025-06-30 11:32:56', 1),
-(19, 'Boshielo', 'Emmanuel', '$2y$10$GbYLySVSA8qlvSfKzAWi1uFblIzipSMocSvyMKBf3.diQbqH.Re8a', 'Mr', 562065285, NULL, 'emahlwele055@gmail.com', 0, '', '2025-07-15 08:29:51', '9942c2923fa78adba6dc3f77cb829159', '2025-07-15 08:29:51', 1),
-(20, 'Sandjon', 'Nicole', '$2y$10$LFVceoKvwMuku/4ldEDt3.E8A1yjkYGVU2qXU/QZCLVUU4kf8VV8m', 'Ms', 2147483647, NULL, 'nsandj@gmail.com', 0, '', '2025-07-15 08:34:57', '3d8397d11dcf5fefbef1f2f587121e90', '2025-07-15 08:34:57', 1),
-(21, 'Mamogobo', 'Sydney', '$2y$10$iQBqDgcGuAqFWFWUQDJD6OczA1.eFSjB1/OPKuLWwTFY5nlq2NNYe', 'Mr', 728547485, NULL, 'mamogobo@gmail.com', 0, '', '2025-07-15 09:24:07', '0e6d551816c26c72bad0ab26cc87edbf', '2025-07-15 09:24:07', 1),
-(24, 'Mbuyane', 'Sanele', '$2y$10$Hx025ygsL1ffOQXVaL0Sb.teIGUrL2JkT3WWtM2Xbs8fBJBMPf94q', 'Ms', 854285425, NULL, 'mbuyane@gmail.com', 0, '', '2025-07-19 12:31:58', 'c859b2dd65d4551d371314cc2c09670b', '2025-07-19 12:31:58', 1),
-(25, 'Temp', 'Temp', '$2y$10$Gbi4R5wR6v85AdDAfXSwtuu8r8eXMTTDtKiYbJLU1/F0N38zDMgjO', 'Dr', 2147483647, NULL, 'doe@gmail.com', 0, '', '2025-07-19 14:51:08', '36a628e323d45abefaa4c10d8c0f3f59', '2025-07-19 14:51:08', 1),
-(38, 'Solo', 'Duo', '$2y$10$LrQXVn75HkfXw6dVbQPOuOpRvar3eiQYlPADNFLnztnA5sZl9H4SC', 'Mr', 2147483647, NULL, 'solo@gmail.com', 1, '', '2025-07-24 09:21:51', '5ec27c5de6af4e97d96190f73b8365e2111ce347fef60eed3c6d544ce64b0fb0', '2025-07-24 09:21:51', 2),
-(39, 'Scon', 'Gavi', '$2y$10$EPebr0WpwVhyJ6mss1t13.p3bfvYRyZ6x3TGk3g7zWTDT5mLfVr.u', 'Mr', 2147483647, NULL, 'msisdoh@gmail.com', 0, '', '2025-07-24 09:37:38', '82e232876381ba7fa7c1078680682f58bfbeddfee19bf31b1dbe11fa1b2f154d', '2025-07-24 09:37:38', 2),
-(40, 'Rashford', 'Marcus', '$2y$10$nVPqVo9SjMSnFRNP0nuX0OUm8vLZ8tiNs4QekwUgR4CDBH66bwh82', 'Mr', 2147483647, NULL, 'rashfordd@gmail.com', 1, '', '2025-07-24 16:25:15', '2a619503334648455c93911d038192ddadde4d50c6cf18efd780c9ea6ca362e6', '2025-07-24 16:25:15', 2),
-(41, 'Messi', 'Lionel', '$2y$10$w2nvS/m1i08UyzUrXmocceB8EFsBFZMMfs206nY/skDyhwWzYQSKy', 'Mr', 2147483647, NULL, 'messi@gmail.com', 1, '', '2025-07-24 16:28:41', '720a424e51ea92417b36ccf147a7c85ee226b4d1b059f6e5ce6db3e079de9982', '2025-07-24 16:28:41', 2),
-(42, 'Iniesta', 'Andres', '$2y$10$1MYyb9oFQ7tO4dwxCqYGnuLe7w5p.kLrlr7SAyFD3KclVJ7u1RefC', 'Mr', 2147483647, NULL, 'iniesta@gmail.com', 1, '', '2025-07-24 16:29:36', '', '2025-07-24 16:29:36', 2),
-(43, 'Hernandes', 'Xavi', '$2y$10$iY.9fqN95mBmUk0QITJvr.fko/LUswElagP3grD8L28muRUwzZqAi', 'Mr', 2147483647, NULL, 'Hernandes@gmail.com', 0, '', '2025-07-24 16:30:38', '43f3584ddb0b19b4a339c407b6efaacf14e38ce31dc5bece8f0edc2d0cc00419', '2025-07-24 16:30:38', 2),
-(44, 'Ibrah', 'Zlatan', '$2y$10$UrbnJX6f1niQoTOdKB5yteEC/ckx.HU56skjtr1UtkMY8S8JZaMiu', 'Mr', 2147483647, NULL, 'ibrah@gmail.com', 1, '', '2025-07-24 16:31:39', '', '2025-07-24 16:31:39', 2),
-(45, 'Toure', 'Yaya', '$2y$10$CdLJPDyeTXhrmNbbaKapyukRCElsfJQjdHEV/jMSEdmF75RQaHiPC', 'Mr', 2147483647, NULL, 'Toure@gmail.com', 0, '', '2025-07-24 16:32:25', 'defafde26e84ca69788f470efb7bf4531b6b803deabc6b47e6b4c03ac882a067', '2025-07-24 16:32:25', 2),
-(46, 'Suarez', 'Luis', '$2y$10$JTO5Hc31FYxL721VA1XP8OkznLT6GQ9l32mIcJxuL1UdeT2grK40W', 'Mr', 2147483647, NULL, 'Suarez@gmail.com', 0, '', '2025-07-24 16:33:18', '3ce3d814d77778ec75f4f08204424a0d9e8ad10192e4656564ed001929bcb4d6', '2025-07-24 16:33:18', 2),
-(47, 'Busi', 'Sergio', '$2y$10$bUTjxTFAEblxTJCrIzAOOO.NWhk2ZVr8uRk1N4Oj.NwJMEWp0jfbG', 'Mr', 2147483647, NULL, 'busi@gmail.com', 0, '', '2025-07-24 16:34:20', '739d28a6156299a2e8c2d433502ac793424b4cbb713d4d5d211fe98367d44043', '2025-07-24 16:34:20', 2),
-(48, 'Puyol', 'Charles', '$2y$10$vHvZa1GsThfbL3mv1U24Z.8A7xbmVgiWPBsQE26nHRvvQiKZqsNHu', 'Mr', 2147483647, NULL, 'Puyol@gmail.com', 0, '', '2025-07-24 16:35:01', '093c67faff9d534e9352ea2ddfc06878afbf68355ec3373c0cc690542ecabe36', '2025-07-24 16:35:01', 2),
-(49, 'Alves', 'Dani', '$2y$10$g4P1j9nAmzgK9Kg9irFsH.95u5GEJ7/k0YaY7N0H9fa4ghHcz9V4O', 'Mr', 2147483647, NULL, 'Alves@gmail.com', 0, '', '2025-07-24 16:35:42', '70ad5c217f1facbb41ba2a5d36c90a617a2eeaea6b346519fabacceca02218ee', '2025-07-24 16:35:42', 2),
-(50, 'Villa', 'David', '$2y$10$SSOUv/xPar0RTVi9HExhkO8RvBQwAeroC1t1pl6kkmSbxAGhAY.ma', 'Mr', 2147483647, NULL, 'Villas@gmail.com', 0, '', '2025-07-24 16:36:35', 'cff98d494f903f48fc76a3ef307bab819bbde4a30d1a1b5a2dd886fd4ffc7110', '2025-07-24 16:36:35', 2),
-(51, 'Something', 'Pique', '$2y$10$FS.HK94En2HeKsMLGD211e9HY6rS6g9.BivHxRVLEdwSrl4ZGzeRi', 'Mr', 2147483647, NULL, 'pique@gmail.com', 0, '', '2025-07-24 16:37:36', '4507cf88fbe8dd6627e0ebe1ae410099a003b4b2e4b986b2b27ad4b8ed6d948f', '2025-07-24 16:37:36', 2),
-(52, 'Gaucho', 'Ronaldinho', '$2y$10$jf1gcAWQ.nRfshE13TvWEuSd2JwRhRbbgL/IRBbTXmKa2TsDAfZwO', 'Mr', 2147483647, NULL, 'Gaucho@gmail.com', 0, '', '2025-07-24 16:38:55', '1d2d1d942bdc371111d2e34d5f776f821cbd2c3ca1ff722dd6c69146e06cc850', '2025-07-24 16:38:55', 2),
-(53, 'Etoo', 'Samuel', '$2y$10$AI30OgF3sszyt5Y98Cs7serogGYrkGBn8SKoXIZk09uJ5gyeJG8PK', 'Mr', 2147483647, NULL, 'Etoo@gmail.com', 0, '', '2025-07-24 16:39:24', 'e726af57cd1b60b0e0f261123d3f6cb69051e25737235794d24dbb17de6165fe', '2025-07-24 16:39:24', 2),
-(54, 'Ramos', 'Sergio', '$2y$10$IpAKxz567lJXC4ctcpykQu35FzCx4yZpc15vUfIJs/0x2gv3XIH9.', 'Mr', 2147483647, NULL, 'Ramos@gmail.com', 0, '', '2025-07-24 16:41:09', '258d1928b1dcb5b8f36856d5d598869a1e9413ded12ba44db8ed53aa6e50d12a', '2025-07-24 16:41:09', 2),
-(55, 'Parkar', 'Letty', '$2y$10$jnos60lQhNpspOQ1pPWCj.GUubh8s5K/Qx3XHNjKwazmIXfQSk5nO', 'Mrs', 2147483647, NULL, 'parkar@gmail.com', 0, '', '2025-07-24 17:10:55', '0669703be53a55438658c4dda7e5bcec', '2025-07-24 17:10:55', 1),
-(56, 'Jones', 'Molly', '$2y$10$X20DJj8saNZRr2x/3qRteubET9E0/ODNhfQ6ew7RKiPFMMqjDlIWS', 'Mrs', 2147483647, NULL, 'jones@gmail.com', 0, '', '2025-07-24 17:16:07', '84124d7519dc470701bb0a964fe7726a', '2025-07-24 17:16:07', 1),
-(57, 'Boorn', 'Joris', '$2y$10$TTTZbLPOmdEyBtYaiAgDfelndBJKj0qYkuzmEkYzoMt1s3RNWJai6', 'Mr', 2147483647, NULL, 'boorn@gmail.com', 0, '', '2025-07-24 17:18:56', '81b420a23b1b2a503779767ac000fb17', '2025-07-24 17:18:56', 1),
-(58, 'Pierce', 'Alexander', '$2y$10$k5peCRhgnOMM706SpYdyBeEi2UMIE7icxKFyWccnfTNAiE9al6vkq', 'Mr', 2147483647, NULL, 'pierce@gmail.com', 0, '', '2025-07-24 17:20:10', 'e3661c1b3f8684f54c7b40b4760a9e2a', '2025-07-24 17:20:10', 1),
-(59, 'wswsw', 'wswswsw', '$2y$10$pen8U65c24d2/RvKFc4d5e0O24OrxqML5DvDN28Ha1sbxVsZGvMRe', 'Mr', 2147483647, NULL, 'wsww@gmail.com', 0, '', '2025-07-24 17:21:20', 'dca23cd7890ea2d70fb61b839452a30d', '2025-07-24 17:21:20', 1),
-(60, 'Modric', 'Luka', '$2y$10$0Ppb3fkKbruRd8xcJq9i6OOdQDsPuRGc181w8nSxex3pv4zGxyKby', 'Mr', 215484521, NULL, 'emahlwele05@gmail.com', 1, '$2y$10$imVKMV2GELte5V1DPfZWse0blNWBEuGXUKa9tv672MZ2XsGG7RVw2', '2025-07-28 08:34:18', '', '2025-07-27 14:52:24', 2),
-(61, 'Kante', 'Ngolo', '$2y$10$W9KRqeAh5E0pSYzvCWNbpurjA5Y77RMb2CAAM.7Ls6G0CcpAzP0lW', 'Mr', 215455454, NULL, 'kante@gmail.com', 0, '', '2025-08-04 15:08:20', '681e151f7b4b20d5f68b7a764874b520cdea43d42166814f6ab32a06e73eec0f', '2025-08-04 15:08:20', 2);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `usersubject`
---
-
-CREATE TABLE `usersubject` (
-  `Id` int(11) NOT NULL,
-  `SubjectId` int(11) DEFAULT NULL,
-  `UserId` int(11) NOT NULL,
-  `SubjectName` varchar(100) DEFAULT NULL,
-  `SubjectCode` varchar(20) DEFAULT NULL,
-  `ThreeMonthsPrice` decimal(10,2) DEFAULT NULL,
-  `SixMonthsPrice` decimal(10,2) DEFAULT NULL,
-  `TwelveMonthsPrice` decimal(10,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `users` (`Id`, `Surname`, `Name`, `UserPassword`, `Gender`, `Contact`, `AlternativeContact`, `Email`, `IsVerified`, `ResetCode`, `ResetTimestamp`, `VerificationToken`, `RegistrationDate`, `UserType`, `FailedAttempts`, `LastFailedAttempt`, `PermanentlyBlocked`) VALUES
+(1, 'Director', 'DOE', '$2y$10$xcisHOBXh6RzLzS9hERHaeSQna4BZAzJCuu.uJNn5Fon6btiUto8.', 'Mr', 1234567890, NULL, 'thedistributorsofedu@gmail.com', 1, '', NULL, 'f3659d1c92546274b30c2ade4b5e3012da1cfabc13f04bb3b9cf9a76007090eb', '2025-06-30 11:18:57', 0, 0, NULL, 0),
+(2, 'Malesela', 'Shirley M M v', '$2y$10$t2VD2G8anvVZ/8IQ5f43RO9fq33OI38c8WU3gfNnn/EEHCy9rRL7G', 'Ms', 2048567858, NULL, 'shirley@gmail.com', 1, '', '2025-06-30 11:32:56', 'f9c5c52aee8b1fd0a72553256e2a425ef8aece59d855a99b710cc1fe0dbf0f52', '2025-06-30 11:32:56', 1, 0, NULL, 0),
+(19, 'Boshielo', 'Emmanuel', '$2y$10$GbYLySVSA8qlvSfKzAWi1uFblIzipSMocSvyMKBf3.diQbqH.Re8a', 'Mr', 2147483647, NULL, 'emahlwele055@gmail.com', 0, '', '2025-07-15 08:29:51', '9942c2923fa78adba6dc3f77cb829159', '2025-07-15 08:29:51', 1, 0, NULL, 0),
+(20, 'Sandjon', 'Nicole', '$2y$10$LFVceoKvwMuku/4ldEDt3.E8A1yjkYGVU2qXU/QZCLVUU4kf8VV8m', 'Ms', 2147483647, NULL, 'nsandj@gmail.com', 0, '', '2025-07-15 08:34:57', '3d8397d11dcf5fefbef1f2f587121e90', '2025-07-15 08:34:57', 1, 0, NULL, 0),
+(21, 'Mamogobo', 'Sydney', '$2y$10$iQBqDgcGuAqFWFWUQDJD6OczA1.eFSjB1/OPKuLWwTFY5nlq2NNYe', 'Mr', 728547485, NULL, 'mamogobo@gmail.com', 0, '', '2025-07-15 09:24:07', '0e6d551816c26c72bad0ab26cc87edbf', '2025-07-15 09:24:07', 1, 0, NULL, 0),
+(24, 'Mbuyane', 'Sanele', '$2y$10$Hx025ygsL1ffOQXVaL0Sb.teIGUrL2JkT3WWtM2Xbs8fBJBMPf94q', 'Ms', 854285425, NULL, 'mbuyane@gmail.com', 0, '', '2025-07-19 12:31:58', 'c859b2dd65d4551d371314cc2c09670b', '2025-07-19 12:31:58', 1, 0, NULL, 0),
+(25, 'Temp', 'Temp', '$2y$10$Gbi4R5wR6v85AdDAfXSwtuu8r8eXMTTDtKiYbJLU1/F0N38zDMgjO', 'Dr', 2147483647, NULL, 'doe@gmail.com', 0, '', '2025-07-19 14:51:08', '36a628e323d45abefaa4c10d8c0f3f59', '2025-07-19 14:51:08', 1, 0, NULL, 0),
+(55, 'Parkar', 'Letty', '$2y$10$jnos60lQhNpspOQ1pPWCj.GUubh8s5K/Qx3XHNjKwazmIXfQSk5nO', 'Mrs', 2147483647, NULL, 'parkar@gmail.com', 0, '', '2025-07-24 17:10:55', '0669703be53a55438658c4dda7e5bcec', '2025-07-24 17:10:55', 1, 0, NULL, 0),
+(56, 'Jones', 'Molly', '$2y$10$X20DJj8saNZRr2x/3qRteubET9E0/ODNhfQ6ew7RKiPFMMqjDlIWS', 'Mrs', 2147483647, NULL, 'jones@gmail.com', 0, '', '2025-07-24 17:16:07', '84124d7519dc470701bb0a964fe7726a', '2025-07-24 17:16:07', 1, 0, NULL, 0),
+(57, 'Boorn', 'Joris', '$2y$10$TTTZbLPOmdEyBtYaiAgDfelndBJKj0qYkuzmEkYzoMt1s3RNWJai6', 'Mr', 2147483647, NULL, 'boorn@gmail.com', 0, '', '2025-07-24 17:18:56', '81b420a23b1b2a503779767ac000fb17', '2025-07-24 17:18:56', 1, 0, NULL, 0),
+(58, 'Pierce', 'Alexander', '$2y$10$k5peCRhgnOMM706SpYdyBeEi2UMIE7icxKFyWccnfTNAiE9al6vkq', 'Mr', 2147483647, NULL, 'pierce@gmail.com', 0, '', '2025-07-24 17:20:10', 'e3661c1b3f8684f54c7b40b4760a9e2a', '2025-07-24 17:20:10', 1, 0, NULL, 0),
+(59, 'wswsw', 'wswswsw', '$2y$10$pen8U65c24d2/RvKFc4d5e0O24OrxqML5DvDN28Ha1sbxVsZGvMRe', 'Mr', 2147483647, NULL, 'wsww@gmail.com', 0, '', '2025-07-24 17:21:20', 'dca23cd7890ea2d70fb61b839452a30d', '2025-07-24 17:21:20', 1, 0, NULL, 0),
+(105, 'Bosh', 'Moses', '$2y$10$ChIgJ17cS/iG3XXdtEYZCuCkwXGMOs4Q6Wjij1xGrvsp9I4S4hyGO', 'Mr', 2147483647, NULL, 'moses@gmail.com', 0, '', '2025-09-05 18:06:00', '8538c7d72c0bcd480e521998f686986ddb67ced11e6e4126f7181ef412d38df4', '2025-09-05 18:06:00', 2, 0, NULL, 0),
+(106, 'Boshielo', 'Emmanuel', '$2y$10$Pzkq1yIe1MOKNsCc79dxDOa.Nxv44rjP6jrGO.uTeUvbijUACyEHq', 'Mr', 764323216, NULL, 'ema@gmail.com', 0, '', '2025-09-05 18:06:59', 'c12780071923d5f974326e41e36d15cea481db76f643e5045cdb987949afd5d1', '2025-09-05 18:06:59', 2, 0, NULL, 0),
+(107, 'Malaka', 'Grace', '$2y$10$q6EEHZxr21X/t4ac9XJ6B.KDx3DjmvO.f1mlm3K2rLjXbOlSP/TMW', 'Mrs', 764323216, NULL, 'grace@gmail.com', 0, '', '2025-09-05 18:07:57', '763b9d2c857f718b7ff88474777314d600c4f16a0be341369003c4af820ce462', '2025-09-05 18:07:57', 2, 0, NULL, 0),
+(108, 'KUunutu', 'Charles', '$2y$10$uVX5aNNatyaolubfhVXcw.WWXEZ1fapOUpVlO276Qm8dSEmgp20Zu', 'Mr', 764323216, NULL, 'charles@gmail.com', 0, '', '2025-09-05 18:09:08', '8d577b29a603ba54cddf611bcd2954b859f3a1fcaff8c35edc7fbc17defae4c6', '2025-09-05 18:09:08', 2, 0, NULL, 0),
+(109, 'Maputla', 'Thabo', '$2y$10$DYE2ZarVQGHVdFFHdEfAiOc7DezGv/sb4sZw.ukygOE8l8JSV0y.i', 'Mr', 764323216, NULL, 'thabo@gmail.com', 0, '', '2025-09-05 18:10:08', 'cda638416da5f5864e123a5c18f72ef4b2e451ea582935081f3a5511c4a2fa6f', '2025-09-05 18:10:08', 2, 0, NULL, 0),
+(110, 'zakzaka', 'Kwaito', '$2y$10$a.l6XjAndPPQvchBEfDT8OY/mauiIOVtAKOIQ4NaJJLY1404HSF52', 'Mr', 764323216, NULL, 'kwaito@gmail.com', 0, '', '2025-09-05 18:11:06', 'b8ff67eb1b73e1d083222faf31fb41532f456cc929eb4c1cbcefdf1fccd97997', '2025-09-05 18:11:06', 2, 0, NULL, 0),
+(111, 'Mahlare', 'Felicia', '$2y$10$98.JRpNskMMAMRivlNv.zeNzko6IkwwAc6vbJad6CSEgryRQKkKFO', 'Mrs', 764323216, NULL, 'felicia@gmail.com', 0, '', '2025-09-05 18:15:06', 'a92eca98278e319b6816138e6a3e8c3d6146f4733a0c4236204fe628f0ef6036', '2025-09-05 18:15:06', 2, 0, NULL, 0),
+(112, 'Mogashane', 'Sharon', '$2y$10$muXuZ67hgonv1s39G6sfFu/bgslY3JW/bWgMo6HZqEEU8oiJjSOly', 'Mr', 764323216, NULL, 'sharon@gmail.com', 0, '', '2025-09-05 18:44:03', '72ad203255b3dc3bb1ab72cbbf28a8da2f7fea0b0f0ebbc79337dea6e732e7a7', '2025-09-05 18:44:03', 2, 0, NULL, 0),
+(113, 'Masilila', 'Leago', '$2y$10$Ni9LYDFBmzEkVnPOhd/9v.Znx3KTLBC08HgNCy9kXBfA/dJ8JouHi', 'Mrs', 764323216, NULL, 'leago@gmail.com', 0, '', '2025-09-06 09:25:34', '5f7ccaaaec43c8edaac0629515afcfa885164dfb6583fe61037eb00524f68a45', '2025-09-06 09:25:34', 2, 0, NULL, 0),
+(114, 'Volky', 'Lefa', '$2y$10$bahgUp5PVz.gq0o3ZjVLoO./vQ9vUrsZ7wkWrxcojj//pq5.fMFIS', 'Mr', 764323216, NULL, 'lefa@gmail.com', 0, '', '2025-09-06 16:23:49', '3021613fba10f1e87b566664dffd3d8bade619f66b4062a672f99e61980a763e', '2025-09-06 16:23:49', 2, 0, NULL, 0),
+(115, 'Matlala', 'Boikano', '$2y$10$Jzy7.6wZqWkxF84r.iEPt.rpS2h7.1qj8onL9Lmf2CKn3DzLOi8Ni', 'Mr', 764323216, NULL, 'boikanyo@gmail.com', 0, '', '2025-09-06 18:38:02', '4df59d21d2e7ab931cd0630a87fffa2b30aefbda8329de5f3a3d707f7d14cf67', '2025-09-06 18:38:02', 2, 0, NULL, 0),
+(121, 'Uzumaki', 'Sasuke', '$2y$10$IfbaSP.CNA.m4SY8anEaZeeEgBBTCbToUCMuJmT..r4GDYQAtI936', 'Mr', 764323216, NULL, 'sasuke@gmail.com', 0, '', NULL, '89280eb4653eded629014e7f840d4d1cbb3978ee96e1db85db1981f114690e87', '2025-09-07 13:07:50', 2, 0, NULL, 0),
+(122, 'Mguni', 'Thabo', '$2y$10$tLBQXNtaTEzi6ENFHTKK2eWjzZnlOHbbQBFcwp0faJH5kqbQfVXQa', 'Mr', 2147483647, NULL, 'emele05@gmail.com', 0, '', '2025-09-22 08:44:09', 'a6ab31d0d79111168e88ccb081d66c5c0b4367f885e97ce7d31535348c871a82', '2025-09-22 08:44:09', 2, 0, NULL, 0),
+(124, 'Boshielo555', 'Emmanuel555', '$2y$10$AWimtT7.WatBYvOPrXaczuDY9lDla7vFEv33Tl59vyhDUdVyKPyBG', 'Mr', 2147483647, NULL, 'emahsdfge05@gmail.com', 1, '', '2025-09-22 09:17:59', '', '2025-09-22 09:17:59', 2, 0, NULL, 0),
+(125, 'Letsholonyane', 'Reneilwe', '$2y$10$eBHJ6Nw58HTfs2yM9YoOBO4.4AEcRqxmGOEjBlfNOMGSm.Yep2S9e', 'Mr', 2147483647, NULL, 'emahlwele05@gmail.com', 1, '$2y$10$NLzx472rllK9DKieur84oOBOUShWotegpfja3Pd/XXTs90iUZWNCS', '2025-09-23 11:06:23', '', '2025-09-22 09:38:49', 2, 0, NULL, 0),
+(126, 'Laravel', 'Tonny', '$2y$10$nVL9FHi6kxuIvgoa3V9/mOb1a2IfY46ZgRfomPm.DaRCtJ5qTeXci', 'Ms', 2147483647, NULL, 'distributorsdoe@gmail.com', 1, '', '2025-09-22 10:06:45', '', '2025-09-22 10:06:45', 2, 0, NULL, 0);
 
 --
 -- Indexes for dumped tables
@@ -1526,16 +1267,8 @@ ALTER TABLE `activities`
 --
 ALTER TABLE `classes`
   ADD PRIMARY KEY (`ClassID`),
-  ADD KEY `SubjectID` (`SubjectID`),
-  ADD KEY `TutorID` (`TutorID`);
-
---
--- Indexes for table `directorsubjects`
---
-ALTER TABLE `directorsubjects`
-  ADD PRIMARY KEY (`Id`),
-  ADD KEY `DirectorId` (`DirectorId`),
-  ADD KEY `SubjectId` (`SubjectId`);
+  ADD KEY `TutorID` (`TutorID`),
+  ADD KEY `fk_classes_subject` (`SubjectID`);
 
 --
 -- Indexes for table `feedbacklog`
@@ -1550,7 +1283,7 @@ ALTER TABLE `feedbacklog`
 --
 ALTER TABLE `finances`
   ADD PRIMARY KEY (`FinanceId`),
-  ADD KEY `LearnerId` (`LearnerId`);
+  ADD UNIQUE KEY `uc_finances` (`LearnerId`);
 
 --
 -- Indexes for table `grades`
@@ -1613,6 +1346,14 @@ ALTER TABLE `learnerlevel`
   ADD KEY `LevelId` (`LevelId`);
 
 --
+-- Indexes for table `learneronlineactivities`
+--
+ALTER TABLE `learneronlineactivities`
+  ADD PRIMARY KEY (`LearnerOnlineActivityId`),
+  ADD UNIQUE KEY `LearnerId` (`LearnerId`,`OnlineActivityId`),
+  ADD KEY `fk_loa_activity` (`OnlineActivityId`);
+
+--
 -- Indexes for table `learnerpracticequestions`
 --
 ALTER TABLE `learnerpracticequestions`
@@ -1662,16 +1403,27 @@ ALTER TABLE `notices`
   ADD KEY `CreatedBy` (`CreatedBy`);
 
 --
--- Indexes for table `oldsubjects`
+-- Indexes for table `notifications`
 --
-ALTER TABLE `oldsubjects`
-  ADD PRIMARY KEY (`SubjectId`);
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`NotificationId`),
+  ADD KEY `idx_createdfor` (`CreatedFor`),
+  ADD KEY `idx_grade_subject` (`Grade`,`SubjectName`),
+  ADD KEY `idx_expirydate` (`ExpiryDate`);
 
 --
 -- Indexes for table `onlineactivities`
 --
 ALTER TABLE `onlineactivities`
   ADD PRIMARY KEY (`Id`);
+
+--
+-- Indexes for table `onlineactivitiesassignments`
+--
+ALTER TABLE `onlineactivitiesassignments`
+  ADD PRIMARY KEY (`AssignmentId`),
+  ADD KEY `fk_onlineactivitiesassignments_class` (`ClassID`),
+  ADD KEY `fk_onlineactivitiesassignments_activity` (`OnlineActivityId`);
 
 --
 -- Indexes for table `onlinequestions`
@@ -1715,8 +1467,8 @@ ALTER TABLE `resourceassignments`
 --
 ALTER TABLE `resources`
   ADD PRIMARY KEY (`ResourceID`),
-  ADD KEY `SubjectID` (`SubjectID`),
-  ADD KEY `UploadedBy` (`UploadedBy`);
+  ADD KEY `UploadedBy` (`UploadedBy`),
+  ADD KEY `fk_resources_subject` (`SubjectID`);
 
 --
 -- Indexes for table `schools`
@@ -1735,7 +1487,8 @@ ALTER TABLE `subjectnotices`
 --
 ALTER TABLE `subjects`
   ADD PRIMARY KEY (`SubjectId`),
-  ADD KEY `GradeId` (`GradeId`);
+  ADD KEY `GradeId` (`GradeId`),
+  ADD KEY `fk_default_tutor` (`DefaultTutorId`);
 
 --
 -- Indexes for table `todolist`
@@ -1757,6 +1510,13 @@ ALTER TABLE `tutoravailability`
 ALTER TABLE `tutordateexceptions`
   ADD PRIMARY KEY (`Id`),
   ADD UNIQUE KEY `unique_exception` (`TutorId`,`ExceptionDate`);
+
+--
+-- Indexes for table `tutorpayments`
+--
+ALTER TABLE `tutorpayments`
+  ADD PRIMARY KEY (`PaymentId`),
+  ADD KEY `TutorId` (`TutorId`);
 
 --
 -- Indexes for table `tutors`
@@ -1786,14 +1546,6 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`Id`);
 
 --
--- Indexes for table `usersubject`
---
-ALTER TABLE `usersubject`
-  ADD PRIMARY KEY (`Id`),
-  ADD KEY `UserId` (`UserId`),
-  ADD KEY `SubjectId` (`SubjectId`);
-
---
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -1801,19 +1553,13 @@ ALTER TABLE `usersubject`
 -- AUTO_INCREMENT for table `activities`
 --
 ALTER TABLE `activities`
-  MODIFY `ActivityId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `ActivityId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `classes`
 --
 ALTER TABLE `classes`
-  MODIFY `ClassID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
-
---
--- AUTO_INCREMENT for table `directorsubjects`
---
-ALTER TABLE `directorsubjects`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `ClassID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT for table `feedbacklog`
@@ -1825,73 +1571,79 @@ ALTER TABLE `feedbacklog`
 -- AUTO_INCREMENT for table `finances`
 --
 ALTER TABLE `finances`
-  MODIFY `FinanceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `FinanceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
 
 --
 -- AUTO_INCREMENT for table `grades`
 --
 ALTER TABLE `grades`
-  MODIFY `GradeId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `GradeId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `inviterequests`
 --
 ALTER TABLE `inviterequests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `invitetokens`
 --
 ALTER TABLE `invitetokens`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `learneractivitymarks`
 --
 ALTER TABLE `learneractivitymarks`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT for table `learneranswers`
 --
 ALTER TABLE `learneranswers`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=165;
 
 --
 -- AUTO_INCREMENT for table `learnerclasses`
 --
 ALTER TABLE `learnerclasses`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=144;
 
 --
 -- AUTO_INCREMENT for table `learnerhomeworkresults`
 --
 ALTER TABLE `learnerhomeworkresults`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT for table `learnerlevel`
 --
 ALTER TABLE `learnerlevel`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+
+--
+-- AUTO_INCREMENT for table `learneronlineactivities`
+--
+ALTER TABLE `learneronlineactivities`
+  MODIFY `LearnerOnlineActivityId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `learnerpracticequestions`
 --
 ALTER TABLE `learnerpracticequestions`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=263;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=292;
 
 --
 -- AUTO_INCREMENT for table `learners`
 --
 ALTER TABLE `learners`
-  MODIFY `LearnerId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+  MODIFY `LearnerId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
 -- AUTO_INCREMENT for table `learnersubject`
 --
 ALTER TABLE `learnersubject`
-  MODIFY `LearnerSubjectId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `LearnerSubjectId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=156;
 
 --
 -- AUTO_INCREMENT for table `level`
@@ -1909,31 +1661,37 @@ ALTER TABLE `memos`
 -- AUTO_INCREMENT for table `notices`
 --
 ALTER TABLE `notices`
-  MODIFY `NoticeNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `NoticeNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT for table `oldsubjects`
+-- AUTO_INCREMENT for table `notifications`
 --
-ALTER TABLE `oldsubjects`
-  MODIFY `SubjectId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+ALTER TABLE `notifications`
+  MODIFY `NotificationId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `onlineactivities`
 --
 ALTER TABLE `onlineactivities`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+
+--
+-- AUTO_INCREMENT for table `onlineactivitiesassignments`
+--
+ALTER TABLE `onlineactivitiesassignments`
+  MODIFY `AssignmentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `onlinequestions`
 --
 ALTER TABLE `onlinequestions`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
 
 --
 -- AUTO_INCREMENT for table `practicequestions`
 --
 ALTER TABLE `practicequestions`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=117;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
 
 --
 -- AUTO_INCREMENT for table `ratings`
@@ -1951,19 +1709,19 @@ ALTER TABLE `registrationquestions`
 -- AUTO_INCREMENT for table `resourceassignments`
 --
 ALTER TABLE `resourceassignments`
-  MODIFY `AssignmentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `AssignmentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `resources`
 --
 ALTER TABLE `resources`
-  MODIFY `ResourceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `ResourceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `schools`
 --
 ALTER TABLE `schools`
-  MODIFY `SchoolId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `SchoolId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `subjectnotices`
@@ -1975,13 +1733,13 @@ ALTER TABLE `subjectnotices`
 -- AUTO_INCREMENT for table `subjects`
 --
 ALTER TABLE `subjects`
-  MODIFY `SubjectId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `SubjectId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `todolist`
 --
 ALTER TABLE `todolist`
-  MODIFY `TodoId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `TodoId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `tutoravailability`
@@ -1996,6 +1754,12 @@ ALTER TABLE `tutordateexceptions`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `tutorpayments`
+--
+ALTER TABLE `tutorpayments`
+  MODIFY `PaymentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `tutorsessions`
 --
 ALTER TABLE `tutorsessions`
@@ -2005,13 +1769,7 @@ ALTER TABLE `tutorsessions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
-
---
--- AUTO_INCREMENT for table `usersubject`
---
-ALTER TABLE `usersubject`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
 -- Constraints for dumped tables
@@ -2027,15 +1785,8 @@ ALTER TABLE `activities`
 -- Constraints for table `classes`
 --
 ALTER TABLE `classes`
-  ADD CONSTRAINT `classes_ibfk_1` FOREIGN KEY (`SubjectID`) REFERENCES `oldsubjects` (`SubjectId`),
-  ADD CONSTRAINT `classes_ibfk_2` FOREIGN KEY (`TutorID`) REFERENCES `tutors` (`TutorId`);
-
---
--- Constraints for table `directorsubjects`
---
-ALTER TABLE `directorsubjects`
-  ADD CONSTRAINT `directorsubjects_ibfk_1` FOREIGN KEY (`DirectorId`) REFERENCES `users` (`Id`),
-  ADD CONSTRAINT `directorsubjects_ibfk_2` FOREIGN KEY (`SubjectId`) REFERENCES `oldsubjects` (`SubjectId`);
+  ADD CONSTRAINT `classes_ibfk_2` FOREIGN KEY (`TutorID`) REFERENCES `tutors` (`TutorId`),
+  ADD CONSTRAINT `fk_classes_subject` FOREIGN KEY (`SubjectID`) REFERENCES `subjects` (`SubjectId`);
 
 --
 -- Constraints for table `feedbacklog`
@@ -2043,12 +1794,6 @@ ALTER TABLE `directorsubjects`
 ALTER TABLE `feedbacklog`
   ADD CONSTRAINT `feedbacklog_ibfk_1` FOREIGN KEY (`ActivityId`) REFERENCES `onlineactivities` (`Id`),
   ADD CONSTRAINT `feedbacklog_ibfk_2` FOREIGN KEY (`TutorId`) REFERENCES `users` (`Id`);
-
---
--- Constraints for table `finances`
---
-ALTER TABLE `finances`
-  ADD CONSTRAINT `finances_ibfk_1` FOREIGN KEY (`LearnerId`) REFERENCES `learners` (`LearnerId`);
 
 --
 -- Constraints for table `grades`
@@ -2092,6 +1837,13 @@ ALTER TABLE `learnerlevel`
   ADD CONSTRAINT `learnerlevel_ibfk_2` FOREIGN KEY (`LevelId`) REFERENCES `level` (`Id`);
 
 --
+-- Constraints for table `learneronlineactivities`
+--
+ALTER TABLE `learneronlineactivities`
+  ADD CONSTRAINT `fk_loa_activity` FOREIGN KEY (`OnlineActivityId`) REFERENCES `onlineactivities` (`Id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_loa_learner` FOREIGN KEY (`LearnerId`) REFERENCES `learners` (`LearnerId`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `learnerpracticequestions`
 --
 ALTER TABLE `learnerpracticequestions`
@@ -2115,14 +1867,21 @@ ALTER TABLE `learners`
 -- Constraints for table `learnersubject`
 --
 ALTER TABLE `learnersubject`
-  ADD CONSTRAINT `learnersubject_ibfk_1` FOREIGN KEY (`LearnerId`) REFERENCES `learners` (`LearnerId`),
-  ADD CONSTRAINT `learnersubject_ibfk_2` FOREIGN KEY (`SubjectId`) REFERENCES `oldsubjects` (`SubjectId`);
+  ADD CONSTRAINT `fk_learnersubject_subject` FOREIGN KEY (`SubjectId`) REFERENCES `subjects` (`SubjectId`),
+  ADD CONSTRAINT `learnersubject_ibfk_1` FOREIGN KEY (`LearnerId`) REFERENCES `learners` (`LearnerId`);
 
 --
 -- Constraints for table `notices`
 --
 ALTER TABLE `notices`
   ADD CONSTRAINT `notices_ibfk_1` FOREIGN KEY (`CreatedBy`) REFERENCES `users` (`Id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `onlineactivitiesassignments`
+--
+ALTER TABLE `onlineactivitiesassignments`
+  ADD CONSTRAINT `fk_onlineactivitiesassignments_activity` FOREIGN KEY (`OnlineActivityId`) REFERENCES `onlineactivities` (`Id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_onlineactivitiesassignments_class` FOREIGN KEY (`ClassID`) REFERENCES `classes` (`ClassID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `onlinequestions`
@@ -2155,13 +1914,14 @@ ALTER TABLE `resourceassignments`
 -- Constraints for table `resources`
 --
 ALTER TABLE `resources`
-  ADD CONSTRAINT `resources_ibfk_1` FOREIGN KEY (`SubjectID`) REFERENCES `oldsubjects` (`SubjectId`),
+  ADD CONSTRAINT `fk_resources_subject` FOREIGN KEY (`SubjectID`) REFERENCES `subjects` (`SubjectId`),
   ADD CONSTRAINT `resources_ibfk_2` FOREIGN KEY (`UploadedBy`) REFERENCES `users` (`Id`);
 
 --
 -- Constraints for table `subjects`
 --
 ALTER TABLE `subjects`
+  ADD CONSTRAINT `fk_default_tutor` FOREIGN KEY (`DefaultTutorId`) REFERENCES `tutors` (`TutorId`) ON DELETE SET NULL,
   ADD CONSTRAINT `subjects_ibfk_1` FOREIGN KEY (`GradeId`) REFERENCES `grades` (`GradeId`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
@@ -2183,6 +1943,12 @@ ALTER TABLE `tutordateexceptions`
   ADD CONSTRAINT `tutordateexceptions_ibfk_1` FOREIGN KEY (`TutorId`) REFERENCES `users` (`Id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `tutorpayments`
+--
+ALTER TABLE `tutorpayments`
+  ADD CONSTRAINT `tutorpayments_ibfk_1` FOREIGN KEY (`TutorId`) REFERENCES `tutors` (`TutorId`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `tutors`
 --
 ALTER TABLE `tutors`
@@ -2199,15 +1965,7 @@ ALTER TABLE `tutorsessions`
 -- Constraints for table `tutorsubject`
 --
 ALTER TABLE `tutorsubject`
-  ADD CONSTRAINT `tutorsubject_ibfk_1` FOREIGN KEY (`TutorId`) REFERENCES `users` (`Id`),
-  ADD CONSTRAINT `tutorsubject_ibfk_2` FOREIGN KEY (`SubjectId`) REFERENCES `oldsubjects` (`SubjectId`);
-
---
--- Constraints for table `usersubject`
---
-ALTER TABLE `usersubject`
-  ADD CONSTRAINT `usersubject_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`),
-  ADD CONSTRAINT `usersubject_ibfk_2` FOREIGN KEY (`SubjectId`) REFERENCES `oldsubjects` (`SubjectId`);
+  ADD CONSTRAINT `tutorsubject_ibfk_1` FOREIGN KEY (`TutorId`) REFERENCES `users` (`Id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -243,11 +243,11 @@ if (isset($_POST['login'])) {
       <!-- Login Form -->
       <form action="login.php" method="post">
         <div class="container">
-          <input type="text" placeholder="Enter Email" id="email" name="email" required>
+          <input type="text" placeholder="Enter Email" id="email" name="email" maxlength="100" required>
         </div>
 
         <div class="container">
-          <input type="password" placeholder="Enter Password" id="password" name="password" required>
+          <input type="password" placeholder="Enter Password" id="password" name="password" maxlength="250" required>
         </div>
 
         <div class="container">

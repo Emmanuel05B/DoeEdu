@@ -66,6 +66,7 @@ $requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserTy
                         <input type="hidden" name="id" value="<?= $req['Id'] ?>">
                         <button type="submit" class="btn btn-primary btn-xs btn-send-reminder">Send Reminder</button>
                       </form>
+                      <button type="submit" class="btn btn-danger btn-xs btn-delete">Delete(Deregister)</button>
                     </td>
                     <td>
 

@@ -122,6 +122,16 @@ if ($resultSubjects) {
                           </div>
                         </div>
 
+                        <!-- Manage Verifications -->
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                          <div class="small-box" style="background-color:#e8e0f8; color:#4b2e83;">
+                            <div class="inner text-center">
+                              <h5>Verifications</h5>
+                            </div>
+                            <a href="pendingverifications.php" class="small-box-footer" style="color:#4b2e83;">Go <i class="fa fa-arrow-circle-right"></i></a>
+                          </div>
+                        </div>
+
 
                       </div>
 
@@ -270,124 +280,7 @@ if ($resultSubjects) {
                     <div class="profile-personal-info">
                       <h3 class="text-primary mb-4">System Settings</h3>
                       
-                      <div class="row">
-                        <!-- General Settings -->
-                        <div class="col-md-4">
-                          <div class="box box-primary" style="border-top: 3px solid #3c8dbc;">
-                            <div class="box-header with-border" style="background-color:#f0f8ff;">
-                              <h3 class="box-title" style="color:#3c8dbc;">
-                                <i class="fa fa-cogs"></i> General Settings
-                              </h3>
-                            </div>
-                            <form role="form">
-                              <div class="box-body">
-                                <div class="form-group">
-                                  <label for="siteName">Site Name</label>
-                                  <input type="text" class="form-control" id="siteName" placeholder="Enter site name">
-                                </div>
-                                <div class="form-group">
-                                  <label for="adminEmail">Admin Email</label>
-                                  <input type="email" class="form-control" id="adminEmail" placeholder="Enter admin email">
-                                </div>
-                                <div class="form-group">
-                                  <label for="theme">Theme</label>
-                                  <select class="form-control" id="theme">
-                                    <option>Default</option>
-                                    <option>Dark</option>
-                                    <option>Light</option>
-                                  </select>
-                                </div>
-                                <div class="form-group">
-                                  <label>Maintenance Mode</label><br>
-                                  <label class="radio-inline">
-                                    <input type="radio" name="maintenance" value="on"> On
-                                  </label>
-                                  <label class="radio-inline">
-                                    <input type="radio" name="maintenance" value="off" checked> Off
-                                  </label>
-                                </div>
-                              </div>
-                              <div class="box-footer">
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
-                              </div>
-                            </form>
-                          </div>
-                        </div>
-
-                        <!-- Roles & Permissions -->
-                        <div class="col-md-4">
-                          <div class="box box-success" style="border-top: 3px solid #00a65a;">
-                            <div class="box-header with-border" style="background-color:#e6ffed;">
-                              <h3 class="box-title" style="color:#00a65a;">
-                                <i class="fa fa-user-shield"></i> Roles & Permissions
-                              </h3>
-                            </div>
-                            <form role="form">
-                              <div class="box-body">
-                                <div class="form-group">
-                                  <label for="roleName">Role Name</label>
-                                  <input type="text" class="form-control" id="roleName" placeholder="Enter role name">
-                                </div>
-                                <div class="form-group">
-                                  <label>Permissions</label>
-                                  <div class="checkbox">
-                                    <label><input type="checkbox"> Manage Users</label>
-                                  </div>
-                                  <div class="checkbox">
-                                    <label><input type="checkbox"> Manage Resources</label>
-                                  </div>
-                                  <div class="checkbox">
-                                    <label><input type="checkbox"> View Reports</label>
-                                  </div>
-                                  <div class="checkbox">
-                                    <label><input type="checkbox"> System Settings</label>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="box-footer">
-                                <button type="submit" class="btn btn-success">Save Role</button>
-                              </div>
-                            </form>
-                          </div>
-                        </div>
-
-                        <!-- Audit Logs -->
-                        <div class="col-md-4">
-                          <div class="box box-warning" style="border-top: 3px solid #f39c12;">
-                            <div class="box-header with-border" style="background-color:#fff3e0;">
-                              <h3 class="box-title" style="color:#f39c12;">
-                                <i class="fa fa-history"></i> Audit Logs
-                              </h3>
-                            </div>
-                            <form role="form">
-                              <div class="box-body">
-                                <div class="form-group">
-                                  <label for="userFilter">Filter by User</label>
-                                  <input type="text" class="form-control" id="userFilter" placeholder="Enter username">
-                                </div>
-                                <div class="form-group">
-                                  <label for="actionType">Action Type</label>
-                                  <select class="form-control" id="actionType">
-                                    <option>All</option>
-                                    <option>Login</option>
-                                    <option>Update</option>
-                                    <option>Delete</option>
-                                    <option>Create</option>
-                                  </select>
-                                </div>
-                                <div class="form-group">
-                                  <label>Date Range</label>
-                                  <input type="date" class="form-control" style="display:inline-block; width:48%;" id="startDate">
-                                  <input type="date" class="form-control" style="display:inline-block; width:48%;" id="endDate">
-                                </div>
-                              </div>
-                              <div class="box-footer">
-                                <button type="submit" class="btn btn-warning">Search Logs</button>
-                              </div>
-                            </form>
-                          </div>
-                        </div>
-                      </div>
+                      
 
                       <!-- Main Content -->
                       <section class="content">
@@ -421,12 +314,7 @@ if ($resultSubjects) {
                                       <td><input type="text" class="form-control text-center" value="R750.00"></td>
                                       <td><input type="text" class="form-control text-center" value="R1199.00"></td>
                                     </tr>
-                                    <tr>
-                                      <td>Both Subjects</td>
-                                      <td><input type="text" class="form-control text-center" value="R850.00"></td>
-                                      <td><input type="text" class="form-control text-center" value="R1250.00"></td>
-                                      <td><input type="text" class="form-control text-center" value="R1950.00"></td>
-                                    </tr>
+                                    
                                     <!-- Add more subjects as new rows -->
                                   </tbody>
                                 </table>
@@ -445,97 +333,11 @@ if ($resultSubjects) {
                       <section class="content">
                         <div class="row">
 
-                          <!-- Subject Pricing -->
-                          <div class="col-md-12">
-                            <h3>Subject Pricing</h3>
-                          </div>
-
-                          <!-- Mathematics Block -->
-                          <div class="col-md-4">
-                            <div class="box box-primary">
-                              <div class="box-header with-border">
-                                <h3 class="box-title">Mathematics</h3>
-                              </div>
-                              <div class="box-body">
-                                <div class="form-group">
-                                  <label>3 Months</label>
-                                  <input type="number" class="form-control" placeholder="e.g. 500">
-                                </div>
-                                <div class="form-group">
-                                  <label>6 Months</label>
-                                  <input type="number" class="form-control" placeholder="e.g. 900">
-                                </div>
-                                <div class="form-group">
-                                  <label>12 Months</label>
-                                  <input type="number" class="form-control" placeholder="e.g. 1600">
-                                </div>
-                              </div>
-                              <div class="box-footer">
-                                <button type="button" class="btn btn-primary">Save</button>
-                              </div>
-                            </div>
-                          </div>
-
-                          <!-- English Block -->
-                          <div class="col-md-4">
-                            <div class="box box-primary">
-                              <div class="box-header with-border">
-                                <h3 class="box-title">English</h3>
-                              </div>
-                              <div class="box-body">
-                                <div class="form-group">
-                                  <label>3 Months</label>
-                                  <input type="number" class="form-control" placeholder="e.g. 400">
-                                </div>
-                                <div class="form-group">
-                                  <label>6 Months</label>
-                                  <input type="number" class="form-control" placeholder="e.g. 750">
-                                </div>
-                                <div class="form-group">
-                                  <label>12 Months</label>
-                                  <input type="number" class="form-control" placeholder="e.g. 1400">
-                                </div>
-                              </div>
-                              <div class="box-footer">
-                                <button type="button" class="btn btn-primary">Save</button>
-                              </div>
-                            </div>
-                          </div>
-
-                          <!-- Science Block -->
-                          <div class="col-md-4">
-                            <div class="box box-primary">
-                              <div class="box-header with-border">
-                                <h3 class="box-title">Science</h3>
-                              </div>
-                              <div class="box-body">
-                                <div class="form-group">
-                                  <label>3 Months</label>
-                                  <input type="number" class="form-control" placeholder="e.g. 600">
-                                </div>
-                                <div class="form-group">
-                                  <label>6 Months</label>
-                                  <input type="number" class="form-control" placeholder="e.g. 1100">
-                                </div>
-                                <div class="form-group">
-                                  <label>12 Months</label>
-                                  <input type="number" class="form-control" placeholder="e.g. 2000">
-                                </div>
-                              </div>
-                              <div class="box-footer">
-                                <button type="button" class="btn btn-primary">Save</button>
-                              </div>
-                            </div>
-                          </div>
-
-                          <!-- Add more subjects in same block format -->
-
                           <!-- Default Values -->
-                          <div class="col-md-12">
-                            <h3>Default Values</h3>
+                          <div class="col-md-4">
                             <div class="box box-warning">
                               <div class="box-header with-border">
-                                <h3 class="box-title">System Defaults</h3>
+                                <h3 class="box-title">Class Defaults</h3>
                               </div>
                               <div class="box-body">
                                 <div class="default-values-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px;">
@@ -543,6 +345,27 @@ if ($resultSubjects) {
                                     <label>Default Tutor ID</label>
                                     <input type="number" class="form-control" placeholder="Enter Tutor ID">
                                   </div>
+                                 
+                                  <div class="form-group">
+                                    <label>Default Maximum Learners per Class</label>
+                                    <input type="number" class="form-control" placeholder="e.g. 30">
+                                  </div>
+                                
+                                </div>
+                              </div>
+                              <div class="box-footer text-right">
+                                <button type="button" class="btn btn-warning">Save Defaults</button>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="box box-primary">
+                              <div class="box-header with-border">
+                                <h3 class="box-title">Quizzes Defaults</h3>
+                              </div>
+                              <div class="box-body">
+                                <div class="default-values-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px;">
+                                  
                                   <div class="form-group">
                                     <label>Default Class Duration (minutes)</label>
                                     <input type="number" class="form-control" placeholder="e.g. 60">
@@ -551,13 +374,26 @@ if ($resultSubjects) {
                                     <label>Default Pass Mark (%)</label>
                                     <input type="number" class="form-control" placeholder="e.g. 70">
                                   </div>
+                                  
+                                </div>
+                              </div>
+                              <div class="box-footer text-right">
+                                <button type="button" class="btn btn-primary">Save Defaults</button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-4">
+                            <div class="box box-danger">
+                              <div class="box-header with-border">
+                                <h3 class="box-title">Email Defaults</h3>
+                              </div>
+                              <div class="box-body">
+                                <div class="default-values-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px;">
+                                  
                                   <div class="form-group">
-                                    <label>Default Maximum Learners per Class</label>
-                                    <input type="number" class="form-control" placeholder="e.g. 30">
-                                  </div>
-                                  <div class="form-group">
-                                    <label>Default Resource Storage Limit (MB)</label>
-                                    <input type="number" class="form-control" placeholder="e.g. 500">
+                                    <label for="adminEmail">Admin Email</label>
+                                    <input type="email" class="form-control" id="adminEmail" placeholder="Enter admin email">
                                   </div>
                                   <div class="form-group">
                                     <label>Email Password(DONT TOUCH)</label>
@@ -567,7 +403,29 @@ if ($resultSubjects) {
                                 </div>
                               </div>
                               <div class="box-footer text-right">
-                                <button type="button" class="btn btn-warning">Save Defaults</button>
+                                <button type="button" class="btn btn-danger">Save Defaults</button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-4">
+                            <div class="box box-success">
+                              <div class="box-header with-border">
+                                <h3 class="box-title">Resources Defaults</h3>
+                              </div>
+                              <div class="box-body">
+                                <div class="default-values-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px;">
+                                  
+                                  <div class="form-group">
+                                    <label>Default Resource Storage Limit (MB)</label>
+                                    <input type="number" class="form-control" placeholder="e.g. 500">
+                                  </div>
+                                  
+                                  <!-- Add more default values here if needed -->
+                                </div>
+                              </div>
+                              <div class="box-footer text-right">
+                                <button type="button" class="btn btn-success">Save Defaults</button>
                               </div>
                             </div>
                           </div>

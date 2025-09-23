@@ -63,8 +63,7 @@ if (!isset($_SESSION['email'])) {
                       <th>StNo.</th>
                       <th>First Name</th>
                       <th>Last Name</th>
-                      <th>Grade</th>
-                      <th>Group</th>
+
                       <th class="text-center">Actions</th>
                     </tr>
                   </thead>
@@ -105,8 +104,8 @@ if (!isset($_SESSION['email'])) {
                       <td><?php echo htmlspecialchars($final['LearnerId']); ?></td>
                       <td><?php echo htmlspecialchars($final['Name']); ?></td>
                       <td><?php echo htmlspecialchars($final['Surname']); ?></td>
-                      <td><?php echo htmlspecialchars($final['Grade']); ?></td>
-                      <td><?php echo htmlspecialchars($final['GroupName']); ?></td>
+                      <!-- <td><?php //echo htmlspecialchars($final['Grade']); ?></td> -->
+                      <!-- <td><?php// echo htmlspecialchars($final['GroupName']); ?></td> -->
                       <td class="text-center">
                         <a href="tracklearnerprogress.php?id=<?php echo $final['LearnerId']; ?>&val=<?php echo $subjectId; ?>" class="btn btn-xs btn-primary">Track Progress</a>
                         <a href="learnerprofile.php?id=<?php echo $final['LearnerId']; ?>&val=<?php echo $subjectId; ?>" class="btn btn-xs btn-success">Open Profile</a>
@@ -126,8 +125,6 @@ if (!isset($_SESSION['email'])) {
                       <th>StNo.</th>
                       <th>First Name</th>
                       <th>Last Name</th>
-                      <th>Grade</th>
-                      <th>Group</th>
                       <th class="text-center">Actions</th>
                     </tr>
                   </tfoot>

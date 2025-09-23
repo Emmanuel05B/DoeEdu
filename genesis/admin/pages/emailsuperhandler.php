@@ -55,7 +55,7 @@ try {
             $mail->send();
 
             $_SESSION['success'] = "Email successfully sent to " . htmlspecialchars($emailto) . "!";
-            break;
+        break;
 
 
         // 1. Custom email to one or multiple people
@@ -78,11 +78,9 @@ try {
 
             $mail->send();
             $_SESSION['success'] = "Email sent to " . count($recipients) . " recipient(s).";
-            break;
+        break;
 
-            
-
-        // 2. Invite email
+        // 2. Invite email....to register
         case 'invite':
             
             $invite_id = intval($_POST['id'] ?? $_GET['id'] ?? 0);
@@ -94,7 +92,8 @@ try {
             $request = $stmt->get_result()->fetch_assoc();
             $stmt->close();
             if (!$request) throw new Exception("Invite request not found.");
-            if ($request['IsAccepted']) throw new Exception("Invite already accepted.");
+            //will change coz we wanna send another one as reminder/ or if expired
+            // if ($request['IsAccepted']) throw new Exception("Invite already accepted.");  
 
             $token = bin2hex(random_bytes(32));
             $expiresAt = date('Y-m-d H:i:s', strtotime('+7 days'));
@@ -122,13 +121,17 @@ try {
             $updateStmt->close();
 
             $_SESSION['success'] = "Invite sent to {$request['email']}.";
-            break;
+        break;
 
-        // 3. Learner verification / reminder
+        // 3. parent verification/approval / reminder..already registered
+        //so here 
+        // .must change from sending to learner Email to updated Parent Email instead.
+        // use the id from users table for this learner to get ParentEmail from learners table
         case 'reminder':
             $learner_id = intval($_POST['id'] ?? $_GET['id'] ?? 0);
 
             if (!$learner_id) throw new Exception("Invalid learner ID.");
+            //wanna get learner summery of subjects registred also
 
             $stmt = $connect->prepare("SELECT Name, Email, VerificationToken, IsVerified FROM users WHERE Id=? AND UserType='2'");
             $stmt->bind_param("i", $learner_id);
@@ -150,8 +153,8 @@ try {
 
             $mail->send();
 
-            $_SESSION['success'] = "Reminder sent to {$learner['Email']}.";
-            break;
+            $_SESSION['success'] = "Reminder sent to {$learner['Email']}.";  //must be to parent
+        break;
 
         // 4. reminder all
         case 'reminder_all':
@@ -182,13 +185,10 @@ try {
             if (!empty($failures)) {
                 $_SESSION['error'] = count($failures) . " reminder(s) failed to send: " . implode(', ', $failures);
             }
-            break;
+        break;
 
 
-        
         // 5. Feedback emails to parents for non-submissions
-        case 'feedback':
-            // 5. Feedback emails to parents for non-submissions
         case 'feedback':
             $activityId = intval($_POST['activityId'] ?? 0);
             if (!$activityId) throw new Exception("Invalid activity ID.");
@@ -270,7 +270,7 @@ try {
             if (!empty($failures)) {
                 $_SESSION['error'] = count($failures) . " failed: " . implode(', ', $failures);
             }
-            break;
+        break;
 
             
             

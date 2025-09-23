@@ -4,44 +4,49 @@ include(__DIR__ . "/../../partials/connect.php");
 
 // Check if user is logged in
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
+    header("Location: ../../common/pages/login.php");
     exit();
 }
 
-// Collect the data from the form
-$taskName = $_POST['task_name'];
-$dueDate = $_POST['due_date']; // Assuming format is 'Y-m-d'
-$dueTime = $_POST['due_time']; // Assuming format is 'H:i'
-$priority = $_POST['priority'];
+// Collect the data
+$taskName = trim($_POST['task_name'] ?? '');
+
+// Due Date: user input or today
+$dueDate = !empty($_POST['due_date']) ? $_POST['due_date'] : date('Y-m-d');
+
+// Due Time: user input or now
+$dueTime = !empty($_POST['due_time']) ? $_POST['due_time'] : date('H:i');
+
+// Combine into MySQL DATETIME format
+$dueDateTime = $dueDate . ' ' . $dueTime; // e.g., "2025-08-30 20:46"
+
+// Priority: default Medium if not provided
+$priority = trim($_POST['priority'] ?? 'Medium');
+
+// Category: default General
+$category = "General";
+
 $creatorId = $_SESSION['user_id']; // Assuming user ID is stored in session
 
-// Set the category to a default value (or get it from the form if needed)
-$category = "General"; // You can adjust this based on user input or remove if not needed
 
-// Combine date and time into a single datetime format
-$dueDateTime = $dueDate . ' ' . $dueTime;
-
-// Validate data (simple example)
-if (empty($taskName) || empty($dueDate) || empty($dueTime) || empty($priority)) {
-    die("All fields are required.");
+// Basic validation
+if (empty($taskName)) {
+    header("Location: adminindex.php?status=error&message=" . urlencode("Task Name is required."));
+    exit();
 }
 
-// Insert the data into the database
+// Insert into database
 $sql = "INSERT INTO TodoList (CreatorId, TaskText, DueDate, Priority, Category, CreationDate) 
         VALUES (?, ?, ?, ?, ?, NOW())";
 
-// Prepare the SQL statement
 $stmt = $connect->prepare($sql);
-
-// Bind parameters to the SQL query
 $stmt->bind_param("sssss", $creatorId, $taskName, $dueDateTime, $priority, $category);
 
-// Execute the statement and check for success
 if ($stmt->execute()) {
-    // Redirect back with success status
-    header("Location: adminindex.php?status=success");
+    header("Location: adminindex.php?status=success&message=" . urlencode("Task added successfully!"));
+    exit();
 } else {
-    // Handle errors
-    die("Error inserting task: " . $stmt->error);
+    header("Location: adminindex.php?status=error&message=" . urlencode("Error adding task: " . $stmt->error));
+    exit();
 }
 ?>

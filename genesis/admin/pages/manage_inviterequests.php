@@ -72,19 +72,32 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
                     </td>
                     <td>
                       
+                    <!--
+                      <?php // if (!$req['IsAccepted']): ?>
+                        <form action="emailsuperhandler.php" method="post" style="display:inline;">
+                            <input type="hidden" name="action" value="invite">
+                            <input type="hidden" name="id" value="<?//= $req['id'] ?>">
+                            <input type="hidden" name="redirect" value="manage_inviterequests.php">
+                            <button type="submit" class="btn btn-primary btn-xs swal-send">Send Invite</button>
+                        </form>
+                      <?php // endif; ?>
+                      -->
 
-                      <?php if (!$req['IsAccepted']): ?>
                         <form action="emailsuperhandler.php" method="post" style="display:inline;">
                             <input type="hidden" name="action" value="invite">
                             <input type="hidden" name="id" value="<?= $req['id'] ?>">
                             <input type="hidden" name="redirect" value="manage_inviterequests.php">
                             <button type="submit" class="btn btn-primary btn-xs swal-send">Send Invite</button>
                         </form>
-                      <?php endif; ?>
+
+
+
+
                       <button class="btn btn-danger btn-xs swal-delete"
                               data-id="<?= $req['id'] ?>"
                               data-name="<?= htmlspecialchars($req['name']) ?>"
-                            >Delete</button>
+                            >Delete
+                          </button>
                     </td>
                   </tr>
                 <?php endwhile; ?>

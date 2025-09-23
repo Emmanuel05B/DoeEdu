@@ -15,8 +15,6 @@ if (isset($_POST["Submit"])) {
         exit;
     }
 
-    //$_SESSION['reset_message'] = "If an account with this email exists, a reset link has been sent.";
-
     // Additional password rules
     $uppercase = preg_match('@[A-Z]@', $newPassword);
     $lowercase = preg_match('@[a-z]@', $newPassword);
@@ -206,7 +204,13 @@ if (isset($_POST["Submit"])) {
         echo '<div class="success-message">' . $_SESSION['success_message'] . '</div>';
         unset($_SESSION['success_message']);
     }
+
+    if (isset($_SESSION['reset_message'])) {
+    echo '<div class="success-message">' . $_SESSION['reset_message'] . '</div>';
+    unset($_SESSION['reset_message']); // remove so it only shows once
+    }
     ?>
+
 
     <form method="POST" action="">
       <div class="container">

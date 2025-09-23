@@ -173,18 +173,13 @@
                           <i class="fa fa-ellipsis-v"></i>
                           <i class="fa fa-ellipsis-v"></i>
                         </span>
-                        <!-- checkbox -->
-                        <input type="checkbox" value="" <?php if ($task['Status'] == 1) echo 'checked'; ?>>
-                        <!-- todo text -->
                         <span class="text"><?php echo htmlspecialchars($task['TaskText']); ?></span>
-                        <!-- Emphasis label -->
                         <small class="label label-info">
                           <i class="fa fa-clock-o"></i> <?php echo $dueDate . ' ' . $dueTime; ?>
                         </small>
-                        <!-- General tools such as edit or delete -->
-                        <div class="tools">
-                          <a href="updateTodo.php?todo_id=<?php echo $task['TodoId']; ?>" class="fa fa-edit"></a>
-                          <a href="deleteTodo.php?todo_id=<?php echo $task['TodoId']; ?>" class="fa fa-trash-o" onclick="return confirm('Are you sure you want to delete this task?');"></a>
+                        <div class="tools">                        
+                          <a href="deleteTodo.php?todo_id=<?php echo $task['TodoId']; ?>" 
+                          class="fa fa-trash-o delete-task"></a>
                         </div>
                       </li>
                       <?php
@@ -198,8 +193,14 @@
               <!-- /.box-body -->
 
               <div class="box-footer clearfix no-border">
-                <a href="todo.php" class="btn btn-block btn-primary"><i class="fa fa-plus"></i> Add item</a>
+              
+                <a href="#" class="btn btn-block btn-primary" data-toggle="modal" data-target="#modal-default">
+                  <i class="fa fa-plus"></i> Add item
+                </a>
+              
               </div>
+              
+
             </div>
       
           </section>
@@ -279,6 +280,43 @@
     }
   ?>
 
+  <?php if(isset($_GET['status']) && isset($_GET['message'])): ?>
+  <script>
+      Swal.fire({
+          icon: '<?php echo $_GET['status'] === "success" ? "success" : "error"; ?>',
+          title: '<?php echo $_GET['status'] === "success" ? "Success" : "Oops!"; ?>',
+          text: '<?php echo htmlspecialchars($_GET['message']); ?>'
+      });
+  </script>
+  <?php endif; ?>
+
+  <script>
+  // Select all delete buttons
+    document.querySelectorAll('.delete-task').forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent default navigation
+            const url = this.href; // Get the link
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will permanently delete the task!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect to the delete URL if confirmed
+                    window.location.href = url;
+                }
+            });
+        });
+    });
+  </script>
+
+
 
   <?php
     //include('../partials/connect.php');
@@ -309,6 +347,19 @@
 </script>
 <?php $_SESSION['seen_notification'] = true; ?>
 <?php endif; ?>
+
+<script>
+  $(document).ready(function() {
+
+      // Close the modal and redirect when clicking on the backdrop
+      $('.modal').on('click', function (e) {
+          if ($(e.target).is('.modal')) {
+              window.location.href = 'adminindex.php'; 
+          }
+      });
+  });
+</script>
+
 
 <!-- Notification Modal -->
 <div class="modal fade" id="adminNotificationsModal" tabindex="-1" role="dialog" aria-labelledby="adminNotifTitle" aria-hidden="true">
@@ -348,6 +399,71 @@
     </div>
   </div>
 </div>
+
+
+<!-- To Do List Modal -->
+<div class="modal fade" id="modal-default" tabindex="-1" role="dialog" aria-labelledby="toDoListLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      
+      <!-- Header -->
+      <div class="modal-header" style="background-color: #cce5ff; color: #004085; padding: 5px 15px;">
+        <h4 class="modal-title" id="toDoListLabel" style="font-size: 1.2em;">Add New To Do Task</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #004085;">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      
+      <!-- Body -->
+      <div class="modal-body">
+        <form action="todohandler.php" method="post">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th rowspan="2">Labels</th>
+                <th colspan="5">Fill</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Task Name</td>
+                <td>
+                  <textarea class="form-control" name="task_name" placeholder="Enter task description here" required></textarea>
+                </td>
+              </tr>
+              <tr>
+                <td>Date</td>
+                <td><input type="date" class="form-control" name="due_date"></td>
+              </tr>
+              <tr>
+                <td>Time</td>
+                <td><input type="time" class="form-control" name="due_time"></td>
+              </tr>
+              <tr>
+                <td>Priority</td>
+                <td>
+                  <select class="form-control" name="priority">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="submit" class="btn btn-primary" name="submit">Submit Task</button>
+        </form>
+      </div>
+      
+      <!-- Footer -->
+      <div class="modal-footer">
+        <!-- Optional footer buttons -->
+      </div>
+      
+    </div>
+  </div>
+</div>
+
 
 
 </body>
