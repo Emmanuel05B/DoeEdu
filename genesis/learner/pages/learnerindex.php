@@ -12,6 +12,7 @@
   include(__DIR__ . "/../../common/partials/head.php"); 
 
   $learnerId = $_SESSION['user_id'];
+
   // Fetch learner full name (fallback to session var or 'Learner')
   $stmt = $connect->prepare("SELECT CONCAT(Name, ' ', Surname) AS fullname FROM users WHERE Id = ?");
   $stmt->bind_param("i", $learnerId);
@@ -24,18 +25,31 @@
       $learnerName = $_SESSION['full_name'] ?? 'Learner';
   }
 
+  
   // Fetch Pending Homework count (not submitted & due date in future)
-  $stmt = $connect->prepare("
+
+    $stmt1 = $connect->prepare("
       SELECT COUNT(DISTINCT oa.Id) 
       FROM onlineactivities oa
-      LEFT JOIN learneranswers la ON la.ActivityId = oa.Id AND la.UserId = ?
-      WHERE la.Id IS NULL AND oa.DueDate >= CURDATE()
+      LEFT JOIN learneranswers la 
+          ON la.ActivityId = oa.Id AND la.UserId = ?
+      LEFT JOIN onlineactivitiesassignments oaa
+          ON oaa.AssignmentId = oa.Id
+      WHERE la.Id IS NULL 
+        AND oaa.DueDate >= CURDATE()
   ");
-  $stmt->bind_param("i", $learnerId);
-  $stmt->execute();
-  $stmt->bind_result($pendingHomeworkCount);
-  $stmt->fetch();
-  $stmt->close();
+  
+  if (!$stmt1) {
+      die("Prepare failed: " . $connect->error);
+  }
+
+  $stmt1->bind_param("i", $learnerId);
+  $stmt1->execute();
+  $stmt1->bind_result($pendingHomeworkCount);
+  $stmt1->fetch();
+  $stmt1->close();     
+
+  
 
   // Fetch Completed Homework count (learner answered)
   $stmt = $connect->prepare("
@@ -71,18 +85,29 @@
 
   // Fetch Upcoming Homework (due in future, not submitted yet) limit 5
   $stmt = $connect->prepare("
-      SELECT oa.Id, oa.SubjectId, oa.Title, oa.DueDate
+      SELECT oa.Id, oa.SubjectId, oa.Title, oaa.DueDate
       FROM onlineactivities oa
-      LEFT JOIN learneranswers la ON la.ActivityId = oa.Id AND la.UserId = ?
-      WHERE oa.DueDate >= CURDATE() AND la.Id IS NULL
-      ORDER BY oa.DueDate ASC
+      LEFT JOIN learneranswers la 
+          ON la.ActivityId = oa.Id AND la.UserId = ?
+      LEFT JOIN onlineactivitiesassignments oaa
+          ON oaa.OnlineActivityId = oa.Id
+      WHERE oaa.DueDate >= CURDATE() 
+        AND la.Id IS NULL
+      ORDER BY oaa.DueDate ASC
       LIMIT 5
   ");
+
+  if (!$stmt) {
+    die("Prepare failed: " . $connect->error);
+}
+
   $stmt->bind_param("i", $learnerId);
   $stmt->execute();
   $upcomingHomeworkResult = $stmt->get_result();
   $upcomingHomework = $upcomingHomeworkResult->fetch_all(MYSQLI_ASSOC);
   $stmt->close();
+
+  
 
   // Map SubjectId to name (or fetch from subjects table if exists)
   function getSubjectName($id, $connect) {
@@ -99,24 +124,37 @@
       return "Unknown Subject";
   }
 
+  
+
   // Fetch Recent Results (limit 5 latest)
-  $stmt = $connect->prepare("
-      SELECT oa.SubjectId, oa.Topic, oa.Title, oa.DueDate, la.UserId, la.CreatedAt,
-      ROUND(SUM(oq.CorrectAnswer = la.SelectedAnswer) / COUNT(*) * 100) AS ScorePercent
+    $stmt = $connect->prepare("
+      SELECT oa.SubjectId, oa.Topic, oa.Title, oaa.DueDate, la.UserId, la.CreatedAt,
+            ROUND(SUM(oq.CorrectAnswer = la.SelectedAnswer) / COUNT(*) * 100) AS ScorePercent
       FROM learneranswers la
-      JOIN onlinequestions oq ON la.QuestionId = oq.Id
-      JOIN onlineactivities oa ON la.ActivityId = oa.Id
+      JOIN onlinequestions oq 
+          ON la.QuestionId = oq.Id
+      JOIN onlineactivities oa 
+          ON la.ActivityId = oa.Id
+      LEFT JOIN onlineactivitiesassignments oaa 
+          ON oaa.OnlineActivityId = oa.Id
       WHERE la.UserId = ?
       GROUP BY la.ActivityId
       ORDER BY la.CreatedAt DESC
       LIMIT 5
   ");
+
+
+  if (!$stmt) {
+      die("Prepare failed: " . $connect->error);
+  }
   $stmt->bind_param("i", $learnerId);
   $stmt->execute();
   $recentResultsResult = $stmt->get_result();
   $recentResults = $recentResultsResult->fetch_all(MYSQLI_ASSOC);
   $stmt->close();
 
+
+  
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -230,198 +268,198 @@
       </div>
 
 
-<div class="row"> 
-  <div class="col-md-12">
-    <div class="box box-default" style="border-top:3px solid #3a3a72;">
-      <div class="box-header with-border">
-        <h3 class="box-title">Quick Links</h3>
+      <div class="row"> 
+        <div class="col-md-12">
+          <div class="box box-default" style="border-top:3px solid #3a3a72;">
+            <div class="box-header with-border">
+              <h3 class="box-title">Quick Links</h3>
+            </div>
+            <div class="box-body">
+
+              <!-- ================= Profile & Settings ================= -->
+              <h4 style="color:#3a3a72; margin-bottom:10px;">Profile & Settings</h4>
+              <div class="row">
+                <div class="col-md-3 col-sm-6">
+                  <a href="profile.php">
+                    <div class="small-box" style="background:#f0f8ff; color:#333;">
+                      <div class="inner">
+                        <h4>👤</h4>
+                        <p>My Profile</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                  <a href="mysubjects.php">
+                    <div class="small-box" style="background:#e0f7fa; color:#333;">
+                      <div class="inner">
+                        <h4>📖</h4>
+                        <p>My Subjects</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                  <a href="booksession.php">
+                    <div class="small-box" style="background:#fffde7; color:#333;">
+                      <div class="inner">
+                        <h4>📅</h4>
+                        <p>Book a Session</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                  <a href="tutorrating.php">
+                    <div class="small-box" style="background:#fff3e0; color:#333;">
+                      <div class="inner">
+                        <h4>⭐</h4>
+                        <p>Rate Your Tutor</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <!-- ================= Study & Resources ================= -->
+              <h4 style="color:#3a3a72; margin:20px 0 10px 0;">Study & Resources</h4>
+              <div class="row">
+                <div class="col-md-3 col-sm-6">
+                  <a href="studymaterials.php">
+                    <div class="small-box" style="background:#e8f5e9; color:#333;">
+                      <div class="inner">
+                        <h4>📚</h4>
+                        <p>Study Materials</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                  <a href="pastpapers.php">
+                    <div class="small-box" style="background:#fff3f3; color:#333;">
+                      <div class="inner">
+                        <h4>📝</h4>
+                        <p>Past Papers</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                  <a href="practicequizzes.php">
+                    <div class="small-box" style="background:#e8eaf6; color:#333;">
+                      <div class="inner">
+                        <h4>📝</h4>
+                        <p>Sharpen My Skills</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                  <a href="assignments.php">
+                    <div class="small-box" style="background:#fff8e1; color:#333;">
+                      <div class="inner">
+                        <h4>🗂️</h4>
+                        <p>Homeworks/Quizzes</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <!-- ================= Progress & Performance ================= -->
+              <h4 style="color:#3a3a72; margin:20px 0 10px 0;">Progress & Performance</h4>
+              <div class="row">
+                <div class="col-md-3 col-sm-6">
+                  <a href="myresults.php">
+                    <div class="small-box" style="background:#fff8e1; color:#333;">
+                      <div class="inner">
+                        <h4>📊</h4>
+                        <p>My Results</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                  <a href="progress.php">
+                    <div class="small-box" style="background:#f0f7ff; color:#333;">
+                      <div class="inner">
+                        <h4>🚀</h4>
+                        <p>Track Progress</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                  <a href="schedule.php">
+                    <div class="small-box" style="background:#fefcf0; color:#333;">
+                      <div class="inner">
+                        <h4>⏰</h4>
+                        <p>My Schedule</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                  <a href="attendance.php">
+                    <div class="small-box" style="background:#f0fff0; color:#333;">
+                      <div class="inner">
+                        <h4>📅</h4>
+                        <p>My Attendance</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <!-- ================= Communication & Support ================= -->
+              <h4 style="color:#3a3a72; margin:20px 0 10px 0;">Communication & Support</h4>
+              <div class="row">
+                <div class="col-md-3 col-sm-6">
+                  <a href="support.php">
+                    <div class="small-box" style="background:#fff0f5; color:#333;">
+                      <div class="inner">
+                        <h4>🆘</h4>
+                        <p>Help & Support</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                  <a href="forums.php">
+                    <div class="small-box" style="background:#f1f8e9; color:#333;">
+                      <div class="inner">
+                        <h4>💬</h4>
+                        <p>Discussion Forums</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                  <a href="studentvoice.php">
+                    <div class="small-box" style="background:#fff3e0; color:#333;">
+                      <div class="inner">
+                        <h4>🗣️</h4>
+                        <p>Student Voice</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                  <a href="announcements.php">
+                    <div class="small-box" style="background:#fce4ec; color:#333;">
+                      <div class="inner">
+                        <h4>📢</h4>
+                        <p>Announcements</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="box-body">
-
-        <!-- ================= Profile & Settings ================= -->
-        <h4 style="color:#3a3a72; margin-bottom:10px;">Profile & Settings</h4>
-        <div class="row">
-          <div class="col-md-3 col-sm-6">
-            <a href="profile.php">
-              <div class="small-box" style="background:#f0f8ff; color:#333;">
-                <div class="inner">
-                  <h4>👤</h4>
-                  <p>My Profile</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="mysubjects.php">
-              <div class="small-box" style="background:#e0f7fa; color:#333;">
-                <div class="inner">
-                  <h4>📖</h4>
-                  <p>My Subjects</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="booksession.php">
-              <div class="small-box" style="background:#fffde7; color:#333;">
-                <div class="inner">
-                  <h4>📅</h4>
-                  <p>Book a Session</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="tutorrating.php">
-              <div class="small-box" style="background:#fff3e0; color:#333;">
-                <div class="inner">
-                  <h4>⭐</h4>
-                  <p>Rate Your Tutor</p>
-                </div>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <!-- ================= Study & Resources ================= -->
-        <h4 style="color:#3a3a72; margin:20px 0 10px 0;">Study & Resources</h4>
-        <div class="row">
-          <div class="col-md-3 col-sm-6">
-            <a href="studymaterials.php">
-              <div class="small-box" style="background:#e8f5e9; color:#333;">
-                <div class="inner">
-                  <h4>📚</h4>
-                  <p>Study Materials</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="pastpapers.php">
-              <div class="small-box" style="background:#fff3f3; color:#333;">
-                <div class="inner">
-                  <h4>📝</h4>
-                  <p>Past Papers</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="practicequizzes.php">
-              <div class="small-box" style="background:#e8eaf6; color:#333;">
-                <div class="inner">
-                  <h4>📝</h4>
-                  <p>Sharpen My Skills</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="assignments.php">
-              <div class="small-box" style="background:#fff8e1; color:#333;">
-                <div class="inner">
-                  <h4>🗂️</h4>
-                  <p>Homeworks/Quizzes</p>
-                </div>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <!-- ================= Progress & Performance ================= -->
-        <h4 style="color:#3a3a72; margin:20px 0 10px 0;">Progress & Performance</h4>
-        <div class="row">
-          <div class="col-md-3 col-sm-6">
-            <a href="myresults.php">
-              <div class="small-box" style="background:#fff8e1; color:#333;">
-                <div class="inner">
-                  <h4>📊</h4>
-                  <p>My Results</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="progress.php">
-              <div class="small-box" style="background:#f0f7ff; color:#333;">
-                <div class="inner">
-                  <h4>🚀</h4>
-                  <p>Track Progress</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="schedule.php">
-              <div class="small-box" style="background:#fefcf0; color:#333;">
-                <div class="inner">
-                  <h4>⏰</h4>
-                  <p>My Schedule</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="attendance.php">
-              <div class="small-box" style="background:#f0fff0; color:#333;">
-                <div class="inner">
-                  <h4>📅</h4>
-                  <p>My Attendance</p>
-                </div>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <!-- ================= Communication & Support ================= -->
-        <h4 style="color:#3a3a72; margin:20px 0 10px 0;">Communication & Support</h4>
-        <div class="row">
-          <div class="col-md-3 col-sm-6">
-            <a href="support.php">
-              <div class="small-box" style="background:#fff0f5; color:#333;">
-                <div class="inner">
-                  <h4>🆘</h4>
-                  <p>Help & Support</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="forums.php">
-              <div class="small-box" style="background:#f1f8e9; color:#333;">
-                <div class="inner">
-                  <h4>💬</h4>
-                  <p>Discussion Forums</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="studentvoice.php">
-              <div class="small-box" style="background:#fff3e0; color:#333;">
-                <div class="inner">
-                  <h4>🗣️</h4>
-                  <p>Student Voice</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <a href="announcements.php">
-              <div class="small-box" style="background:#fce4ec; color:#333;">
-                <div class="inner">
-                  <h4>📢</h4>
-                  <p>Announcements</p>
-                </div>
-              </div>
-            </a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</div>
 
 
 

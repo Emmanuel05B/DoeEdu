@@ -230,7 +230,9 @@ try {
 
             $mail->send();
 
-            $_SESSION['success'] = "Reminder sent to {$pemail}.";
+            $parentFullName = $learner['ParentTitle'] . ' ' . $learner['ParentName'] . ' ' . $learner['ParentSurname'];
+            $_SESSION['success'] = "Reminder sent to {$parentFullName} ({$pemail}).";
+
         break;
 
 

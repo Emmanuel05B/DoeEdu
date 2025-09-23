@@ -67,7 +67,7 @@ if (!isset($_SESSION['email'])) {
             <div class="col-xs-12">
                 <div class="box">
                     <div class="box-header">
-                        <h3 class="box-title"><?php echo htmlspecialchars($subjectName); ?> - Assigned Homework (Grade <?php echo $grade . ' ' . $group; ?>)</h3>
+                        <h3 class="box-title"><?php echo htmlspecialchars($subjectName); ?> - Assigned Homework (<?php echo $grade . ' ' . $group; ?>)</h3>
                     </div>
                     <div class="box-body table-responsive">
                         <table class="table table-bordered table-striped" style="width:100%;">
@@ -86,12 +86,18 @@ if (!isset($_SESSION['email'])) {
                             <?php
                             // Step 4: Get assigned activities for this class
                             $stmtActivities = $connect->prepare("
-                                SELECT a.Id, a.Title, a.Topic, a.CreatedAt, a.DueDate, a.TotalMarks
+                                SELECT a.Id, a.Title, a.Topic, a.CreatedAt, aa.DueDate, a.TotalMarks
                                 FROM onlineactivities a
-                                INNER JOIN onlineactivitiesassignments aa ON a.Id = aa.OnlineActivityId
+                                INNER JOIN onlineactivitiesassignments aa 
+                                    ON a.Id = aa.OnlineActivityId
                                 WHERE aa.ClassID = ?
-                                ORDER BY a.CreatedAt DESC
+                                ORDER BY aa.AssignedAt DESC
                             ");
+
+                            if (!$stmtActivities) {
+                                    die("Prepare failed: " . $connect->error);
+                                }
+
                             $stmtActivities->bind_param("i", $classID);
                             $stmtActivities->execute();
                             $activities = $stmtActivities->get_result();

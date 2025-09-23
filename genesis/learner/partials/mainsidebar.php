@@ -84,7 +84,7 @@ $subStmt->close();
     <li><a href="perfomance.php"><i class="fa fa-circle-o"></i> My Performance</a></li>
     <li><a href="announcements.php"><i class="fa fa-circle-o"></i> Announcements / News</a></li>
     <li><a href="forums.php"><i class="fa fa-circle-o"></i> Discussion Forums</a></li>
-    <li><a href="voices.php"><i class="fa fa-circle-o"></i> Student Voice</a></li>
+    <li><a href="studentvoices.php"><i class="fa fa-circle-o"></i> Student Voice</a></li>
     <li><a href="calendar.php"><i class="fa fa-circle-o"></i> Calendar / Schedule</a></li>
     <li><a href="help.php"><i class="fa fa-circle-o"></i> Help & Support</a></li>
     <li><a href="profilesettings.php"><i class="fa fa-circle-o"></i> Profile Settings</a></li>

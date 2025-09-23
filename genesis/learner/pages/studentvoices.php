@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html>
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
-  exit();
+    header("Location: ../../common/pages/login.php");
+    exit();
 }
+include(__DIR__ . "/../../common/partials/head.php");
 ?>
-<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -15,7 +13,6 @@ if (!isset($_SESSION['email'])) {
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
-
     <section class="content-header">
       <h1>Student Voices <small>Share your thoughts, feedback, or suggestions. You can choose to stay anonymous.</small></h1>
       <ol class="breadcrumb">
@@ -26,14 +23,14 @@ if (!isset($_SESSION['email'])) {
 
     <section class="content">
       <div class="row">
-        <!-- Feedback Form -->
         <div class="col-md-8">
           <div class="box" style="border-top: 3px solid #6a52a3; border-radius:10px;">
             <div class="box-header with-border">
               <h3 class="box-title" style="color:#6a52a3; font-weight:600;">Submit Feedback</h3>
             </div>
             <div class="box-body">
-              <form action="#" method="POST">
+
+              <form action="studentvoices_handler.php" method="POST">
                 <div class="form-group">
                   <label for="subject" style="color:#3a3a72;">Topic (Optional)</label>
                   <input type="text" name="subject" class="form-control input-sm" placeholder="e.g. Suggestion, Complaint, Appreciation">
@@ -56,7 +53,6 @@ if (!isset($_SESSION['email'])) {
           </div>
         </div>
 
-        <!-- Why Your Voice Matters -->
         <div class="col-md-4">
           <div class="box" style="border-top: 3px solid #f0ad4e; border-radius:10px;">
             <div class="box-header with-border">
@@ -75,6 +71,27 @@ if (!isset($_SESSION['email'])) {
 
   <div class="control-sidebar-bg"></div>
 </div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+<?php if(isset($_SESSION['success'])): ?>
+Swal.fire({
+  icon: 'success',
+  title: 'Success',
+  text: '<?= $_SESSION['success']; ?>'
+});
+<?php unset($_SESSION['success']); endif; ?>
+
+<?php if(isset($_SESSION['error'])): ?>
+Swal.fire({
+  icon: 'error',
+  title: 'Oops!',
+  text: '<?= $_SESSION['error']; ?>'
+});
+<?php unset($_SESSION['error']); endif; ?>
+</script>
+
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 </body>
 </html>

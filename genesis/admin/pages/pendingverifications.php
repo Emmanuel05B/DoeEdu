@@ -7,7 +7,24 @@ if (!isset($_SESSION['email'])) {
 include(__DIR__ . "/../../common/partials/head.php"); 
 include(__DIR__ . "/../../partials/connect.php");
 
-$requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserType = '2'"); ?>
+
+$sql = "
+    SELECT u.Id AS Id, u.Name AS Name, u.Email AS Email, u.Surname AS Surname, u.RegistrationDate AS RegistrationDate,
+           u.VerificationToken, u.IsVerified,
+           l.ParentTitle, l.ParentName, l.ParentSurname, l.ParentEmail
+    FROM users u
+    INNER JOIN learners l ON u.Id = l.LearnerId
+    WHERE u.IsVerified = 0 
+      AND u.UserType = '2'
+";
+
+$requests = $connect->query($sql);
+
+?>
+
+
+
+
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -45,7 +62,7 @@ $requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserTy
                 <tr>
                   <th>Name</th>
                   <th>Surname</th>
-                  <th>Email</th>
+                  <th>Parent Email</th>
                   <th>Registered At</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -56,7 +73,7 @@ $requests = $connect->query("SELECT * FROM users WHERE IsVerified = 0 AND UserTy
                   <tr>
                     <td><?= htmlspecialchars($req['Name']) ?></td>
                     <td><?= htmlspecialchars($req['Surname']) ?></td>
-                    <td><?= htmlspecialchars($req['Email']) ?></td>
+                    <td><?= htmlspecialchars($req['ParentEmail']) ?></td>
                     <td><?= htmlspecialchars($req['RegistrationDate']) ?></td>
                     <td><span class="label label-warning">Not Verified</span></td>
                     <td>

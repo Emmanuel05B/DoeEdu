@@ -97,7 +97,7 @@
                 <h3><?php echo $row['count']; ?></h3>
                 <p>Learners Registered</p>
               </div>
-              <a href="updatelearnerlist.php">
+              <a href="classes.php">
                 <div class="icon" style="font-size: 55px; top: 10px;">
                   <i class="ion ion-person-add"></i>
                 </div>
