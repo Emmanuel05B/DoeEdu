@@ -106,15 +106,15 @@ while($row = $gradesResult->fetch_assoc()){
                     <div class="form-group row">
                       <div class="col-md-3">
                         <label>First Name</label>
-                        <input type="text" class="form-control" name="name" value="<?php echo $Name; ?>" readonly>
+                        <input type="text" class="form-control" name="name" maxlength="100" value="<?php echo $Name; ?>" readonly>
                       </div>
                       <div class="col-md-3">
                         <label>Surname</label>
-                        <input type="text" class="form-control" name="surname" value="<?php echo $Surname; ?>" readonly>
+                        <input type="text" class="form-control" name="surname" maxlength="100" value="<?php echo $Surname; ?>" readonly>
                       </div>
                       <div class="col-md-3">
                         <label>Email</label>
-                        <input type="email" class="form-control" name="email" value="<?php echo $invitedEmail; ?>" readonly>
+                        <input type="email" class="form-control" name="email" maxlength="100" value="<?php echo $invitedEmail; ?>" readonly>
 
                       </div>
                       <div class="col-md-3">
@@ -190,15 +190,15 @@ while($row = $gradesResult->fetch_assoc()){
                     <div class="form-group row">
                       <div class="col-md-3">
                         <label>First Name</label>
-                        <input type="text" class="form-control" name="parentname" required>
+                        <input type="text" class="form-control" name="parentname" maxlength="100" required>
                       </div>
                       <div class="col-md-3">
                         <label>Surname</label>
-                        <input type="text" class="form-control" name="parentsurname" required>
+                        <input type="text" class="form-control" name="parentsurname" maxlength="100" required>
                       </div>
                       <div class="col-md-3">
                         <label>Email</label>
-                        <input type="email" class="form-control" name="parentemail" required>
+                        <input type="email" class="form-control" name="parentemail" maxlength="100" required>
                       </div>
                       <div class="col-md-3">
                         <label>Cell No:</label>

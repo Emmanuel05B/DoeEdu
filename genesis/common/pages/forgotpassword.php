@@ -131,7 +131,7 @@ session_start();
 
     <form method="POST" action="">
       <div class="container">
-        <input type="email" id="email" name="email" placeholder="Enter Your Email" required>
+        <input type="email" id="email" name="email" maxlength="100" placeholder="Enter Your Email" required>
       </div>
       <div class="container">
         <input type="submit" name="Submit" value="Reset Password" class="loginbtn">

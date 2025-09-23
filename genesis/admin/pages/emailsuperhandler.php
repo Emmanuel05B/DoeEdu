@@ -126,35 +126,113 @@ try {
         // 3. parent verification/approval / reminder..already registered
         //so here 
         // .must change from sending to learner Email to updated Parent Email instead.
-        // use the id from users table for this learner to get ParentEmail from learners table
+        // use the id from users table for this learner to get ParentEmail from learners table 
+
+
+        //will need $pemail, $pname, $learnerName, $verificationToken, $learnerId
         case 'reminder':
-            $learner_id = intval($_POST['id'] ?? $_GET['id'] ?? 0);
+                $learner_id = intval($_POST['id'] ?? $_GET['id'] ?? 0);
 
-            if (!$learner_id) throw new Exception("Invalid learner ID.");
-            //wanna get learner summery of subjects registred also
+                if (!$learner_id) throw new Exception("Invalid learner ID.");
 
-            $stmt = $connect->prepare("SELECT Name, Email, VerificationToken, IsVerified FROM users WHERE Id=? AND UserType='2'");
-            $stmt->bind_param("i", $learner_id);
-            $stmt->execute();
-            $learner = $stmt->get_result()->fetch_assoc();
-            $stmt->close();
-            if (!$learner) throw new Exception("Learner not found.");
-            if ($learner['IsVerified']) throw new Exception("Learner already verified.");
+                // --- Fetch learner subjects and fees ---
+                $stmt = $connect->prepare("
+                    SELECT s.SubjectName, ls.NumberOfTerms, ls.ContractFee
+                    FROM learnersubject ls
+                    JOIN subjects s ON ls.SubjectId = s.SubjectId
+                    WHERE ls.LearnerId = ?
+                ");
+                $stmt->bind_param("i", $learner_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
 
-            $mail = initMailer();
-            $mail->addAddress($learner['Email'], $learner['Name']);
-            $mail->Subject = 'Reminder: Please Verify Your DoE Account';
-            $verify_link = "http://localhost/DoeEdu/genesis/common/verification.php?token={$learner['VerificationToken']}";
-            $mail->Body = "<p>Dear {$learner['Name']},</p>
-                           <p>This is a friendly reminder to verify your email address to activate your DoE Genesis learner account.</p>
-                           <a href='$verify_link' style='background-color: #008CBA; color: white; padding: 10px 20px;'>Verify Email</a>
-                           <p>If you’ve already verified, you can ignore this message.</p>
-                           <p>Best regards,<br><strong>DoE Team</strong></p>";
+                $subjectRows = "";
+                $totalFees   = 0;
+
+                while ($row = $result->fetch_assoc()) {
+                    $subjectRows .= "<tr>
+                                        <td>{$row['SubjectName']}</td>
+                                        <td>{$row['NumberOfTerms']} months</td>
+                                        <td>R {$row['ContractFee']}</td>
+                                    </tr>";
+                    $totalFees += (float)$row['ContractFee'];
+                }
+                $stmt->close();
+
+                // --- Fetch learner + parent details ---
+                $sql = "
+                    SELECT u.Name AS LearnerName, u.VerificationToken, u.IsVerified,
+                        l.ParentTitle, l.ParentName, l.ParentSurname, l.ParentEmail, l.ParentContactNumber
+                    FROM users u
+                    INNER JOIN learners l ON u.Id = l.LearnerId
+                    WHERE u.Id = ? AND u.UserType = '2'
+                ";
+                $stmt = $connect->prepare($sql);
+                $stmt->bind_param("i", $learner_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $learner = $result->fetch_assoc();
+                $stmt->close();
+
+                if (!$learner) throw new Exception("Learner not found.");
+                if ($learner['IsVerified']) throw new Exception("Learner already verified.");
+
+                // --- Prepare variables ---
+                $pname            = $learner['ParentTitle'] . ' ' . $learner['ParentName'] . ' ' . $learner['ParentSurname'];
+                $pemail           = $learner['ParentEmail'];
+                $learnerName      = $learner['LearnerName'];
+                $verificationToken = $learner['VerificationToken'];
+
+                // --- Send email ---
+                $mail = initMailer();
+                $mail->addAddress($pemail, $pname);
+                $mail->Subject = 'Your Child Registration & Fees Approval - DoE';
+
+                $verify_link = "http://localhost/DoE_Genesis/DoeEdu/genesis/common/pages/verification.php?token={$verificationToken}";
+
+                $mail->Body = "
+                    <p>Dear $pname,</p>
+                    <p>Your child <strong>$learnerName</strong> has been successfully registered with the Distributors of Education.</p>
+
+                    <p>Please review the subjects and fees below. By verifying, you acknowledge awareness of the costs and approve your child's registration:</p>
+
+                    <table border='1' cellpadding='8' cellspacing='0' style='border-collapse: collapse;'>
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Duration</th>
+                                <th>Fee</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            $subjectRows
+                            <tr>
+                                <td colspan='2'><strong>Total</strong></td>
+                                <td><strong>R $totalFees</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                <p style='text-align:center; margin:20px 0;'>
+                    <a href='$verify_link' 
+                    style='background-color: #008CBA; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>
+                    Verify & Approve Registration
+                    </a>
+                </p>
+
+                <p>Once verified, you will receive updates on your child's progress, upcoming sessions, and announcements.</p>
+                <p>If you did not expect this email or the link does not work, please contact us so we can assist you.</p>
+
+                <br>
+                <p>Warm regards,</p>
+                <p><strong>DoE Team</strong></p>
+            ";
 
             $mail->send();
 
-            $_SESSION['success'] = "Reminder sent to {$learner['Email']}.";  //must be to parent
+            $_SESSION['success'] = "Reminder sent to {$pemail}.";
         break;
+
 
         // 4. reminder all
         case 'reminder_all':
