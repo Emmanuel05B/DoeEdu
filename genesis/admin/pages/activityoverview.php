@@ -64,7 +64,7 @@ if ($row = $dueResult->fetch_assoc()) {
 }
 $dueStmt->close();
 
-// Get learner IDs assigned to this specific class/group
+// Get learner IDs assigned to this specific class/group . 
 $learnerStmt = $connect->prepare("
     SELECT DISTINCT lt.LearnerId
     FROM learners lt
@@ -101,6 +101,12 @@ if (!empty($learnerIds)) {
 // Score calculation
 $completed = 0;
 $totalScores = [];
+
+// >>> NEW CODE <<<
+// Array to collect learners who did not submit
+$notSubmittedIds = [];
+// <<< NEW CODE <<<
+
 foreach ($learnerIds as $userId) {
     $answerStmt = $connect->prepare("SELECT oq.CorrectAnswer, la.SelectedAnswer 
         FROM learneranswers la 
@@ -118,8 +124,15 @@ foreach ($learnerIds as $userId) {
     if ($total > 0) {
         $completed++;
         $totalScores[] = round(($correct / $total) * 100);
+    }else {
+        // >>> NEW CODE <<<
+        // Mark learners with 0 answers as not submitted
+        $notSubmittedIds[] = $userId;
+        // <<< NEW CODE <<<
     }
     $answerStmt->close();
+
+
 }
 
 $notSubmitted = $totalAssigned - $completed;
@@ -213,6 +226,10 @@ $isClosed = $now > new DateTime($dueDate);
                     <input type="hidden" name="action" value="feedback">
                     <input type="hidden" name="redirect" value="activityoverview.php?activityId=<?= $activityId ?>&gra=<?= urlencode($grade) ?>&sub=<?= urlencode($subjectId) ?>&group=<?= urlencode($group) ?>">
                     <input type="hidden" name="activityId" value="<?= $activityId ?>">
+
+                    <!-- >>> NEW CODE <<< -->
+                    <input type="hidden" name="notSubmittedIds" value="<?= htmlspecialchars(implode(',', $notSubmittedIds)) ?>">
+                    <!-- <<< NEW CODE <<< -->
 
                     <div class="row">
                         <div class="col-md-6">

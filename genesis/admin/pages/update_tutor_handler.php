@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $firstname = trim($_POST['firstname']);
             $surname = trim($_POST['surname']);
             $email = trim($_POST['email']);
-            $contact = trim($_POST['contactnumber']);
+            $contact = "0000000000";
 
             $stmt = $connect->prepare("UPDATE users SET Name = ?, Surname = ?, Email = ?, Contact = ? WHERE Id = ?");
             $stmt->bind_param("ssssi", $firstname, $surname, $email, $contact, $tutorId);

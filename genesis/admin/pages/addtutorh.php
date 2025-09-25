@@ -33,24 +33,19 @@ $email = trim($_POST['email'] ?? '');
 $title = $_POST['tutortitle'] ?? '';
 $subjects = $_POST['subjects'] ?? [];
 $contact = $_POST['contactnumber'] ?? '';
+$password = $_POST['password'] ?? '';
 
 
-if (!$name || !$surname || !$email || !$contact || !$title || empty($subjects)) {
-    echo "<script>
-          Swal.fire({
-              icon: 'error',
-              title: 'Missing or Invalid Information',
-              text: 'Please fill in all required fields and select at least one subject.',
-              confirmButtonText: 'Go Back'
-          }).then(() => {
-              window.history.back();
-          });
-          </script>";
+if (!$name || !$surname || !$email  || !$password || !$title || empty($subjects)) {
+
+    $_SESSION['error'] = " Please fill in all required fields and select at least one subject ";
+    header("Location: addtutor.php?");
     exit();
+    
 }
 
 // Set required variables
-$hashedPassword = password_hash("12345", PASSWORD_DEFAULT);
+$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 $verificationToken = bin2hex(random_bytes(16)); // Random 32-char token
 
 $connect->begin_transaction();
@@ -90,27 +85,18 @@ try {
 
     $connect->commit();
 
-          echo "<script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Tutor Registered',
-                text: 'Tutor has been successfully added.',
-                showDenyButton: true,
-                
-                confirmButtonText: 'Assign to Class Now!',
-                denyButtonText: 'Ok, Back'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = 'assigntutorclass.php';
-                } else if (result.isDenied) {
-                    window.history.back();
-                }
-            });
-            </script>";
+       // Set success message for learner profile
+        $_SESSION['success'] = "Tutor added successfully.!";
+        header("Location: addtutor.php?");
+        exit();
 
 
 } catch (Exception $e) {
     $connect->rollback();
+    $_SESSION['error'] = 'Error: " . addslashes($e->getMessage()) . "';
+    header("Location: addtutor.php?");
+    exit();
+    /*
     echo "<script>
           Swal.fire({
               icon: 'error',
@@ -121,6 +107,7 @@ try {
               window.history.back();
           });
           </script>";
+          */
 }
 ?>
 

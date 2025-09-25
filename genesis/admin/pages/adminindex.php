@@ -407,7 +407,7 @@
     <div class="modal-content">
       
       <!-- Header -->
-      <div class="modal-header" style="background-color: #cce5ff; color: #004085; padding: 5px 15px;">
+      <div class="modal-header" style="background-color: #cce5ff; color: padding: 5px 15px;">
         <h4 class="modal-title" id="toDoListLabel" style="font-size: 1.2em;">Add New To Do Task</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #004085;">
             <span aria-hidden="true">&times;</span>

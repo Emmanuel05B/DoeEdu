@@ -269,9 +269,9 @@ if (!isset($_SESSION['email'])) {
                   <h4 class="text-primary mb-2">Capture Learner Marks</h4>
                   <form action="save_marks.php" method="POST">
                     <div class="row">
-                      <div class="form-group col-md-6" style="padding-left: 5px;">
+                      <div class="form-group col-md-3" style="padding-left: 5px;">
                         <label>Subject:</label>
-                        <select name="subject" class="form-control input-sm" required>
+                        <select name="subjectId" class="form-control input-sm" required>
                           <option value="">-- Select --</option>
                           <?php foreach($subjectOptions as $sub): ?>
                             <option value="<?php echo $sub['SubjectId']; ?>"><?php echo $sub['SubjectName']; ?></option>
@@ -279,30 +279,27 @@ if (!isset($_SESSION['email'])) {
                         </select>
                       </div>
 
-                      <div class="form-group col-md-6" style="padding-left: 5px;">
+                      <div class="form-group col-md-4" style="padding-left: 5px;">
                         <label>Chapter / Topic:</label>
-                        <input type="text" name="chapter" class="form-control input-sm" placeholder="e.g. Fractions" required>
+                        <input type="text" name="chaptername" class="form-control input-sm" placeholder="e.g. Fractions" required>
+                        <input type="hidden" name="learnerId" value="<?php echo $learnerId; ?>" class="form-control input-sm" >
+                      </div>
+                      <div class="form-group col-md-4" style="padding-left: 5px;">
+                        <label>Activity Name:</label>
+                        <input type="text" name="activityname" class="form-control input-sm" placeholder="e.g. Quiz 1" required>
                       </div>
                     </div>
 
                     <div class="row">
-                      <div class="form-group col-md-6" style="padding-left: 5px;">
-                        <label>Activity Name:</label>
-                        <input type="text" name="activity" class="form-control input-sm" placeholder="e.g. Quiz 1" required>
-                      </div>
+                      
                       <div class="form-group col-md-3" style="padding: 0 5px;">
                         <label>Total Marks:</label>
-                        <input type="number" name="total_marks" class="form-control input-sm" placeholder="e.g. 20" required>
+                        <input type="number" name="activitytotal" class="form-control input-sm" placeholder="e.g. 20" required>
                       </div>
                       <div class="form-group col-md-3" style="padding-left: 5px;">
                         <label>Marks Obtained:</label>
-                        <input type="number" name="marks_obtained" class="form-control input-sm" placeholder="e.g. 15" required>
+                        <input type="number" name="marksobtained" class="form-control input-sm" placeholder="e.g. 15" required>
                       </div>
-                    </div>
-
-                    <div class="form-group mb-2">
-                      <label>Remarks / Notes (optional):</label>
-                      <textarea name="remarks" class="form-control input-sm" rows="1" placeholder="e.g. Learner struggled with question 3."></textarea>
                     </div>
 
                     <button type="submit" class="btn btn-xs btn-primary">Save Record</button>
@@ -669,6 +666,20 @@ if (!isset($_SESSION['email'])) {
             Swal.fire({
                 icon: 'error',
                 title: 'Failed to Send',
+                text: '". addslashes($msg) ."',
+                confirmButtonText: 'OK'
+            });
+        </script>";
+    }
+    if (isset($_SESSION['successMarks'])) {
+        $msg = $_SESSION['successMarks'];
+        unset($_SESSION['successMarks']);
+        echo "
+        <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Marks Recorded!',
                 text: '". addslashes($msg) ."',
                 confirmButtonText: 'OK'
             });

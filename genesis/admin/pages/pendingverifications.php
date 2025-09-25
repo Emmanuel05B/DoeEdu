@@ -1,10 +1,12 @@
+<!DOCTYPE html>
+<html>
+  
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
   header("Location: ../../common/pages/login.php");
   exit();
 }
-include(__DIR__ . "/../../common/partials/head.php"); 
 include(__DIR__ . "/../../partials/connect.php");
 
 
@@ -25,6 +27,7 @@ $requests = $connect->query($sql);
 
 
 
+<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -44,17 +47,17 @@ $requests = $connect->query($sql);
 
     <section class="content">
       <div class="box box-info">
+        <div class="box-body table-responsive">
         <div class="box-header with-border d-flex justify-content-between align-items-center" style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 class="box-title">Unverified Learners</h3>
-       
-        <form id="sendAllForm" action="emailsuperhandler.php" method="post" style="display: inline;">
-          <input type="hidden" name="action" value="reminder_all">
-          <input type="hidden" name="redirect" value="pendingverifications.php">
-          <button type="submit" id="sendAllBtn" class="btn btn-warning btn-sm">Send Reminder to All</button>
-        </form>
+          <h3 class="box-title">Unverified Learners</h3>
+        
+          <form id="sendAllForm" action="emailsuperhandler.php" method="post" style="display: inline;">
+            <input type="hidden" name="action" value="reminder_all">
+            <input type="hidden" name="redirect" value="pendingverifications.php">
+            <button type="submit" id="sendAllBtn" class="btn btn-warning btn-sm">Send Reminder to All</button>
+          </form>
         </div>
 
-        <div class="box-body">
           <div class="table-responsive">
             
             <table id="example1" class="table table-bordered table-hover">
@@ -107,7 +110,6 @@ $requests = $connect->query($sql);
     </section>
   </div>
 
-  <div class="control-sidebar-bg"></div>
 </div>
 
 <!-- JS Libraries -->
@@ -154,6 +156,7 @@ $requests = $connect->query($sql);
 </script>
 
 
+
 <script>
   $(function () {
 
@@ -166,8 +169,6 @@ $requests = $connect->query($sql);
       "autoWidth": false,
       "responsive": true
     });
-
-  });
 
   // Alerts for success or error
   <?php if(isset($_SESSION['success'])): ?>
@@ -189,8 +190,8 @@ $requests = $connect->query($sql);
     });
     <?php unset($_SESSION['error']); ?>
   <?php endif; ?>
+  });
 </script>
-
 
 
 </body>

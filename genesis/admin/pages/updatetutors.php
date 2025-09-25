@@ -176,106 +176,106 @@ $stmt->close();
 
     <!-- FINANCE -->
     <!-- FINANCE + CLASSES GRID -->
-<div class="row" style="margin-top:20px;">
-    <!-- FINANCE -->
-    <div class="col-md-6">
-        <div class="box box-success" style="border-top:3px solid #00a65a;">
-            <div class="box-header with-border" style="background-color:#e6ffed;">
-                <h3 class="box-title" style="color:#00a65a;">Finance</h3>
+    <div class="row" style="margin-top:20px;">
+        <!-- FINANCE -->
+        <div class="col-md-6">
+            <div class="box box-success" style="border-top:3px solid #00a65a;">
+                <div class="box-header with-border" style="background-color:#e6ffed;">
+                    <h3 class="box-title" style="color:#00a65a;">Finance</h3>
+                </div>
+                <div class="box-body">
+                    <?php 
+                    $totalPaid = 0;
+                    foreach($payments as $p){ $totalPaid += $p['Amount']; }
+                    ?>
+                    <p><strong>Total Paid:</strong> R <?= number_format($totalPaid, 2) ?></p>
+
+                    <form method="POST" action="update_tutor_handler.php">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Amount</label>
+                                <input type="number" step="0.01" class="form-control" name="amount" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label>Notes</label>
+                                <input type="text" class="form-control" name="notes">
+                            </div>
+                            <div class="col-md-3 text-right" style="margin-top:25px;">
+                                <input type="hidden" name="tutor_id" value="<?= $tutorId ?>">
+                                <button type="submit" class="btn btn-success" name="update_finance">Add Payment</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <table class="table table-bordered table-striped" style="margin-top:15px;">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount (R)</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach($payments as $p): ?>
+                            <tr>
+                                <td><?= $p['PaymentDate'] ?></td>
+                                <td><?= number_format($p['Amount'], 2) ?></td>
+                                <td><?= htmlspecialchars($p['Notes']) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="box-body">
-                <?php 
-                $totalPaid = 0;
-                foreach($payments as $p){ $totalPaid += $p['Amount']; }
-                ?>
-                <p><strong>Total Paid:</strong> R <?= number_format($totalPaid, 2) ?></p>
+        </div>
 
-                <form method="POST" action="update_tutor_handler.php">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label>Amount</label>
-                            <input type="number" step="0.01" class="form-control" name="amount" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label>Notes</label>
-                            <input type="text" class="form-control" name="notes">
-                        </div>
-                        <div class="col-md-3 text-right" style="margin-top:25px;">
-                            <input type="hidden" name="tutor_id" value="<?= $tutorId ?>">
-                            <button type="submit" class="btn btn-success" name="update_finance">Add Payment</button>
-                        </div>
-                    </div>
-                </form>
+        <!-- Assigned Classes & Groups -->
+        <div class="col-md-6">
+            <div class="box box-info" style="border-top:3px solid #605ca8;">
+                <div class="box-header with-border" style="background-color:#e8e5f7;">
+                    <h3 class="box-title" style="color:#605ca8;">Assigned Classes/Groups</h3>
+                </div>
+                <div class="box-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Grade</th>
+                                <th>Subject</th>
+                                <th>Group Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        // Fetch assigned classes for this tutor
+                        $assignedClasses = [];
+                        $stmt = $connect->prepare("
+                            SELECT c.Grade, c.GroupName, s.SubjectName
+                            FROM classes c
+                            JOIN subjects s ON c.SubjectID = s.SubjectId
+                            WHERE c.TutorID = ?
+                            ORDER BY c.Grade, c.GroupName
+                        ");
+                        $stmt->bind_param("i", $tutorId);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        while($row = $result->fetch_assoc()){
+                            $assignedClasses[] = $row;
+                        }
+                        $stmt->close();
 
-                <table class="table table-bordered table-striped" style="margin-top:15px;">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Amount (R)</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach($payments as $p): ?>
-                        <tr>
-                            <td><?= $p['PaymentDate'] ?></td>
-                            <td><?= number_format($p['Amount'], 2) ?></td>
-                            <td><?= htmlspecialchars($p['Notes']) ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
+                        foreach($assignedClasses as $class): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($class['Grade']) ?></td>
+                                <td><?= htmlspecialchars($class['SubjectName']) ?></td>
+                                <td><?= htmlspecialchars($class['GroupName']) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Assigned Classes & Groups -->
-    <div class="col-md-6">
-        <div class="box box-info" style="border-top:3px solid #605ca8;">
-            <div class="box-header with-border" style="background-color:#e8e5f7;">
-                <h3 class="box-title" style="color:#605ca8;">Assigned Classes/Groups</h3>
-            </div>
-            <div class="box-body">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Grade</th>
-                            <th>Subject</th>
-                            <th>Group Name</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    // Fetch assigned classes for this tutor
-                    $assignedClasses = [];
-                    $stmt = $connect->prepare("
-                        SELECT c.Grade, c.GroupName, s.SubjectName
-                        FROM classes c
-                        JOIN subjects s ON c.SubjectID = s.SubjectId
-                        WHERE c.TutorID = ?
-                        ORDER BY c.Grade, c.GroupName
-                    ");
-                    $stmt->bind_param("i", $tutorId);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    while($row = $result->fetch_assoc()){
-                        $assignedClasses[] = $row;
-                    }
-                    $stmt->close();
-
-                    foreach($assignedClasses as $class): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($class['Grade']) ?></td>
-                            <td><?= htmlspecialchars($class['SubjectName']) ?></td>
-                            <td><?= htmlspecialchars($class['GroupName']) ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
 
 
     </section>

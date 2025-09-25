@@ -170,11 +170,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <label>Grade</label>
                   <select class="form-control" name="grades[]" required>
                     <option value="">Select Grade</option>
-                    <option value="8">Grade 8</option>
-                    <option value="9">Grade 9</option>
-                    <option value="10">Grade 10</option>
-                    <option value="11">Grade 11</option>
-                    <option value="12">Grade 12</option>
+                    <option value="Grade 8">Grade 8</option>
+                    <option value="Grade9">Grade 9</option>
+                    <option value="Grade 10">Grade 10</option>
+                    <option value="Grade 11">Grade 11</option>
+                    <option value="Grade 12">Grade 12</option>
                   </select>
                 </div>
                 <div class="col-md-2">

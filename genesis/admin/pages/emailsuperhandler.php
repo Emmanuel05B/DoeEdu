@@ -268,7 +268,7 @@ try {
         break;
 
 
-        // 5. Feedback emails to parents for non-submissions
+        // 5. Feedback emails to parents for non-submissions. 
         case 'feedback':
             $activityId = intval($_POST['activityId'] ?? 0);
             if (!$activityId) throw new Exception("Invalid activity ID.");
@@ -283,44 +283,37 @@ try {
 
             $activityTitle = $activity['Title'];
 
-            // 2️⃣ Get learners assigned to this activity
-            $learnerIds = [];
-            $stmt = $connect->prepare("
-                SELECT DISTINCT lt.LearnerId, u.Name AS LearnerName, u.Surname AS LearnerSurname, 
-                    l.ParentName, l.ParentEmail
-                FROM learners lt
-                JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
-                JOIN users u ON lt.LearnerId = u.Id
-                JOIN learners l ON lt.LearnerId = l.LearnerId
-                WHERE ls.SubjectId = (SELECT SubjectId FROM onlineactivities WHERE Id = ?) 
-                AND lt.Grade = (SELECT Grade FROM onlineactivities WHERE Id = ?)
-                AND ls.ContractExpiryDate > CURDATE()
-            ");
-            $stmt->bind_param("ii", $activityId, $activityId);
-            $stmt->execute();
-            $result = $stmt->get_result();
+            // >>> NEW CODE <<<  
+            // 2️⃣ Get learners who did NOT submit (from form)
+            $notSubmittedIds = $_POST['notSubmittedIds'] ?? '';
+            $notSubmittedIds = array_filter(array_map('intval', explode(',', $notSubmittedIds)));
 
-            $learnersToEmail = [];
-            while ($row = $result->fetch_assoc()) {
-                // 3️⃣ Check if learner submitted
-                $checkStmt = $connect->prepare("SELECT COUNT(*) FROM learneranswers WHERE UserId = ? AND ActivityId = ?");
-                $checkStmt->bind_param("ii", $row['LearnerId'], $activityId);
-                $checkStmt->execute();
-                $checkStmt->bind_result($answerCount);
-                $checkStmt->fetch();
-                $checkStmt->close();
-
-                if ($answerCount == 0) {
-                    $learnersToEmail[] = $row;
-                }
+            if (empty($notSubmittedIds)) {
+                $_SESSION['error'] = "No learners to send feedback to.";
+                header("Location: " . ($_POST['redirect'] ?? 'activityoverview.php'));
+                exit;
             }
-            $stmt->close();
 
-            // 4️⃣ Send emails
+            $placeholders = implode(',', array_fill(0, count($notSubmittedIds), '?'));
+            $types = str_repeat('i', count($notSubmittedIds));
+            $stmt = $connect->prepare("
+                SELECT u.Id AS LearnerId, u.Name AS LearnerName, u.Surname AS LearnerSurname, 
+                    l.ParentName, l.ParentEmail
+                FROM users u
+                JOIN learners l ON u.Id = l.LearnerId
+                WHERE u.Id IN ($placeholders)
+            ");
+            $stmt->bind_param($types, ...$notSubmittedIds);
+            $stmt->execute();
+            $learnersToEmail = $stmt->get_result();
+            $stmt->close();
+            // <<< NEW CODE <<<
+
+            // 3️⃣ Send emails
             $successCount = 0;
             $failures = [];
 
-            foreach ($learnersToEmail as $row) {
+            while ($row = $learnersToEmail->fetch_assoc()) {
                 try {
                     $mail = initMailer();
                     $mail->addAddress($row['ParentEmail'], $row['ParentName']);
@@ -338,7 +331,7 @@ try {
                 }
             }
 
-            // 5️⃣ Update LastFeedbackSent
+            // 4️⃣ Update LastFeedbackSent
             if ($successCount > 0) {
                 $updateStmt = $connect->prepare("UPDATE onlineactivities SET LastFeedbackSent = NOW() WHERE Id = ?");
                 $updateStmt->bind_param("i", $activityId);
@@ -351,6 +344,7 @@ try {
                 $_SESSION['error'] = count($failures) . " failed: " . implode(', ', $failures);
             }
         break;
+
 
             
             

@@ -71,7 +71,8 @@ if ($resultSubjects) {
                 <ul class="nav nav-tabs">
                   <li class="active"><a href="#add" data-toggle="tab">Add Users</a></li>
                   <li><a href="#update" data-toggle="tab">Update Users</a></li>
-                  <li><a href="#settings" data-toggle="tab">System Settings</a></li>
+                  <li><a href="#delete" data-toggle="tab">Delete Users</a></li>
+                  <li><a href="#settings" data-toggle="tab">Settings</a></li>
                 </ul>
                 <div class="tab-content">
 
@@ -241,7 +242,6 @@ if ($resultSubjects) {
                                             <td><?php echo htmlspecialchars($final['Surname']) ?></td>
                                             <td class="text-center">
                                               <a href="updatetutors.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-xs btn-warning">Update</a>
-                                              <a href="learnerprofile.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-xs btn-primary">Profile</a>
                                             </td>
                                           </tr>
                                         <?php endwhile; ?>
@@ -266,12 +266,135 @@ if ($resultSubjects) {
 
                         </div>
                      
+                    </div>
+                  </div>
 
+                  <!-- Delete Users -->
+                  <div class="tab-pane" id="delete">
+                    <div class="profile-personal-info">
+                      <h3 class="text-danger mb-4">Delete </h3>
+                    
+                        <div class="row">
 
+                          <!-- Learners List -->
+                          <div class="col-md-6">
+                            <div class="box">
+                              <div class="box-header with-border">
+                                <?php
+                                  $stmt = $connect->prepare("
+                                      SELECT lt.*, u.Name, u.Surname
+                                      FROM learners lt
+                                      JOIN users u ON lt.LearnerId = u.Id
+                                  ");
+                                  $stmt->execute();
+                                  $results = $stmt->get_result();
 
+                                  echo "<h3 class='box-title'>Learners List</h3>";
+                                ?>
+                              </div>
 
+                              <div class="box-body">
+                                <div class="table-responsive">
+                                  <table id="learnersTabledelete" class="table table-bordered table-hover">
+                                    <thead style="background-color: #f06f6fff;">
+                                      <tr>
+                                        <th>Name</th>
+                                        <th>Surname</th>
+                                        <th>Grade</th>
+                                        <th class="text-center">Actions</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <?php if ($results && $results->num_rows > 0): ?>
+                                        <?php while($final = $results->fetch_assoc()): ?>
+                                          <tr>
+                                            <td><?php echo htmlspecialchars($final['Name']) ?></td>
+                                            <td><?php echo htmlspecialchars($final['Surname']) ?></td>
+                                            <td><?php echo htmlspecialchars($final['Grade']) ?></td>
+                                            <td class="text-center">
+                                              <a href="deletelearner.php?id=<?php echo $final['LearnerId'] ?>" class="btn btn-xs btn-danger">Delete</a>
+                                            </td>
+                                          </tr>
+                                        <?php endwhile; ?>
+                                      <?php else: ?>
+                                        <tr>
+                                          <td colspan="4" class="text-center">No learners found.</td>
+                                        </tr>
+                                      <?php endif; ?>
+                                    </tbody>
+                                    <tfoot style="background-color: #f9f9f9;">
+                                      <tr>
+                                        <th>Name</th>
+                                        <th>Surname</th>
+                                        <th>Grade</th>
+                                        <th class="text-center">Actions</th>
+                                      </tr>
+                                    </tfoot>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
 
+                          <!-- Tutors List -->
+                          <div class="col-md-6">
+                            <div class="box">
+                              <div class="box-header with-border">
+                                <?php
+                                  $stmt = $connect->prepare("
+                                      SELECT lt.*, u.Name, u.Surname
+                                      FROM tutors lt
+                                      JOIN users u ON lt.TutorId = u.Id
+                                  ");
+                                  $stmt->execute();
+                                  $results = $stmt->get_result();
 
+                                  echo "<h3 class='box-title'>Tutors List</h3>";
+                                ?>
+                              </div>
+
+                              <div class="box-body">
+                                <div class="table-responsive">
+                                  <table id="tutorsTabledelete" class="table table-bordered table-hover">
+                                    <thead style="background-color: #f06f6fff;">
+                                      <tr>
+                                        <th>Name</th>
+                                        <th>Surname</th>
+                                        <th class="text-center">Actions</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <?php if ($results && $results->num_rows > 0): ?>
+                                        <?php while($final = $results->fetch_assoc()): ?>
+                                          <tr>
+                                            <td><?php echo htmlspecialchars($final['Name']) ?></td>
+                                            <td><?php echo htmlspecialchars($final['Surname']) ?></td>
+                                            <td class="text-center">
+                                              <a href="deletetutors.php?id=<?php echo $final['TutorId'] ?>" class="btn btn-xs btn-danger">Delete</a>
+                                            </td>
+                                          </tr>
+                                        <?php endwhile; ?>
+                                      <?php else: ?>
+                                        <tr>
+                                          <td colspan="5" class="text-center">No tutors found.</td>
+                                        </tr>
+                                      <?php endif; ?>
+                                    </tbody>
+                                    <tfoot style="background-color: #f9f9f9;">
+                                      <tr>
+                                        <th>Name</th>
+                                        <th>Surname</th>
+                                        <th class="text-center">Actions</th>
+                                      </tr>
+                                    </tfoot>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                  
                     </div>
                   </div>
 
@@ -469,6 +592,27 @@ if ($resultSubjects) {
 
     // Initialize Tutors Table
     $('#tutorsTable').DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true
+    });
+
+    $('#learnersTabledelete').DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true
+    });
+
+    // Initialize Tutors Table
+    $('#tutorsTabledelete').DataTable({
       "paging": true,
       "lengthChange": true,
       "searching": true,

@@ -243,7 +243,7 @@ $(function () {
         $('#editDueDateModal').modal('show');
     });
 
-    // Unassign Button
+    // Unassign Button 
     $(document).on('click', '.unassign-activity-btn', function(e) {
         e.preventDefault();
         var activityId = $(this).data('id');

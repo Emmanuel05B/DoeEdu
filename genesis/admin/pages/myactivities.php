@@ -94,10 +94,7 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                     <a href='masteractivityoverview.php?activityId=" . $activityId . "' class='btn btn-xs btn-info' title='Overview'>
                         <i class='fa fa-info-circle'></i>
                     </a>
-                    <a href='#' class='btn btn-xs btn-warning view-classes-btn' 
-                    data-activity='<?= $activityId ?>' title='View Assigned Classes'>
-                      <i class='fa fa-users'></i>
-                    </a>
+                    
 
                   </td>
                     
