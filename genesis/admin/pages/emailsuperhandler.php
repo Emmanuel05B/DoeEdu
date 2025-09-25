@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 include(__DIR__ . "/../../partials/connect.php");
@@ -5,7 +6,12 @@ include(__DIR__ . "/../../partials/connect.php");
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require __DIR__ . '/../../../vendor/autoload.php';
+// --- FIXED PATH TO COMPOSER AUTOLOAD ---
+require __DIR__ . '/../../../vendor/autoload.php'; // <-- fixed
+
+// --- LOAD .env VARIABLES ---
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'); // project root
+$dotenv->load();
 
 // --- Determine action ---
 $action = $_POST['action'] ?? $_GET['action'] ?? null;
@@ -17,18 +23,18 @@ if (!$action) {
     exit();
 }
 
-// --- PHPMailer Setup Function --
+// --- PHPMailer Setup Function ---
 function initMailer() {
     $mail = new PHPMailer(true);
     $mail->isSMTP();
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
-    $mail->Username   = 'thedistributorsofedu@gmail.com';
-    $mail->Password   = 'dytn yizm aszo jptc'; // secure storage recommended
+    $mail->Username   = $_ENV['EMAIL_ADDRESS'];  // read from .env
+    $mail->Password   = $_ENV['EMAIL_APP_PASSWORD']; // read from .env
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
     $mail->Port       = 465;
-    $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
-    $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis');
+    $mail->setFrom($_ENV['EMAIL_ADDRESS'], 'DoE_Genesis');
+    $mail->addReplyTo($_ENV['EMAIL_ADDRESS'], 'DoEGenesis');
     $mail->isHTML(true);
     return $mail;
 }
@@ -38,7 +44,7 @@ try {
 
     switch($action) {
 
-        // 0. General email to anyone
+        // 0. General email to anyone           Done!
         case 'general':
             $emailto = $_POST['emailto'] ?? '';
             $subject = $_POST['subject'] ?? 'No Subject';
@@ -58,7 +64,7 @@ try {
         break;
 
 
-        // 1. Custom email to one or multiple people
+        // 1. Custom email to one or multiple people            Done!
         case 'custom':
             $recipients = $_POST['recipients'] ?? [];
             if (!is_array($recipients)) $recipients = [$recipients];
@@ -80,7 +86,7 @@ try {
             $_SESSION['success'] = "Email sent to " . count($recipients) . " recipient(s).";
         break;
 
-        // 2. Invite email....to register
+        // 2. Invite email....to register         Done!
         case 'invite':
             
             $invite_id = intval($_POST['id'] ?? $_GET['id'] ?? 0);
@@ -123,13 +129,7 @@ try {
             $_SESSION['success'] = "Invite sent to {$request['email']}.";
         break;
 
-        // 3. parent verification/approval / reminder..already registered
-        //so here 
-        // .must change from sending to learner Email to updated Parent Email instead.
-        // use the id from users table for this learner to get ParentEmail from learners table 
-
-
-        //will need $pemail, $pname, $learnerName, $verificationToken, $learnerId
+        // 3. parent verification/approval / reminder..already registered        Done!
         case 'reminder':
                 $learner_id = intval($_POST['id'] ?? $_GET['id'] ?? 0);
 
@@ -268,7 +268,7 @@ try {
         break;
 
 
-        // 5. Feedback emails to parents for non-submissions. 
+        // 5. Feedback emails to parents for non-submissions.    Done!
         case 'feedback':
             $activityId = intval($_POST['activityId'] ?? 0);
             if (!$activityId) throw new Exception("Invalid activity ID.");
