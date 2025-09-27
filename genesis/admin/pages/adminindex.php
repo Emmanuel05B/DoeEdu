@@ -57,6 +57,17 @@
           } else {
               $users = 0; // or handle error
           }
+
+          // Count expired contracts that are still active
+          $sqlCountExpired = "
+              SELECT COUNT(*) AS count
+              FROM learnersubject ls
+              WHERE ls.ContractExpiryDate < CURDATE()
+                AND ls.Status = 'Active'
+          ";
+          $resultExpired = $connect->query($sqlCountExpired);
+          $rowExpired = $resultExpired->fetch_assoc();
+          $expiredCount = $rowExpired['count'] ?? 0;
           
         ?>
 
@@ -91,10 +102,11 @@
             </div>
           </div>
 
+          <!--
           <div class="col-lg-3 col-xs-6">
-            <div class="small-box" style="background-color: #b2ebf2;"> <!-- light aqua  -->
+            <div class="small-box" style="background-color: #b2ebf2;"> 
               <div class="inner">
-                <h3><?php echo $row['count']; ?></h3>
+                <h3><?php // echo $row['count']; ?></h3>
                 <p>Learners Registered</p>
               </div>
               <a href="classes.php">
@@ -104,9 +116,10 @@
               </a>
             </div>
           </div>
+          -->
 
           <div class="col-lg-3 col-xs-6">
-            <div class="small-box" style="background-color: #dd90d3ff;">
+            <div class="small-box" style="background-color: #b2ebf2;">
               <div class="inner">
                 <h3><?= 55 ?></h3>
                 <p>Student Voices</p>
@@ -119,6 +132,24 @@
 
             </div>
           </div>
+
+
+          <div class="col-lg-3 col-xs-6">
+            <div class="small-box" style="background-color: #dd90d3ff;">
+                <div class="inner">
+                    <h3><?php echo $expiredCount; ?></h3>
+                    <p>Expired Contracts</p>
+                </div>
+
+                <!-- Icon now triggers modal -->
+                <a href="#" data-toggle="modal" data-target="#expiredModal">
+                    <div class="icon" style="font-size: 55px; top: 10px;">
+                        <i class="fa fa-file-text-o"></i> <!-- list/doc icon -->
+                    </div>
+                </a>
+            </div>
+        </div>
+
 
         </div>
 
@@ -257,7 +288,7 @@
         <script>
             Swal.fire({
                 icon: 'success',
-                title: 'Email Sent',
+                title: 'Done!',
                 text: '". addslashes($msg) ."',
                 confirmButtonText: 'OK'
             });
@@ -272,7 +303,7 @@
         <script>
             Swal.fire({
                 icon: 'error',
-                title: 'Failed to Send',
+                title: 'Failed!',
                 text: '". addslashes($msg) ."',
                 confirmButtonText: 'OK'
             });
@@ -463,6 +494,173 @@
     </div>
   </div>
 </div>
+
+
+<!-- Expired Learners Modal -->
+<div class="modal fade" id="expiredModal" tabindex="-1" role="dialog" aria-labelledby="expiredModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:#f44336; color:#fff;">
+        <h5 class="modal-title" id="expiredModalLabel">Expired Contracts</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead style="background-color: #fdd;">
+              <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Subject</th>
+                <th>Registered On</th>
+                <th>Expired On</th>
+                <th>Drop</th>
+                <th>Notify</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+              $sqlExpired = "
+                SELECT lt.LearnerId, u.Name, u.Surname, u.Email, 
+                       ls.SubjectId, ls.ContractStartDate, ls.ContractExpiryDate
+                FROM learners lt
+                INNER JOIN users u ON lt.LearnerId = u.Id
+                LEFT JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
+                WHERE ls.ContractExpiryDate < CURDATE()
+                  AND ls.Status = 'Active'
+                ORDER BY lt.LearnerId, ls.ContractExpiryDate ASC
+              ";
+              $stmtExp = $connect->prepare($sqlExpired);
+              $stmtExp->execute();
+              $expiredResults = $stmtExp->get_result();
+
+              if ($expiredResults && $expiredResults->num_rows > 0):
+                  while ($row = $expiredResults->fetch_assoc()):
+                      $subjectName = '';
+                      if (!empty($row['SubjectId'])) {
+                          $subjStmt = $connect->prepare("SELECT SubjectName FROM subjects WHERE SubjectId = ?");
+                          $subjStmt->bind_param("i", $row['SubjectId']);
+                          $subjStmt->execute();
+                          $subjResult = $subjStmt->get_result();
+                          $subjRow = $subjResult->fetch_assoc();
+                          $subjectName = $subjRow['SubjectName'] ?? '';
+                          $subjStmt->close();
+                      }
+              ?>
+              <tr>
+                <td><?php echo htmlspecialchars($row['Name']); ?></td>
+                <td><?php echo htmlspecialchars($row['Surname']); ?></td>
+                <td><?php echo htmlspecialchars($subjectName); ?></td>
+                <td><?php echo $row['ContractStartDate'] ? htmlspecialchars(date('Y-m-d', strtotime($row['ContractStartDate']))) : '-'; ?></td>
+                <td><?php echo $row['ContractExpiryDate'] ? htmlspecialchars(date('Y-m-d', strtotime($row['ContractExpiryDate']))) : '-'; ?></td>
+                <td>
+                  <button class="btn btn-danger btn-xs drop-btn" 
+                          data-learnerid="<?php echo $row['LearnerId']; ?>" 
+                          data-subjectid="<?php echo $row['SubjectId']; ?>">
+                    Drop
+                  </button>
+                </td>
+                <td>
+                  <button class="btn btn-warning btn-xs notify-btn" 
+                          data-learnerid="<?= $row['LearnerId']; ?>" 
+                          data-subjectid="<?= $row['SubjectId']; ?>"
+                          data-email="<?= htmlspecialchars($row['Email']); ?>"
+                          data-subject="<?= htmlspecialchars($subjectName); ?>">
+                    Notify
+                  </button>
+                  
+                </td>
+                
+              </tr>
+              <?php
+                  endwhile;
+              else:
+              ?>
+              <tr>
+                <td colspan="7" class="text-center">No learners found.</td>
+              </tr>
+              <?php endif; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Drop subject confirmation
+    $('.drop-btn').click(function() {
+        let learnerId = $(this).data('learnerid');
+        let subjectId = $(this).data('subjectid');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This will drop the subject for the learner!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, drop it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit form via POST
+                $('<form method="post" action="drop_subject.php">' +
+                    '<input type="hidden" name="learnerId" value="'+learnerId+'">' +
+                    '<input type="hidden" name="subjectId" value="'+subjectId+'">' +
+                  '</form>').appendTo('body').submit();
+            }
+        });
+    });
+
+    
+    
+    // Notify learner confirmation using emailsuperhandler.php
+    $('.notify-btn').click(function() {
+    let firstName = $(this).closest('tr').find('td:first').text(); // First Name
+    let lastName  = $(this).closest('tr').find('td:nth-child(2)').text(); // Last Name
+    let email     = $(this).data('email'); // Learner Email
+    let subject   = $(this).data('subject'); // Subject Name
+    let learnerName = firstName + ' ' + lastName;
+
+    Swal.fire({
+        title: 'Send Notification?',
+        text: "This will notify the learner about the expired contract.",
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#f0ad4e',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, notify!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $('<form method="post" action="emailsuperhandler.php">' +
+                '<input type="hidden" name="emailto" value="' + email + '">' +
+                '<input type="hidden" name="learnerName" value="' + learnerName + '">' +
+                '<input type="hidden" name="subjectName" value="' + subject + '">' +
+                '<input type="hidden" name="action" value="contract_expiry">' +
+                '<input type="hidden" name="redirect" value="adminindex.php">' +
+              '</form>').appendTo('body').submit();
+        }
+    });
+});
+
+
+    
+
+});
+</script>
+
+
+
+
+
+
 
 
 

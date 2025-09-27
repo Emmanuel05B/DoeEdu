@@ -71,9 +71,6 @@ if (!isset($_SESSION['email'])) {
                     <?php
                     // Working query: only active learners (contract not expired) ... for this grade, subject and group
 
-
-
-                    /*
                     $sql = "
                         SELECT 
                             lt.LearnerId,
@@ -85,38 +82,14 @@ if (!isset($_SESSION['email'])) {
                         INNER JOIN users u ON lt.LearnerId = u.Id
                         INNER JOIN learnersubject ls 
                             ON lt.LearnerId = ls.LearnerId 
-                            AND ls.ContractExpiryDate > CURDATE()   .. will be a problem., use status intead.
+                            AND ls.ContractExpiryDate > CURDATE()
                         INNER JOIN learnerclasses lc 
                             ON lt.LearnerId = lc.LearnerID
                         INNER JOIN classes c 
                             ON lc.ClassID = c.ClassID
                             AND c.SubjectID = ls.SubjectID
                         WHERE ls.SubjectId = ? AND lt.Grade = ? AND c.GroupName = ?
-                    ";  */
-
-                    $sql = "
-                            SELECT DISTINCT 
-                                lt.LearnerId,
-                                lt.Grade,
-                                u.Name,
-                                u.Surname,
-                                c.GroupName
-                            FROM learners lt
-                            JOIN learnersubject ls 
-                                ON lt.LearnerId = ls.LearnerId
-                                AND ls.Status = 'Active'
-                                AND ls.SubjectId = ?
-                            JOIN users u 
-                                ON lt.LearnerId = u.Id
-                            JOIN learnerclasses lc 
-                                ON lt.LearnerId = lc.LearnerID
-                            JOIN classes c 
-                                ON lc.ClassID = c.ClassID
-                                AND c.SubjectID = ls.SubjectID
-                            WHERE lt.Grade = ? AND c.GroupName = ?
-                        ";
-
-                    
+                    ";
 
                     $stmt = $connect->prepare($sql);
                     $stmt->bind_param("iss", $subjectId, $grade, $group);
@@ -207,21 +180,14 @@ if (!isset($_SESSION['email'])) {
             </thead>
             <tbody>
               <?php
-              // Query learners whose subjects are Cancelled or Completed.
-
-              //works fine but becomes a problem for classes that were onnce deleted. so if all learners of a class deregister,
-              // the class gets deleted, but when a new learner registers a new class exists, so the problem is these are 
-              // the same classes but with different class ids.  e.g old math 10 B with class id of 10.
-              //  vs new math 10 B with class id of 11.
-              ///perhaps I should not delete this class. let it exists with zero learners. 
-              // when new learners registers, theyll get in to it instead of rebuilding the class again.
+              // Query learners whose subjects are Cancelled or Completed
               $sqlExpired = "
                   SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName, ls.Status, ls.ContractExpiryDate
                   FROM learners lt
                   INNER JOIN users u ON lt.LearnerId = u.Id
                   LEFT JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
                   LEFT JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
-                  LEFT JOIN classes c ON lc.ClassID = c.ClassID   
+                  LEFT JOIN classes c ON lc.ClassID = c.ClassID
                   WHERE ls.Status IN ('Cancelled','Completed')
               ";
 

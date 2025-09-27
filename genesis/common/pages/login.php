@@ -185,7 +185,7 @@ if (isset($_POST['login'])) {
 
         switch ($user['UserType']) {
             case 0: header('Location: ../../admin/pages/adminindex.php'); break;
-            case 1: header('Location: ../../tutor/tutorindex.php'); break;
+            case 1: header('Location: ../../tutor/pages/tutorindex.php'); break;
             case 2: header('Location: ../../learner/pages/learnerindex.php'); break;
             default: 
                 $_SESSION['error_message'] = $genericError;

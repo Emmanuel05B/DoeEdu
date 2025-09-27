@@ -507,31 +507,6 @@ if ($resultSubjects) {
                           </div>
 
                           <div class="col-md-4">
-                            <div class="box box-danger">
-                              <div class="box-header with-border">
-                                <h3 class="box-title">Email Defaults</h3>
-                              </div>
-                              <div class="box-body">
-                                <div class="default-values-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px;">
-                                  
-                                  <div class="form-group">
-                                    <label for="adminEmail">Admin Email</label>
-                                    <input type="email" class="form-control" id="adminEmail" placeholder="Enter admin email">
-                                  </div>
-                                  <div class="form-group">
-                                    <label>Email Password(DONT TOUCH)</label>
-                                    <input type="text" class="form-control" placeholder="e.g. sdf dsfsd fsdf dsf">
-                                  </div>
-                                  <!-- Add more default values here if needed -->
-                                </div>
-                              </div>
-                              <div class="box-footer text-right">
-                                <button type="button" class="btn btn-danger">Save Defaults</button>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="col-md-4">
                             <div class="box box-success">
                               <div class="box-header with-border">
                                 <h3 class="box-title">Resources Defaults</h3>

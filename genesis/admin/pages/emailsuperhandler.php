@@ -346,9 +346,34 @@ try {
         break;
 
 
-            
-            
+        // 6. Notify learner of contract expiry
+        case 'contract_expiry':
+            $learnerEmail = trim($_POST['emailto'] ?? '');
+            $learnerName  = trim($_POST['learnerName'] ?? '');
+            $subjectName  = trim($_POST['subjectName'] ?? '');
 
+            if (!$learnerEmail || !$learnerName || !$subjectName) {
+                throw new Exception("Missing learner or subject information.");
+            }
+
+            $mail = initMailer();
+            $mail->addAddress($learnerEmail, $learnerName);
+            $mail->Subject = "Important: Contract Expiry for {$subjectName}";
+
+            $mail->Body = "
+                <p>Dear {$learnerName},</p>
+                
+                <p>This is to inform you that your contract for the subject <strong>{$subjectName}</strong> has expired.</p>
+                <p>Please renew your contract within <strong>7 days</strong> to avoid termination. Failure to renew will result in loss of access to classes for this subject.</p>
+                <p>To renew, please log in to your account and complete the renewal process.</p>
+                <br>
+                <p>Best regards,</p>
+                <p><strong>DoE Team</strong></p>
+            ";
+
+            $mail->send();
+            $_SESSION['success'] = "Contract expiry notification sent to {$learnerName} - ({$learnerEmail}).";
+        break;
 
 
 

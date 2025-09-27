@@ -126,10 +126,6 @@ if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "Dere
                     $stmt3->execute();
                     $stmt3->close();
 
-                    /*  no longer delete classes with zero learners...
-                     as this also gets rid of records of learners who were once in it
-
-                     
                     // Step stmt2a: Delete class if no learners remain
                     $stmt2a = $connect->prepare("
                         DELETE FROM classes 
@@ -139,14 +135,12 @@ if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "Dere
                     $stmt2a->execute();
                     $stmt2a->close();
 
-                    */
-
                 }
                 $stmt->close();
 
                 $newStatus = "Cancelled";
                
-                //Step 5: update subject after handling classes 
+                //Step 5: update subject after handling classes
                 $stmt = $connect->prepare("
                     UPDATE learnersubject
                     SET Status = ?
