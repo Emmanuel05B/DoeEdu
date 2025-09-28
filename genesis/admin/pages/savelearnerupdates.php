@@ -84,7 +84,9 @@ if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "Dere
         $connect->begin_transaction();
         try {
             // Step 1: Get SubjectId before updating
-            $stmt = $connect->prepare("SELECT SubjectID FROM learnersubject WHERE LearnerSubjectId=? AND LearnerId=?");
+            $stmt = $connect->prepare("
+                SELECT SubjectID FROM learnersubject
+                WHERE LearnerSubjectId=? AND LearnerId=?");
             $stmt->bind_param("ii", $learnerSubjectId, $learnerId);
             $stmt->execute();
             $stmt->bind_result($subjectId);
@@ -107,7 +109,7 @@ if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "Dere
                 if ($row = $result->fetch_assoc()) {
                     $classId = $row['ClassID'];
 
-                    // Step 3: Decrement class count
+                    // Step 3: Decrement class count.
 
                     $stmt2 = $connect->prepare("
                         UPDATE classes 
@@ -119,6 +121,21 @@ if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "Dere
                     $stmt2->bind_param("i", $classId);
                     $stmt2->execute();
                     $stmt2->close();
+
+                    // -----------------------------
+                    // Step 4: Copy to learnerclasshistory
+                    $stmtHist = $connect->prepare("
+                        INSERT INTO learnerclasshistory (LearnerID, ClassID, SubjectId, GroupName, Reason)
+                        SELECT lc.LearnerID, lc.ClassID, c.SubjectID, c.GroupName, 'Cancelled'
+                        FROM learnerclasses lc
+                        INNER JOIN classes c ON lc.ClassID = c.ClassID
+                        WHERE lc.LearnerID = ? AND lc.ClassID = ?
+                        LIMIT 1
+                    ");
+                    $stmtHist->bind_param("ii", $learnerId, $classId);
+                    $stmtHist->execute();
+                    $stmtHist->close();
+                    // -----------------------------
 
                     // Step 4: Remove from learnerclasses
                     $stmt3 = $connect->prepare("DELETE FROM learnerclasses WHERE LearnerID = ? AND ClassID = ?");

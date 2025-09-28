@@ -351,10 +351,24 @@ try {
             $learnerEmail = trim($_POST['emailto'] ?? '');
             $learnerName  = trim($_POST['learnerName'] ?? '');
             $subjectName  = trim($_POST['subjectName'] ?? '');
+            $learnerId    = intval($_POST['learnerId'] ?? 0);
+            $subjectId    = intval($_POST['subjectId'] ?? 0);
 
-            if (!$learnerEmail || !$learnerName || !$subjectName) {
+            if (!$learnerEmail || !$learnerName || !$subjectName || !$learnerId || !$subjectId) {
                 throw new Exception("Missing learner or subject information.");
             }
+
+            // Update LastReminded before sending email
+            $stmtUpdate = $connect->prepare("
+                UPDATE learnersubject 
+                SET LastReminded = NOW() 
+                WHERE LearnerId = ? AND SubjectId = ?
+            ");
+            $stmtUpdate->bind_param("ii", $learnerId, $subjectId);
+            $stmtUpdate->execute();
+            $stmtUpdate->close();
+
+            //send the email
 
             $mail = initMailer();
             $mail->addAddress($learnerEmail, $learnerName);
@@ -372,6 +386,7 @@ try {
             ";
 
             $mail->send();
+
             $_SESSION['success'] = "Contract expiry notification sent to {$learnerName} - ({$learnerEmail}).";
         break;
 

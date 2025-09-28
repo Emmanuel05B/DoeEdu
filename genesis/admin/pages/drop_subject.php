@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($row = $result->fetch_assoc()) {
                     $classId = $row['ClassID'];
 
-                    // Step 3: Decrement class count and set status
+                    // Step 3: Decrement class count and set status 
                     $stmt2 = $connect->prepare("
                         UPDATE classes 
                         SET CurrentLearnerCount = CurrentLearnerCount - 1,
@@ -51,7 +51,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt2->execute();
                     $stmt2->close();
 
-                    // Step 4: Remove from learnerclasses
+                    // Step 4: Copy to history table
+                    $stmtHist = $connect->prepare("
+                        INSERT INTO learnerclasshistory (LearnerID, ClassID, SubjectId, GroupName, Reason)
+                        SELECT lc.LearnerID, lc.ClassID, c.SubjectID, c.GroupName, 'Completed'
+                        FROM learnerclasses lc
+                        INNER JOIN classes c ON lc.ClassID = c.ClassID
+                        WHERE lc.LearnerID = ? AND lc.ClassID = ?
+                        LIMIT 1
+                    ");
+                    $stmtHist->bind_param("ii", $learnerId, $classId);
+                    $stmtHist->execute();
+                    $stmtHist->close();
+
+                    // -----------------------------
+
+                    // Step 5: Remove from learnerclasses ..
                     $stmt3 = $connect->prepare("DELETE FROM learnerclasses WHERE LearnerID = ? AND ClassID = ?");
                     $stmt3->bind_param("ii", $learnerId, $classId);
                     $stmt3->execute();
@@ -59,8 +74,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $stmt->close();
 
-                // Step 5: Update subject status
-                $newStatus = "Cancelled";
+                // Step 6: Update subject status
+                $newStatus = "Completed";  
                 $stmt = $connect->prepare("
                     UPDATE learnersubject
                     SET Status = ?

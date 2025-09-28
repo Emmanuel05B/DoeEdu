@@ -37,37 +37,27 @@
        
         <?php 
           include('../../partials/connect.php');
-          $sql = "SELECT COUNT(*) as count FROM users WHERE IsVerified = 1 AND UserType = '2'";
-          $result = $connect->query($sql);
-          $row = $result->fetch_assoc(); 
+          
+          // Pending verification users
+          $usersQuery = $connect->query("SELECT COUNT(*) as count FROM users WHERE IsVerified = 1 AND UserType = '2'");
+          $pendingusers = $usersQuery ? $usersQuery->fetch_assoc()['count'] : 0;
 
+          // Invite requests
+          $inviteQuery = $connect->query("SELECT COUNT(*) as countinvites FROM inviterequests");
+          $inviteRequests = $inviteQuery ? $inviteQuery->fetch_assoc()['countinvites'] : 0;
 
-          $requests = $connect->query("SELECT COUNT(*) as countinvites FROM inviterequests");
-          if ($requests) {
-              $rowinvites = $requests->fetch_assoc();
-              $inviteRequests = $rowinvites['countinvites'];
-          } else {
-              $inviteRequests = 0; // or handle error
-          }
+          // Unread student voices
+          $voicesQuery = $connect->query("SELECT COUNT(*) as unreadCount FROM studentvoices WHERE IsRead = 0");
+          $unreadVoices = $voicesQuery ? $voicesQuery->fetch_assoc()['unreadCount'] : 0;
 
-          $verify = $connect->query("SELECT COUNT(*) as countusers FROM users WHERE IsVerified = 0 AND UserType = '2' ");
-          if ($verify) {
-              $rowverify = $verify->fetch_assoc();
-              $users = $rowverify['countusers'];
-          } else {
-              $users = 0; // or handle error
-          }
+          // Expired contracts
+          $expiredQuery = $connect->query("
+              SELECT COUNT(*) AS count 
+              FROM learnersubject 
+              WHERE ContractExpiryDate < CURDATE() AND Status = 'Active'
+          ");
+          $expiredCount = $expiredQuery ? $expiredQuery->fetch_assoc()['count'] : 0;
 
-          // Count expired contracts that are still active
-          $sqlCountExpired = "
-              SELECT COUNT(*) AS count
-              FROM learnersubject ls
-              WHERE ls.ContractExpiryDate < CURDATE()
-                AND ls.Status = 'Active'
-          ";
-          $resultExpired = $connect->query($sqlCountExpired);
-          $rowExpired = $resultExpired->fetch_assoc();
-          $expiredCount = $rowExpired['count'] ?? 0;
           
         ?>
 
@@ -77,7 +67,7 @@
           <div class="col-lg-3 col-xs-6">
             <div class="small-box" style="background-color: #7bd3f6ff;">
               <div class="inner">
-                <h3><?= $users ?></h3>
+                <h3><?= $pendingusers ?></h3>
                 <p>Pending Verification</p>
               </div>
               <a href="pendingverifications.php">
@@ -102,26 +92,10 @@
             </div>
           </div>
 
-          <!--
-          <div class="col-lg-3 col-xs-6">
-            <div class="small-box" style="background-color: #b2ebf2;"> 
-              <div class="inner">
-                <h3><?php // echo $row['count']; ?></h3>
-                <p>Learners Registered</p>
-              </div>
-              <a href="classes.php">
-                <div class="icon" style="font-size: 55px; top: 10px;">
-                  <i class="ion ion-person-add"></i>
-                </div>
-              </a>
-            </div>
-          </div>
-          -->
-
           <div class="col-lg-3 col-xs-6">
             <div class="small-box" style="background-color: #b2ebf2;">
               <div class="inner">
-                <h3><?= 55 ?></h3>
+                <h3><?= $unreadVoices ?></h3>
                 <p>Student Voices</p>
               </div>
               <a href="voices.php">
@@ -132,7 +106,6 @@
 
             </div>
           </div>
-
 
           <div class="col-lg-3 col-xs-6">
             <div class="small-box" style="background-color: #dd90d3ff;">
@@ -148,7 +121,7 @@
                     </div>
                 </a>
             </div>
-        </div>
+          </div>
 
 
         </div>
@@ -354,6 +327,7 @@
     $userId = $_SESSION['user_id'];
 
     // Load user data
+    /*
     $usql = "SELECT * FROM users WHERE Id = ?";
     $stmtUser = $connect->prepare($usql);
     $stmtUser->bind_param("i", $userId);
@@ -361,6 +335,8 @@
     $resultUser = $stmtUser->get_result();
     $userData = $resultUser->fetch_assoc();
     $stmtUser->close();
+
+    */
 
     // Fetch notices
     $sql = "SELECT NoticeNo, Title, Content, Date FROM notices WHERE ExpiryDate >= CURDATE() ORDER BY Date DESC";
@@ -518,13 +494,14 @@
                 <th>Expired On</th>
                 <th>Drop</th>
                 <th>Notify</th>
+                <th>Last Reminded</th>
               </tr>
             </thead>
             <tbody>
               <?php
               $sqlExpired = "
                 SELECT lt.LearnerId, u.Name, u.Surname, u.Email, 
-                       ls.SubjectId, ls.ContractStartDate, ls.ContractExpiryDate
+                       ls.SubjectId, ls.ContractStartDate, ls.ContractExpiryDate, ls.LastReminded
                 FROM learners lt
                 INNER JOIN users u ON lt.LearnerId = u.Id
                 LEFT JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
@@ -572,6 +549,7 @@
                   </button>
                   
                 </td>
+                <td><?php echo $row['LastReminded'] ? htmlspecialchars(date('Y-m-d', strtotime($row['LastReminded']))) : '-'; ?></td>
                 
               </tr>
               <?php
@@ -618,41 +596,41 @@ $(document).ready(function() {
             }
         });
     });
-
-    
     
     // Notify learner confirmation using emailsuperhandler.php
     $('.notify-btn').click(function() {
-    let firstName = $(this).closest('tr').find('td:first').text(); // First Name
-    let lastName  = $(this).closest('tr').find('td:nth-child(2)').text(); // Last Name
-    let email     = $(this).data('email'); // Learner Email
-    let subject   = $(this).data('subject'); // Subject Name
-    let learnerName = firstName + ' ' + lastName;
+      let firstName = $(this).closest('tr').find('td:first').text(); // First Name
+      let lastName  = $(this).closest('tr').find('td:nth-child(2)').text(); // Last Name
+      let email     = $(this).data('email'); // Learner Email
+      let subject   = $(this).data('subject'); // Subject Name
+      let learnerName = firstName + ' ' + lastName;
+      let learnerId = $(this).data('learnerid');
+      let subjectId = $(this).data('subjectid');
 
-    Swal.fire({
-        title: 'Send Notification?',
-        text: "This will notify the learner about the expired contract.",
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonColor: '#f0ad4e',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, notify!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $('<form method="post" action="emailsuperhandler.php">' +
-                '<input type="hidden" name="emailto" value="' + email + '">' +
-                '<input type="hidden" name="learnerName" value="' + learnerName + '">' +
-                '<input type="hidden" name="subjectName" value="' + subject + '">' +
-                '<input type="hidden" name="action" value="contract_expiry">' +
-                '<input type="hidden" name="redirect" value="adminindex.php">' +
-              '</form>').appendTo('body').submit();
-        }
+      Swal.fire({
+          title: 'Send Notification?',
+          text: "This will notify the learner about the expired contract.",
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonColor: '#f0ad4e',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Yes, notify!'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              $('<form method="post" action="emailsuperhandler.php">' +
+                  '<input type="hidden" name="emailto" value="' + email + '">' +
+                  '<input type="hidden" name="learnerName" value="' + learnerName + '">' +
+                  '<input type="hidden" name="subjectName" value="' + subject + '">' +
+                  '<input type="hidden" name="learnerId" value="' + learnerId + '">' +
+                  '<input type="hidden" name="subjectId" value="' + subjectId + '">' +
+                  '<input type="hidden" name="action" value="contract_expiry">' +
+                  '<input type="hidden" name="redirect" value="adminindex.php">' +
+                '</form>').appendTo('body').submit();
+          }
+      });
     });
-});
 
-
-    
-
+    //end
 });
 </script>
 
