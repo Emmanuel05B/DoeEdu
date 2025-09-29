@@ -166,6 +166,7 @@
                   <i class="ion ion-alert-circled"></i>
                 </div>
               </a>
+              <a href="pendingverifications.php" class="small-box-footer">open <i class="fa fa-arrow-circle-right"></i></a>
             </div>
           </div>
 
@@ -180,6 +181,7 @@
                   <i class="fa fa-envelope-open"></i>
                 </div>
               </a>
+              <a href="manage_inviterequests.php" class="small-box-footer">open <i class="fa fa-arrow-circle-right"></i></a>
             </div>
           </div>
 
@@ -194,7 +196,7 @@
                   <i class="fa fa-bullhorn"></i>
                 </div>
               </a>
-
+              <a href="voices.php" class="small-box-footer">open <i class="fa fa-arrow-circle-right"></i></a>
             </div>
           </div>
 
@@ -211,6 +213,7 @@
                         <i class="fa fa-file-text-o"></i> <!-- list/doc icon -->
                     </div>
                 </a>
+                <a href="#" data-toggle="modal" data-target="#expiredModal" class="small-box-footer">open <i class="fa fa-arrow-circle-right"></i></a>
             </div>
           </div>
 
