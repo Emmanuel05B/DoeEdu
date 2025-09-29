@@ -160,6 +160,10 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 require '../../../vendor/autoload.php';
 
+// --- LOAD .env VARIABLES ---
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
+$dotenv->load();
+
 if (isset($_POST['Submit'])) {
     $email = filter_var($_POST["email"], FILTER_SANITIZE_EMAIL);
 
@@ -198,14 +202,14 @@ if (isset($_POST['Submit'])) {
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
-            $mail->Username = 'thedistributorsofedu@gmail.com';
-            $mail->Password = 'dytn yizm aszo jptc'; 
+            $mail->Username = $_ENV['EMAIL_ADDRESS'];
+            $mail->Password = $_ENV['EMAIL_APP_PASSWORD']; 
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port = 465;
 
-            $mail->setFrom('thedistributorsofedu@gmail.com', 'Distributors of Education');
+            $mail->setFrom($_ENV['EMAIL_ADDRESS'], 'Distributors of Education');
             $mail->addAddress($email, $surname);
-            $mail->addReplyTo('thedistributorsofedu@gmail.com', 'Distributors of Education');
+            $mail->addReplyTo($_ENV['EMAIL_ADDRESS'], 'Distributors of Education');
 
             $mail->isHTML(true);
             $mail->Subject = 'Your Password Reset Code - Distributors of Education';

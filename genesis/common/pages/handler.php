@@ -10,6 +10,9 @@ use PHPMailer\PHPMailer\Exception;
 // Load Composer's autoloader
 require __DIR__ . '/../../../vendor/autoload.php';
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'); 
+$dotenv->load();
+
 // Transaction start
 $connect->begin_transaction();
 
@@ -287,14 +290,14 @@ function sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $c
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'thedistributorsofedu@gmail.com';
-        $mail->Password = 'dytn yizm aszo jptc';  // update with correct password
+        $mail->Username = $_ENV['EMAIL_ADDRESS'];
+        $mail->Password = $_ENV['EMAIL_APP_PASSWORD'];   // update with correct password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port = 465;
 
-        $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
+        $mail->setFrom($_ENV['EMAIL_ADDRESS'], 'DoE_Genesis');
         $mail->addAddress($pemail, $pname);
-        $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis');
+        $mail->addReplyTo($_ENV['EMAIL_ADDRESS'], 'DoEGenesis');
 
         // Fetch learner subjects and fees
         $stmt = $connect->prepare("
@@ -376,14 +379,14 @@ function sendEmailToLearner($email, $name, $verificationToken) {
       $mail->isSMTP();
       $mail->Host = 'smtp.gmail.com';
       $mail->SMTPAuth = true;
-      $mail->Username = 'thedistributorsofedu@gmail.com';
-      $mail->Password = 'dytn yizm aszo jptc';
+      $mail->Username = $_ENV['EMAIL_ADDRESS'];
+      $mail->Password = $_ENV['EMAIL_APP_PASSWORD']; 
       $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
       $mail->Port = 465;
 
-      $mail->setFrom('thedistributorsofedu@gmail.com', 'DoE_Genesis');
+      $mail->setFrom($_ENV['EMAIL_ADDRESS'], 'DoE_Genesis');
       $mail->addAddress($email, $name);
-      $mail->addReplyTo('thedistributorsofedu@gmail.com', 'DoEGenesis');
+      $mail->addReplyTo($_ENV['EMAIL_ADDRESS'], 'DoEGenesis');
 
       $mail->isHTML(true);
       $mail->Subject = 'Welcome to DoE';
