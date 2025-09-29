@@ -34,7 +34,7 @@ function initMailer() {
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
     $mail->Port       = 465;
     $mail->setFrom($_ENV['EMAIL_ADDRESS'], 'DoE_Genesis');
-    $mail->addReplyTo($_ENV['EMAIL_ADDRESS'], 'DoEGenesis');
+    $mail->addReplyTo($_ENV['EMAIL_ADDRESS'], 'DoE_Genesis');
     $mail->isHTML(true);
     return $mail;
 }
@@ -346,7 +346,7 @@ try {
         break;
 
 
-        // 6. Notify learner of contract expiry
+        // 6. Notify learner of contract expiry             Done!
         case 'contract_expiry':
             $learnerEmail = trim($_POST['emailto'] ?? '');
             $learnerName  = trim($_POST['learnerName'] ?? '');
@@ -390,7 +390,7 @@ try {
             $_SESSION['success'] = "Contract expiry notification sent to {$learnerName} - ({$learnerEmail}).";
         break;
 
-        // 7. Mail all parents of owing learners who haven't paid in the last month
+        // 7. Mail all parents of owing learners who haven't paid in the last month       Done!
         case 'owing_lastmonth':
             $learnerIds = $_POST['learnerIds'] ?? '';
             $learnerIds = array_filter(array_map('intval', explode(',', $learnerIds)));
@@ -452,62 +452,60 @@ try {
         break;
 
 
+        // 8. Reminding/Mailing individually for payments          Done!
+        case 'owing_individual':
+            $learnerId = intval($_POST['learnerId'] ?? 0);
 
-    // 8. M
+            if ($learnerId > 0) {
+                $stmt = $connect->prepare("
+                    SELECT u.Name AS LearnerName, u.Surname AS LearnerSurname,
+                        l.ParentName, l.ParentSurname, l.ParentEmail,
+                        f.Balance
+                    FROM finances f
+                    JOIN users u ON f.LearnerId = u.Id
+                    JOIN learners l ON u.Id = l.LearnerId
+                    WHERE u.Id = ?
+                ");
+                $stmt->bind_param("i", $learnerId);
+                $stmt->execute();
+                $row = $stmt->get_result()->fetch_assoc();
 
-    case 'owing_individual':
-        $learnerId = intval($_POST['learnerId'] ?? 0);
+                if ($row) {
+                    try {
+                        $mail = initMailer();
+                        $pemail  = $row['ParentEmail'];
+                        $pname   = trim($row['ParentName'] . ' ' . $row['ParentSurname']);
+                        $learner = $row['LearnerName'] . ' ' . $row['LearnerSurname'];
+                        $balance = number_format($row['Balance'], 2);
 
-        if ($learnerId > 0) {
-            $stmt = $connect->prepare("
-                SELECT u.Name AS LearnerName, u.Surname AS LearnerSurname,
-                    l.ParentName, l.ParentSurname, l.ParentEmail,
-                    f.Balance
-                FROM finances f
-                JOIN users u ON f.LearnerId = u.Id
-                JOIN learners l ON u.Id = l.LearnerId
-                WHERE u.Id = ?
-            ");
-            $stmt->bind_param("i", $learnerId);
-            $stmt->execute();
-            $row = $stmt->get_result()->fetch_assoc();
+                        $mail->addAddress($pemail, $pname);
+                        $mail->Subject = "Outstanding Fees Notice - $learner";
+                        $mail->Body    = "
+                            <p>Dear $pname,</p>
+                            <p>Our records indicate outstanding school fees for your child <strong>$learner</strong>.</p>
+                            <p><strong>Balance: R $balance</strong></p>
+                            <p>Please settle as soon as possible.</p>
+                            <br><p>Best regards,<br><strong>DoE Team</strong></p>
+                        ";
+                        $mail->send();
 
-            if ($row) {
-                try {
-                    $mail = initMailer();
-                    $pemail  = $row['ParentEmail'];
-                    $pname   = trim($row['ParentName'] . ' ' . $row['ParentSurname']);
-                    $learner = $row['LearnerName'] . ' ' . $row['LearnerSurname'];
-                    $balance = number_format($row['Balance'], 2);
+                        $stmtUpdate = $connect->prepare("UPDATE finances SET LastReminderSent = NOW() WHERE LearnerId = ?");
+                        $stmtUpdate->bind_param("i", $learnerId);
+                        $stmtUpdate->execute();
+                        $stmtUpdate->close();
 
-                    $mail->addAddress($pemail, $pname);
-                    $mail->Subject = "Outstanding Fees Notice - $learner";
-                    $mail->Body    = "
-                        <p>Dear $pname,</p>
-                        <p>Our records indicate outstanding school fees for your child <strong>$learner</strong>.</p>
-                        <p><strong>Balance: R $balance</strong></p>
-                        <p>Please settle as soon as possible.</p>
-                        <br><p>Best regards,<br><strong>DoE Team</strong></p>
-                    ";
-                    $mail->send();
+                        $_SESSION['success'] = "Reminder sent to {$pemail}.";
+                        header("Location: mailparent.php");
+                        exit();
 
-                    $stmtUpdate = $connect->prepare("UPDATE finances SET LastReminderSent = NOW() WHERE LearnerId = ?");
-                    $stmtUpdate->bind_param("i", $learnerId);
-                    $stmtUpdate->execute();
-                    $stmtUpdate->close();
-
-                    $_SESSION['success'] = "Reminder sent to {$pemail}.";
-                    header("Location: mailparent.php");
-                    exit();
-
-                } catch (Exception $e) {
-                    $_SESSION['error'] = "Failed to send reminder to {$pemail}: " . $e->getMessage();
-                    header("Location: mailparent.php");
-                    exit();
+                    } catch (Exception $e) {
+                        $_SESSION['error'] = "Failed to send reminder to {$pemail}: " . $e->getMessage();
+                        header("Location: mailparent.php");
+                        exit();
+                    }
                 }
             }
-        }
-    break;
+        break;
 
 
 

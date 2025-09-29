@@ -15,11 +15,105 @@
 
 <body class="hold-transition skin-blue sidebar-mini">
   <div class="wrapper">
-    <?php include(__DIR__ . "/../partials/header.php"); ?>
+    
+    <header class="main-header">
+      <!-- Logo -->
+      <a href="adminindex.php" class="logo">
+        <!-- mini logo for sidebar mini 50x50 pixels -->
+        <span class="logo-mini"><b>Click</b></span>
+        <!-- logo for regular state and mobile devices -->
+        <span class="logo-lgd"><b>DoE_Genesis </b></span>
+      </a>
+      <!-- Header Navbar: style can be found in header.less -->
+      <nav class="navbar navbar-static-top">
+        <!-- Sidebar toggle button-->
+        <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="logo-lg"><b>Distributors Of Education </b></span>
+        </a>
+      
+        <div class="navbar-custom-menu">
+          <?php 
+          include('../../partials/connect.php');
+
+          // Pending verification users
+          $usersQuery = $connect->query("SELECT COUNT(*) as count FROM users WHERE IsVerified = 1 AND UserType = '2'");
+          $pendingUsers = $usersQuery ? $usersQuery->fetch_assoc()['count'] : 0;
+
+          // Invite requests
+          $inviteQuery = $connect->query("SELECT COUNT(*) as count FROM inviterequests");
+          $inviteRequests = $inviteQuery ? $inviteQuery->fetch_assoc()['count'] : 0;
+
+          // Unread student voices
+          $voicesQuery = $connect->query("SELECT COUNT(*) as count FROM studentvoices WHERE IsRead = 0");
+          $unreadVoices = $voicesQuery ? $voicesQuery->fetch_assoc()['count'] : 0;
+
+          // Expired contracts
+          $expiredQuery = $connect->query("SELECT COUNT(*) AS count FROM learnersubject WHERE ContractExpiryDate < CURDATE() AND Status = 'Active'");
+          $expiredContracts = $expiredQuery ? $expiredQuery->fetch_assoc()['count'] : 0;
+          ?>
+
+
+          <ul class="nav navbar-nav">
+
+            <!-- Pending verification -->
+            <li>
+              <a href="pendingverifications.php">
+                <i class="fa fa-user-times"></i>
+                <span class="label label-warning"><?= $pendingUsers ?></span>
+              </a>
+            </li>
+
+            <!-- Invite requests -->
+            <li>
+              <a href="manage_inviterequests.php">
+                <i class="fa fa-envelope-open"></i>
+                <span class="label label-info"><?= $inviteRequests ?></span>
+              </a>
+            </li>
+
+            <!-- Student voices -->
+            <li>
+              <a href="voices.php">
+                <i class="fa fa-bullhorn"></i>
+                <span class="label label-success"><?= $unreadVoices ?></span>
+              </a>
+            </li>
+
+            <!-- Expired contracts -->
+            <li>
+              <a href="#" data-toggle="modal" data-target="#expiredModal">
+                <i class="fa fa-file-text-o"></i>
+                <span class="label label-danger"><?= $expiredContracts ?></span>
+              </a>
+            </li>
+
+            <!-- Original notifications bell -->
+            <li>
+              <a href="#" data-toggle="modal" data-target="#adminNotificationsModal">
+                <i class="fa fa-bell-o"></i>
+              </a>
+            </li>
+
+            <!-- User account -->
+            <li class="dropdown user user-menu">
+              
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <img src="../images/doe.jpg" class="user-image" alt="User Image">
+                
+              </a>
+            </li>
+
+          </ul>
+
+        </div>
+      </nav>
+    </header>
+
     <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
-      <!-- cover section (untouched)-->
+      <!-- cover section --> 
 
       <section class="content-header">
         <h1>Dashboard <small>Control panel</small></h1>
@@ -27,10 +121,7 @@
           <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
           <li class="active">Dashboard</li>
         </ol>
-        <!-- Button to manually open the modal -->
-      <a href="#" data-toggle="modal" data-target="#adminNotificationsModal">
-        <i class="fa fa-bell"></i> Notifications
-      </a>
+
       </section>
 
       <section class="content">

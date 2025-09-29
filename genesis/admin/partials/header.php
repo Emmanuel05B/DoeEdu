@@ -35,148 +35,52 @@
       </a>
 
       <div class="navbar-custom-menu">
+        <?php 
+        include('../../partials/connect.php');
+
+        // Pending verification users
+        $usersQuery = $connect->query("SELECT COUNT(*) as count FROM users WHERE IsVerified = 1 AND UserType = '2'");
+        $pendingUsers = $usersQuery ? $usersQuery->fetch_assoc()['count'] : 0;
+
+        // Invite requests
+        $inviteQuery = $connect->query("SELECT COUNT(*) as count FROM inviterequests");
+        $inviteRequests = $inviteQuery ? $inviteQuery->fetch_assoc()['count'] : 0;
+
+        // Unread student voices
+        $voicesQuery = $connect->query("SELECT COUNT(*) as count FROM studentvoices WHERE IsRead = 0");
+        $unreadVoices = $voicesQuery ? $voicesQuery->fetch_assoc()['count'] : 0;
+
+        // Expired contracts
+        $expiredQuery = $connect->query("SELECT COUNT(*) AS count FROM learnersubject WHERE ContractExpiryDate < CURDATE() AND Status = 'Active'");
+        $expiredContracts = $expiredQuery ? $expiredQuery->fetch_assoc()['count'] : 0;
+        ?>
         <ul class="nav navbar-nav">
-          <!-- Messages: style can be found in dropdown.less-->
-
-          <li class="dropdown messages-menu">
-            <a href="inbox.php" class="dropdown-toggle" data-toggle="dropdown">
-
-              <i class="fa fa-envelope-o"></i>
-              <span class="label label-success">25</span>
+          <!-- Pending verification -->
+          <li>
+            <a href="pendingverifications.php">
+              <i class="fa fa-user-times"></i>
+              <span class="label label-warning"><?= $pendingUsers ?></span>
+              
             </a>
-            <ul class="dropdown-menu">
-              <li class="header">You have 25 messages</li>
-              <li>
-                <!-- inner menu: contains the actual data -->
-                <ul class="menu">
-
-                <?php
-                  
-                 // $sql = "SELECT * FROM tutors";  //comeback for condition
-                  $sql = "
-                    SELECT 
-                        t.TutorId, u.Name, u.Surname, u.Email, u.Contact, u.Gender, t.Availability, t.ProfilePicture, 
-                        GROUP_CONCAT(DISTINCT s.SubjectName SEPARATOR ', ') AS Subjects
-                    FROM tutors t
-                    JOIN users u ON t.TutorId = u.Id
-                    LEFT JOIN tutorsubject ts ON t.TutorId = ts.TutorId
-                    LEFT JOIN subjects s ON ts.SubjectId = s.SubjectId
-                    GROUP BY t.TutorId
-                ";
-                  $results = $connect->query($sql);
-                  while($final = $results->fetch_assoc()) { ?>
-
-                    <?php 
-                    /*
-                    $currentTime = time();
-                    $recievedtime = strtotime($final['CreatedAt']);
-                    $timepast = $currentTime - $recievedtime;
-                    
-                    $inMinutes = floor($timepast /60);  //floor.. cuts the milliseconds
-                    $inHours = floor($timepast /3660);
-                    $inDays = floor($timepast /86400);
-                    $inMonths = floor($timepast /(30 * 86400));
-
-
-                    if ($timepast < 60) {
-                        $_SESSION['elapsed'] = $timepast . ' seconds';
-                    } elseif ($timepast < 3600) {
-                        $_SESSION['elapsed'] = $inMinutes . ' minute/s'; 
-                    } elseif ($timepast < 86400) {
-                        $_SESSION['elapsed'] = $inHours . ' hour/s';
-                    } elseif ($timepast < 2592000) {
-                        $_SESSION['elapsed'] = $inDays . ' day/s'; 
-                    } else {
-                        $_SESSION['elapsed'] = $inMonths . ' month/s'; 
-                    }
-                    */
-                    ?>
-
-                  <li><!-- start message -->
-                    <a href="inbox.php?id=<?php echo $final['Email'];?>">
-                      <div class="pull-left">
-                        <img src="<?= !empty($tutor['ProfilePicture']) ? '' . htmlspecialchars($tutor['ProfilePicture']) : '../uploads/doe.jpg' ?>"class="img-circle" alt="User Image">
-
-                      </div>
-                      <h4>
-                        <?php echo $final['Name'];?> <!--sender Name -->
-                   
-                        <?php
-                        if (isset($_SESSION['elapsed'])) {
-                            echo '<small><i class="fa fa-clock-o"></i>' . $_SESSION['elapsed'] . '</small>';
-                            unset($_SESSION['elapsed']);
-                        }
-                        ?>
-            
-
-                      </h4>
-                      <p><?php echo $final['Surname'];?></p>  <!--message/title -->
-                    </a>
-                  </li>
-                  <!-- end message -->
-                  <?php } ?>
-                  
-                </ul>
-              </li>
-              <li class="footer"><a href="inbox.php">See All Messages</a></li>
-            </ul>
-          </li>
-          <!-- Notifications: style can be found in dropdown.less -->
-
-          <li class="dropdown notifications-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-bell-o"></i>
-              <span class="label label-warning">5</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li class="header">You have 5 notifications</li>
-              <li>
-                <ul class="menu">
-                  <!-- 1. New Resource -->
-                  <li>
-                    <a href="viewResource.php?id=101">
-                      <i class="fa fa-file-text text-aqua"></i> New resource "Algebra Basics" uploaded
-                      <small><i>Aug 20, 10:15</i></small>
-                    </a>
-                  </li>
-
-                  <!-- 2. Learner Complaint -->
-                  <li>
-                    <a href="viewComplaint.php?id=55">
-                      <i class="fa fa-exclamation-circle text-red"></i> New complaint submitted by John Doe
-                      <small><i>Aug 20, 11:00</i></small>
-                    </a>
-                  </li>
-
-                  <!-- 3. Quiz Results Available -->
-                  <li>
-                    <a href="viewQuizResults.php?quizId=23">
-                      <i class="fa fa-check-square text-green"></i> Quiz results for Grade 10 Math are ready
-                      <small><i>Aug 19, 16:45</i></small>
-                    </a>
-                  </li>
-
-                  <!-- 4. Session Booking -->
-                  <li>
-                    <a href="viewSession.php?id=12">
-                      <i class="fa fa-calendar text-yellow"></i> New session booked by Jane Smith
-                      <small><i>Aug 20, 09:30</i></small>
-                    </a>
-                  </li>
-
-                  <!-- 5. New Rating -->
-                  <li>
-                    <a href="viewRatings.php?sessionId=5">
-                      <i class="fa fa-star text-purple"></i> New rating received for your session
-                      <small><i>Aug 19, 14:20</i></small>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li class="footer"><a href="allnotifications.php">View all notifications</a></li>
-            </ul>
           </li>
 
+          <!-- Invite requests -->
+          <li>
+            <a href="manage_inviterequests.php">
+              <i class="fa fa-envelope-open"></i>
+              <span class="label label-info"><?= $inviteRequests ?></span>
+              
+            </a>
+          </li>
+
+          <!-- Student voices -->
+          <li>
+            <a href="voices.php">
+              <i class="fa fa-bullhorn"></i>
+              <span class="label label-success"><?= $unreadVoices ?></span>
+              
+            </a>
+          </li>
 
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
@@ -194,22 +98,6 @@
       </div>
     </nav>
   </header>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
