@@ -91,138 +91,88 @@ include(__DIR__ . "/../../partials/connect.php");
           </div>
       </div>
 
-      <!-- Status Links  -->
-      <div class="row">
-        <div class="col-md-12">
-          <div class="box-footer">
-            <div class="row">
-              <div class="col-sm-3 col-xs-6">
-                <div class="description-block border-right">
-                  <a href="status.php?val=1" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #17a2b8;">
-                    <div>
-                      <h5 class="description-header">Learners</h5>
-                      <span class="description-text">Active - Owing</span>
-                    </div>
-                  </a>
-                </div>
+      <!-- Learners Table -->
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="box">
+              <div class="box-header">
+                <h3 class="box-title">Learners Finances</h3>
               </div>
-              <div class="col-sm-3 col-xs-6">
-                <div class="description-block border-right">
-                  <a href="status.php?val=3" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #ffc107;">
-                    <div>
-                      <h5 class="description-header">Learners</h5>
-                      <span class="description-text">Not Active - Not Owing</span>
-                    </div>
-                  </a>
+              <div class="box-body">
+                <div class="table-responsive">
+                  <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Total Fees</th>
+                        <th>Total Paid</th>
+                        <th>Balance</th>
+                        <th>Last Payment Date</th>
+                        <th>Record Payment</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php
+                        $sql = "
+                          SELECT 
+                            f.LearnerId,
+                            u.Name,
+                            u.Surname,
+                            f.TotalFees,
+                            f.TotalPaid,
+                            f.Balance,
+                            f.LastPaymentDate
+                          FROM finances f
+                          JOIN users u ON f.LearnerId = u.Id
+                          ORDER BY u.Surname, u.Name
+                        ";
+                        
+                        $results = $connect->query($sql);
+                        if ($results && $results->num_rows > 0) {
+                          while($final = $results->fetch_assoc()) { ?>
+                            <tr>
+                              <td><?= htmlspecialchars($final['Name']) ?></td>
+                              <td><?= htmlspecialchars($final['Surname']) ?></td>
+                              <td>R<?= number_format($final['TotalFees'], 2) ?></td>
+                              <td>R<?= number_format($final['TotalPaid'], 2) ?></td>
+                              <td>R<?= number_format($final['Balance'], 2) ?></td>
+                              <td>
+                                <?= !empty($final['LastPaymentDate']) ? date('d M Y, H:i', strtotime($final['LastPaymentDate'])) : 'Never' ?>
+                              </td>
+                              <td>
+                                <form action="payhandler.php" method="POST" class="horizontal-container">
+                                  <input type="number" class="form-control2" id="newamount" name="newamount" min="-5000" max="5000" required>
+                                  <input type="hidden" name="learnerid" value="<?= htmlspecialchars($final['LearnerId']) ?>">                                                                        
+                                  <button type="submit" name="updateby" class="btn btn-sm btn-primary py-3 px-4">Pay</button>
+                                </form>
+                              </td>
+                            </tr>
+                          <?php }
+                        } else { ?>
+                          <tr>
+                            <td colspan="7" class="text-center">No learners found in finances table.</td>
+                          </tr>
+                      <?php } ?>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Total Fees</th>
+                        <th>Total Paid</th>
+                        <th>Balance</th>
+                        <th>Last Payment Date</th> <!-- Added column -->
+                        <th>Record Payment</th>
+                      </tr>
+                    </tfoot>
+                  </table>
                 </div>
-              </div>
-              <div class="col-sm-3 col-xs-6">
-                <div class="description-block border-right">
-                  <a href="status.php?val=2" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #28a745;">
-                    <div>
-                      <h5 class="description-header">Learners</h5>
-                      <span class="description-text">Active - Not Owing</span>
-                    </div>
-                  </a>
-                </div>
-              </div>
-              <div class="col-sm-3 col-xs-6">
-                <div class="description-block">
-                  <a href="status.php?val=4" style="display: block; text-decoration: none; padding: 5px; color: #fff; text-align: center; border-radius: 5px; background-color: #dc3545;">
-                    <div>
-                      <h5 class="description-header">Learners</h5>
-                      <span class="description-text">Not Active - Owing</span>
-                    </div>
-                  </a>
-                </div>
+                <a href="mailparent.php" class="btn btn-block btn-primary">Mail Parents <i class="fa fa-arrow-circle-right"></i></a>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Learners Table -->
-        <div class="row">
-  <div class="col-xs-12">
-    <div class="box">
-      <div class="box-header">
-        <h3 class="box-title">Learners Finances</h3>
-      </div>
-      <div class="box-body">
-        <div class="table-responsive">
-          <table id="example1" class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Surname</th>
-                <th>Total Fees</th>
-                <th>Total Paid</th>
-                <th>Balance</th>
-                <th>Last Payment Date</th> <!-- Added column -->
-                <th>Update Payment</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php
-                $sql = "
-                  SELECT 
-                    f.LearnerId,
-                    u.Name,
-                    u.Surname,
-                    f.TotalFees,
-                    f.TotalPaid,
-                    f.Balance,
-                    f.LastPaymentDate
-                  FROM finances f
-                  JOIN users u ON f.LearnerId = u.Id
-                  ORDER BY u.Surname, u.Name
-                ";
-                
-                $results = $connect->query($sql);
-                if ($results && $results->num_rows > 0) {
-                  while($final = $results->fetch_assoc()) { ?>
-                    <tr>
-                      <td><?= htmlspecialchars($final['Name']) ?></td>
-                      <td><?= htmlspecialchars($final['Surname']) ?></td>
-                      <td>R<?= number_format($final['TotalFees'], 2) ?></td>
-                      <td>R<?= number_format($final['TotalPaid'], 2) ?></td>
-                      <td>R<?= number_format($final['Balance'], 2) ?></td>
-                      <td>
-                        <?= !empty($final['LastPaymentDate']) ? date('d M Y, H:i', strtotime($final['LastPaymentDate'])) : 'Never' ?>
-                      </td>
-                      <td>
-                        <form action="payhandler.php" method="POST" class="horizontal-container">
-                          <input type="number" class="form-control2" id="newamount" name="newamount" min="-5000" max="5000" required>
-                          <input type="hidden" name="learnerid" value="<?= htmlspecialchars($final['LearnerId']) ?>">                                                                        
-                          <button type="submit" name="updateby" class="btn btn-sm btn-primary py-3 px-4">Pay</button>
-                        </form>
-                      </td>
-                    </tr>
-                  <?php }
-                } else { ?>
-                  <tr>
-                    <td colspan="7" class="text-center">No learners found in finances table.</td>
-                  </tr>
-              <?php } ?>
-            </tbody>
-            <tfoot>
-              <tr>
-                <th>Name</th>
-                <th>Surname</th>
-                <th>Total Fees</th>
-                <th>Total Paid</th>
-                <th>Balance</th>
-                <th>Last Payment Date</th> <!-- Added column -->
-                <th>Update Payment</th>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-        <a href="mailparent.php" class="btn btn-block btn-primary">Mail Parents <i class="fa fa-arrow-circle-right"></i></a>
-      </div>
-    </div>
-  </div>
-</div>
 
     </section>
 

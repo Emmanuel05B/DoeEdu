@@ -390,6 +390,125 @@ try {
             $_SESSION['success'] = "Contract expiry notification sent to {$learnerName} - ({$learnerEmail}).";
         break;
 
+        // 7. Mail all parents of owing learners who haven't paid in the last month
+        case 'owing_lastmonth':
+            $learnerIds = $_POST['learnerIds'] ?? '';
+            $learnerIds = array_filter(array_map('intval', explode(',', $learnerIds)));
+
+            if(empty($learnerIds)) {
+                $_SESSION['error'] = "No learners to send reminders to.";
+                break;
+            }
+
+            $placeholders = implode(',', array_fill(0, count($learnerIds), '?'));
+            $types = str_repeat('i', count($learnerIds));
+
+            // Get learner + parent details
+            $stmt = $connect->prepare("
+                SELECT u.Id AS LearnerId, u.Name AS LearnerName, u.Surname AS LearnerSurname,
+                    l.ParentName, l.ParentSurname, l.ParentEmail
+                FROM users u
+                JOIN learners l ON u.Id = l.LearnerId
+                WHERE u.Id IN ($placeholders)
+            ");
+            $stmt->bind_param($types, ...$learnerIds);
+            $stmt->execute();
+            $learners = $stmt->get_result();
+            $stmt->close();
+
+            $successCount = 0;
+            $failures = [];
+
+            while($row = $learners->fetch_assoc()) {
+                try {
+                    $mail = initMailer();
+                    $mail->addAddress($row['ParentEmail'], $row['ParentName'] . ' ' . $row['ParentSurname']);
+                    $mail->Subject = "Reminder: Outstanding Fees for {$row['LearnerName']}";
+                    $mail->Body = "
+                        <p>Dear {$row['ParentName']} {$row['ParentSurname']},</p>
+                        <p>Your child <strong>{$row['LearnerName']} {$row['LearnerSurname']}</strong> has not made a payment in the last month.</p>
+                        <p>Please clear the outstanding fees at your earliest convenience.</p>
+                        <br>
+                        <p>Best regards,</p>
+                        <p><strong>DoE Team</strong></p>
+                    ";
+                    $mail->send();
+                    $successCount++;
+
+                    $stmtUpdate = $connect->prepare("UPDATE finances SET LastReminderSent = NOW() WHERE LearnerId = ?");
+                    $stmtUpdate->bind_param("i", $row['LearnerId']);
+                    $stmtUpdate->execute();
+                    $stmtUpdate->close();
+
+                } catch(Exception $e) {
+                    $failures[] = $row['ParentEmail'];
+                }
+            }
+
+            $_SESSION['success'] = "$successCount reminder(s) sent successfully.";
+            if(!empty($failures)) {
+                $_SESSION['error'] = count($failures) . " reminder(s) failed to send: " . implode(', ', $failures);
+            }
+        break;
+
+
+
+    // 8. M
+
+    case 'owing_individual':
+        $learnerId = intval($_POST['learnerId'] ?? 0);
+
+        if ($learnerId > 0) {
+            $stmt = $connect->prepare("
+                SELECT u.Name AS LearnerName, u.Surname AS LearnerSurname,
+                    l.ParentName, l.ParentSurname, l.ParentEmail,
+                    f.Balance
+                FROM finances f
+                JOIN users u ON f.LearnerId = u.Id
+                JOIN learners l ON u.Id = l.LearnerId
+                WHERE u.Id = ?
+            ");
+            $stmt->bind_param("i", $learnerId);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+
+            if ($row) {
+                try {
+                    $mail = initMailer();
+                    $pemail  = $row['ParentEmail'];
+                    $pname   = trim($row['ParentName'] . ' ' . $row['ParentSurname']);
+                    $learner = $row['LearnerName'] . ' ' . $row['LearnerSurname'];
+                    $balance = number_format($row['Balance'], 2);
+
+                    $mail->addAddress($pemail, $pname);
+                    $mail->Subject = "Outstanding Fees Notice - $learner";
+                    $mail->Body    = "
+                        <p>Dear $pname,</p>
+                        <p>Our records indicate outstanding school fees for your child <strong>$learner</strong>.</p>
+                        <p><strong>Balance: R $balance</strong></p>
+                        <p>Please settle as soon as possible.</p>
+                        <br><p>Best regards,<br><strong>DoE Team</strong></p>
+                    ";
+                    $mail->send();
+
+                    $stmtUpdate = $connect->prepare("UPDATE finances SET LastReminderSent = NOW() WHERE LearnerId = ?");
+                    $stmtUpdate->bind_param("i", $learnerId);
+                    $stmtUpdate->execute();
+                    $stmtUpdate->close();
+
+                    $_SESSION['success'] = "Reminder sent to {$pemail}.";
+                    header("Location: mailparent.php");
+                    exit();
+
+                } catch (Exception $e) {
+                    $_SESSION['error'] = "Failed to send reminder to {$pemail}: " . $e->getMessage();
+                    header("Location: mailparent.php");
+                    exit();
+                }
+            }
+        }
+    break;
+
 
 
         default:

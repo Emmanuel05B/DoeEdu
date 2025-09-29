@@ -81,9 +81,12 @@ include(__DIR__ . "/../../partials/connect.php");
           $learnerCount = $row['CurrentLearnerCount'];
           $maxSize = $row['MaxClassSize'];
           $status = $learnerCount >= $maxSize ? 'Full' : 'Not Full';
+
+          // Determine box color
+          $boxColor = $learnerCount == 0 ? '#f8d7da' : '#ffffff'; // redish if 0 learners, default white otherwise
       ?>
         <div class="col-md-3">
-          <div class="box box-primary">
+          <div class="box box-primary" style="background-color: <?php echo $boxColor; ?>;">
             <div class="box-header with-border text-center">
               <h3 class="box-title" style="margin:10px auto;"><?php echo $grade; ?></h3>
               <p><i class="fa fa-book"></i> <?php echo $subjectName; ?> - Group <?php echo $group; ?></p>
@@ -93,11 +96,14 @@ include(__DIR__ . "/../../partials/connect.php");
                 <?php echo $row['Status']; ?>
               </p>            
             </div>
-            <div class="box-body text-center" style="background-color:#a3bffa;">
+            <div class="box-body text-center" style="background-color: <?php echo $learnerCount == 0 ? '#f7c6c7' : '#a3bffa'; ?>;">
+
+              <?php $disabled = $learnerCount == 0 ? 'disabled" style="pointer-events:none;' : ''; ?>
+              <?php $btnClass = $learnerCount == 0 ? 'btn btn-default btn-sm' : 'btn btn-info btn-sm'; ?>
               <!-- Button that triggers modal -->
                      
               <button 
-                  class="btn btn-info btn-sm" 
+                  class="<?php echo $btnClass; ?> <?php echo $disabled; ?>" 
                   style="width: 100px;" 
                   data-toggle="modal" 
                   data-target="#modal-recordMarks"
@@ -106,8 +112,14 @@ include(__DIR__ . "/../../partials/connect.php");
                   data-group="<?php echo $group; ?>">
                   Record Marks
               </button>
-                          
-              <a href="assignedquizzes.php?sub=<?php echo $row['SubjectID'] ?>&gra=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">+ Quizzes</a>
+
+              <!-- Quizzes button -->
+              <a href="assignedquizzes.php?sub=<?php echo $row['SubjectID'] ?>&gra=<?php echo $grade ?>&group=<?php echo $group ?>" 
+                class="<?php echo $btnClass; ?> <?php echo $disabled; ?>" 
+                style="width: 100px;">
+                + Quizzes
+              </a>
+              
               <a href="managestudymaterials.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Resources</a>
               <a href="alllearner.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Open Class</a>
 

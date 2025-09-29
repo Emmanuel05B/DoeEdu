@@ -71,6 +71,9 @@ if (!isset($_SESSION['email'])) {
                     <?php
                     // Working query: only active learners (contract not expired) ... for this grade, subject and group
 
+
+
+                    /*
                     $sql = "
                         SELECT 
                             lt.LearnerId,
@@ -82,14 +85,38 @@ if (!isset($_SESSION['email'])) {
                         INNER JOIN users u ON lt.LearnerId = u.Id
                         INNER JOIN learnersubject ls 
                             ON lt.LearnerId = ls.LearnerId 
-                            AND ls.ContractExpiryDate > CURDATE()
+                            AND ls.ContractExpiryDate > CURDATE()   .. will be a problem., use status intead.
                         INNER JOIN learnerclasses lc 
                             ON lt.LearnerId = lc.LearnerID
                         INNER JOIN classes c 
                             ON lc.ClassID = c.ClassID
                             AND c.SubjectID = ls.SubjectID
                         WHERE ls.SubjectId = ? AND lt.Grade = ? AND c.GroupName = ?
-                    ";
+                    ";  */
+
+                    $sql = "
+                            SELECT DISTINCT 
+                                lt.LearnerId,
+                                lt.Grade,
+                                u.Name,
+                                u.Surname,
+                                c.GroupName
+                            FROM learners lt
+                            JOIN learnersubject ls 
+                                ON lt.LearnerId = ls.LearnerId
+                                AND ls.Status = 'Active'
+                                AND ls.SubjectId = ?
+                            JOIN users u 
+                                ON lt.LearnerId = u.Id
+                            JOIN learnerclasses lc 
+                                ON lt.LearnerId = lc.LearnerID
+                            JOIN classes c 
+                                ON lc.ClassID = c.ClassID
+                                AND c.SubjectID = ls.SubjectID
+                            WHERE lt.Grade = ? AND c.GroupName = ?
+                        ";
+
+                    
 
                     $stmt = $connect->prepare($sql);
                     $stmt->bind_param("iss", $subjectId, $grade, $group);
@@ -155,6 +182,7 @@ if (!isset($_SESSION['email'])) {
 </div>
 
 <!-- Expired Learners Modal -->
+<!-- Expired / Cancelled Learners Modal -->
 <div class="modal fade" id="expiredModal" tabindex="-1" role="dialog" aria-labelledby="expiredModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -169,51 +197,44 @@ if (!isset($_SESSION['email'])) {
           <table class="table table-bordered table-hover">
             <thead style="background-color: #fdd;">
               <tr>
-                
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Grade</th>
                 <th>Group</th>
                 <th>Status</th>
-                <th>Contract Ended On</th>
+                <th>Left On</th>
               </tr>
             </thead>
             <tbody>
               <?php
-              // Query learners whose subjects are Cancelled or Completed
+              // Query learners from learnerclasshistory
               $sqlExpired = "
-                  SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName, ls.Status, ls.ContractExpiryDate
-                  FROM learners lt
-                  INNER JOIN users u ON lt.LearnerId = u.Id
-                  LEFT JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
-                  LEFT JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
-                  LEFT JOIN classes c ON lc.ClassID = c.ClassID
-                  WHERE ls.Status IN ('Cancelled','Completed')
+                  SELECT u.Name, u.Surname, h.GroupName, h.SubjectId, h.LearnerID, h.LeftAt, h.Reason
+                  FROM learnerclasshistory h
+                  INNER JOIN users u ON h.LearnerID = u.Id
+                  
               ";
 
-              if ($subjectId > 0) {
-                  $sqlExpired .= " AND ls.SubjectId = ?";
+              $params = [];
+              $types = '';
+
+              if ($subjectId > 0) { 
+                  $sqlExpired .= " AND h.SubjectId = ?"; 
+                  $types .= 'i'; $params[] = $subjectId;
               }
-              if ($grade !== '') {
-                  $sqlExpired .= " AND lt.Grade = ?";
+              if ($grade !== '') { 
+                  $sqlExpired .= " AND h.LearnerID IN (
+                      SELECT LearnerId FROM learners WHERE Grade = ?
+                  )"; 
+                  $types .= 's'; $params[] = $grade;
               }
-              if ($group !== '') {
-                  $sqlExpired .= " AND c.GroupName = ?";
+              if ($group !== '') { 
+                  $sqlExpired .= " AND h.GroupName = ?"; 
+                  $types .= 's'; $params[] = $group;
               }
 
               $stmtExp = $connect->prepare($sqlExpired);
-
-              // Bind params dynamically
-              $bindTypes = '';
-              $bindValues = [];
-              if ($subjectId > 0) { $bindTypes .= 'i'; $bindValues[] = $subjectId; }
-              if ($grade !== '') { $bindTypes .= 's'; $bindValues[] = $grade; }
-              if ($group !== '') { $bindTypes .= 's'; $bindValues[] = $group; }
-
-              if (!empty($bindValues)) {
-                  $stmtExp->bind_param($bindTypes, ...$bindValues);
-              }
-
+              if (!empty($params)) { $stmtExp->bind_param($types, ...$params); }
               $stmtExp->execute();
               $expiredResults = $stmtExp->get_result();
 
@@ -221,12 +242,22 @@ if (!isset($_SESSION['email'])) {
                   while ($row = $expiredResults->fetch_assoc()):
               ?>
               <tr>
-                <td><?php echo htmlspecialchars($row['Name']); ?></td>
-                <td><?php echo htmlspecialchars($row['Surname']); ?></td>
-                <td><?php echo htmlspecialchars($row['Grade']); ?></td>
-                <td><?php echo htmlspecialchars($row['GroupName']); ?></td>
-                <td><?php echo htmlspecialchars($row['Status']); ?></td>
-                <td><?php echo htmlspecialchars(date('Y-m-d', strtotime($row['ContractExpiryDate']))); ?></td>
+                <td><?= htmlspecialchars($row['Name']) ?></td>
+                <td><?= htmlspecialchars($row['Surname']) ?></td>
+                <td>
+                  <?php
+                  // Fetch grade from learners table
+                  $stmtGrade = $connect->prepare("SELECT Grade FROM learners WHERE LearnerID = ?");
+                  $stmtGrade->bind_param("i", $row['LearnerID']);
+                  $stmtGrade->execute();
+                  $gradeRes = $stmtGrade->get_result()->fetch_assoc();
+                  $stmtGrade->close();
+                  echo htmlspecialchars($gradeRes['Grade'] ?? '');
+                  ?>
+                </td>
+                <td><?= htmlspecialchars($row['GroupName']) ?></td>
+                <td><?= htmlspecialchars($row['Reason']) ?></td>
+                <td><?= htmlspecialchars(date('Y-m-d', strtotime($row['LeftAt']))) ?></td>
               </tr>
               <?php
                   endwhile;
@@ -246,6 +277,7 @@ if (!isset($_SESSION['email'])) {
     </div>
   </div>
 </div>
+
 
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>

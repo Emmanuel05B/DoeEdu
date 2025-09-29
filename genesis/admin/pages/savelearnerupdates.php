@@ -156,6 +156,19 @@ if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "Dere
                     $stmt2a->execute();
                     $stmt2a->close();
 
+
+                    you could update instead. 
+
+                    // Step stmt2a: Mark class as 'Empty' instead of deleting
+                    $stmt2a = $connect->prepare("
+                        UPDATE classes
+                        SET Status = 'Empty'
+                        WHERE ClassID = ? AND CurrentLearnerCount = 0
+                    ");
+                    $stmt2a->bind_param("i", $classId);
+                    $stmt2a->execute();
+                    $stmt2a->close();
+
                     */
 
                 }
