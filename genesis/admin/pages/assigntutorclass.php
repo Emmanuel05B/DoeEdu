@@ -6,9 +6,9 @@ if (!isset($_SESSION['email'])) {
     header("Location: ../../common/pages/login.php");
     exit();
 }
+
 include(__DIR__ . "/../../common/partials/head.php"); 
 include(__DIR__ . "/../../partials/connect.php");
-
 
 // ------------------ HANDLER ------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tutorId'], $_POST['classId'])) {
@@ -36,7 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tutorId'], $_POST['cl
     header("Location: assigntutorclass.php");
     exit();
 }
-
 // ---------------- END HANDLER ----------------
 ?>
 <body class="hold-transition skin-blue sidebar-mini">
@@ -45,9 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tutorId'], $_POST['cl
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
-    
     <section class="content-header">
-        <h1>Tutor_Class Pairing <small>Select tutor and a class to pair</small></h1>
+        <h1>Tutor_Class Pairing <small>Select class and assign a tutor</small></h1>
         <ol class="breadcrumb">
             <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
             <li class="active">Tutor Assignment</li>
@@ -56,42 +54,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tutorId'], $_POST['cl
 
     <section class="content">
       <div class="row">
-        <!-- Form Column  -->
+        <!-- Form Column -->
         <div class="col-md-5">
           <div class="box box-primary">
             <div class="box-body">
               <form action="assigntutorclass.php" method="POST">
+
+                <!-- Class Dropdown -->
                 <div class="form-group">
-                  <label for="tutor">Select Tutor:</label>
-                  <select name="tutorId" class="form-control" required>
-                    <option value="">-- Select Tutor --</option>
+                  <label for="class">Select Class:</label>
+                  <select name="classId" id="classSelect" class="form-control" required>
+                    <option value="">-- Select Class --</option>
                     <?php
-                    $tutors = $connect->query("SELECT u.Id, u.Name, u.Surname FROM users u JOIN tutors t ON u.Id = t.TutorId");
-                    while ($tutor = $tutors->fetch_assoc()) {
-                        echo "<option value='{$tutor['Id']}'>{$tutor['Name']} {$tutor['Surname']}</option>";
+                    $classes = $connect->query("
+                      SELECT c.ClassID, c.Grade, c.GroupName, c.TutorID, s.SubjectId, s.SubjectName, s.DefaultTutorId
+                      FROM classes c
+                      JOIN subjects s ON c.SubjectID = s.SubjectId
+                      ORDER BY c.Grade, c.GroupName
+                    ");
+
+                    while ($class = $classes->fetch_assoc()) {
+                        $assigned = ($class['TutorID'] != $class['DefaultTutorId']) ? "✅" : "❌";
+                        $label = "{$assigned} {$class['Grade']} - Group {$class['GroupName']} ({$class['SubjectName']})";
+                        echo "<option value='{$class['ClassID']}' 
+                                data-subject='{$class['SubjectId']}' 
+                                data-grade='{$class['Grade']}'>
+                                {$label}
+                              </option>";
                     }
                     ?>
                   </select>
                 </div>
 
+                <!-- Tutor Dropdown -->
+                
                 <div class="form-group">
-                  <label for="class">Select Class:</label>
-                  <select name="classId" class="form-control" required>
-                    <option value="">-- Select Class --</option>
-                    <?php
-                    $classes = $connect->query("
-                      SELECT c.ClassID, c.Grade, c.GroupName, s.SubjectName 
-                      FROM classes c 
-                      JOIN subjects s ON c.SubjectID = s.SubjectId
-                      ORDER BY c.Grade, c.GroupName
-                    ");
-                    while ($class = $classes->fetch_assoc()) {
-                        $label = "Grade {$class['Grade']} - Group {$class['GroupName']} ({$class['SubjectName']})";
-                        echo "<option value='{$class['ClassID']}'>{$label}</option>";
-                    }
-                    ?>
+                  <label for="tutor">Select Tutor:</label>
+                  <select name="tutorId" id="tutorSelect" class="form-control" required disabled>
+                    <option value="">-- Select Tutor --</option>
                   </select>
                 </div>
+
 
                 <button type="submit" class="btn btn-primary">Assign Tutor</button>
               </form>
@@ -110,16 +113,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tutorId'], $_POST['cl
                 <thead style="background-color:#d1d9ff;">
                   <tr>
                     <th>Class</th>
-                    <th>Grade</th>
-                    <th>Group</th>
                     <th>Subject</th>
                     <th>Tutor</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   <?php
                   $assignments = $connect->query("
-                    SELECT c.Grade, c.GroupName, s.SubjectName, u.Name, u.Surname
+                    SELECT c.Grade, c.GroupName, c.TutorID, s.SubjectName, s.DefaultTutorId, u.Name, u.Surname
                     FROM classes c
                     JOIN subjects s ON c.SubjectID = s.SubjectId
                     LEFT JOIN users u ON c.TutorID = u.Id
@@ -127,12 +129,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tutorId'], $_POST['cl
                   ");
                   while ($row = $assignments->fetch_assoc()) {
                       $tutorName = $row['Name'] ? "{$row['Name']} {$row['Surname']}" : "<i>Unassigned</i>";
+                      $status = ($row['TutorID'] != $row['DefaultTutorId']) ? "✅ Assigned Tutor" : "❌ Default Tutor";
                       echo "<tr>
                               <td>{$row['Grade']} - Group {$row['GroupName']}</td>
-                              <td>{$row['Grade']}</td>
-                              <td>{$row['GroupName']}</td>
                               <td>{$row['SubjectName']}</td>
                               <td>{$tutorName}</td>
+                              <td>{$status}</td>
                             </tr>";
                   }
                   ?>
@@ -141,6 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tutorId'], $_POST['cl
             </div>
           </div>
         </div>
+
       </div>
     </section>
   </div>
@@ -150,7 +153,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tutorId'], $_POST['cl
 
 <!-- Scripts -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <?php if (isset($_SESSION['alert'])): ?>
 <script>
@@ -162,6 +164,43 @@ Swal.fire({
 });
 </script>
 <?php unset($_SESSION['alert']); endif; ?>
+
+<script>
+$(document).ready(function() {
+    $('#classSelect').on('change', function() {
+        const selectedOption = $(this).find('option:selected');
+        const subjectId = selectedOption.data('subject');
+        const gradeName = selectedOption.data('grade');
+        const tutorSelect = $('#tutorSelect');
+
+        // Reset tutor dropdown
+        tutorSelect.empty().append('<option value="">-- Select Tutor --</option>');
+
+        if(subjectId && gradeName){
+            $.ajax({
+                url: 'fetch_tutors.php',
+                method: 'GET',
+                data: { subjectId: subjectId, gradeName: gradeName },
+                dataType: 'json',
+                success: function(response) {
+                    if(response.length){
+                        response.forEach(tutor => {
+                            tutorSelect.append(`<option value="${tutor.Id}">${tutor.Name} ${tutor.Surname}</option>`);
+                        });
+                        tutorSelect.prop('disabled', false); // enable dropdown
+                    } else {
+                        tutorSelect.append('<option value="">No tutors available</option>');
+                        tutorSelect.prop('disabled', true); // keep disabled if none
+                    }
+                }
+            });
+        } else {
+            tutorSelect.prop('disabled', true); // keep disabled if no class
+        }
+    });
+});
+
+</script>
 
 
 </body>
