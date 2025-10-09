@@ -41,6 +41,17 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
 
         <!-- Learner Management -->
         <li><a href="classes.php"><i class="fa fa-circle-o"></i> My Class</a></li>
+
+
+          <li><a href="studyresources.php"><i class="fa fa-circle-o"></i> Resources</a></li>
+          <li><a href="admincreatenotifications.php"><i class="fa fa-circle-o"></i> Create Notifications</a></li>
+
+          <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> Activity Manegement</a></li>
+          <li><a href="setupquestion.php"><i class="fa fa-circle-o"></i> Question Builder</a></li>
+
+
+
+
         <li><a href="addsubjectnotice.php"><i class="fa fa-circle-o"></i> Add notices</a></li>
  
         <!-- Teaching & Content -->

@@ -165,103 +165,18 @@ try {
             $insertLS->execute();
             $insertLS->close();
 
-            // -------------------
             // CLASS ASSIGNMENT
-            // -------------------
+            // -------------------here
 
-            // I should use the grade Id, to get the grade Name fro grades
 
-            $maxLearnersPerClass = $subRes['MaxClassSize'] ?? 5;
-            $tutorId             = $subRes['DefaultTutorId'] ?? 25;
 
-            $stmtClass = $connect->prepare("
-                SELECT ClassID, CurrentLearnerCount 
-                FROM classes 
-                WHERE SubjectID = ? AND Grade = ? AND Status != 'Full' 
-                ORDER BY CreatedAt ASC 
-                LIMIT 1
-            ");
-            $stmtClass->bind_param("ii", $sid, $gradeName);
-            $stmtClass->execute();
-            $resultClass = $stmtClass->get_result();
-
-            if ($resultClass->num_rows > 0) {
-                $class     = $resultClass->fetch_assoc();
-                $classId   = (int)$class['ClassID'];
-                $newCount  = ((int)$class['CurrentLearnerCount']) + 1;
-                $classStat = ($newCount >= $maxLearnersPerClass) ? 'Full' : 'Not Full';
-
-                $update = $connect->prepare("UPDATE classes SET CurrentLearnerCount = ?, Status = ? WHERE ClassID = ?");
-                $update->bind_param("isi", $newCount, $classStat, $classId);
-                $update->execute();
-                $update->close();  
-                    
-            } else {
-                $stmtGroup = $connect->prepare("
-                    SELECT GroupName 
-                    FROM classes 
-                    WHERE SubjectID = ? AND Grade = ? 
-                    ORDER BY GroupName DESC 
-                    LIMIT 1
-                ");
-                $stmtGroup->bind_param("is", $sid, $gradeName);
-                $stmtGroup->execute();
-                $groupResult = $stmtGroup->get_result();
-
-                if ($groupResult->num_rows > 0) {
-                    $lastGroupName = $groupResult->fetch_assoc()['GroupName'];
-                    $newGroupName = chr(ord($lastGroupName) + 1); // A → B → C, etc.
-                } else {
-                    $newGroupName = 'A';
-                }
-                $stmtGroup->close();
-
-                $classStat = 'Not Full';
-                $newCount  = 1;
-
-                $insertClass = $connect->prepare("
-                    INSERT INTO classes 
-                        (SubjectID, Grade, GroupName, CurrentLearnerCount, TutorID, Status, CreatedAt) 
-                    VALUES 
-                        (?, ?, ?, ?, ?, ?, NOW())
-                ");
-                $insertClass->bind_param("ississ", $sid, $gradeName, $newGroupName, $newCount, $tutorId, $classStat);
-                $insertClass->execute();
-                $classId = $connect->insert_id;
-                $insertClass->close();
-            }
-
-            $assign = $connect->prepare("INSERT INTO learnerclasses (LearnerID, ClassID, AssignedAt) VALUES (?, ?, NOW())");
-            $assign->bind_param("ii", $learnerId, $classId);
-            $assign->execute();
-            $assign->close();
             }
         
     } // End of subjects loop
 
-    // -------------------
     // FINANCES (single row per learner) 
-    // -------------------
-    $stmtTotal = $connect->prepare("
-        SELECT SUM(ContractFee - IFNULL(DiscountAmount,0)) AS TotalFees
-        FROM learnersubject
-        WHERE LearnerId = ?
-    ");
-    $stmtTotal->bind_param("i", $learnerId);
-    $stmtTotal->execute();
-    $resultTotal = $stmtTotal->get_result()->fetch_assoc();
-    $stmtTotal->close();
-
-    $totalFees = (float)$resultTotal['TotalFees'];
-
-    $insertFin = $connect->prepare("
-        INSERT INTO finances (LearnerId, TotalFees, TotalPaid, PaymentStatus, UpdatedAt) 
-        VALUES (?, ?, 0, 'Unpaid', NOW())
-        ON DUPLICATE KEY UPDATE TotalFees = VALUES(TotalFees)
-    ");
-    $insertFin->bind_param("id", $learnerId, $totalFees);
-    $insertFin->execute();
-    $insertFin->close();
+    // ------------------- here
+   
 
     // Commit transaction
     sendEmailToLearner($email, $name, $verificationToken);

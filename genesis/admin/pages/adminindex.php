@@ -130,7 +130,7 @@
           include('../../partials/connect.php');
           
           // Pending verification users
-          $usersQuery = $connect->query("SELECT COUNT(*) as count FROM users WHERE IsVerified = 1 AND UserType = '2'");
+          $usersQuery = $connect->query("SELECT COUNT(*) as count FROM users WHERE IsVerified = 0 AND UserType = '2'");
           $pendingusers = $usersQuery ? $usersQuery->fetch_assoc()['count'] : 0;
 
           // Invite requests

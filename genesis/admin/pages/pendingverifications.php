@@ -86,7 +86,8 @@ $requests = $connect->query($sql);
                         <input type="hidden" name="id" value="<?= $req['Id'] ?>">
                         <button type="submit" class="btn btn-primary btn-xs btn-send-reminder">Send Reminder</button>
                       </form>
-                      <button type="submit" class="btn btn-danger btn-xs btn-delete">Delete(Deregister)</button>
+                      <button type="button" class="btn btn-danger btn-xs btn-delete" data-id="<?= $req['Id'] ?>">Delete (Deregister)</button>
+
                     </td>
                     <td>
 
@@ -191,6 +192,31 @@ $requests = $connect->query($sql);
     <?php unset($_SESSION['error']); ?>
   <?php endif; ?>
   });
+</script>
+
+
+<script>
+$(document).ready(function() {
+  // Delete confirmation
+  $('.btn-delete').on('click', function() {
+    const learnerId = $(this).data('id');
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will permanently remove this unverified learner and all related data.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = 'delete_unverified.php?id=' + learnerId;
+      }
+    });
+  });
+});
 </script>
 
 
