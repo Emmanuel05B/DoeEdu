@@ -58,6 +58,7 @@ $subStmt->close();
     <li class="header">MAIN NAVIGATION</li>
     <li><a href="learnerindex.php"><i class="fa fa-circle-o"></i> Home / Dashboard</a></li>
     <li><a href="mytutors.php"><i class="fa fa-circle-o"></i> My Tutors</a></li>
+    <li><a href="mysubjects.php"><i class="fa fa-circle-o"></i> My Subjects</a></li>
     <li><a href="learningresources.php"><i class="fa fa-circle-o"></i> Learning Resources</a></li>
     <li><a href="homework.php"><i class="fa fa-circle-o"></i> Homeworks</a></li>
 

@@ -43,7 +43,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
         <li><a href="classes.php"><i class="fa fa-circle-o"></i> My Class</a></li>
 
 
-          <li><a href="studyresources.php"><i class="fa fa-circle-o"></i> Resources</a></li>
+          
           <li><a href="admincreatenotifications.php"><i class="fa fa-circle-o"></i> Create Notifications</a></li>
 
           <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> Activity Manegement</a></li>
@@ -54,13 +54,12 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
 
         <li><a href="addsubjectnotice.php"><i class="fa fa-circle-o"></i> Add notices</a></li>
  
-        <!-- Teaching & Content -->
-        <li><a href="resources.php"><i class="fa fa-circle-o"></i> Resources</a></li>
+        <!-- Teaching & Content -->        
+        <li><a href="studyresources.php"><i class="fa fa-circle-o"></i> Resources</a></li>
+        <li><a href="schedule.php"><i class="fa fa-circle-o"></i>Bookings & Availability</a></li>
         <li><a href="manageactivities.php"><i class="fa fa-circle-o"></i> Manage Activities</a></li>
         <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> My Activities</a></li>
         <li><a href="managestudymaterials.php"><i class="fa fa-circle-o"></i> Manage Study Materials</a></li>
-        <li><a href="Sessions.php"><i class="fa fa-circle-o"></i> Sessions</a></li>
-        <li><a href="schedule.php"><i class="fa fa-circle-o"></i> Set Availability</a></li>
 
 
         <!-- Analysis & Reports -->

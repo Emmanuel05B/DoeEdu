@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tutorId'], $_POST['cl
                   ");
                   while ($row = $assignments->fetch_assoc()) {
                       $tutorName = $row['Name'] ? "{$row['Name']} {$row['Surname']}" : "<i>Unassigned</i>";
-                      $status = ($row['TutorID'] != $row['DefaultTutorId']) ? "✅ Assigned Tutor" : "❌ Default Tutor";
+                      $status = ($row['TutorID'] != $row['DefaultTutorId']) ? "✅ Assigned" : "❌ Default";
                       echo "<tr>
                               <td>{$row['Grade']} - Group {$row['GroupName']}</td>
                               <td>{$row['SubjectName']}</td>
