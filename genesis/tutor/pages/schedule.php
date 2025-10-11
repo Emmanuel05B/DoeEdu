@@ -11,7 +11,11 @@ include(__DIR__ . "/../../partials/connect.php");
 $tutorId = $_SESSION['user_id'];
 
 // --- Fetch weekly availability ---
-$weeklyStmt = $connect->prepare("SELECT DayOfWeek, StartTime, EndTime FROM tutoravailability WHERE TutorId = ?");
+$weeklyStmt = $connect->prepare("
+    SELECT DayOfWeek, StartTime, EndTime 
+    FROM tutoravailability 
+    WHERE TutorId = ? AND AvailabilityType = 'Recurring'
+");
 $weeklyStmt->bind_param("i", $tutorId);
 $weeklyStmt->execute();
 $weeklyRes = $weeklyStmt->get_result();
@@ -19,10 +23,35 @@ $weeklyAvailability = [];
 while ($row = $weeklyRes->fetch_assoc()) {
     $weeklyAvailability[$row['DayOfWeek']] = [
         'start' => $row['StartTime'],
-        'end' => $row['EndTime']
+        'end'   => $row['EndTime']
     ];
 }
 $weeklyStmt->close();
+
+
+// --- Fetch daily (once-off) availability ---
+$dailyStmt = $connect->prepare("
+    SELECT DayOfWeek, StartTime, EndTime 
+    FROM tutoravailability 
+    WHERE TutorId = ? AND AvailabilityType = 'OnceOff'
+");
+$dailyStmt->bind_param("i", $tutorId);
+$dailyStmt->execute();
+$dailyRes = $dailyStmt->get_result();
+
+$dailyAvailability = [];
+while ($row = $dailyRes->fetch_assoc()) {
+    $dailyAvailability[$row['DayOfWeek']][] = [
+        'start' => $row['StartTime'],
+        'end'   => $row['EndTime']
+    ];
+}
+
+$dailyStmt->close();
+
+
+
+
 
 // --- Fetch pending sessions ---
 $pendingSQL = "
@@ -36,6 +65,8 @@ $pendingQuery = $connect->prepare($pendingSQL);
 $pendingQuery->bind_param("i", $tutorId);
 $pendingQuery->execute();
 $pendingResult = $pendingQuery->get_result();
+
+
 
 // --- Fetch accepted sessions ---
 $acceptedSQL = "
@@ -59,6 +90,20 @@ $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 <?php include(__DIR__ . "/../partials/header.php"); ?>
 <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
+<?php if (isset($_SESSION['alert'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        icon: '<?php echo $_SESSION['alert']['type']; ?>',
+        title: '<?php echo addslashes($_SESSION['alert']['title']); ?>',
+        text: '<?php echo addslashes($_SESSION['alert']['text']); ?>',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+    });
+});
+</script>
+<?php unset($_SESSION['alert']); endif; ?>
+
 <div class="content-wrapper" style="background-color: #f7f9fc;">
   <section class="content-header">
     <h1>My Availability & Bookings</h1>
@@ -70,12 +115,14 @@ $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 
       <!-- Full-width Weekly Availability -->
       <div class="col-md-12">
-        <div class="box box-info">
+        <div class="box box-primary">
           <div class="box-header with-border">
-            <h3 class="box-title">Weekly Availability</h3>
-            <button class="btn btn-sm btn-primary pull-right" data-toggle="modal" data-target="#availabilityModal">Edit Availability</button>
+            <h3 class="box-title">Availability</h3>
+            <button class="btn btn-sm btn-info pull-right" data-toggle="modal" data-target="#availabilityModalOnceOff">Edit Availability Once-Off</button>
+            <button class="btn btn-sm btn-primary pull-right" data-toggle="modal" data-target="#availabilityModal">Edit Availability Recurring</button>
+
           </div>
-          <div class="box-body">
+          <div class="box-body table-responsive">
             <table class="table table-bordered text-center">
               <thead>
                 <tr>
@@ -84,7 +131,7 @@ $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
                   <?php endforeach; ?>
                 </tr>
               </thead>
-              <tbody>
+              <tbody style="background-color:#f0f8ff; color:#3c8dbc;">
                 <tr>
                   <?php foreach ($days as $day):
                     $start = $weeklyAvailability[$day]['start'] ?? '-';
@@ -94,6 +141,29 @@ $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
                   <?php endforeach; ?>
                 </tr>
               </tbody>
+
+              <tbody>
+                <?php 
+                // Find the maximum number of slots in any day (so all rows align)
+                $maxSlots = max(array_map('count', $dailyAvailability ?: [[]]));
+
+                for ($i = 0; $i < $maxSlots; $i++): ?>
+                  <tr>
+                    <?php foreach ($days as $day): ?>
+                      <td>
+                        <?php if (!empty($dailyAvailability[$day][$i])): 
+                          $slot = $dailyAvailability[$day][$i]; ?>
+                          <?= htmlspecialchars($slot['start']) ?> - <?= htmlspecialchars($slot['end']) ?>
+                        <?php else: ?>
+                          ---
+                        <?php endif; ?>
+                      </td>
+                    <?php endforeach; ?>
+                  </tr>
+                <?php endfor; ?>
+              </tbody>
+
+
             </table>
           </div>
         </div>
@@ -103,8 +173,8 @@ $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
       <div class="col-md-12">
 
         <!-- Pending Bookings -->
-        <div class="box box-primary">
-          <div class="box-header with-border" style="background-color:#f0f8ff; color:#3c8dbc;">
+        <div class="box box-success" style="border-top:3px solid #00a65a;">
+          <div class="box-header with-border" style="background-color:#e6ffed; color:#00a65a;">
             <h3 class="box-title"><i class="fa fa-clock-o"></i> Pending Sessions</h3>
           </div>
           <div class="box-body table-responsive">
@@ -128,7 +198,7 @@ $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
                     <tr>
                       <td><?= htmlspecialchars($row['Name']) ?></td>
                       <td><?= htmlspecialchars($row['Subject']) ?></td>
-                      <td>Default</td>
+                      <td><?= htmlspecialchars($row['Grade']) ?></td>
                       <td><?= $dt->format('Y-m-d') ?></td>
                       <td><?= $dt->format('H:i') ?></td>
                       <td><?= htmlspecialchars($row['Notes']) ?></td>
@@ -182,7 +252,7 @@ $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
                     <tr>
                       <td><?= htmlspecialchars($row['Name']) ?></td>
                       <td><?= htmlspecialchars($row['Subject']) ?></td>
-                      <td>Default</td>
+                      <td><?= htmlspecialchars($row['Grade']) ?></td>
                       <td><?= $dt->format('Y-m-d') ?></td>
                       <td><?= $dt->format('H:i') ?></td>
                       <td><?= htmlspecialchars($row['Notes']) ?></td>
@@ -201,7 +271,7 @@ $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
   </section>
 </div>
 
-<!-- Modal stays unchanged -->
+<!-- Modals -->
  <div class="modal fade" id="availabilityModal" tabindex="-1" role="dialog">
   <div class="modal-dialog">
     <form method="POST" action="saveavailability.php">
@@ -239,6 +309,54 @@ $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
     </form>
   </div>
 </div>
+
+<div class="modal fade" id="availabilityModalOnceOff" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <form method="POST" action="savedailyavailability.php">
+      <div class="modal-content">
+        <div class="modal-header bg-default">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Set daily Availability</h4>
+        </div>
+        <div class="modal-body">
+          
+            <div class="form-group row align-items-center">
+              <div class="col-sm-4">
+                
+                <label>Day</label>
+                  <select class="form-control" name="parenttitle" required>
+                    <option value="">Select Day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                  </select>
+              </div>
+              <div class="col-sm-4">
+                <label>Start</label>
+                <input type="time" name="start" class="form-control input-sm time-input" required>
+              </div>
+              <div class="col-sm-4">
+                <label>End</label>
+                <input type="time" name="end" class="form-control input-sm time-input" required>
+              </div>
+            </div>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-info">Save Availability</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
 <script>

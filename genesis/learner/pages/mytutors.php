@@ -28,12 +28,13 @@ $classQuery->close();
 if (!empty($classIds)) {
   $inClause = implode(',', array_map('intval', $classIds));
 
-  $sql = "
+    $sql = "
       SELECT 
           t.TutorId, 
           u.Name, u.Surname, u.Email, u.Contact, u.Gender, 
           t.Availability, t.ProfilePicture,
-          GROUP_CONCAT(DISTINCT s.SubjectName SEPARATOR ', ') AS Subjects
+          GROUP_CONCAT(DISTINCT s.SubjectName SEPARATOR ', ') AS Subjects,
+          GROUP_CONCAT(DISTINCT c.Grade SEPARATOR ', ') AS Grades
       FROM classes c
       JOIN tutors t ON c.TutorID = t.TutorId
       JOIN users u ON t.TutorId = u.Id
@@ -41,6 +42,7 @@ if (!empty($classIds)) {
       WHERE c.ClassID IN ($inClause)
       GROUP BY t.TutorId
   ";
+
 
   $result = $connect->query($sql);
   while ($tutor = $result->fetch_assoc()) {
@@ -92,9 +94,10 @@ $alertMessage = $_GET['message'] ?? '';
                 data-tutor="<?= $tutor['TutorId'] ?>"
                 data-name="<?= htmlspecialchars($tutor['Name'] . ' ' . $tutor['Surname']) ?>"
                 data-subjects="<?= htmlspecialchars($tutor['Subjects']) ?>"
+                data-grade="<?= htmlspecialchars($tutor['Grades']) ?>" 
               >
                 Book Session
-              </button>
+              </button> 
             </div>
           </div>
         </div>
@@ -117,6 +120,7 @@ $alertMessage = $_GET['message'] ?? '';
                 <th>Tutor</th>
                 <th>Subject</th>
                 <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -124,7 +128,7 @@ $alertMessage = $_GET['message'] ?? '';
               $twoWeeksAgo = (new DateTime())->modify('-14 days')->format('Y-m-d H:i:s');
 
               $stmt3 = $connect->prepare("
-                SELECT ts.SlotDateTime, ts.Subject, ts.Status, u.Name, u.Surname 
+                SELECT ts.SessionId, ts.SlotDateTime, ts.Subject, ts.Status, u.Name, u.Surname 
                 FROM tutorsessions ts
                 JOIN users u ON ts.TutorId = u.Id
                 WHERE ts.LearnerId = ? AND ts.SlotDateTime >= ?
@@ -136,7 +140,7 @@ $alertMessage = $_GET['message'] ?? '';
               while ($booking = $res3->fetch_assoc()):
                 $dt = new DateTime($booking['SlotDateTime']);
                 $status = $booking['Status'];
-                $color = $status == 'Confirmed' ? '#28a745' : ($status == 'Pending' ? '#f0ad4e' : '#d9534f');
+                $color = $status == 'Confirmed' ? '#28a745' : ($status == 'Pending' ? '#f04ec7ff' : '#d9534f');
               ?>
                 <tr>
                   <td><?= $dt->format('Y-m-d') ?></td>
@@ -149,6 +153,15 @@ $alertMessage = $_GET['message'] ?? '';
                       <?= $status ?>
                     </span>
                   </td>
+                  <td>
+                    <form method="POST" action="cancelsession.php" class="decline-form" style="display:inline;">
+                      <input type="hidden" name="sessionid" value="<?= $booking['SessionId'] ?>">
+                      <button type="submit" class="btn btn-xs btn-warning">
+                        <i class="fa fa-times"></i> Cancel/Delete
+                      </button>
+                    </form>
+                  </td>
+                  
                 </tr>
               <?php endwhile; ?>
             </tbody>
@@ -192,8 +205,8 @@ $alertMessage = $_GET['message'] ?? '';
           </div>
 
           <div class="form-group">
-            <label>Additional Notes</label>
-            <textarea name="notes" class="form-control" rows="3" placeholder="Optional..."></textarea>
+            <label>Why request a Session?</label>
+            <textarea name="notes" class="form-control" rows="3" placeholder="I need help with ..." required></textarea>
           </div>
         </div>
         <div class="modal-footer">
@@ -208,31 +221,79 @@ $alertMessage = $_GET['message'] ?? '';
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
 <script>
-// Open modal
+document.querySelectorAll('.decline-form button').forEach(btn => {
+    btn.addEventListener('click', function(e){
+        e.preventDefault();
+        const form = this.closest('form');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This will delete the request!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, Cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+
+<?php if(isset($_SESSION['alert'])): ?>
+
+<script>
+Swal.fire({
+    icon: "<?= $_SESSION['alert']['type'] ?>",
+    title: "<?= $_SESSION['alert']['title'] ?>",
+    text: "<?= $_SESSION['alert']['message'] ?>",
+    showConfirmButton: true,
+    confirmButtonText: "OK",
+    confirmButtonColor: "#3085d6"
+});
+</script>
+<?php unset($_SESSION['alert']); endif; ?>
+
+<script>
+
 $('.openBookingModal').on('click', function() {
   const tutorId = $(this).data('tutor');
   const tutorName = $(this).data('name');
   const subjects = $(this).data('subjects').split(',');
+  const grade = $(this).data('grade'); 
 
   $('#modalTutorId').val(tutorId);
   $('#tutorName').text(tutorName);
-  $('#modalSubject').empty();
 
+  // Populate Subjects
+  $('#modalSubject').empty();
   subjects.forEach(s => {
     const sub = s.trim();
     $('#modalSubject').append(`<option value="${sub}">${sub}</option>`);
   });
 
-  $('#modalSlot').html('<option>Loading available slots...</option>');
+  // Add hidden input for grade
+  if ($('#modalGrade').length === 0) {
+    $('#modalSubject').after(`<input type="hidden" name="grade" id="modalGrade" value="${grade}">`); // <<< ADDED
+  } else {
+    $('#modalGrade').val(grade); // <<< ADDED
+  }
 
-  // Fetch available slots dynamically
+  // Load available slots
+  $('#modalSlot').html('<option>Loading available slots...</option>');
   $.get('fetchslots.php', { tutor: tutorId }, function(data) {
     $('#modalSlot').html(data);
   });
 
   $('#bookingModal').modal('show');
 });
+
 </script>
+
+
 
 <?php if (!empty($alertStatus) && !empty($alertMessage)): ?>
 

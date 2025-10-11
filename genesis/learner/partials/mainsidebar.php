@@ -58,7 +58,6 @@ $subStmt->close();
     <li class="header">MAIN NAVIGATION</li>
     <li><a href="learnerindex.php"><i class="fa fa-circle-o"></i> Home / Dashboard</a></li>
     <li><a href="mytutors.php"><i class="fa fa-circle-o"></i> My Tutors</a></li>
-    <li><a href="mysubjects.php"><i class="fa fa-circle-o"></i> My Subjects</a></li>
     <li><a href="learningresources.php"><i class="fa fa-circle-o"></i> Learning Resources</a></li>
     <li><a href="homework.php"><i class="fa fa-circle-o"></i> Homeworks</a></li>
 
@@ -86,7 +85,6 @@ $subStmt->close();
     <li><a href="announcements.php"><i class="fa fa-circle-o"></i> Announcements / News</a></li>
     <li><a href="forums.php"><i class="fa fa-circle-o"></i> Discussion Forums</a></li>
     <li><a href="studentvoices.php"><i class="fa fa-circle-o"></i> Student Voice</a></li>
-    <li><a href="calendar.php"><i class="fa fa-circle-o"></i> Calendar / Schedule</a></li>
     <li><a href="help.php"><i class="fa fa-circle-o"></i> Help & Support</a></li>
     <li><a href="profilesettings.php"><i class="fa fa-circle-o"></i> Profile Settings</a></li>
     <li><a href="logout.php"><i class="fa fa-circle-o"></i> Log out</a></li>

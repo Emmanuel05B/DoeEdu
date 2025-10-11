@@ -7,11 +7,12 @@ $tutorId = $_POST['tutor_id'] ?? '';
 $subject = $_POST['subject'] ?? '';
 $slot = $_POST['slot'] ?? '';
 $notes = $_POST['notes'] ?? '';
+$grade = $_POST['grade'] ?? '';
 
 $status = "";
 $message = "";
 
-if (empty($tutorId) || empty($subject) || empty($slot)) {
+if (empty($tutorId) || empty($subject) || empty($slot) || empty($grade)) {
     $status = "error";
     $message = "Subject and slot selection are required.";
 } else {
@@ -22,7 +23,8 @@ if (empty($tutorId) || empty($subject) || empty($slot)) {
     } else {
         $slotDateTime = $dt->format('Y-m-d H:i:s');
 
-        // 1️⃣ Check if the slot is taken (Pending or Confirmed)
+        // Check if the slot is taken (Pending or Confirmed) 
+
         $checkStmt = $connect->prepare("
             SELECT COUNT(*) 
             FROM tutorsessions 
@@ -40,7 +42,8 @@ if (empty($tutorId) || empty($subject) || empty($slot)) {
             $status = "error";
             $message = "This slot has just been taken. Please choose another.";
         } else {
-            // 2️⃣ Check if this learner already had a declined session at this slot
+            // Check if this learner already had a declined session at this slot
+
             $declinedStmt = $connect->prepare("
                 SELECT COUNT(*) 
                 FROM tutorsessions 
@@ -59,12 +62,15 @@ if (empty($tutorId) || empty($subject) || empty($slot)) {
                 $status = "error";
                 $message = "You cannot rebook a session that you previously booked and was declined.";
             } else {
-                // 3️⃣ Insert new session
+                
+                // always insert a new record
+                // even if this slot was previously declined for another learner
                 $insertStmt = $connect->prepare("
-                    INSERT INTO tutorsessions (TutorId, LearnerId, SlotDateTime, Subject, Notes, Status) 
-                    VALUES (?, ?, ?, ?, ?, 'Pending')
+                    INSERT INTO tutorsessions (TutorId, LearnerId, SlotDateTime, Subject, Grade, Notes, Status) 
+                    VALUES (?, ?, ?, ?, ?, ?, 'Pending')
                 ");
-                $insertStmt->bind_param("iisss", $tutorId, $learnerId, $slotDateTime, $subject, $notes);
+                $insertStmt->bind_param("iissss", $tutorId, $learnerId, $slotDateTime, $subject, $grade, $notes); 
+
 
                 if ($insertStmt->execute()) {
                     $status = "success";
