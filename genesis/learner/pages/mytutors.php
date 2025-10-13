@@ -183,7 +183,8 @@ $alertMessage = $_GET['message'] ?? '';
 <!-- 📘 Booking Modal -->
 <div class="modal fade" id="bookingModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
-    <form id="bookingForm" action="booksession.php" method="POST">
+    <form id="bookingForm" action="booksession.php" method="POST" enctype="multipart/form-data">
+
       <div class="modal-content">
         <div class="modal-header bg-blue">
           <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
@@ -208,6 +209,13 @@ $alertMessage = $_GET['message'] ?? '';
             <label>Why request a Session?</label>
             <textarea name="notes" class="form-control" rows="3" placeholder="I need help with ..." required></textarea>
           </div>
+          <div class="form-group">
+            <label>Attach File (PDF/Image, optional)</label>
+            <input type="file" name="attachment" accept=".pdf,image/*" class="form-control">
+            <small class="text-muted">This can be a PDF or image to show your questions/topics for discussion.</small>
+          </div>
+
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

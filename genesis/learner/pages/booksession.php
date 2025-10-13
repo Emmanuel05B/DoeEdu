@@ -1,3 +1,5 @@
+
+
 <?php
 session_start();
 include(__DIR__ . "/../../partials/connect.php");
@@ -11,75 +13,108 @@ $grade = $_POST['grade'] ?? '';
 
 $status = "";
 $message = "";
+$attachmentPath = null; 
 
-if (empty($tutorId) || empty($subject) || empty($slot) || empty($grade)) {
-    $status = "error";
-    $message = "Subject and slot selection are required.";
-} else {
-    $dt = DateTime::createFromFormat('Y-m-d H:i', $slot);
-    if (!$dt) {
+//  Handle file upload ---
+$attachmentPath = null; // Default
+
+if (!empty($_FILES['attachment']['name'])) {
+    $allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+    $fileType = $_FILES['attachment']['type'];
+    $fileSize = $_FILES['attachment']['size'];
+
+    if (!in_array($fileType, $allowedTypes)) {
         $status = "error";
-        $message = "Invalid date/time format.";
+        $message = "Invalid file type. Only PDF or image files are allowed.";
+    } elseif ($fileSize > 5 * 1024 * 1024) {
+        $status = "error";
+        $message = "File too large. Max 5MB.";
     } else {
-        $slotDateTime = $dt->format('Y-m-d H:i:s');
+        $uploadDir = __DIR__ . '/../../uploads/attachments/';
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
 
-        // Check if the slot is taken (Pending or Confirmed) 
+        $fileName = time() . '_' . basename($_FILES['attachment']['name']);
+        $targetFile = $uploadDir . $fileName;
 
-        $checkStmt = $connect->prepare("
-            SELECT COUNT(*) 
-            FROM tutorsessions 
-            WHERE TutorId = ? 
-              AND SlotDateTime = ? 
-              AND Status IN ('Pending','Confirmed')
-        ");
-        $checkStmt->bind_param("is", $tutorId, $slotDateTime);
-        $checkStmt->execute();
-        $checkStmt->bind_result($count);
-        $checkStmt->fetch();
-        $checkStmt->close();
-
-        if ($count > 0) {
-            $status = "error";
-            $message = "This slot has just been taken. Please choose another.";
+        if (move_uploaded_file($_FILES['attachment']['tmp_name'], $targetFile)) {
+            $attachmentPath = '../../uploads/attachments/' . $fileName; // Path saved in DB
         } else {
-            // Check if this learner already had a declined session at this slot
+            $status = "error";
+            $message = "Failed to upload the file.";
+        }
+    }
+}
 
-            $declinedStmt = $connect->prepare("
+
+// Only proceed if no file errors
+if ($status !== "error") {
+    if (empty($tutorId) || empty($subject) || empty($slot) || empty($grade)) {
+        $status = "error";
+        $message = "Subject and slot selection are required.";
+    } else {
+        $dt = DateTime::createFromFormat('Y-m-d H:i', $slot);
+        if (!$dt) {
+            $status = "error";
+            $message = "Invalid date/time format.";
+        } else {
+            $slotDateTime = $dt->format('Y-m-d H:i:s');
+
+            // Check if the slot is taken (Pending or Confirmed) 
+            $checkStmt = $connect->prepare("
                 SELECT COUNT(*) 
                 FROM tutorsessions 
                 WHERE TutorId = ? 
-                  AND LearnerId = ? 
                   AND SlotDateTime = ? 
-                  AND Status = 'Declined'
+                  AND Status IN ('Pending','Confirmed')
             ");
-            $declinedStmt->bind_param("iis", $tutorId, $learnerId, $slotDateTime);
-            $declinedStmt->execute();
-            $declinedStmt->bind_result($declinedCount);
-            $declinedStmt->fetch();
-            $declinedStmt->close();
+            $checkStmt->bind_param("is", $tutorId, $slotDateTime);
+            $checkStmt->execute();
+            $checkStmt->bind_result($count);
+            $checkStmt->fetch();
+            $checkStmt->close();
 
-            if ($declinedCount > 0) {
+            if ($count > 0) {
                 $status = "error";
-                $message = "You cannot rebook a session that you previously booked and was declined.";
+                $message = "This slot has just been taken. Please choose another.";
             } else {
-                
-                // always insert a new record
-                // even if this slot was previously declined for another learner
-                $insertStmt = $connect->prepare("
-                    INSERT INTO tutorsessions (TutorId, LearnerId, SlotDateTime, Subject, Grade, Notes, Status) 
-                    VALUES (?, ?, ?, ?, ?, ?, 'Pending')
+                // Check if this learner had a previously declined session
+                $declinedStmt = $connect->prepare("
+                    SELECT COUNT(*) 
+                    FROM tutorsessions 
+                    WHERE TutorId = ? 
+                      AND LearnerId = ? 
+                      AND SlotDateTime = ? 
+                      AND Status = 'Declined'
                 ");
-                $insertStmt->bind_param("iissss", $tutorId, $learnerId, $slotDateTime, $subject, $grade, $notes); 
+                $declinedStmt->bind_param("iis", $tutorId, $learnerId, $slotDateTime);
+                $declinedStmt->execute();
+                $declinedStmt->bind_result($declinedCount);
+                $declinedStmt->fetch();
+                $declinedStmt->close();
 
-
-                if ($insertStmt->execute()) {
-                    $status = "success";
-                    $message = "Session booked! It’s pending confirmation.";
-                } else {
+                if ($declinedCount > 0) {
                     $status = "error";
-                    $message = "Something went wrong. Please try again.";
+                    $message = "You cannot rebook a session that was previously declined.";
+                } else {
+                    // Insert new session
+                    $insertStmt = $connect->prepare("
+                        INSERT INTO tutorsessions 
+                        (TutorId, LearnerId, SlotDateTime, Subject, Grade, Notes, AttachmentPath, Status) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')
+                    ");
+                    $insertStmt->bind_param("iisssss", 
+                        $tutorId, $learnerId, $slotDateTime, $subject, $grade, $notes, $attachmentPath
+                    );
+
+                    if ($insertStmt->execute()) {
+                        $status = "success";
+                        $message = "Session booked! It’s pending confirmation.";
+                    } else {
+                        $status = "error";
+                        $message = "Something went wrong. Please try again.";
+                    }
+                    $insertStmt->close();
                 }
-                $insertStmt->close();
             }
         }
     }
@@ -89,3 +124,4 @@ if (empty($tutorId) || empty($subject) || empty($slot) || empty($grade)) {
 header("Location: mytutors.php?status={$status}&message=" . urlencode($message));
 exit();
 ?>
+

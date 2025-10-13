@@ -55,7 +55,7 @@ $dailyStmt->close();
 
 // --- Fetch pending sessions ---
 $pendingSQL = "
-    SELECT ts.*, u.Name, u.Contact 
+    SELECT ts.*, u.Name, u.Contact, ts.AttachmentPath
     FROM tutorsessions ts
     JOIN users u ON ts.LearnerId = u.Id
     WHERE ts.TutorId = ? AND ts.Status = 'Pending'
@@ -68,14 +68,17 @@ $pendingResult = $pendingQuery->get_result();
 
 
 
+
+
 // --- Fetch accepted sessions ---
 $acceptedSQL = "
-    SELECT ts.*, u.Name, u.Contact
+    SELECT ts.*, u.Name, u.Contact, ts.AttachmentPath
     FROM tutorsessions ts
     JOIN users u ON ts.LearnerId = u.Id
     WHERE ts.TutorId = ? AND ts.Status = 'Confirmed' AND ts.SlotDateTime >= NOW()
     ORDER BY ts.SlotDateTime ASC
 ";
+
 $acceptedQuery = $connect->prepare($acceptedSQL);
 $acceptedQuery->bind_param("i", $tutorId);
 $acceptedQuery->execute();
@@ -118,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="box box-primary">
           <div class="box-header with-border">
             <h3 class="box-title">Availability</h3>
-            <button class="btn btn-sm btn-info pull-right" data-toggle="modal" data-target="#availabilityModalOnceOff">Edit Availability Once-Off</button>
+            <button class="btn btn-sm btn-info pull-right" data-toggle="modal" data-target="#availabilityModalOnceOff">Set Availability Once-Off</button>
             <button class="btn btn-sm btn-primary pull-right" data-toggle="modal" data-target="#availabilityModal">Edit Availability Recurring</button>
 
           </div>
@@ -142,26 +145,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 </tr>
               </tbody>
 
+
               <tbody>
                 <?php 
-                // Find the maximum number of slots in any day (so all rows align)
                 $maxSlots = max(array_map('count', $dailyAvailability ?: [[]]));
-
                 for ($i = 0; $i < $maxSlots; $i++): ?>
-                  <tr>
-                    <?php foreach ($days as $day): ?>
-                      <td>
-                        <?php if (!empty($dailyAvailability[$day][$i])): 
-                          $slot = $dailyAvailability[$day][$i]; ?>
-                          <?= htmlspecialchars($slot['start']) ?> - <?= htmlspecialchars($slot['end']) ?>
-                        <?php else: ?>
-                          ---
-                        <?php endif; ?>
-                      </td>
-                    <?php endforeach; ?>
-                  </tr>
+                    <tr>
+                        <?php foreach ($days as $day): ?>
+                            <td>
+                                <?php if (!empty($dailyAvailability[$day][$i])): 
+                                    $slot = $dailyAvailability[$day][$i]; ?>
+                                    <span>
+                                        <?= htmlspecialchars($slot['start']) ?> - <?= htmlspecialchars($slot['end']) ?>
+                                        <form method="POST" action="updateavailability.php" style="display:inline;" class="delete-slot-form">
+                                            <input type="hidden" name="day" value="<?= htmlspecialchars($day) ?>">
+                                            <input type="hidden" name="start" value="<?= htmlspecialchars($slot['start']) ?>">
+                                            <input type="hidden" name="end" value="<?= htmlspecialchars($slot['end']) ?>">
+                                            <input type="hidden" name="action" value="delete">
+                                         
+                                            <i 
+                                                class="fa fa-trash delete-slot" 
+                                                style="color:red; cursor:pointer; margin-left:5px;" 
+                                                title="Delete this slot"
+                                                data-day="<?= htmlspecialchars($day) ?>"
+                                                data-start="<?= htmlspecialchars($slot['start']) ?>"
+                                                data-end="<?= htmlspecialchars($slot['end']) ?>"
+                                            ></i>
+
+                                        </form>
+                                    </span>
+                                <?php else: ?>
+                                    ---
+                                <?php endif; ?>
+                            </td>
+                        <?php endforeach; ?>
+                    </tr>
                 <?php endfor; ?>
               </tbody>
+
+
 
 
             </table>
@@ -187,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   <th>Date</th>
                   <th>Time</th>
                   <th>Notes</th>
-                  <th>Status</th>
+                  <th>File</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -202,7 +224,16 @@ document.addEventListener('DOMContentLoaded', function() {
                       <td><?= $dt->format('Y-m-d') ?></td>
                       <td><?= $dt->format('H:i') ?></td>
                       <td><?= htmlspecialchars($row['Notes']) ?></td>
-                      <td><span class="label label-warning">Pending</span></td>
+                      <td>
+                        <?php if (!empty($row['AttachmentPath'])): ?>
+                          <a href="<?= htmlspecialchars($row['AttachmentPath']) ?>" target="_blank" class="btn btn-xs btn-info">
+                            <i class="fa fa-paperclip"></i> View
+                          </a>
+                        <?php else: ?>
+                          ---
+                        <?php endif; ?>
+                      </td>
+
                       <td>
                         <form method="POST" action="update_session_status.php" style="display:inline;">
                           <input type="hidden" name="session_id" value="<?= $row['SessionId'] ?>">
@@ -243,6 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   <th>Date</th>
                   <th>Time</th>
                   <th>Notes</th>
+                  <th>File</th>
                 </tr>
               </thead>
               <tbody>
@@ -256,6 +288,15 @@ document.addEventListener('DOMContentLoaded', function() {
                       <td><?= $dt->format('Y-m-d') ?></td>
                       <td><?= $dt->format('H:i') ?></td>
                       <td><?= htmlspecialchars($row['Notes']) ?></td>
+                      <td>
+                        <?php if (!empty($row['AttachmentPath'])): ?>
+                          <a href="<?= htmlspecialchars($row['AttachmentPath']) ?>" target="_blank" class="btn btn-xs btn-info">
+                            <i class="fa fa-paperclip"></i> View
+                          </a>
+                        <?php else: ?>
+                          ---
+                        <?php endif; ?>
+                      </td>
                     </tr>
                   <?php endwhile; ?>
                 <?php else: ?>
@@ -395,6 +436,43 @@ document.querySelectorAll('.decline-form button').forEach(btn => {
         });
     });
 });
+
+
+document.querySelectorAll('.delete-slot').forEach(el => {
+    el.addEventListener('click', function() {
+        const day = this.dataset.day;
+        const start = this.dataset.start;
+        const end = this.dataset.end;
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `Delete the slot for ${day} (${start} - ${end})?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then(result => {
+            if (result.isConfirmed) {
+                // Create a temporary form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'updateavailability.php';
+
+                form.innerHTML = `
+                    <input type="hidden" name="day" value="${day}">
+                    <input type="hidden" name="start" value="${start}">
+                    <input type="hidden" name="end" value="${end}">
+                    <input type="hidden" name="action" value="delete">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    });
+});
+
+
 </script>
 
 <?php if(isset($_SESSION['alert'])): ?>
@@ -408,6 +486,7 @@ Swal.fire({
 });
 </script>
 <?php unset($_SESSION['alert']); endif; ?>
+
 
 
 </body>

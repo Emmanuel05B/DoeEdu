@@ -14,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $start = $_POST['start'] ?? '';
     $end = $_POST['end'] ?? '';
 
-    
     if (empty($day) || empty($start) || empty($end)) {
         $_SESSION['alert'] = [
             'type' => 'error',
@@ -36,7 +35,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        
+        // 🔍 Step 1: Check for duplicate or overlapping slots
+        $checkSql = "
+            SELECT * 
+            FROM tutoravailability 
+            WHERE TutorId = ? 
+              AND DayOfWeek = ?
+              AND (
+                    (? BETWEEN StartTime AND EndTime)
+                 OR (? BETWEEN StartTime AND EndTime)
+                 OR (StartTime BETWEEN ? AND ?)
+                 OR (EndTime BETWEEN ? AND ?)
+                 OR (StartTime = ? AND EndTime = ?)
+              )
+        ";
+
+        $stmt = $connect->prepare($checkSql);
+        // ✅ Correct number of placeholders (10 total)
+        $stmt->bind_param(
+            "isssssssss",
+            $tutorId,
+            $day,
+            $start, $end,
+            $start, $end,
+            $start, $end,
+            $start, $end
+        );
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $_SESSION['alert'] = [
+                'type' => 'error',
+                'title' => 'Time Conflict',
+                'text' => "You already have an availability that overlaps with {$start} - {$end} on {$day}."
+            ];
+            $stmt->close();
+            header("Location: schedule.php");
+            exit();
+        }
+        $stmt->close();
+
+        // ✅ Step 2: Insert new availability
         $sql = "INSERT INTO tutoravailability (TutorId, DayOfWeek, StartTime, EndTime, AvailabilityType)
                 VALUES (?, ?, ?, ?, 'OnceOff')";
         $stmt = $connect->prepare($sql);
@@ -59,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     header("Location: schedule.php");
     exit();
-    
+
 } else {
     header("Location: schedule.php");
     exit();

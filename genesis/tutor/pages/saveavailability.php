@@ -3,7 +3,6 @@ session_start();
 include(__DIR__ . "/../../partials/connect.php");
 
 if (!isset($_SESSION['user_id'])) {
-    
     header("Location: ../common/login.php");
     exit();
 }
@@ -25,24 +24,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Delete old availability
+    // Delete old recurring availability
     $deleteSql = "DELETE FROM tutoravailability WHERE TutorId = ? AND AvailabilityType = 'Recurring'";
     $stmt = $connect->prepare($deleteSql);
     $stmt->bind_param("i", $tutorId);
     $stmt->execute();
     $stmt->close();
 
-    // Insert new availability
+    // Prepare insert statement
     $insertSql = "INSERT INTO tutoravailability (TutorId, DayOfWeek, StartTime, EndTime, AvailabilityType)
                   VALUES (?, ?, ?, ?, ?)";
-    $stmt = $connect->prepare($insertSql);
+    $stmtInsert = $connect->prepare($insertSql);
 
     $errors = [];
     $type = "Recurring";
+
     foreach ($days as $day) {
         $start = $startTimes[$day] ?? null;
         $end = $endTimes[$day] ?? null;
 
+        // Basic validations
         if (!$start || !$end) {
             $errors[] = "Missing start or end time for $day.";
             continue;
@@ -52,16 +53,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             continue;
         }
 
-        $stmt->bind_param("issss", $tutorId, $day, $start, $end, $type);
-        $stmt->execute();
-    }
-    $stmt->close();
+        // Check for overlapping availabilities (Recurring or OnceOff)
+        $checkSql = "
+            SELECT * 
+            FROM tutoravailability 
+            WHERE TutorId = ? 
+              AND DayOfWeek = ?
+              AND (
+                    (? BETWEEN StartTime AND EndTime)
+                 OR (? BETWEEN StartTime AND EndTime)
+                 OR (StartTime BETWEEN ? AND ?)
+                 OR (EndTime BETWEEN ? AND ?)
+                 OR (StartTime = ? AND EndTime = ?)
+              )
+        ";
+        $stmtCheck = $connect->prepare($checkSql);
+        $stmtCheck->bind_param(
+            "isssssssss",
+            $tutorId,
+            $day,
+            $start, $end,
+            $start, $end,
+            $start, $end,
+            $start, $end
+        );
+        $stmtCheck->execute();
+        $result = $stmtCheck->get_result();
 
+        if ($result->num_rows > 0) {
+            $errors[] = "Conflict detected for {$day}: {$start} - {$end} overlaps with an existing slot.";
+            $stmtCheck->close();
+            continue; // Skip insert
+        }
+        $stmtCheck->close();
+
+        // ✅ No conflict – insert new availability
+        $stmtInsert->bind_param("issss", $tutorId, $day, $start, $end, $type);
+        $stmtInsert->execute();
+    }
+
+    $stmtInsert->close();
+
+    
     if (!empty($errors)) {
         $_SESSION['alert'] = [
             'type' => 'error',
             'title' => 'Validation Errors',
-            'text' => implode("\n", $errors)
+            'text' => implode("\\n", $errors)
         ];
     } else {
         $_SESSION['alert'] = [
