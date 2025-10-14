@@ -275,8 +275,11 @@ document.addEventListener('DOMContentLoaded', function() {
                   <th>Time</th>
                   <th>Notes</th>
                   <th>File</th>
+                  <th>Meeting</th>
                 </tr>
               </thead>
+              
+
               <tbody>
                 <?php if ($acceptedResult->num_rows > 0): ?>
                   <?php while ($row = $acceptedResult->fetch_assoc()): 
@@ -297,10 +300,25 @@ document.addEventListener('DOMContentLoaded', function() {
                           ---
                         <?php endif; ?>
                       </td>
+                      <td>
+                        <?php if (!empty($row['MeetingLink'])): ?>
+                          <a href="<?= htmlspecialchars($row['MeetingLink']) ?>" target="_blank" class="btn btn-xs btn-success">
+                            <i class="fa fa-video-camera"></i> Join
+                          </a>
+                        <?php else: ?>
+                          <button 
+                            class="btn btn-xs btn-primary openMeetingModal" 
+                            data-session="<?= $row['SessionId'] ?>" 
+                            data-learner="<?= htmlspecialchars($row['Name']) ?>"
+                          >
+                            <i class="fa fa-plus"></i> Add Link
+                          </button>
+                        <?php endif; ?>
+                      </td>
                     </tr>
                   <?php endwhile; ?>
                 <?php else: ?>
-                  <tr><td colspan="6" class="text-center">No upcoming sessions.</td></tr>
+                  <tr><td colspan="8" class="text-center">No upcoming sessions.</td></tr>
                 <?php endif; ?>
               </tbody>
             </table>
@@ -397,6 +415,32 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 
+<div class="modal fade" id="meetingModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <form id="meetingForm" method="POST" action="savemeetinglink.php">
+      <div class="modal-content">
+        <div class="modal-header bg-primary">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Add Meeting Link for <span id="modalLearnerName"></span></h4>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="session_id" id="modalSessionId" value="">
+          <div class="form-group">
+            <label>MS Teams / Zoom Link</label>
+            <input type="url" name="meeting_link" class="form-control" placeholder="Paste meeting link here" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Link</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
@@ -411,6 +455,17 @@ document.querySelectorAll('.day-checkbox').forEach(checkbox => {
         });
     });
 });
+
+$('.openMeetingModal').on('click', function() {
+  const sessionId = $(this).data('session');
+  const learnerName = $(this).data('learner');
+
+  $('#modalSessionId').val(sessionId);
+  $('#modalLearnerName').text(learnerName);
+
+  $('#meetingModal').modal('show');
+});
+
 </script>
 
 

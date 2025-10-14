@@ -12,7 +12,7 @@ $bookedStmt = $connect->prepare("
     WHERE TutorId = ?
       AND SlotDateTime >= NOW()
       AND (
-            Status IN ('Pending', 'Confirmed')           -- Block for everyone
+            Status IN ('Pending', 'Confirmed', 'Completed')           -- Block for everyone
             OR (Status = 'Declined' AND LearnerId = ?)  -- Block only for this learner
           )
 ");

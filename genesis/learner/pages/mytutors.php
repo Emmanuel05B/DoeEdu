@@ -70,7 +70,7 @@ $alertMessage = $_GET['message'] ?? '';
     <!-- Tutors -->
     <?php foreach ($tutors as $tutor): ?>
       <div class="col-md-6">
-        <div class="box box-primary" style="min-height: 300px;">
+        <div class="box box-primary" style="min-height: 280px;">
           <div class="box-header with-border text-center">
             <img 
               src="<?= !empty($tutor['ProfilePicture']) ? '../' . htmlspecialchars($tutor['ProfilePicture']) : '../../uploads/doe.jpg' ?>" 
@@ -83,8 +83,8 @@ $alertMessage = $_GET['message'] ?? '';
             </p>
           </div>
           <div class="box-body text-center">
-            <p><strong>Email:</strong> <?= htmlspecialchars($tutor['Email']) ?></p>
-            <p><strong>Availability:</strong> <?= htmlspecialchars($tutor['Availability']) ?: 'Not specified' ?></p>
+            <p><strong>Email...remove:</strong> <?= htmlspecialchars($tutor['Email']) ?></p>
+            <p><strong>Availability...to remove:</strong> <?= htmlspecialchars($tutor['Availability']) ?: 'Not specified' ?></p>
             <hr>
             <div class="btn-group">
               <a href="feedback.php?tutor=<?= $tutor['TutorId'] ?>" class="btn btn-sm btn-info">Feedback</a>
@@ -104,6 +104,8 @@ $alertMessage = $_GET['message'] ?? '';
       </div>
     <?php endforeach; ?>
 
+
+
     <!-- Bookings Table -->
     <div class="col-md-12">
       <div class="box" style="border-top: 3px solid #3a3a72;">
@@ -115,8 +117,7 @@ $alertMessage = $_GET['message'] ?? '';
             <thead>
               <tr style="background-color:#f0f4ff; color:#3a3a72;">
                 <th>Date</th>
-                <th>Day</th>
-                <th>Time</th>
+                <th>Day---Time</th>
                 <th>Tutor</th>
                 <th>Subject</th>
                 <th>Status</th>
@@ -126,44 +127,108 @@ $alertMessage = $_GET['message'] ?? '';
             <tbody>
               <?php
               $twoWeeksAgo = (new DateTime())->modify('-14 days')->format('Y-m-d H:i:s');
-
+              /*
               $stmt3 = $connect->prepare("
-                SELECT ts.SessionId, ts.SlotDateTime, ts.Subject, ts.Status, u.Name, u.Surname 
+                SELECT ts.SessionId, ts.SlotDateTime, ts.Subject, ts.Status, ts.MeetingLink, ts.Attendance, 
+                      u.Gender, u.Surname
                 FROM tutorsessions ts
                 JOIN users u ON ts.TutorId = u.Id
-                WHERE ts.LearnerId = ? AND ts.SlotDateTime >= ?
+                WHERE ts.LearnerId = ? AND ts.SlotDateTime >= ? AND ts.Hidden = 0
+                ORDER BY ts.SlotDateTime DESC
+              ");  */
+
+              $stmt3 = $connect->prepare("
+                SELECT ts.SessionId, ts.SlotDateTime, ts.Subject, ts.Grade, ts.Status, ts.MeetingLink, ts.Attendance, 
+                      u.Gender, u.Surname, t.TutorId
+                FROM tutorsessions ts
+                JOIN users u ON ts.TutorId = u.Id
+                JOIN tutors t ON ts.TutorId = t.TutorId
+                WHERE ts.LearnerId = ? AND ts.SlotDateTime >= ? AND ts.Hidden = 0
                 ORDER BY ts.SlotDateTime DESC
               ");
+              if (!$stmt3) {
+                  die("Prepare failed: " . $connect->error);
+              }
+
               $stmt3->bind_param("is", $learnerId, $twoWeeksAgo);
               $stmt3->execute();
               $res3 = $stmt3->get_result();
+
               while ($booking = $res3->fetch_assoc()):
                 $dt = new DateTime($booking['SlotDateTime']);
                 $status = $booking['Status'];
-                $color = $status == 'Confirmed' ? '#28a745' : ($status == 'Pending' ? '#f04ec7ff' : '#d9534f');
+                $color = match($status) {
+                    'Confirmed' => '#28a745',
+                    'Pending' => '#f04ec7ff',
+                    'Completed' => '#007bff',
+                    'Missed' => '#d9534f',
+                    default => '#6c757d'
+                };
               ?>
-                <tr>
-                  <td><?= $dt->format('Y-m-d') ?></td>
-                  <td><?= $dt->format('l') // full day name ?></td>
-                  <td><?= $dt->format('H:i') ?></td>
-                  <td><?= htmlspecialchars($booking['Name'] . ' ' . $booking['Surname']) ?></td>
-                  <td><?= htmlspecialchars($booking['Subject']) ?></td>
-                  <td>
-                    <span class="label" style="background-color:<?= $color ?>; color:white; border-radius:4px; padding:3px 8px;">
-                      <?= $status ?>
+              <tr>
+                <td><?= $dt->format('Y-m-d') ?></td>
+                <td><?= $dt->format('l' . '---' . 'H:i') ?></td>
+                <td><?= htmlspecialchars($booking['Gender'] . ' ' . $booking['Surname']) ?></td>
+                <td><?= htmlspecialchars($booking['Subject']) ?></td>
+                <td>
+                  <span class="label" style="background-color:<?= $color ?>; color:white; border-radius:4px; padding:3px 8px;">
+                    <?= $status ?>
+                  </span>
+                </td>
+                <td>
+                  <?php if($status === 'Confirmed' && !empty($booking['MeetingLink'])): ?>
+                    <a href="join.php?sessionid=<?= $booking['SessionId'] ?>" target="_blank" class="btn btn-xs btn-success">
+                      <i class="fa fa-video-camera"></i> Join Session
+                    </a>
+
+                    <?php elseif($status === 'Confirmed' && empty($booking['MeetingLink'])): ?>
+                    <span class="text-warning">
+                        ⏳ Link coming soon
                     </span>
-                  </td>
-                  <td>
-                    <form method="POST" action="cancelsession.php" class="decline-form" style="display:inline;">
-                      <input type="hidden" name="sessionid" value="<?= $booking['SessionId'] ?>">
-                      <button type="submit" class="btn btn-xs btn-warning">
-                        <i class="fa fa-times"></i> Cancel/Delete
-                      </button>
-                    </form>
-                  </td>
+
                   
-                </tr>
+                    
+                    <?php elseif($status === 'Completed'): ?>
+                      <button 
+                        class="btn btn-xs btn-primary openFeedbackModal"
+                        data-session="<?= $booking['SessionId'] ?>"
+                        data-tutor="<?= htmlspecialchars($booking['Gender'] . ' ' . $booking['Surname']) ?>"
+                        data-tutorid="<?= $booking['TutorId'] ?>"
+                        data-learnerid="<?= $learnerId ?>"
+                        data-grade="<?= htmlspecialchars($booking['Grade']) ?>"
+                        data-subject="<?= htmlspecialchars($booking['Subject']) ?>"
+                      >
+                        <i class="fa fa-star"></i> Rate & Feedback
+                      </button>
+
+
+
+
+                    <?php elseif($status === 'Missed'): ?>
+                        
+                        <form method="POST" action="cancelsession.php" class="decline-form" style="display:inline;">
+                          <input type="hidden" name="sessionid" value="<?= $booking['SessionId'] ?>">
+                          <input type="hidden" name="mode" value="remove_missed">
+                          <button type="submit" class="btn btn-xs btn-warning">
+                              <i class="fa fa-times"></i> Remove from list
+                          </button>
+                        </form>
+
+                    <?php else: ?>
+                        <form method="POST" action="cancelsession.php" class="decline-form" style="display:inline;">
+                            <input type="hidden" name="sessionid" value="<?= $booking['SessionId'] ?>">
+                            <input type="hidden" name="mode" value="delete"> 
+                            <button type="submit" class="btn btn-xs btn-danger">
+                                <i class="fa fa-times"></i> Delete
+                            </button>
+                        </form>
+                    <?php endif; ?>
+
+                  
+                </td>
+              </tr>
               <?php endwhile; ?>
+
             </tbody>
           </table>
         </div>
@@ -180,7 +245,7 @@ $alertMessage = $_GET['message'] ?? '';
   <div class="control-sidebar-bg"></div>
 </div>
 
-<!-- 📘 Booking Modal -->
+<!-- Booking Modal -->
 <div class="modal fade" id="bookingModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <form id="bookingForm" action="booksession.php" method="POST" enctype="multipart/form-data">
@@ -226,6 +291,85 @@ $alertMessage = $_GET['message'] ?? '';
   </div>
 </div>
 
+<!-- Feedback Modal -->  
+<!-- Feedback Modal -->  
+<div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel">
+  <div class="modal-dialog" role="document">
+    <form id="feedbackForm" method="POST" action="submit_feedback.php">
+      <div class="modal-content">
+        <div class="modal-header bg-blue">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="feedbackModalLabel">
+            <i class="fa fa-comments"></i> Tutor Session Feedback for <span id="feedbackTutorName"></span>
+          </h4>
+        </div>
+
+        <div class="modal-body">
+          <!-- Hidden fields -->
+          <input type="hidden" name="SessionId" id="feedbackSessionId">
+          <input type="hidden" name="TutorId" id="feedbackTutorId">
+          <input type="hidden" name="LearnerId" id="feedbackLearnerId">
+          <input type="hidden" name="Grade" id="feedbackGrade">
+          <input type="hidden" name="Subject" id="feedbackSubject">
+
+          <p class="text-muted">Please rate your tutor and session experience below:</p>
+
+          <!-- Clarity -->
+          <div class="form-group">
+            <label>1. How clear were the tutor’s explanations?</label><br>
+            <?php for($i=1; $i<=5; $i++): ?>
+              <label class="radio-inline">
+                <input type="radio" name="Clarity" value="<?= $i ?>" required> <?= $i ?>
+              </label>
+            <?php endfor; ?>
+          </div>
+
+          <!-- Engagement -->
+          <div class="form-group">
+            <label>2. How engaging was the tutor?</label><br>
+            <?php for($i=1; $i<=5; $i++): ?>
+              <label class="radio-inline">
+                <input type="radio" name="Engagement" value="<?= $i ?>" required> <?= $i ?>
+              </label>
+            <?php endfor; ?>
+          </div>
+
+          <!-- Understanding -->
+          <div class="form-group">
+            <label>3. Did the tutor answer your questions satisfactorily?</label>
+            <select class="form-control" name="Understanding" required>
+              <option value="">Select</option>
+              <option value="Yes, all of them">Yes, all of them</option>
+              <option value="Some of them">Some of them</option>
+              <option value="No, not really">No, not really</option>
+            </select>
+          </div>
+
+          <!-- Overall Rating -->
+          <div class="form-group">
+            <label>4. Overall satisfaction (1–10)</label><br>
+            <?php for($i=1; $i<=10; $i++): ?>
+              <label class="radio-inline">
+                <input type="radio" name="OverallRating" value="<?= $i ?>" required> <?= $i ?>
+              </label>
+            <?php endfor; ?>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Submit Feedback</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
 <script>
@@ -267,39 +411,70 @@ Swal.fire({
 
 <script>
 
-$('.openBookingModal').on('click', function() {
-  const tutorId = $(this).data('tutor');
-  const tutorName = $(this).data('name');
-  const subjects = $(this).data('subjects').split(',');
-  const grade = $(this).data('grade'); 
+  $('.openBookingModal').on('click', function() {
+    const tutorId = $(this).data('tutor');
+    const tutorName = $(this).data('name');
+    const subjects = $(this).data('subjects').split(',');
+    const grade = $(this).data('grade'); 
 
-  $('#modalTutorId').val(tutorId);
-  $('#tutorName').text(tutorName);
+    $('#modalTutorId').val(tutorId);
+    $('#tutorName').text(tutorName);
 
-  // Populate Subjects
-  $('#modalSubject').empty();
-  subjects.forEach(s => {
-    const sub = s.trim();
-    $('#modalSubject').append(`<option value="${sub}">${sub}</option>`);
+    // Populate Subjects
+    $('#modalSubject').empty();
+    subjects.forEach(s => {
+      const sub = s.trim();
+      $('#modalSubject').append(`<option value="${sub}">${sub}</option>`);
+    });
+
+    // Add hidden input for grade
+    if ($('#modalGrade').length === 0) {
+      $('#modalSubject').after(`<input type="hidden" name="grade" id="modalGrade" value="${grade}">`); // <<< ADDED
+    } else {
+      $('#modalGrade').val(grade); // <<< ADDED
+    }
+
+    // Load available slots
+    $('#modalSlot').html('<option>Loading available slots...</option>');
+    $.get('fetchslots.php', { tutor: tutorId }, function(data) {
+      $('#modalSlot').html(data);
+    });
+
+    $('#bookingModal').modal('show');
   });
 
-  // Add hidden input for grade
-  if ($('#modalGrade').length === 0) {
-    $('#modalSubject').after(`<input type="hidden" name="grade" id="modalGrade" value="${grade}">`); // <<< ADDED
-  } else {
-    $('#modalGrade').val(grade); // <<< ADDED
-  }
+</script>
 
-  // Load available slots
-  $('#modalSlot').html('<option>Loading available slots...</option>');
-  $.get('fetchslots.php', { tutor: tutorId }, function(data) {
-    $('#modalSlot').html(data);
-  });
 
-  $('#bookingModal').modal('show');
+<script>
+// Feedback modal handler
+$(document).on('click', '.openFeedbackModal', function() {
+  const sessionId = $(this).data('session');
+  const tutorName = $(this).data('tutor');
+  const tutorId = $(this).data('tutorid');
+  const learnerId = $(this).data('learnerid');
+  const grade = $(this).data('grade');
+  const subject = $(this).data('subject');
+
+  $('#feedbackSessionId').val(sessionId);
+  $('#feedbackTutorName').text(tutorName);
+  $('#feedbackTutorId').val(tutorId);
+  $('#feedbackLearnerId').val(learnerId);
+  $('#feedbackGrade').val(grade);
+  $('#feedbackSubject').val(subject);
+
+  $('#feedbackForm input[type=radio]').prop('checked', false);
+  $('#feedbackForm textarea').val('');
+
+  $('#feedbackModal').modal('show');
 });
 
 </script>
+
+
+
+
+
 
 
 
