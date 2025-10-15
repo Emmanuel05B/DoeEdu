@@ -149,7 +149,7 @@ if (!isset($_SESSION['email'])) {
                                             <td>{$status}</td>
                                             <td>{$score}</td>
                                             <td>
-                                                <a href='viewhomework.php?activityId={$activityId}&subject=" . urlencode($subjectName) . "' class='btn btn-primary btn-sm'>Open</a>
+                                                <a href='viewhomework.php?activityId={$activityId}&subject=" . urlencode($subjectName) . "' class='btn btn-primary btn-xs'>Open</a>
                                                 {$memoBtn}
                                             </td>
                                           </tr>";

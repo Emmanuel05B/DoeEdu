@@ -49,7 +49,7 @@ $stmt->bind_param(
     $overall
 );
 
-if ($stmt->execute()) {
+if ($stmt->execute()) {    //come..this will affect other learners
     // Mark session as hidden so it no longer appears in the main list
     $update = $connect->prepare("UPDATE tutorsessions SET Hidden = 1 WHERE SessionId = ?");
     $update->bind_param("i", $sessionId);

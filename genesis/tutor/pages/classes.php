@@ -16,6 +16,31 @@ include(__DIR__ . "/../../partials/connect.php");
   <?php include(__DIR__ . "/../partials/header.php"); ?>
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
+  <?php if (isset($_GET['added']) && $_GET['added'] == 1): ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+Swal.fire({
+    icon: 'success',
+    title: 'Link Added!',
+    text: 'The meeting link has been successfully added for this class.',
+    confirmButtonText: 'OK'
+});
+</script>
+<?php endif; ?>
+
+<?php if (isset($_GET['error']) && $_GET['error'] == 1): ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+Swal.fire({
+    icon: 'error',
+    title: 'Oops!',
+    text: 'Something went wrong while adding the link. Please try again.',
+    confirmButtonText: 'OK'
+});
+</script>
+<?php endif; ?>
+
+
   <div class="content-wrapper">
     
     <section class="content-header">
@@ -98,6 +123,21 @@ include(__DIR__ . "/../../partials/connect.php");
                           
               <a href="managestudymaterials.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Resources</a>
               <a href="alllearner.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Open Class</a>
+              
+              <button 
+                class="btn btn-info btn-sm" 
+                style="width: 100px;" 
+                data-toggle="modal" 
+                data-target="#modal-addMeetingLink"
+                data-class="<?php echo $classId; ?>"
+                data-grade="<?php echo $grade; ?>"
+                data-subject="<?php echo $row['SubjectID']; ?>"
+                data-subjectname="<?php echo $subjectName; ?>"
+                data-group="<?php echo $group; ?>">
+                
+                Add Link
+              </button>
+
 
             </div>
           </div>
@@ -170,6 +210,51 @@ include(__DIR__ . "/../../partials/connect.php");
   </div>
 </div>
 
+<!-- Add Meeting Link Modal -->
+<div class="modal fade" id="modal-addMeetingLink" tabindex="-1" role="dialog" aria-labelledby="addMeetingLinkLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-info">
+        <h4 class="modal-title" id="addMeetingLinkLabel">Add Meeting Link</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <form action="addmeetinghandler.php" method="post">
+        <div class="modal-body">
+          
+          <p id="modalClassInfo" style=" margin-bottom:15px;">
+            <!-- JS will fill this -->
+          </p>
+          <div class="form-group">
+            <label for="meetingLink">Meeting Link</label>
+            <input type="url" class="form-control" id="meetingLink" name="meetinglink" required placeholder="https://meet.google.com/...">
+          </div>
+
+          <div class="form-group">
+            <label for="meetingNotes">Notes (optional)</label>
+            <textarea class="form-control" id="meetingNotes" name="notes" rows="3" placeholder="Any details or comments"></textarea>
+          </div>
+
+          <!-- Hidden inputs -->
+          <input type="hidden" id="classid" name="classid">
+          <input type="hidden" id="grade" name="grade">
+          <input type="hidden" id="subjectid" name="subjectid">
+          <input type="hidden" id="groupname" name="groupname">
+          <input type="hidden" id="subjectname" name="subjectname">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" name="submit" class="btn btn-primary">Save Link</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
 <script>
 $('#modal-recordMarks').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget); // Button that triggered the modal 
@@ -186,6 +271,33 @@ $('#modal-recordMarks').on('show.bs.modal', function (event) {
     modal.find('#groupid').val(group);
 });
 </script>
+
+<script>
+$('#modal-addMeetingLink').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget); 
+  var modal = $(this);
+
+  // Get data attributes
+  var classId = button.data('class');
+  var grade = button.data('grade');
+  var subjectId = button.data('subject');
+  var groupName = button.data('group');
+  var subjectName = button.data('subjectname');
+
+  // Fill hidden inputs
+  modal.find('#classid').val(classId);
+  modal.find('#grade').val(grade);
+  modal.find('#subjectid').val(subjectId);
+  modal.find('#groupname').val(groupName);
+  modal.find('#subjectname').val(subjectName);
+
+  // Display class info line
+  modal.find('#modalClassInfo').text(`${grade} | ${subjectName} | Group: ${groupName}`);
+});
+
+</script>
+
+
 
 
 

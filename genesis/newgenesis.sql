@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 23, 2025 at 01:20 PM
+-- Generation Time: Oct 14, 2025 at 12:55 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -45,7 +45,13 @@ CREATE TABLE `activities` (
 
 INSERT INTO `activities` (`ActivityId`, `ActivityName`, `SubjectId`, `ActivityDate`, `MaxMarks`, `Creator`, `Grade`, `ChapterName`, `GroupName`) VALUES
 (22, 'activity 1', 1, '2025-09-10 20:46:33', 25.00, 'Director', 'Grade 10', 'Statistics', 'B'),
-(23, 'activity 1', 1, '2025-09-10 20:55:14', 25.00, 'Director', 'Grade 10', 'Statistics', 'B');
+(23, 'activity 1', 1, '2025-09-10 20:55:14', 25.00, 'Director', 'Grade 10', 'Statistics', 'B'),
+(24, 'activity 1', 1, '2025-09-24 16:46:45', 20.00, 'Director', '1', 'Functions', 'Indiv'),
+(25, 'activity 2', 1, '2025-09-24 16:45:14', 20.00, 'Director', '1', 'Functions', 'Indiv'),
+(26, 'activity 1', 4, '2025-09-27 12:31:15', 25.00, 'Director', 'Grade 10', 'Organic Chemistry25', 'A'),
+(27, 'activity 1', 1, '2025-09-27 12:35:04', 25.00, 'Director', 'Grade 10', 'Functions', 'B'),
+(28, 'activity 1', 4, '2025-09-27 13:05:05', 25.00, 'Director', 'Grade 10', 'Functions', 'A'),
+(29, 'activity 1', 4, '2025-09-28 19:05:43', 25.00, 'Malesela', 'Grade 10', 'Functions', 'B');
 
 -- --------------------------------------------------------
 
@@ -69,12 +75,10 @@ CREATE TABLE `classes` (
 --
 
 INSERT INTO `classes` (`ClassID`, `SubjectID`, `Grade`, `GroupName`, `CurrentLearnerCount`, `TutorID`, `Status`, `CreatedAt`) VALUES
-(57, 1, 'Grade 10', 'A', 4, 25, 'Not Full', '2025-09-05 18:06:00'),
-(58, 4, 'Grade 10', 'A', 5, 25, 'Full', '2025-09-05 18:06:00'),
-(59, 1, 'Grade 10', 'B', 2, 25, 'Not Full', '2025-09-05 18:11:06'),
-(64, 3, 'Grade 12', 'A', 3, 25, 'Not Full', '2025-09-06 16:23:49'),
-(65, 6, 'Grade 12', 'A', 2, 25, 'Not Full', '2025-09-06 18:38:02'),
-(66, 2, 'Grade 11', 'A', 3, 25, 'Not Full', '2025-09-22 08:44:10');
+(68, 1, 'Grade 10', 'A', 1, 2, 'Not Full', '2025-10-09 17:20:20'),
+(69, 4, 'Grade 10', 'A', 1, 24, 'Not Full', '2025-10-09 17:20:20'),
+(70, 3, 'Grade 12', 'A', 1, 2, 'Not Full', '2025-10-09 17:38:12'),
+(71, 6, 'Grade 12', 'A', 1, 2, 'Not Full', '2025-10-09 17:38:14');
 
 -- --------------------------------------------------------
 
@@ -106,30 +110,33 @@ CREATE TABLE `finances` (
   `LastPaymentDate` datetime DEFAULT NULL,
   `Notes` text DEFAULT NULL,
   `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UpdatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `UpdatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `LastReminderSent` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `finances`
 --
 
-INSERT INTO `finances` (`FinanceId`, `LearnerId`, `TotalFees`, `TotalPaid`, `PaymentStatus`, `DueDate`, `LastPaymentDate`, `Notes`, `CreatedAt`, `UpdatedAt`) VALUES
-(38, 105, 1800.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:06:00', '2025-09-05 18:06:00'),
-(39, 106, 1200.00, 1500.00, 'Unpaid', NULL, '2025-09-06 11:52:48', NULL, '2025-09-05 18:06:59', '2025-09-06 09:52:48'),
-(40, 107, 600.00, 200.00, 'Unpaid', NULL, '2025-09-05 22:03:26', NULL, '2025-09-05 18:07:57', '2025-09-06 08:54:18'),
-(41, 108, 900.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:09:09', '2025-09-05 18:09:09'),
-(42, 109, 4200.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:10:08', '2025-09-06 09:14:46'),
-(43, 110, 1500.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:11:06', '2025-09-06 08:41:56'),
-(44, 111, 300.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:15:06', '2025-09-05 18:15:06'),
-(46, 112, 600.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:44:03', '2025-09-05 18:44:03'),
-(72, 113, 600.00, 750.00, 'Unpaid', NULL, '2025-09-06 11:44:56', NULL, '2025-09-06 09:25:35', '2025-09-06 09:44:56'),
-(74, 114, 300.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-06 16:23:49', '2025-09-06 16:23:49'),
-(75, 115, 1500.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-06 18:38:02', '2025-09-06 18:38:02'),
-(81, 121, 300.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-07 13:07:50', '2025-09-07 13:07:50'),
-(82, 122, 300.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-22 08:44:10', '2025-09-22 08:44:10'),
-(84, 124, 600.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-22 09:17:59', '2025-09-22 09:17:59'),
-(85, 125, 1800.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-22 09:38:50', '2025-09-22 09:38:50'),
-(86, 126, 600.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-22 10:06:45', '2025-09-22 10:06:45');
+INSERT INTO `finances` (`FinanceId`, `LearnerId`, `TotalFees`, `TotalPaid`, `PaymentStatus`, `DueDate`, `LastPaymentDate`, `Notes`, `CreatedAt`, `UpdatedAt`, `LastReminderSent`) VALUES
+(38, 105, 1800.00, 1200.00, 'Unpaid', NULL, '2025-09-29 13:31:20', NULL, '2025-09-05 18:06:00', '2025-09-29 11:31:20', '2025-09-29 13:22:00'),
+(39, 106, 1200.00, 1500.00, 'Unpaid', NULL, '2025-09-06 11:52:48', NULL, '2025-09-05 18:06:59', '2025-09-06 09:52:48', NULL),
+(40, 107, 600.00, 200.00, 'Unpaid', NULL, '2025-09-05 22:03:26', NULL, '2025-09-05 18:07:57', '2025-09-06 08:54:18', NULL),
+(41, 108, 900.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:09:09', '2025-09-29 11:22:14', '2025-09-29 13:22:14'),
+(42, 109, 4200.00, 4000.00, 'Unpaid', NULL, '2025-09-29 13:30:13', NULL, '2025-09-05 18:10:08', '2025-09-29 11:30:13', '2025-09-29 13:22:22'),
+(43, 110, 1500.00, 1200.00, 'Unpaid', NULL, '2025-09-29 13:30:58', NULL, '2025-09-05 18:11:06', '2025-09-29 11:30:58', '2025-09-29 13:22:38'),
+(44, 111, 600.00, 600.00, 'Unpaid', NULL, '2025-09-29 13:29:53', NULL, '2025-09-05 18:15:06', '2025-09-29 11:29:53', '2025-09-29 13:22:52'),
+(46, 112, 1100.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-05 18:44:03', '2025-09-29 11:23:00', '2025-09-29 13:23:00'),
+(72, 113, 600.00, 750.00, 'Unpaid', NULL, '2025-09-06 11:44:56', NULL, '2025-09-06 09:25:35', '2025-09-06 09:44:56', NULL),
+(74, 114, 755.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-06 16:23:49', '2025-09-29 11:23:15', '2025-09-29 13:23:15'),
+(75, 115, 1500.00, 520.00, 'Unpaid', NULL, '2025-09-29 12:48:44', NULL, '2025-09-06 18:38:02', '2025-09-29 10:48:44', NULL),
+(81, 121, 300.00, 150.00, 'Unpaid', NULL, '2025-09-29 12:49:40', NULL, '2025-09-07 13:07:50', '2025-09-29 10:49:40', NULL),
+(82, 122, 300.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-22 08:44:10', '2025-09-29 11:23:26', '2025-09-29 13:23:26'),
+(84, 124, 600.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-22 09:17:59', '2025-09-29 11:23:40', '2025-09-29 13:23:40'),
+(85, 125, 1800.00, 1000.00, 'Unpaid', NULL, '2025-09-29 13:30:35', NULL, '2025-09-22 09:38:50', '2025-09-29 11:30:35', NULL),
+(86, 126, 600.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-09-22 10:06:45', '2025-09-22 10:06:45', NULL),
+(98, 130, 900.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-10-09 17:20:21', '2025-10-09 17:20:21', NULL),
+(99, 131, 600.00, 0.00, 'Unpaid', NULL, NULL, NULL, '2025-10-09 17:38:14', '2025-10-09 17:38:14', NULL);
 
 -- --------------------------------------------------------
 
@@ -152,7 +159,7 @@ INSERT INTO `grades` (`GradeId`, `SchoolId`, `GradeName`, `CreatedAt`) VALUES
 (1, 4, 'Grade 10', '2025-08-08 15:58:08'),
 (2, 4, 'Grade 11', '2025-08-08 15:58:08'),
 (3, 4, 'Grade 12', '2025-08-08 15:58:08'),
-(37, 16, '8', '2025-09-21 14:02:58');
+(37, 16, 'Grade 8', '2025-09-21 14:02:58');
 
 -- --------------------------------------------------------
 
@@ -201,7 +208,9 @@ CREATE TABLE `invitetokens` (
 
 INSERT INTO `invitetokens` (`Id`, `InviteRequestId`, `Token`, `Email`, `IsUsed`, `CreatedAt`, `ExpiresAt`) VALUES
 (21, 24, '5ed8d9c7874a51cdd903d895738404ff62f833818ce707bc3be1d6222efffd74', 'emahlwele05@gmail.com', 0, '2025-09-22 11:36:00', '2025-09-29 11:36:00'),
-(22, 22, '830ae63eea008090f879168e68299c6b14bbd018c19b499907ecf2239b5b7bf6', 'distributorsdoe@gmail.com', 0, '2025-09-22 12:05:33', '2025-09-29 12:05:33');
+(22, 22, '830ae63eea008090f879168e68299c6b14bbd018c19b499907ecf2239b5b7bf6', 'distributorsdoe@gmail.com', 0, '2025-09-22 12:05:33', '2025-09-29 12:05:33'),
+(23, 22, '6bcce8a15fa4fe571ffc54db2bc5d433dc6587cca57592477ee1d5305095a29a', 'distributorsdoe@gmail.com', 0, '2025-09-23 16:05:24', '2025-09-30 16:05:24'),
+(24, 24, '54390ca133a59bc6a56284d30cd28300427fe7b1b2ff3f282069e4420e552a86', 'emahlwele05@gmail.com', 0, '2025-10-09 19:28:08', '2025-10-16 19:28:08');
 
 -- --------------------------------------------------------
 
@@ -230,7 +239,11 @@ INSERT INTO `learneractivitymarks` (`Id`, `LearnerId`, `ActivityId`, `MarkerId`,
 (59, 110, 22, 1, 19, '2025-09-09 22:00:00', 'present', 'None', 'Yes', 'None'),
 (60, 111, 22, 1, 18, '2025-09-09 22:00:00', 'present', 'None', 'Yes', 'None'),
 (61, 110, 23, 1, 10, '2025-09-09 22:00:00', 'present', 'None', 'Yes', 'None'),
-(62, 111, 23, 1, 5, '2025-09-09 22:00:00', 'present', 'None', 'Yes', 'None');
+(62, 111, 23, 1, 5, '2025-09-09 22:00:00', 'present', 'None', 'Yes', 'None'),
+(63, 106, 24, 1, 15, '2025-09-23 22:00:00', 'present', 'None', 'Yes', 'None'),
+(64, 106, 25, 1, 19, '2025-09-23 22:00:00', 'present', 'None', 'Yes', 'None'),
+(65, 110, 27, 1, 20, '2025-09-26 22:00:00', 'present', 'None', 'Yes', 'None'),
+(66, 111, 27, 1, 21, '2025-09-26 22:00:00', 'present', 'None', 'Yes', 'None');
 
 -- --------------------------------------------------------
 
@@ -257,33 +270,45 @@ CREATE TABLE `learnerclasses` (
   `Id` int(11) NOT NULL,
   `LearnerID` int(11) NOT NULL,
   `ClassID` int(11) NOT NULL,
-  `AssignedAt` timestamp NOT NULL DEFAULT current_timestamp()
+  `AssignedAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `EnrollmentStatus` enum('Active','Deregistered') DEFAULT 'Active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `learnerclasses`
 --
 
-INSERT INTO `learnerclasses` (`Id`, `LearnerID`, `ClassID`, `AssignedAt`) VALUES
-(109, 105, 58, '2025-09-05 18:06:00'),
-(110, 106, 57, '2025-09-05 18:06:59'),
-(111, 106, 58, '2025-09-05 18:06:59'),
-(113, 108, 57, '2025-09-05 18:09:09'),
-(114, 108, 58, '2025-09-05 18:09:09'),
-(116, 109, 58, '2025-09-05 18:10:08'),
-(117, 110, 59, '2025-09-05 18:11:06'),
-(119, 111, 59, '2025-09-05 18:15:06'),
-(121, 112, 58, '2025-09-05 18:44:03'),
-(128, 113, 57, '2025-09-06 09:25:35'),
-(129, 114, 64, '2025-09-06 16:23:49'),
-(130, 115, 64, '2025-09-06 18:38:02'),
-(131, 115, 65, '2025-09-06 18:38:02'),
-(137, 121, 57, '2025-09-07 13:07:50'),
-(138, 122, 66, '2025-09-22 08:44:10'),
-(140, 124, 66, '2025-09-22 09:17:59'),
-(141, 125, 64, '2025-09-22 09:38:49'),
-(142, 125, 65, '2025-09-22 09:38:49'),
-(143, 126, 66, '2025-09-22 10:06:45');
+INSERT INTO `learnerclasses` (`Id`, `LearnerID`, `ClassID`, `AssignedAt`, `EnrollmentStatus`) VALUES
+(147, 130, 68, '2025-10-09 17:20:20', 'Active'),
+(148, 130, 69, '2025-10-09 17:20:20', 'Active'),
+(149, 131, 70, '2025-10-09 17:38:13', 'Active'),
+(150, 131, 71, '2025-10-09 17:38:14', 'Active');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `learnerclasshistory`
+--
+
+CREATE TABLE `learnerclasshistory` (
+  `HistoryID` int(11) NOT NULL,
+  `LearnerID` int(11) NOT NULL,
+  `ClassID` int(11) NOT NULL,
+  `SubjectId` int(11) NOT NULL,
+  `GroupName` varchar(100) NOT NULL,
+  `LeftAt` datetime NOT NULL DEFAULT current_timestamp(),
+  `Reason` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `learnerclasshistory`
+--
+
+INSERT INTO `learnerclasshistory` (`HistoryID`, `LearnerID`, `ClassID`, `SubjectId`, `GroupName`, `LeftAt`, `Reason`) VALUES
+(1, 108, 57, 1, 'A', '2025-09-28 20:36:13', 'Cancelled'),
+(2, 110, 59, 1, 'B', '2025-09-28 20:37:53', 'Completed'),
+(3, 111, 67, 4, 'B', '2025-09-28 20:39:18', 'Completed'),
+(4, 111, 59, 1, 'B', '2025-09-28 20:42:51', 'Cancelled');
 
 -- --------------------------------------------------------
 
@@ -318,14 +343,6 @@ CREATE TABLE `learnerlevel` (
   `NumberQuestionsLeft` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `learnerlevel`
---
-
-INSERT INTO `learnerlevel` (`Id`, `LearnerId`, `LevelId`, `ChapterName`, `Complete`, `Mark`, `NumberAttempts`, `TotalTimeTaken`, `NumberQuestionsComplete`, `NumberQuestionsLeft`) VALUES
-(31, 115, 1, 'Electrostatics', 1, 1.00, 1, 3, 1, 0),
-(32, 115, 1, 'Analytical Geometry', 1, 4.00, 1, 58, 5, 0);
-
 -- --------------------------------------------------------
 
 --
@@ -355,18 +372,6 @@ CREATE TABLE `learnerpracticequestions` (
   `QuestionId` int(11) NOT NULL,
   `Status` enum('complete','incomplete') NOT NULL DEFAULT 'incomplete'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `learnerpracticequestions`
---
-
-INSERT INTO `learnerpracticequestions` (`Id`, `LearnerId`, `QuestionId`, `Status`) VALUES
-(286, 115, 120, 'complete'),
-(287, 115, 102, 'complete'),
-(288, 115, 103, 'complete'),
-(289, 115, 104, 'complete'),
-(290, 115, 105, 'complete'),
-(291, 115, 106, 'complete');
 
 -- --------------------------------------------------------
 
@@ -404,22 +409,9 @@ CREATE TABLE `learners` (
 --
 
 INSERT INTO `learners` (`LearnerId`, `Grade`, `RegistrationDate`, `LearnerKnockoffTime`, `ParentTitle`, `ParentName`, `ParentSurname`, `ParentEmail`, `ParentContactNumber`, `LastUpdated`) VALUES
-(105, 'Grade 10', NULL, '17:32:00', 'Ms', 'sdc', 'legend', 'dcdscf@gmail.com', '0795674125', NULL),
-(106, 'Grade 10', NULL, '17:32:00', 'Prof', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
-(107, 'Grade 10', NULL, '05:07:00', 'Mrs', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
-(108, 'Grade 10', NULL, '21:08:00', 'Ms', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
-(109, 'Grade 10', NULL, '21:06:00', 'Dr', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
-(110, 'Grade 10', NULL, '20:06:00', 'Ms', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
-(111, 'Grade 10', NULL, '20:46:00', 'Mr', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
-(112, 'Grade 10', NULL, '20:06:00', 'Ms', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
-(113, 'Grade 10', NULL, '20:54:00', 'Ms', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
-(114, 'Grade 12', NULL, '06:23:00', 'Ms', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
-(115, 'Grade 12', NULL, '16:51:00', 'Mrs', 'Emmanuel', 'Boshielo', 'kljhgfd05@gmail.com', '8652465312', NULL),
-(121, 'Grade 10', NULL, '04:52:00', 'Mr', 'Fugaku', 'Uchiha', 'fukaku@gmail.com', '8652465312', NULL),
-(122, 'Grade 11', NULL, '20:06:00', 'Mrs', 'Marry', 'Mguni', 'emah@gmail.com', '4512465445', NULL),
-(124, 'Grade 11', NULL, '16:10:00', 'Mr', 'Marry', 'Boshielo555', 'distributorsdoe@gmail.com', '4512465445', NULL),
-(125, 'Grade 12', NULL, '20:45:00', 'Mrs', 'Dolly', 'Letsholonyane', 'distributorsdoe@gmail.com', '4512465445', NULL),
-(126, 'Grade 11', NULL, '19:05:00', 'Ms', 'Anna', 'Letsholonyane', 'distributorsdoe@gmail.com', '4512465445', NULL);
+(130, 'Grade 10', NULL, '07:12:00', 'Mr', 'EmmanuelParent', 'BoshieloParent', 'emahlwele05@gmail.com', '0875486468', NULL),
+(131, 'Grade 12', NULL, '07:35:00', 'Dr', 'Emmanuel', 'Boshielo', 'emahlwele05@gmail.com', '0875486468', NULL),
+(133, 'Grade 11', NULL, '08:09:00', 'Mr', 'TylerParent', 'JosephsParent', 'emahl@gmail.com', '0875486468', NULL);
 
 -- --------------------------------------------------------
 
@@ -438,38 +430,20 @@ CREATE TABLE `learnersubject` (
   `ContractExpiryDate` datetime DEFAULT NULL,
   `ContractFee` decimal(10,2) NOT NULL DEFAULT 0.00,
   `DiscountAmount` decimal(10,2) DEFAULT 0.00,
-  `Status` enum('Active','Suspended','Completed','Cancelled') DEFAULT 'Active'
+  `Status` enum('Active','Suspended','Completed','Cancelled') DEFAULT 'Active',
+  `LastReminded` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `learnersubject`
 --
 
-INSERT INTO `learnersubject` (`LearnerSubjectId`, `LearnerId`, `SubjectId`, `TargetLevel`, `CurrentLevel`, `NumberOfTerms`, `ContractStartDate`, `ContractExpiryDate`, `ContractFee`, `DiscountAmount`, `Status`) VALUES
-(120, 105, 1, 7, 1, 6, '2025-09-05', '2026-03-04 00:00:00', 600.00, NULL, 'Completed'),
-(121, 105, 4, 7, 1, 12, '2025-09-05', '2026-08-31 00:00:00', 1200.00, NULL, 'Active'),
-(122, 106, 1, 7, 1, 6, '2025-09-05', '2026-03-04 00:00:00', 600.00, NULL, 'Active'),
-(123, 106, 4, 7, 1, 6, '2025-09-05', '2026-03-04 00:00:00', 600.00, NULL, 'Active'),
-(125, 108, 1, 7, 1, 3, '2025-09-05', '2025-12-04 00:00:00', 300.00, NULL, 'Active'),
-(126, 108, 4, 7, 1, 6, '2025-09-05', '2025-10-11 00:00:00', 600.00, NULL, 'Completed'),
-(127, 109, 1, 7, 1, 3, '2025-09-05', '2025-12-04 00:00:00', 3000.00, NULL, 'Cancelled'),
-(128, 109, 4, 7, 1, 12, '2025-09-05', '2026-08-31 00:00:00', 1200.00, NULL, 'Active'),
-(129, 110, 1, 7, 1, 3, '2025-09-05', '2025-12-04 00:00:00', 300.00, NULL, 'Active'),
-(131, 111, 1, 7, 1, 3, '2025-09-05', '2025-12-04 00:00:00', 300.00, NULL, 'Active'),
-(133, 112, 4, NULL, NULL, 6, '2025-09-05', '2026-03-04 00:00:00', 600.00, NULL, 'Active'),
-(137, 107, 1, 3, 2, NULL, '2025-09-06', '2025-10-04 00:00:00', 150.00, 0.00, 'Cancelled'),
-(138, 107, 4, 7, 2, NULL, '2025-05-04', '2025-10-11 00:00:00', 450.00, 0.00, 'Cancelled'),
-(139, 110, 4, 7, 2, NULL, '2025-09-06', '2025-10-11 00:00:00', 1200.00, 0.00, 'Cancelled'),
-(140, 113, 1, 7, 1, 6, '2025-09-06', '2026-03-05 00:00:00', 600.00, NULL, 'Active'),
-(141, 114, 3, 7, 1, 3, '2025-09-06', '2025-12-05 00:00:00', 300.00, NULL, 'Active'),
-(142, 115, 3, 7, 3, 3, '2025-09-06', '2025-12-05 00:00:00', 300.00, NULL, 'Active'),
-(143, 115, 6, 7, 4, 12, '2025-09-06', '2026-09-01 00:00:00', 1200.00, NULL, 'Active'),
-(149, 121, 1, 7, 1, 3, '2025-09-07', '2025-12-06 00:00:00', 300.00, NULL, 'Active'),
-(150, 122, 2, 7, 1, 3, '2025-09-22', '2025-12-21 00:00:00', 300.00, NULL, 'Active'),
-(152, 124, 2, 7, 1, 6, '2025-09-22', '2026-03-21 00:00:00', 600.00, NULL, 'Active'),
-(153, 125, 3, 7, 2, 6, '2025-09-22', '2026-03-21 00:00:00', 600.00, NULL, 'Active'),
-(154, 125, 6, 7, 4, 12, '2025-09-22', '2026-09-17 00:00:00', 1200.00, NULL, 'Active'),
-(155, 126, 2, 7, 1, 6, '2025-09-22', '2026-03-21 00:00:00', 600.00, NULL, 'Active');
+INSERT INTO `learnersubject` (`LearnerSubjectId`, `LearnerId`, `SubjectId`, `TargetLevel`, `CurrentLevel`, `NumberOfTerms`, `ContractStartDate`, `ContractExpiryDate`, `ContractFee`, `DiscountAmount`, `Status`, `LastReminded`) VALUES
+(159, 130, 1, 7, 1, 3, '2025-10-09', '2026-01-07 00:00:00', 300.00, NULL, 'Active', NULL),
+(160, 130, 4, 7, 1, 6, '2025-10-09', '2026-04-07 00:00:00', 600.00, NULL, 'Active', NULL),
+(161, 131, 3, 7, 1, 3, '2025-10-09', '2026-01-07 00:00:00', 300.00, NULL, 'Active', NULL),
+(162, 131, 6, 7, 1, 3, '2025-10-09', '2026-01-07 00:00:00', 300.00, NULL, 'Active', NULL),
+(164, 133, 2, 7, 1, 6, '2025-10-09', '2026-04-07 00:00:00', 600.00, NULL, 'Active', NULL);
 
 -- --------------------------------------------------------
 
@@ -556,7 +530,8 @@ INSERT INTO `notices` (`NoticeNo`, `Title`, `Content`, `Date`, `ExpiryDate`, `Is
 (13, '22222222222222', '3333333333333', '2025-07-25 10:20:19', '2025-08-09', 0, 1, 1),
 (14, 'Emmanuel Emmanuel', '\"Exam Timetable Updated - Please download the latest PDF from the resources page.\"', '2025-08-11 00:16:04', '2025-08-30', 0, 1, 12),
 (15, 'Title d f d f', 'ef w few ew few', '2025-08-20 23:01:46', '2025-08-30', 0, 1, 12),
-(16, 'Title 444s', 'r6ftgyuhijkol gbuhnjkml', '2025-09-03 18:10:09', '2025-09-27', 0, 1, 12);
+(16, 'Title 444s', 'r6ftgyuhijkol gbuhnjkml', '2025-09-03 18:10:09', '2025-09-27', 0, 1, 12),
+(17, 'Hey there 2', 'g re re re erfreg', '2025-09-24 16:37:00', '2025-10-03', 0, 1, 12);
 
 -- --------------------------------------------------------
 
@@ -589,7 +564,8 @@ INSERT INTO `notifications` (`NotificationId`, `Title`, `Content`, `SubjectName`
 (2, 'The Second manual notification', 'This is the first manual notification which im using for testing.', NULL, NULL, 1, 12, '2025-08-20 23:24:32', '2025-11-08', 0, NULL, 0, NULL),
 (3, 'Welcome Back!', 'We hope you are ready for a productive term! Check out the latest resources in your dashboard.', NULL, NULL, 1, 1, '2025-08-20 23:27:31', '2025-09-19', 0, NULL, 2, NULL),
 (4, 'System Maintenance', 'The platform will undergo maintenance this weekend. Expect brief downtime.', NULL, NULL, 1, 12, '2025-08-20 23:27:34', '2025-08-27', 0, NULL, 2, NULL),
-(5, 'Title 444s', 'x x  xxxx x x x', NULL, NULL, 1, 12, '2025-09-03 18:09:38', '2025-09-27', 0, NULL, 0, NULL);
+(5, 'Title 444s', 'x x  xxxx x x x', NULL, NULL, 1, 12, '2025-09-03 18:09:38', '2025-09-27', 0, NULL, 0, NULL),
+(6, 'Hey There Title', 'ef ef erg er re reg', NULL, NULL, 1, 12, '2025-09-24 16:36:14', '2025-10-10', 0, NULL, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -619,9 +595,9 @@ CREATE TABLE `onlineactivities` (
 
 INSERT INTO `onlineactivities` (`Id`, `TutorId`, `SubjectId`, `Grade`, `Topic`, `Title`, `Instructions`, `TotalMarks`, `CreatedAt`, `ImagePath`, `LastFeedbackSent`, `MemoPath`, `GroupName`) VALUES
 (47, 1, 3, 'Grade 12', 'Stati Stati', 'Quiz 10000020000 11dd', '3 3 3 3 3 3 3 3 444 4 4 4 4', 5, '2025-08-22 19:48:27', 'uploads/images/activity_47_1755890044.png', NULL, NULL, 'A'),
-(49, 1, 1, 'Grade 10', 'Stati Stati', '77777777666666newly', '', 1, '2025-09-03 18:28:33', NULL, NULL, NULL, 'A'),
+(49, 1, 1, 'Grade 10', 'Stati Stati', '77777777666666newly', '', 1, '2025-09-03 18:28:33', NULL, '2025-09-26 00:09:47', NULL, 'A'),
 (50, 1, 1, 'Grade 10', 'Sequences & Series', 'Quiz zxzxzxzzxzx', 'hhgf hf jh jh jh hj jg gj jhj h hj hj hj', 1, '2025-09-08 22:35:46', NULL, NULL, NULL, 'A'),
-(51, 1, 1, 'Grade 10', 'Finances', 'Quiz Class B', '', 1, '2025-09-08 22:40:42', NULL, NULL, NULL, 'B'),
+(51, 1, 1, 'Grade 10', 'Finances', 'Quiz Class B', '', 1, '2025-09-08 22:40:42', NULL, '2025-09-26 00:05:43', NULL, 'B'),
 (52, 1, 3, 'Grade 12', 'Finances  for 12', 'Quiz Class A', 'erth', 1, '2025-09-08 23:05:57', NULL, NULL, NULL, 'A'),
 (53, 1, 1, 'Grade 10', 'Analytical  for 10', 'tghjkm', '', 1, '2025-09-09 14:23:27', NULL, NULL, NULL, 'A'),
 (54, 1, 1, 'Grade 10', 'Analytical  for 10', 'tghjkm', 'This isthd d', 1, '2025-09-09 14:24:37', '../uploads/1757420677_2024-removebg-preview.png', NULL, '../uploads/memos/1757420677_Diesel Mech N4.pdf', 'A'),
@@ -642,18 +618,6 @@ CREATE TABLE `onlineactivitiesassignments` (
   `DueDate` date DEFAULT NULL,
   `LastFeedBackSent` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `onlineactivitiesassignments`
---
-
-INSERT INTO `onlineactivitiesassignments` (`AssignmentId`, `ClassID`, `OnlineActivityId`, `AssignedAt`, `DueDate`, `LastFeedBackSent`) VALUES
-(15, 57, 50, '2025-09-09 10:37:50', '2025-10-11', NULL),
-(20, 57, 49, '2025-09-09 11:40:34', '2025-09-08', NULL),
-(21, 57, 51, '2025-09-09 12:26:41', '2025-09-09', NULL),
-(22, 59, 51, '2025-09-09 13:45:32', '2025-09-09', NULL),
-(23, 59, 49, '2025-09-09 14:32:00', '2025-09-27', NULL),
-(24, 58, 56, '2025-09-10 19:12:33', '2025-09-27', NULL);
 
 -- --------------------------------------------------------
 
@@ -937,6 +901,42 @@ INSERT INTO `schools` (`SchoolId`, `SchoolName`, `Address`, `ContactNumber`, `Em
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `studentvoices`
+--
+
+CREATE TABLE `studentvoices` (
+  `Id` int(10) UNSIGNED NOT NULL,
+  `UserId` int(10) UNSIGNED DEFAULT NULL,
+  `Subject` varchar(255) DEFAULT NULL,
+  `Message` text NOT NULL,
+  `IsAnonymous` tinyint(1) NOT NULL DEFAULT 0,
+  `CreatedAt` datetime NOT NULL DEFAULT current_timestamp(),
+  `IsRead` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `studentvoices`
+--
+
+INSERT INTO `studentvoices` (`Id`, `UserId`, `Subject`, `Message`, `IsAnonymous`, `CreatedAt`, `IsRead`) VALUES
+(1, 106, 'Suggestion', 'How about we we w we we', 0, '2025-09-23 20:06:59', 1),
+(2, NULL, 'Complaint', 'df dgd bdf gf bgf bgf btfb', 1, '2025-09-23 20:07:15', 1),
+(3, 106, 'Appreciation', 'sgdhftj fykgujjt fhj th tyhjtr tr', 0, '2025-09-23 20:08:33', 1),
+(4, 106, 'Suggestion', 'How about we improve the app interface?', 0, '2025-09-27 19:32:34', 0),
+(5, NULL, 'Complaint', 'The platform is sometimes slow.', 1, '2025-09-27 19:32:34', 1),
+(6, 107, 'Appreciation', 'I really like the new resources section!', 0, '2025-09-27 19:32:34', 0),
+(7, 108, 'Feedback', 'Please add more exercises on algebra.', 0, '2025-09-27 19:32:34', 0),
+(8, NULL, 'Suggestion', 'Consider adding dark mode.', 1, '2025-09-27 19:32:34', 0),
+(9, 109, 'Complaint', 'Video playback sometimes lags.', 0, '2025-09-27 19:32:34', 0),
+(10, 110, 'Appreciation', 'The tutor feedback is very helpful.', 0, '2025-09-27 19:32:34', 0),
+(11, NULL, 'Feedback', 'Anonymous suggestion for group discussions.', 1, '2025-09-27 19:32:34', 0),
+(12, 111, 'Suggestion', 'Add more quizzes for practice.', 0, '2025-09-27 19:32:34', 0),
+(13, 112, 'Appreciation', 'I enjoyed the last live session.', 0, '2025-09-27 19:32:34', 0),
+(14, 112, 'Appreciation', 'I really appreciate the consistent support from the tutors. The explanations are detailed, and the additional resources provided have helped me understand complex topics better. I hope this continues!', 0, '2025-09-27 19:34:49', 0);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `subjectnotices`
 --
 
@@ -1017,14 +1017,9 @@ CREATE TABLE `todolist` (
 --
 
 INSERT INTO `todolist` (`TodoId`, `CreatorId`, `TaskText`, `CreationDate`, `DueDate`, `Priority`, `Status`, `TimeSpent`, `CompletionDate`, `Category`) VALUES
-(11, 1, 'work on the tutor perfomance button', '2025-07-19 19:47:46', '0000-00-00 00:00:00', 'Low', 0, NULL, NULL, 'General'),
-(20, 1, 'Make the Email Password Dynamic in the settings', '2025-09-07 15:14:48', '2025-10-11 20:45:00', 'Low', 0, NULL, NULL, 'General'),
-(23, 1, 'Quiz Management overview modal page', '2025-09-10 21:14:12', '2025-09-25 08:45:00', 'Low', 0, NULL, NULL, 'General'),
-(24, 1, 'Student voices to be made dynamic', '2025-09-10 21:15:44', '2025-09-26 21:15:00', 'Low', 0, NULL, NULL, 'General'),
-(25, 1, 'work on sending emails to parents for leaners who did not submit', '2025-09-10 21:16:28', '2025-09-17 09:16:00', 'Low', 0, NULL, NULL, 'General'),
-(26, 1, 'Improve the addtutor.php; Grades) to be dynamic', '2025-09-10 21:19:10', '2025-09-26 21:22:00', 'Low', 0, NULL, NULL, 'General'),
-(27, 1, 'Not forgetting the learner profile', '2025-09-10 22:44:59', '2025-09-27 22:49:00', 'Low', 0, NULL, NULL, 'General'),
-(28, 1, 'Modal for Level details of Practice Q ...in learnerprofile', '2025-09-23 12:44:16', '2025-08-30 20:46:00', 'Low', 0, NULL, NULL, 'General');
+(38, 1, 'Work on the notifications', '2025-09-24 16:41:47', '2025-09-24 16:41:00', 'Low', 0, NULL, NULL, 'General'),
+(41, 1, 'Mmantwas groove!', '2025-09-27 19:39:25', '2025-09-27 19:39:00', 'Low', 0, NULL, NULL, 'General'),
+(42, 1, 'managestudymaterials.php  needs some work! (for class resources)', '2025-09-27 19:45:52', '2025-09-27 19:45:00', 'Low', 0, NULL, NULL, 'General');
 
 -- --------------------------------------------------------
 
@@ -1038,15 +1033,27 @@ CREATE TABLE `tutoravailability` (
   `DayOfWeek` varchar(10) NOT NULL,
   `StartTime` time NOT NULL,
   `EndTime` time NOT NULL,
-  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `AvailabilityType` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tutoravailability`
 --
 
-INSERT INTO `tutoravailability` (`Id`, `TutorId`, `DayOfWeek`, `StartTime`, `EndTime`, `CreatedAt`) VALUES
-(8, 2, 'Sunday', '20:00:00', '22:00:00', '2025-07-08 17:07:54');
+INSERT INTO `tutoravailability` (`Id`, `TutorId`, `DayOfWeek`, `StartTime`, `EndTime`, `CreatedAt`, `AvailabilityType`) VALUES
+(27, 24, 'Monday', '01:40:00', '05:42:00', '2025-10-10 20:44:44', 'Recurring'),
+(28, 24, 'Thursday', '10:36:00', '11:36:00', '2025-10-10 20:44:44', 'Recurring'),
+(29, 24, 'Saturday', '21:45:00', '22:45:00', '2025-10-10 20:44:44', 'Recurring'),
+(45, 2, 'Monday', '22:00:00', '22:30:00', '2025-10-11 20:27:15', 'OnceOff'),
+(46, 2, 'Monday', '18:30:00', '19:00:00', '2025-10-11 20:28:11', 'OnceOff'),
+(48, 2, 'Friday', '13:30:00', '14:30:00', '2025-10-11 20:29:57', 'OnceOff'),
+(67, 2, 'Tuesday', '01:09:00', '02:00:00', '2025-10-13 10:38:47', 'Recurring'),
+(68, 2, 'Thursday', '19:00:00', '20:00:00', '2025-10-13 10:38:47', 'Recurring'),
+(69, 2, 'Sunday', '22:30:00', '23:30:00', '2025-10-13 10:38:47', 'Recurring'),
+(71, 2, 'Wednesday', '15:00:00', '16:00:00', '2025-10-13 10:39:54', 'OnceOff'),
+(72, 2, 'Monday', '20:00:00', '21:00:00', '2025-10-13 10:48:40', 'OnceOff'),
+(73, 2, 'Sunday', '22:00:00', '22:10:00', '2025-10-13 10:51:59', 'OnceOff');
 
 -- --------------------------------------------------------
 
@@ -1063,6 +1070,33 @@ CREATE TABLE `tutordateexceptions` (
   `CustomEnd` time DEFAULT NULL,
   `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tutorfeedback`
+--
+
+CREATE TABLE `tutorfeedback` (
+  `FeedbackId` int(11) NOT NULL,
+  `SessionId` int(11) NOT NULL,
+  `TutorId` int(11) NOT NULL,
+  `LearnerId` int(11) NOT NULL,
+  `Grade` varchar(50) NOT NULL,
+  `SubjectName` varchar(100) DEFAULT NULL,
+  `Clarity` tinyint(4) NOT NULL,
+  `Engagement` tinyint(4) NOT NULL,
+  `Understanding` enum('Yes, all of them','Some of them','No, not really') NOT NULL,
+  `OverallRating` tinyint(4) NOT NULL,
+  `FeedbackDate` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tutorfeedback`
+--
+
+INSERT INTO `tutorfeedback` (`FeedbackId`, `SessionId`, `TutorId`, `LearnerId`, `Grade`, `SubjectName`, `Clarity`, `Engagement`, `Understanding`, `OverallRating`, `FeedbackDate`) VALUES
+(3, 5, 2, 130, 'Grade 10', 'Mathematics', 4, 3, 'Yes, all of them', 7, '2025-10-14 12:51:49');
 
 -- --------------------------------------------------------
 
@@ -1121,7 +1155,10 @@ INSERT INTO `tutors` (`TutorId`, `Bio`, `Qualifications`, `ExperienceYears`, `Pr
 (56, '', '', 0, '', ''),
 (57, '', '', 0, '', ''),
 (58, '', '', 0, '', ''),
-(59, '', '', 0, '', '');
+(59, '', '', 0, '', ''),
+(127, '', '', 0, '', ''),
+(128, '', '', 0, '', ''),
+(129, '', '', 0, '', '');
 
 -- --------------------------------------------------------
 
@@ -1134,11 +1171,39 @@ CREATE TABLE `tutorsessions` (
   `TutorId` int(11) NOT NULL,
   `LearnerId` int(11) NOT NULL,
   `SlotDateTime` datetime NOT NULL,
-  `Subject` varchar(100) NOT NULL,
+  `Subject` varchar(255) NOT NULL,
+  `Grade` varchar(50) NOT NULL,
   `Notes` text DEFAULT NULL,
-  `Status` enum('Pending','Confirmed','Cancelled') DEFAULT 'Pending',
-  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
+  `AttachmentPath` varchar(255) DEFAULT NULL,
+  `MeetingLink` varchar(255) DEFAULT NULL,
+  `Status` enum('Pending','Confirmed','Declined','Completed','Missed') DEFAULT 'Pending',
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `Attendance` enum('NotJoined','Joined') DEFAULT 'NotJoined',
+  `Hidden` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tutorsessions`
+--
+
+INSERT INTO `tutorsessions` (`SessionId`, `TutorId`, `LearnerId`, `SlotDateTime`, `Subject`, `Grade`, `Notes`, `AttachmentPath`, `MeetingLink`, `Status`, `CreatedAt`, `Attendance`, `Hidden`) VALUES
+(1, 2, 131, '2025-10-12 22:54:00', 'Mathematics', 'Grade 12', ',./', NULL, NULL, 'Confirmed', '2025-10-11 22:19:01', 'NotJoined', 0),
+(4, 2, 131, '2025-10-19 22:54:00', 'Mathematics', 'Grade 12', 'rshjetj', NULL, NULL, 'Declined', '2025-10-11 22:19:52', 'NotJoined', 0),
+(5, 2, 130, '2025-10-13 22:00:00', 'Mathematics', 'Grade 10', 'xfhbnfm', NULL, 'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjQxZmI2ZjItMjY1ZS00ZmY1LWFlYTQtMjQ1NzM0ZDJkYmI5%40thread.v2/0?context=%7b%22Tid%22%3axxxxxx%22%7d', 'Completed', '2025-10-11 22:20:32', 'Joined', 1),
+(6, 2, 130, '2025-10-15 13:34:00', 'Mathematics', 'Grade 10', 'xfndm', NULL, 'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjQxZmI2ZjItMjY1ZS00ZmY1LWFlYTQtMjQ1NzM0ZDJkYmI5%40thread.v2/0?context=%7b%22Tid%22%3axxxxxx%22%7d', 'Confirmed', '2025-10-11 22:20:48', 'Joined', 0),
+(7, 2, 130, '2025-10-13 18:30:00', 'Mathematics', 'Grade 10', 'new request of onced declined', NULL, NULL, 'Pending', '2025-10-11 22:23:38', 'NotJoined', 0),
+(8, 2, 130, '2025-10-13 20:30:00', 'Mathematics', 'Grade 10', 'xfdghb', NULL, NULL, 'Declined', '2025-10-11 22:26:32', 'NotJoined', 0),
+(10, 2, 131, '2025-10-13 20:00:00', 'Mathematics', 'Grade 12', 'I need help with FInanciallfkdnv', NULL, NULL, 'Confirmed', '2025-10-13 11:07:55', 'NotJoined', 0),
+(13, 2, 131, '2025-10-17 13:30:00', 'Mathematics', 'Grade 12', 'test upload 5', '../../uploads/attachments/1760354561_doe.png', 'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjQxZmI2ZjItMjY1ZS00ZmY1LWFlYTQtMjQ1NzM0ZDJkYmI5%40thread.v2/0?context=%7b%22Tid%22%3axxxxxx%22%7d', 'Confirmed', '2025-10-13 11:22:41', 'NotJoined', 0),
+(14, 2, 131, '2025-10-14 01:09:00', 'Mathematics', 'Grade 12', 'ryh h 6j6 j56', '../../uploads/attachments/1760355103_Neo  (1).pdf', NULL, 'Pending', '2025-10-13 11:31:43', 'NotJoined', 0),
+(15, 2, 131, '2025-10-15 15:00:00', 'Mathematics', 'Grade 12', 'rt hth tyjty', '../../uploads/attachments/1760355163_Rachel\'s (1).pdf', NULL, 'Confirmed', '2025-10-13 11:32:43', 'NotJoined', 0),
+(16, 2, 131, '2025-10-16 19:00:00', 'Mathematics', 'Grade 12', 'uyhj ijj iuji', '../../uploads/attachments/1760355197_IMG_20250527_095318.jpg', NULL, 'Confirmed', '2025-10-13 11:33:17', 'NotJoined', 0),
+(17, 2, 131, '2025-10-19 22:00:00', 'Mathematics', 'Grade 12', 'fdg gf t ', NULL, NULL, 'Declined', '2025-10-13 11:49:51', 'NotJoined', 0),
+(18, 2, 130, '2025-10-13 15:45:00', 'Mathematics', 'Grade 10', 'today today test', NULL, 'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjQxZmI2ZjItMjY1ZS00ZmY1LWFlYTQtMjQ1NzM0ZDJkYmI5%40thread.v2/0?context=%7b%22Tid%22%3axxxxxx%22%7d', 'Missed', '2025-10-13 13:42:06', 'NotJoined', 0),
+(19, 2, 130, '2025-10-19 22:00:00', 'Mathematics', 'Grade 10', ' btrb ngf n', NULL, NULL, 'Confirmed', '2025-10-14 09:13:10', 'NotJoined', 0),
+(20, 2, 130, '2025-10-26 22:30:00', 'Mathematics', 'Grade 10', 'rg er h', NULL, NULL, 'Confirmed', '2025-10-14 09:13:23', 'NotJoined', 0),
+(21, 2, 130, '2025-10-21 01:09:00', 'Mathematics', 'Grade 10', 'sg g', NULL, 'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjQxZmI2ZjItMjY1ZS00ZmY1LWFlYTQtMjQ1NzM0ZDJkYmI5%40thread.v2/0?context=%7b%22Tid%22%3axxxxxx%22%7d', 'Confirmed', '2025-10-14 09:13:39', 'NotJoined', 0),
+(22, 2, 130, '2025-10-20 22:00:00', 'Mathematics', 'Grade 10', ' ver bre bb', NULL, NULL, 'Declined', '2025-10-14 09:13:51', 'NotJoined', 0);
 
 -- --------------------------------------------------------
 
@@ -1161,6 +1226,8 @@ INSERT INTO `tutorsubject` (`TutorId`, `SubjectId`, `Active`, `AvgRating`) VALUE
 (2, 1, 1, 0.00),
 (2, 3, 1, 0.00),
 (2, 4, 1, 0.00),
+(2, 6, 1, 0.00),
+(2, 49, 1, 0.00),
 (19, 1, 1, 0.00),
 (19, 2, 1, 0.00),
 (20, 1, 1, 0.00),
@@ -1189,7 +1256,11 @@ INSERT INTO `tutorsubject` (`TutorId`, `SubjectId`, `Active`, `AvgRating`) VALUE
 (58, 1, 1, 0.00),
 (58, 5, 1, 0.00),
 (59, 1, 1, 0.00),
-(59, 5, 1, 0.00);
+(59, 5, 1, 0.00),
+(127, 1, 1, 0.00),
+(127, 6, 1, 0.00),
+(128, 4, 1, 0.00),
+(129, 4, 1, 0.00);
 
 -- --------------------------------------------------------
 
@@ -1234,22 +1305,12 @@ INSERT INTO `users` (`Id`, `Surname`, `Name`, `UserPassword`, `Gender`, `Contact
 (57, 'Boorn', 'Joris', '$2y$10$TTTZbLPOmdEyBtYaiAgDfelndBJKj0qYkuzmEkYzoMt1s3RNWJai6', 'Mr', 2147483647, NULL, 'boorn@gmail.com', 0, '', '2025-07-24 17:18:56', '81b420a23b1b2a503779767ac000fb17', '2025-07-24 17:18:56', 1, 0, NULL, 0),
 (58, 'Pierce', 'Alexander', '$2y$10$k5peCRhgnOMM706SpYdyBeEi2UMIE7icxKFyWccnfTNAiE9al6vkq', 'Mr', 2147483647, NULL, 'pierce@gmail.com', 0, '', '2025-07-24 17:20:10', 'e3661c1b3f8684f54c7b40b4760a9e2a', '2025-07-24 17:20:10', 1, 0, NULL, 0),
 (59, 'wswsw', 'wswswsw', '$2y$10$pen8U65c24d2/RvKFc4d5e0O24OrxqML5DvDN28Ha1sbxVsZGvMRe', 'Mr', 2147483647, NULL, 'wsww@gmail.com', 0, '', '2025-07-24 17:21:20', 'dca23cd7890ea2d70fb61b839452a30d', '2025-07-24 17:21:20', 1, 0, NULL, 0),
-(105, 'Bosh', 'Moses', '$2y$10$ChIgJ17cS/iG3XXdtEYZCuCkwXGMOs4Q6Wjij1xGrvsp9I4S4hyGO', 'Mr', 2147483647, NULL, 'moses@gmail.com', 0, '', '2025-09-05 18:06:00', '8538c7d72c0bcd480e521998f686986ddb67ced11e6e4126f7181ef412d38df4', '2025-09-05 18:06:00', 2, 0, NULL, 0),
-(106, 'Boshielo', 'Emmanuel', '$2y$10$Pzkq1yIe1MOKNsCc79dxDOa.Nxv44rjP6jrGO.uTeUvbijUACyEHq', 'Mr', 764323216, NULL, 'ema@gmail.com', 0, '', '2025-09-05 18:06:59', 'c12780071923d5f974326e41e36d15cea481db76f643e5045cdb987949afd5d1', '2025-09-05 18:06:59', 2, 0, NULL, 0),
-(107, 'Malaka', 'Grace', '$2y$10$q6EEHZxr21X/t4ac9XJ6B.KDx3DjmvO.f1mlm3K2rLjXbOlSP/TMW', 'Mrs', 764323216, NULL, 'grace@gmail.com', 0, '', '2025-09-05 18:07:57', '763b9d2c857f718b7ff88474777314d600c4f16a0be341369003c4af820ce462', '2025-09-05 18:07:57', 2, 0, NULL, 0),
-(108, 'KUunutu', 'Charles', '$2y$10$uVX5aNNatyaolubfhVXcw.WWXEZ1fapOUpVlO276Qm8dSEmgp20Zu', 'Mr', 764323216, NULL, 'charles@gmail.com', 0, '', '2025-09-05 18:09:08', '8d577b29a603ba54cddf611bcd2954b859f3a1fcaff8c35edc7fbc17defae4c6', '2025-09-05 18:09:08', 2, 0, NULL, 0),
-(109, 'Maputla', 'Thabo', '$2y$10$DYE2ZarVQGHVdFFHdEfAiOc7DezGv/sb4sZw.ukygOE8l8JSV0y.i', 'Mr', 764323216, NULL, 'thabo@gmail.com', 0, '', '2025-09-05 18:10:08', 'cda638416da5f5864e123a5c18f72ef4b2e451ea582935081f3a5511c4a2fa6f', '2025-09-05 18:10:08', 2, 0, NULL, 0),
-(110, 'zakzaka', 'Kwaito', '$2y$10$a.l6XjAndPPQvchBEfDT8OY/mauiIOVtAKOIQ4NaJJLY1404HSF52', 'Mr', 764323216, NULL, 'kwaito@gmail.com', 0, '', '2025-09-05 18:11:06', 'b8ff67eb1b73e1d083222faf31fb41532f456cc929eb4c1cbcefdf1fccd97997', '2025-09-05 18:11:06', 2, 0, NULL, 0),
-(111, 'Mahlare', 'Felicia', '$2y$10$98.JRpNskMMAMRivlNv.zeNzko6IkwwAc6vbJad6CSEgryRQKkKFO', 'Mrs', 764323216, NULL, 'felicia@gmail.com', 0, '', '2025-09-05 18:15:06', 'a92eca98278e319b6816138e6a3e8c3d6146f4733a0c4236204fe628f0ef6036', '2025-09-05 18:15:06', 2, 0, NULL, 0),
-(112, 'Mogashane', 'Sharon', '$2y$10$muXuZ67hgonv1s39G6sfFu/bgslY3JW/bWgMo6HZqEEU8oiJjSOly', 'Mr', 764323216, NULL, 'sharon@gmail.com', 0, '', '2025-09-05 18:44:03', '72ad203255b3dc3bb1ab72cbbf28a8da2f7fea0b0f0ebbc79337dea6e732e7a7', '2025-09-05 18:44:03', 2, 0, NULL, 0),
-(113, 'Masilila', 'Leago', '$2y$10$Ni9LYDFBmzEkVnPOhd/9v.Znx3KTLBC08HgNCy9kXBfA/dJ8JouHi', 'Mrs', 764323216, NULL, 'leago@gmail.com', 0, '', '2025-09-06 09:25:34', '5f7ccaaaec43c8edaac0629515afcfa885164dfb6583fe61037eb00524f68a45', '2025-09-06 09:25:34', 2, 0, NULL, 0),
-(114, 'Volky', 'Lefa', '$2y$10$bahgUp5PVz.gq0o3ZjVLoO./vQ9vUrsZ7wkWrxcojj//pq5.fMFIS', 'Mr', 764323216, NULL, 'lefa@gmail.com', 0, '', '2025-09-06 16:23:49', '3021613fba10f1e87b566664dffd3d8bade619f66b4062a672f99e61980a763e', '2025-09-06 16:23:49', 2, 0, NULL, 0),
-(115, 'Matlala', 'Boikano', '$2y$10$Jzy7.6wZqWkxF84r.iEPt.rpS2h7.1qj8onL9Lmf2CKn3DzLOi8Ni', 'Mr', 764323216, NULL, 'boikanyo@gmail.com', 0, '', '2025-09-06 18:38:02', '4df59d21d2e7ab931cd0630a87fffa2b30aefbda8329de5f3a3d707f7d14cf67', '2025-09-06 18:38:02', 2, 0, NULL, 0),
-(121, 'Uzumaki', 'Sasuke', '$2y$10$IfbaSP.CNA.m4SY8anEaZeeEgBBTCbToUCMuJmT..r4GDYQAtI936', 'Mr', 764323216, NULL, 'sasuke@gmail.com', 0, '', NULL, '89280eb4653eded629014e7f840d4d1cbb3978ee96e1db85db1981f114690e87', '2025-09-07 13:07:50', 2, 0, NULL, 0),
-(122, 'Mguni', 'Thabo', '$2y$10$tLBQXNtaTEzi6ENFHTKK2eWjzZnlOHbbQBFcwp0faJH5kqbQfVXQa', 'Mr', 2147483647, NULL, 'emele05@gmail.com', 0, '', '2025-09-22 08:44:09', 'a6ab31d0d79111168e88ccb081d66c5c0b4367f885e97ce7d31535348c871a82', '2025-09-22 08:44:09', 2, 0, NULL, 0),
-(124, 'Boshielo555', 'Emmanuel555', '$2y$10$AWimtT7.WatBYvOPrXaczuDY9lDla7vFEv33Tl59vyhDUdVyKPyBG', 'Mr', 2147483647, NULL, 'emahsdfge05@gmail.com', 1, '', '2025-09-22 09:17:59', '', '2025-09-22 09:17:59', 2, 0, NULL, 0),
-(125, 'Letsholonyane', 'Reneilwe', '$2y$10$eBHJ6Nw58HTfs2yM9YoOBO4.4AEcRqxmGOEjBlfNOMGSm.Yep2S9e', 'Mr', 2147483647, NULL, 'emahlwele05@gmail.com', 1, '$2y$10$NLzx472rllK9DKieur84oOBOUShWotegpfja3Pd/XXTs90iUZWNCS', '2025-09-23 11:06:23', '', '2025-09-22 09:38:49', 2, 0, NULL, 0),
-(126, 'Laravel', 'Tonny', '$2y$10$nVL9FHi6kxuIvgoa3V9/mOb1a2IfY46ZgRfomPm.DaRCtJ5qTeXci', 'Ms', 2147483647, NULL, 'distributorsdoe@gmail.com', 1, '', '2025-09-22 10:06:45', '', '2025-09-22 10:06:45', 2, 0, NULL, 0);
+(127, '22222222222', '1111111', '$2y$10$u/rMsJZV/gHKB/RaIK2qWOKDSDX9fSS6H4guzBxi6IcHIsP2HbNly', 'Mr', 657089357, NULL, 'thedistributorsofedu@gmail.com', 0, '', '2025-09-24 18:53:22', '04d3bf29d6f51fb52eb3a8d42373bffd', '2025-09-24 18:53:22', 1, 0, NULL, 0),
+(128, '144444', 'asdfgh', '$2y$10$WS3/wUfSi/4gJYCe/yo.NuWmluGNCBO58lQDyjOJ/aBy2hfnpeLR6', 'Mr', 2020202020, NULL, 'thedistributorsofedu@gmail.com', 0, '', '2025-09-24 19:08:25', '0d2d6870dc5521c2c346f27e2609a38c', '2025-09-24 19:08:25', 1, 0, NULL, 0),
+(129, '144444', 'asdfgh', '$2y$10$pOsNoBHN5W8WMqadav9N6.pDyVcRP4q2C3vY8BbBwj4REiQau/hi.', 'Mr', 2020202020, NULL, 'thedistributorsofedu@gmail.com', 0, '', '2025-09-24 19:08:46', 'f2ba900bb81f0ad04e35606cad40af3e', '2025-09-24 19:08:46', 1, 0, NULL, 0),
+(130, 'Boshielo', 'Emmanuel', '$2y$10$ghV9OZVg1avxRmY9HVfYlOYqNOi4tHkFK6icMoVi7Ql12P1OOQpna', 'Mr', 655708932, NULL, 'emmanuel@gmail.com', 1, '', '2025-10-09 17:14:21', '', '2025-10-09 17:14:21', 2, 0, NULL, 0),
+(131, 'Letsholonyane', 'Reneilwe', '$2y$10$vc.Hnk0LffZLtS6lI.bngebQUiSWgHD2oqYvxXkhoeRDu4IHVr4GG', 'Mr', 655709888, NULL, 'emahlwele05@gmail.com', 1, '', '2025-10-09 17:35:57', '', '2025-10-09 17:35:57', 2, 0, NULL, 0),
+(133, 'Josephs', 'Tyler', '$2y$10$ziDaGuXPLb5OsUB7mjrXnOqIYH49iUduZ9YE5sa65s/W6NqupuS2.', 'Mr', 655708932, NULL, 'tyler@gmail.com', 0, '', '2025-10-09 18:10:14', '88fad6b0e1e7ebdae3a49d9ea170fc53755998bc7f475582678673c1c317d37c', '2025-10-09 18:10:14', 2, 0, NULL, 0);
 
 --
 -- Indexes for dumped tables
@@ -1328,6 +1389,15 @@ ALTER TABLE `learnerclasses`
   ADD PRIMARY KEY (`Id`),
   ADD KEY `LearnerID` (`LearnerID`),
   ADD KEY `ClassID` (`ClassID`);
+
+--
+-- Indexes for table `learnerclasshistory`
+--
+ALTER TABLE `learnerclasshistory`
+  ADD PRIMARY KEY (`HistoryID`),
+  ADD KEY `LearnerID` (`LearnerID`),
+  ADD KEY `ClassID` (`ClassID`),
+  ADD KEY `SubjectId` (`SubjectId`);
 
 --
 -- Indexes for table `learnerhomeworkresults`
@@ -1477,6 +1547,12 @@ ALTER TABLE `schools`
   ADD PRIMARY KEY (`SchoolId`);
 
 --
+-- Indexes for table `studentvoices`
+--
+ALTER TABLE `studentvoices`
+  ADD PRIMARY KEY (`Id`);
+
+--
 -- Indexes for table `subjectnotices`
 --
 ALTER TABLE `subjectnotices`
@@ -1512,6 +1588,12 @@ ALTER TABLE `tutordateexceptions`
   ADD UNIQUE KEY `unique_exception` (`TutorId`,`ExceptionDate`);
 
 --
+-- Indexes for table `tutorfeedback`
+--
+ALTER TABLE `tutorfeedback`
+  ADD PRIMARY KEY (`FeedbackId`);
+
+--
 -- Indexes for table `tutorpayments`
 --
 ALTER TABLE `tutorpayments`
@@ -1529,8 +1611,7 @@ ALTER TABLE `tutors`
 --
 ALTER TABLE `tutorsessions`
   ADD PRIMARY KEY (`SessionId`),
-  ADD UNIQUE KEY `unique_booking` (`TutorId`,`SlotDateTime`),
-  ADD KEY `LearnerId` (`LearnerId`);
+  ADD UNIQUE KEY `unique_booking_per_learner` (`TutorId`,`SlotDateTime`,`LearnerId`);
 
 --
 -- Indexes for table `tutorsubject`
@@ -1553,13 +1634,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activities`
 --
 ALTER TABLE `activities`
-  MODIFY `ActivityId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `ActivityId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `classes`
 --
 ALTER TABLE `classes`
-  MODIFY `ClassID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `ClassID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
 
 --
 -- AUTO_INCREMENT for table `feedbacklog`
@@ -1571,7 +1652,7 @@ ALTER TABLE `feedbacklog`
 -- AUTO_INCREMENT for table `finances`
 --
 ALTER TABLE `finances`
-  MODIFY `FinanceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
+  MODIFY `FinanceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
 
 --
 -- AUTO_INCREMENT for table `grades`
@@ -1589,13 +1670,13 @@ ALTER TABLE `inviterequests`
 -- AUTO_INCREMENT for table `invitetokens`
 --
 ALTER TABLE `invitetokens`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `learneractivitymarks`
 --
 ALTER TABLE `learneractivitymarks`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT for table `learneranswers`
@@ -1607,7 +1688,13 @@ ALTER TABLE `learneranswers`
 -- AUTO_INCREMENT for table `learnerclasses`
 --
 ALTER TABLE `learnerclasses`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=144;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=151;
+
+--
+-- AUTO_INCREMENT for table `learnerclasshistory`
+--
+ALTER TABLE `learnerclasshistory`
+  MODIFY `HistoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `learnerhomeworkresults`
@@ -1637,13 +1724,13 @@ ALTER TABLE `learnerpracticequestions`
 -- AUTO_INCREMENT for table `learners`
 --
 ALTER TABLE `learners`
-  MODIFY `LearnerId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
+  MODIFY `LearnerId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=134;
 
 --
 -- AUTO_INCREMENT for table `learnersubject`
 --
 ALTER TABLE `learnersubject`
-  MODIFY `LearnerSubjectId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=156;
+  MODIFY `LearnerSubjectId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=165;
 
 --
 -- AUTO_INCREMENT for table `level`
@@ -1661,13 +1748,13 @@ ALTER TABLE `memos`
 -- AUTO_INCREMENT for table `notices`
 --
 ALTER TABLE `notices`
-  MODIFY `NoticeNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `NoticeNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `NotificationId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `NotificationId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `onlineactivities`
@@ -1679,7 +1766,7 @@ ALTER TABLE `onlineactivities`
 -- AUTO_INCREMENT for table `onlineactivitiesassignments`
 --
 ALTER TABLE `onlineactivitiesassignments`
-  MODIFY `AssignmentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `AssignmentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `onlinequestions`
@@ -1724,6 +1811,12 @@ ALTER TABLE `schools`
   MODIFY `SchoolId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
+-- AUTO_INCREMENT for table `studentvoices`
+--
+ALTER TABLE `studentvoices`
+  MODIFY `Id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
 -- AUTO_INCREMENT for table `subjectnotices`
 --
 ALTER TABLE `subjectnotices`
@@ -1739,19 +1832,25 @@ ALTER TABLE `subjects`
 -- AUTO_INCREMENT for table `todolist`
 --
 ALTER TABLE `todolist`
-  MODIFY `TodoId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `TodoId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `tutoravailability`
 --
 ALTER TABLE `tutoravailability`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
 -- AUTO_INCREMENT for table `tutordateexceptions`
 --
 ALTER TABLE `tutordateexceptions`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tutorfeedback`
+--
+ALTER TABLE `tutorfeedback`
+  MODIFY `FeedbackId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `tutorpayments`
@@ -1763,13 +1862,13 @@ ALTER TABLE `tutorpayments`
 -- AUTO_INCREMENT for table `tutorsessions`
 --
 ALTER TABLE `tutorsessions`
-  MODIFY `SessionId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `SessionId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=134;
 
 --
 -- Constraints for dumped tables
@@ -1953,13 +2052,6 @@ ALTER TABLE `tutorpayments`
 --
 ALTER TABLE `tutors`
   ADD CONSTRAINT `tutors_ibfk_1` FOREIGN KEY (`TutorId`) REFERENCES `users` (`Id`);
-
---
--- Constraints for table `tutorsessions`
---
-ALTER TABLE `tutorsessions`
-  ADD CONSTRAINT `tutorsessions_ibfk_1` FOREIGN KEY (`TutorId`) REFERENCES `users` (`Id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `tutorsessions_ibfk_2` FOREIGN KEY (`LearnerId`) REFERENCES `users` (`Id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `tutorsubject`

@@ -21,9 +21,26 @@ $userId = $_SESSION['user_id']; // logged-in learner
 $subjectName = isset($_GET['subject']) ? $_GET['subject'] : '';
 
 // Fetch activity details
-$stmt = $connect->prepare("SELECT TutorId, SubjectId, Grade, Topic, Title, Instructions, TotalMarks, DueDate, CreatedAt, ImagePath FROM onlineactivities WHERE id = ?");
+$stmt = $connect->prepare("SELECT TutorId, SubjectId, Grade, Topic, Title, Instructions, 
+TotalMarks, DueDate, CreatedAt, ImagePath FROM onlineactivities WHERE id = ?");
+
+
+                              SELECT a.Id, a.Title, a.Topic, a.CreatedAt, aa.DueDate, a.TotalMarks
+                                FROM onlineactivities a
+                                INNER JOIN onlineactivitiesassignments aa 
+                                    ON a.Id = aa.OnlineActivityId
+                                WHERE aa.ClassID = ?
+                                ORDER BY aa.AssignedAt DESC
+
+
+if (!$stmt) {
+  die("Prepare failed: " . $connect->error);
+}
+
 $stmt->bind_param("i", $activityId);
+
 $stmt->execute();
+
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {

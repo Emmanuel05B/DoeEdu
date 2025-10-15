@@ -205,10 +205,6 @@ include(__DIR__ . "/../../partials/connect.php");
     $('#myModal').modal('show');
   });
 
-  function markAsRead(element) {
-    const notice = element.closest('.notice');
-    notice.classList.add('read');
-  }
 </script>
 
 <!-- Notification Modal -->
@@ -225,7 +221,7 @@ include(__DIR__ . "/../../partials/connect.php");
       </div>
       <div class="modal-body">
         <?php
-        include("../partials/connect.php");
+        include(__DIR__ . "/../../partials/connect.php");
         //$sql = "SELECT NoticeNo, Title, Content, Date, IsOpened FROM notices WHERE CreatedFor = 2 OR  CreatedFor = 12 ORDER BY Date DESC";
         //$results = $connect->query($sql);  same as below
         $sql = "SELECT NoticeNo, Title, Content, Date, IsOpened FROM notices WHERE CreatedFor IN (2, 12) 
@@ -237,7 +233,6 @@ include(__DIR__ . "/../../partials/connect.php");
             <div class="notice <?= $notice['IsOpened'] ? 'read' : ''; ?>">
               <p>
                 <strong style="color: blue;">Date:</strong> <?= date('Y-m-d', strtotime($notice['Date'])) ?>
-                <a href="readnotice.php?id=<?= $notice['NoticeNo'] ?>" class="close-notice" onclick="markAsRead(this)">Mark Read</a>
               </p>
               <p><strong style="color: blue;">Subject:</strong> <strong style="color: black;"><?= htmlspecialchars($notice['Title']) ?></strong></p>
               <p><?= nl2br(htmlspecialchars($notice['Content'])) ?></p>
