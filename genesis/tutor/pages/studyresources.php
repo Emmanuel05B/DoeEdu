@@ -25,6 +25,9 @@
     $subjectGradeOptions = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 
+
+
+
     // Fetch all resources matching tutor's assigned subjects & grades
     $uploadedResources = [];
     $stmt = $connect->prepare("
@@ -79,7 +82,7 @@
       <div class="row">
         <!-- Upload Resource - Left Side -->
       
-        <div class="col-md-12">
+        <div class="col-md-6">
           <div class="box box-primary" style="border-top: 3px solid #3c8dbc;">
             <div class="box-header with-border" style="background-color:#f0f8ff;">
               <h3 class="box-title" style="color:#3c8dbc;">
@@ -91,7 +94,7 @@
                 <div class="row">
 
                   <!-- Left Column: Form Fields (8 cols) -->
-                  <div class="col-md-8">
+                  <div class="col-md-12">
                     <div class="row">
                       <!-- Title -->
                       <div class="col-md-6 form-group">
@@ -106,7 +109,7 @@
                           <option value="">Select Subject & Grade</option>
                           <?php foreach ($subjectGradeOptions as $option): ?>
                             <option value="<?= htmlspecialchars($option['ClassID']) ?>">
-                              Grade <?= htmlspecialchars($option['Grade']) ?> - Group <?= htmlspecialchars($option['GroupName']) ?> (<?= htmlspecialchars($option['SubjectName']) ?>)
+                              <?= htmlspecialchars($option['Grade']) ?> - Group <?= htmlspecialchars($option['GroupName']) ?> (<?= htmlspecialchars($option['SubjectName']) ?>)
                             </option>
                           <?php endforeach; ?>
                         </select>
@@ -118,39 +121,10 @@
                         <input type="file" name="resource_file" class="form-control" required>
                       </div>
 
-                      <!-- Visibility -->
-                      <div class="col-md-6 form-group">
-                        <label for="visibility">Visibility</label>
-                        <select name="visibility" class="form-control" required>
-                          <option value="private">Private (Only assigned classes)</option>
-                          <option value="public">Public (All learners can access)</option>
-                        </select>
-                      </div>
-
                       <!-- Description -->
-                      <div class="col-md-12 form-group">
+                      <div class="col-md-6 form-group">
                         <label for="description">Description / Notes (Optional)</label>
                         <textarea name="description" class="form-control" rows="2" placeholder="Brief info about the resource"></textarea>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Right Column: File Info (4 cols) -->
-                  <div class="col-md-4">
-                    <div class="form-group">
-                      <label>Supported File Types</label>
-                      <div class="alert alert-info" style="margin-bottom:0;">
-                        <strong>Allowed formats:</strong><br>
-                        <ul style="margin: 0; padding-left: 18px;">
-                          <li>PDF (.pdf)</li>
-                          <li>Images (.jpg, .jpeg, .png, .gif, .webp)</li>
-                          <li>Documents (.doc, .docx, .xls, .xlsx, .ppt, .pptx)</li>
-                          <li>Videos (.mp4, .avi, .mov, .mkv, .webm)</li>
-                          <li>Audio (.mp3, .wav, .m4a, .ogg)</li>
-                          <li>Compressed (.zip, .rar, .7z)</li>
-                          <li>Text files (.txt, .csv)</li>
-                        </ul>
-                        <p style="margin-top:5px;"><strong>Maximum size:</strong> 50 MB</p>
                       </div>
                     </div>
                   </div>
@@ -225,7 +199,7 @@
                     </td>
                     <td><?= htmlspecialchars($res['ResourceType']) ?></td>
                     <td><?= htmlspecialchars($res['SubjectName']) ?></td>
-                    <td>Grade <?= htmlspecialchars($res['Grade']) ?></td>
+                    <td><?= htmlspecialchars($res['Grade']) ?></td>
                     <td>
                       <a href="<?= $fileUrl ?>" class="btn btn-xs btn-primary" title="Download" download>
                         <i class="fa fa-download"></i>

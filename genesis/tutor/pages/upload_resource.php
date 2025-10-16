@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $title = trim($_POST['title'] ?? '');
 $classId = trim($_POST['classId'] ?? '');
-$visibility = trim($_POST['visibility'] ?? 'private');
+$visibility = trim($_POST['visibility'] ?? 'private');  
 $description = trim($_POST['description'] ?? '');
 $uploadedBy = $_SESSION['user_id'] ?? null;
 

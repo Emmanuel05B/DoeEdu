@@ -116,19 +116,31 @@ Swal.fire({
                 Record Marks
               </button>
 
-
               <!-- Quizzes button -->
               <a href="assignedquizzes.php?sub=<?php echo $row['SubjectID'] ?>&gra=<?php echo $grade ?>&group=<?php echo $group ?>" 
                 class="<?php echo $btnClass; ?> <?php echo $disabled; ?>" 
                 style="width: 100px;">
                 + Quizzes
               </a>
-                          
-              <a href="managestudymaterials.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>"
-                class="btn btn-info btn-sm" 
+
+              <a href="assignedresources.php?sub=<?php echo $row['SubjectID'] ?>&gra=<?php echo $grade ?>&group=<?php echo $group ?>" 
+                class="<?php echo $btnClass; ?> <?php echo $disabled; ?>" 
                 style="width: 100px;">
-                Resources
+                + Reso
               </a>
+                          
+              <button 
+                class="btn btn-info btn-sm <?php echo $disabled; ?>" 
+                style="width: 100px;"
+                data-toggle="modal" 
+                data-target="#modal-uploadResource"
+                data-class="<?php echo $classId; ?>"
+                data-grade="<?php echo $grade; ?>"
+                data-subjectid="<?php echo $row['SubjectID']; ?>"
+                data-subjectname="<?php echo $subjectName; ?>"
+                data-group="<?php echo $group; ?>">
+                + Resources
+              </button>
 
               <a href="alllearner.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>"
                 class="btn btn-info btn-sm" 
@@ -175,7 +187,6 @@ Swal.fire({
 
 <!-- Scripts -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-
 
 
 <!-- Record Marks Modal -->
@@ -277,7 +288,6 @@ Swal.fire({
   </div>
 </div>
 
-
 <!-- Notify Class Modal -->
 <div class="modal fade" id="modal-notifyClass" tabindex="-1" role="dialog" aria-labelledby="notifyClassLabel" aria-hidden="true">
   <div class="modal-dialog modal-md" role="document">
@@ -311,6 +321,77 @@ Swal.fire({
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-primary">Post Notice</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Resource Modal -->
+<div class="modal fade" id="modal-uploadResource" tabindex="-1" role="dialog" aria-labelledby="uploadResourceLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-info">
+        <h4 class="modal-title" id="uploadResourceLabel">Upload Resource</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <form action="upload_resource.php" method="post" enctype="multipart/form-data">
+        <div class="modal-body">
+          
+          <p id="modalClassInfoResource" style="margin-bottom:15px;"></p>
+
+          <div class="row">
+            <!-- Left Column: Inputs -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Title</label>
+                <input type="text" name="title" class="form-control" placeholder="E.g. Newton’s Laws Summary" required>
+              </div>
+
+              <div class="form-group">
+                <label>Choose File</label>
+                <input type="file" name="resource_file" class="form-control" required>
+              </div>
+
+              <div class="form-group">
+                <label>Description / Notes (Optional)</label>
+                <textarea name="description" class="form-control" rows="3" placeholder="Brief info about the resource"></textarea>
+              </div>
+            </div>
+
+            <!-- Right Column: File Type Info -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Supported File Types</label>
+                <div class="alert alert-info" style="margin-bottom:0;">
+                  <strong>Allowed formats:</strong>
+                  <ul style="margin: 0; padding-left: 18px;">
+                    <li>PDF (.pdf)</li>
+                    <li>Images (.jpg, .jpeg, .png, .gif, .webp)</li>
+                    <li>Documents (.doc, .docx, .xls, .xlsx, .ppt, .pptx)</li>
+                    <li>Videos (.mp4, .avi, .mov, .mkv, .webm)</li>
+                    <li>Audio (.mp3, .wav, .m4a, .ogg)</li>
+                    <li>Compressed (.zip, .rar, .7z)</li>
+                    <li>Text files (.txt, .csv)</li>
+                  </ul>
+                  <p style="margin-top:5px;"><strong>Maximum size:</strong> 50 MB</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hidden inputs -->
+          <input type="hidden" id="resourceClassId" name="classId">
+          <input type="hidden" id="resourceGrade" name="grade">
+          <input type="hidden" id="resourceSubjectId" name="subjectid">
+          <input type="hidden" id="resourceGroup" name="group">
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary"><i class="fa fa-cloud-upload"></i> Upload Resource</button>
         </div>
       </form>
     </div>
@@ -382,9 +463,25 @@ $('#modal-notifyClass').on('show.bs.modal', function (event) {
 });
 </script>
 
+<script>
+$('#modal-uploadResource').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget);
+    var modal = $(this);
 
+    var classId = button.data('class');
+    var grade = button.data('grade');
+    var subjectId = button.data('subjectid');
+    var group = button.data('group');
+    var subjectName = button.data('subjectname');
 
+    modal.find('#resourceClassId').val(classId);
+    modal.find('#resourceGrade').val(grade);
+    modal.find('#resourceSubjectId').val(subjectId);
+    modal.find('#resourceGroup').val(group);
 
+    modal.find('#modalClassInfoResource').text(`${subjectName} | ${grade} | Group: ${group}`);
+});
+</script>
 
 
 
