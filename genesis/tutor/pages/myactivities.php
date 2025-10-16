@@ -10,7 +10,7 @@ if (!isset($_SESSION['email'])) {
 
 include(__DIR__ . "/../../partials/connect.php");
 
-$tutorId = $_SESSION['user_id']; // Logged-in tutor id
+$tutorId = $_SESSION['user_id']; 
 ?>
 
 <?php include(__DIR__ . "/../../common/partials/head.php"); ?>
@@ -57,7 +57,8 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                 <th>Grade</th>
                 <th>Subject</th>
                 <th>Created On</th>
-                <th>Action</th>
+                <th>Edit</th>
+                <th>Open</th>
               </tr>
             </thead>
             <tbody>
@@ -84,19 +85,17 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                     <td>" . htmlspecialchars($row['Grade']) . "</td>
                     <td>" . htmlspecialchars($row['SubjectName']) . "</td>
                     <td>" . htmlspecialchars($row['CreatedAt']) . "</td>
-                   <td>
+                    <td>
                     <a href='viewactivity.php?activityId=" . $activityId . " ' class='btn btn-xs btn-primary' title='Edit'>
-                        <i class='fa fa-pencil'></i>
+                        <i class='fa fa-pencil'>Edit</i>
                     </a>
-                    <a href='#' class='btn btn-xs btn-danger delete-activity-btn' data-id='" . intval($row['Id']) . "' title='Delete'>
-                        <i class='fa fa-trash'></i>
-                    </a>
+                    </td>
+                    <td>
                     <a href='masteractivityoverview.php?activityId=" . $activityId . "' class='btn btn-xs btn-info' title='Overview'>
-                        <i class='fa fa-info-circle'></i>
+                        <i class='fa fa-info-circle'>Overview</i>
                     </a>
-                    
-
-                  </td>
+                  
+                    </td>
                     
                 </tr>";
 
@@ -114,8 +113,6 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
   <div class="control-sidebar-bg"></div>
 </div>
 
-<!-- Include SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
@@ -126,27 +123,6 @@ $(function () {
         autoWidth: false,
         order: [[4, "asc"]] // Sort by due date ascending by default
     });
-
-    // SweetAlert for Delete buttons
-    $(document).on('click', '.delete-activity-btn', function(e) {
-    e.preventDefault();
-    var activityId = $(this).data('id');
-
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "This will permanently delete the activity!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = 'deleteactivity.php?activityId=' + activityId;
-        }
-    });
-});
 
 });
 </script>

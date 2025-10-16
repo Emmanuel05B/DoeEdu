@@ -167,64 +167,6 @@
           </div>
         </div>
 
-
-        <!-- Bulk Assign Resources to Class - Right Side -->
-        <div class="col-md-12">
-          <div class="box box-info" style="border-top: 3px solid #00c0ef;">
-            <div class="box-header with-border" style="background-color:#d9f0fb;">
-              <h3 class="box-title" style="color:#0073b7;">
-                <i class="fa fa-tasks"></i> Bulk Assign Resources to Class/Group
-              </h3>
-            </div>
-            <div class="box-body" style="background-color:#ffffff;">
-              <form action="assign_resource.php" method="POST">
-                <div class="form-group">
-                  <label>Select Resources</label>
-                  <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9;">
-                    <table class="table table-striped" style="margin-bottom: 0;">
-                      <thead>
-                        <tr>
-                          <th style="width: 40px;"></th> <!-- checkbox column -->
-                          <th>Title</th>
-                          <th>Grade</th>
-                          <th>Subject</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <?php foreach ($uploadedResources as $res): ?>
-                          <tr>
-                            <td><input type="checkbox" name="resourceIds[]" value="<?= htmlspecialchars($res['ResourceID']) ?>"></td>
-                            <td><?= htmlspecialchars($res['Title']) ?></td>
-                            <td>Grade <?= htmlspecialchars($res['Grade']) ?></td>
-                            <td><?= htmlspecialchars($res['SubjectName']) ?></td>
-                          </tr>
-                        <?php endforeach; ?>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <div class="form-group row" style="margin-top: 15px;">
-                  <div class="col-xs-8">
-                    <select name="classId" id="classId" class="form-control" required>
-                      <option value="">-- Select a Class/Group --</option>
-                      <?php foreach ($assignedClasses as $class): ?>
-                        <option value="<?= htmlspecialchars($class['ClassID']) ?>">
-                          <?= htmlspecialchars($class['label']) ?>
-                        </option>
-                      <?php endforeach; ?>
-                    </select>
-                  </div>
-                  <div class="col-xs-4">
-                    <button type="submit" class="btn btn-info btn-block" style="margin-top: 0;">
-                      <i class="fa fa-check"></i> Assign Selected
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- Uploaded Resources Table -->
@@ -288,9 +230,7 @@
                       <a href="<?= $fileUrl ?>" class="btn btn-xs btn-primary" title="Download" download>
                         <i class="fa fa-download"></i>
                       </a>
-                      <button class="btn btn-xs btn-danger delete-resource-btn" data-id="<?= htmlspecialchars($res['ResourceID']) ?>" title="Delete">
-                        <i class="fa fa-trash"></i>
-                      </button>
+
                       <div class="btn-group">
                         <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown" title="Assign Resource">
                           <i class="fa fa-link"></i> Assign <span class="caret"></span>
@@ -370,42 +310,6 @@
 <script>
   $(function () {
     $('#resourceTable').DataTable();
-
-    $('.delete-resource-btn').on('click', function () {
-      const resourceId = $(this).data('id');
-      const row = $(this).closest('tr');
-
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "This will permanently delete this resource.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, delete it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: 'delete_resource.php',
-            method: 'POST',
-            data: { id: resourceId },
-            success: function (response) {
-              if (response.trim() === 'deleted') {
-                row.fadeOut(300, function () {
-                  $(this).remove();
-                });
-                Swal.fire('Deleted!', 'The resource has been deleted.', 'success');
-              } else {
-                Swal.fire('Error', 'Failed to delete the resource.', 'error');
-              }
-            },
-            error: function () {
-              Swal.fire('Error', 'An unexpected error occurred.', 'error');
-            }
-          });
-        }
-      });
-    });
   });
 </script>
 

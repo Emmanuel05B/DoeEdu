@@ -337,8 +337,6 @@ $('#modal-recordMarks').on('show.bs.modal', function (event) {
 
      modal.find('#modalClassInfoRecord').text(`${subjectName} | ${grade} | Group: ${group}`);
 });
-
-
 </script>
 
 <script>
