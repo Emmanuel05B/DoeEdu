@@ -2,6 +2,11 @@
 session_start();
 include(__DIR__ . "/../../partials/connect.php");
 
+
+
+//this handler is for submitting feedback for a one on one session that happened.
+
+
 // Get POST data from the simplified feedback modal
 $sessionId     = (int) ($_POST['SessionId'] ?? 0);
 $tutorId       = (int) ($_POST['TutorId'] ?? 0);

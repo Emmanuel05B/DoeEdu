@@ -18,128 +18,115 @@ if (!isset($_SESSION['email'])) {
 
 <div class="content-wrapper">
     <section class="content-header">
-        <h1>My Old Classes/sessions <small>View all your passed scheduled class sessions</small></h1>
+        <h1>My Past Meetings <small>Give feedback on your previous sessions</small></h1>
         <ol class="breadcrumb">
             <li><a href="learnerindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li class="active">Classes</li>
+            <li class="active">Past Meetings</li>
         </ol>
     </section>
 
-    <?php
-    include(__DIR__ . "/../../partials/connect.php");
-    $LearnerId = $_SESSION['user_id'];
+<?php
+include(__DIR__ . "/../../partials/connect.php");
+$LearnerId = $_SESSION['user_id'];
 
-    // Step 1: Get learner's class IDs
-    $stmtClasses = $connect->prepare("SELECT ClassID FROM learnerclasses WHERE LearnerID = ?");
-    $stmtClasses->bind_param("i", $LearnerId);
-    $stmtClasses->execute();
-    $classResults = $stmtClasses->get_result()->fetch_all(MYSQLI_ASSOC);
-    $stmtClasses->close();
+// Step 1: Get learner's class IDs
+$stmtClasses = $connect->prepare("SELECT ClassID FROM learnerclasses WHERE LearnerID = ?");
+$stmtClasses->bind_param("i", $LearnerId);
+$stmtClasses->execute();
+$classResults = $stmtClasses->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmtClasses->close();
 
-    if (count($classResults) === 0) {
-        echo "<h3 class='text-center'>You are not assigned to any classes yet.</h3>";
-    } else {
-        foreach ($classResults as $classRow) {
-            $classID = $classRow['ClassID'];
+if (count($classResults) === 0) {
+    echo "<h3 class='text-center'>You are not assigned to any classes yet.</h3>";
+} else {
+    foreach ($classResults as $classRow) {
+        $classID = $classRow['ClassID'];
 
-            // Step 2: Get class info (Grade, GroupName, SubjectId)
-            $stmtClassInfo = $connect->prepare("SELECT Grade, GroupName, SubjectId FROM classes WHERE ClassID = ? LIMIT 1");
-            $stmtClassInfo->bind_param("i", $classID);
-            $stmtClassInfo->execute();
-            $classInfo = $stmtClassInfo->get_result()->fetch_assoc();
-            $stmtClassInfo->close();
+        // Get class info (Grade, GroupName, SubjectId, TutorId)
+        $stmtClassInfo = $connect->prepare("SELECT Grade, GroupName, SubjectId, TutorId FROM classes WHERE ClassID = ? LIMIT 1");
+        $stmtClassInfo->bind_param("i", $classID);
+        $stmtClassInfo->execute();
+        $classInfo = $stmtClassInfo->get_result()->fetch_assoc();
+        $stmtClassInfo->close();
 
-            $grade = $classInfo['Grade'];
-            $group = $classInfo['GroupName'];
-            $subjectId = $classInfo['SubjectId'];
+        $grade = $classInfo['Grade'];
+        $group = $classInfo['GroupName'];
+        $subjectId = $classInfo['SubjectId'];
+        $tutorId = $classInfo['TutorId'];
 
-            // Step 3: Get subject name
-            $stmtSubject = $connect->prepare("SELECT SubjectName FROM subjects WHERE SubjectId = ? LIMIT 1");
-            $stmtSubject->bind_param("i", $subjectId);
-            $stmtSubject->execute();
-            $subjectRow = $stmtSubject->get_result()->fetch_assoc();
-            $stmtSubject->close();
+        // Get subject name
+        $stmtSubject = $connect->prepare("SELECT SubjectName FROM subjects WHERE SubjectId = ? LIMIT 1");
+        $stmtSubject->bind_param("i", $subjectId);
+        $stmtSubject->execute();
+        $subjectRow = $stmtSubject->get_result()->fetch_assoc();
+        $stmtSubject->close();
+        $subjectName = $subjectRow ? $subjectRow['SubjectName'] : '';
 
-            $subjectName = $subjectRow['SubjectName'];
-
-
-            // Step 4: Fetch meetings for this class     .. WHERE cm.ClassId = ? AND cm.Status = 'Replaced'
-            $stmtSessions = $connect->prepare("
-                SELECT 
-                    cm.MeetingID, cm.MeetingLink, cm.Status, cm.Notes, cm.MeetingDate,
-                    u.Name AS TutorName, u.Surname AS TutorSurname
-                FROM classmeetings cm
-                JOIN users u ON cm.TutorId = u.Id
-                WHERE cm.ClassId = ?
-                ORDER BY cm.MeetingDate DESC
-            ");
-
-            if (!$stmtSessions) {
-                die("Prepare failed: " . $connect->error);
-            }
-
-            $stmtSessions->bind_param("i", $classID);
-            $stmtSessions->execute();
-            $sessions = $stmtSessions->get_result();
-
-
-
-    ?>
+        // Fetch past meetings that haven't received feedback yet
+        $stmtMeetings = $connect->prepare("
+            SELECT 
+                cm.MeetingId, cm.MeetingDate,
+                u.Name AS TutorName, u.Surname AS TutorSurname
+            FROM classmeetings cm
+            JOIN users u ON cm.TutorId = u.Id
+            WHERE cm.ClassId = ?
+              AND cm.MeetingDate < NOW()
+              AND cm.MeetingId NOT IN (
+                  SELECT MeetingId FROM meetingfeedback WHERE LearnerId = ?
+              )
+            ORDER BY cm.MeetingDate DESC
+        ");
+        $stmtMeetings->bind_param("ii", $classID, $LearnerId);
+        $stmtMeetings->execute();
+        $meetings = $stmtMeetings->get_result();
+?>
 
     <section class="content">
         <div class="row">
             <div class="col-xs-12">
                 <div class="box">
                     <div class="box-header">
-                        <h3 class="box-title">
-                            <?= htmlspecialchars($subjectName) ?> - <?= $grade . " " . $group ?>
-                        </h3>
+                        <h3 class="box-title"><?= htmlspecialchars($subjectName) ?> - <?= htmlspecialchars($grade . " " . $group) ?></h3>
                     </div>
                     <div class="box-body table-responsive">
                         <table class="table table-bordered table-striped">
                             <thead style="background-color: #3c8dbc; color: white;">
                                 <tr>
                                     <th>Date & Time</th>
+                                    <th>Subject</th>
+                                    <th>Grade</th>
                                     <th>Tutor</th>
-                                    <th>Status</th>
-                                    <th>Meeting Link</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                             <?php
-                            if ($sessions->num_rows === 0) {
-                                echo "<tr><td colspan='5'>No scheduled sessions for this class.</td></tr>";
+                            if ($meetings->num_rows === 0) {
+                                echo "<tr><td colspan='5'>No past sessions awaiting feedback for this class.</td></tr>";
                             } else {
-                                while ($session = $sessions->fetch_assoc()) {
-                                    $statusLabel = "";
-                                    switch ($session['Status']) {
-                                        case 'Active':
-                                            $statusLabel = "<span class='label label-success'>Active</span>";
-                                            break;
-                                        case 'Pending':
-                                            $statusLabel = "<span class='label label-warning'>Pending</span>";
-                                            break;
-                                        default:
-                                            $statusLabel = "<span class='label label-default'>" . htmlspecialchars($session['Status']) . "</span>";
-                                    }
+                                while ($row = $meetings->fetch_assoc()) {
+                                    $meetingId = (int)$row['MeetingId'];
+                                    $meetingDate = date('Y-m-d H:i', strtotime($row['MeetingDate']));
+                                    $tutorName = htmlspecialchars($row['TutorName'] . ' ' . $row['TutorSurname']);
 
                                     echo "<tr>
-                                            <td>" . date("Y-m-d H:i", strtotime($session['MeetingDate'])) . "</td>
-                                            <td>{$session['TutorName']} {$session['TutorSurname']}</td>
-                                            <td>{$statusLabel}</td>
-                                            <td><a href='{$session['MeetingLink']}' target='_blank'>Join</a></td>
+                                            <td>{$meetingDate}</td>
+                                            <td>{$subjectName}</td>
+                                            <td>{$grade} {$group}</td>
+                                            <td>{$tutorName}</td>
                                             <td>
-                                                <button class='btn btn-info btn-xs openFeedbackModal' 
-                                                    data-session='{$session['MeetingID']}' 
-                                                    data-tutor='{$session['TutorName']} {$session['TutorSurname']}'>
+                                                <button class='btn btn-primary btn-xs openFeedbackModal'
+                                                    data-meetingid='{$meetingId}'
+                                                    data-classid='".htmlspecialchars($classID)."'
+                                                    data-tutorid='".htmlspecialchars($tutorId)."'
+                                                    data-subjectid='".htmlspecialchars($subjectId)."'
+                                                    data-tutor='{$tutorName}'>
                                                     Give Feedback
                                                 </button>
                                             </td>
                                         </tr>";
                                 }
                             }
-
                             ?>
                             </tbody>
                         </table>
@@ -149,11 +136,11 @@ if (!isset($_SESSION['email'])) {
         </div>
     </section>
 
-    <?php
-            $stmtSessions->close();
-        } // foreach class
-    } // else
-    ?>
+<?php
+        $stmtMeetings->close();
+    } // foreach class
+} // else
+?>
 </div>
 
 <div class="control-sidebar-bg"></div>
@@ -161,13 +148,99 @@ if (!isset($_SESSION['email'])) {
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
+<!-- Feedback Modal -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel">
+  <div class="modal-dialog" role="document">
+    <form id="feedbackForm" method="POST" action="submit_class_feedback.php">
+      <div class="modal-content">
+        <div class="modal-header bg-blue">
+          <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+          <h4 class="modal-title">Feedback for <span id="feedbackTutorName"></span></h4>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="MeetingId" id="feedbackMeetingId">
+          <input type="hidden" name="ClassId" id="feedbackClassId">
+          <input type="hidden" name="TutorId" id="feedbackTutorId">
+          <input type="hidden" name="SubjectId" id="feedbackSubjectId">
+
+          <div class="form-group">
+            <label>1. How clear were the tutor’s explanations?</label><br>
+            <?php for($i=1;$i<=5;$i++): ?>
+              <label class="radio-inline">
+                <input type="radio" name="ClarityRating" value="<?= $i ?>" required> <?= $i ?>
+              </label>
+            <?php endfor; ?>
+          </div>
+
+          <div class="form-group">
+            <label>2. How engaging was the tutor?</label><br>
+            <?php for($i=1;$i<=5;$i++): ?>
+              <label class="radio-inline">
+                <input type="radio" name="EngagementRating" value="<?= $i ?>" required> <?= $i ?>
+              </label>
+            <?php endfor; ?>
+          </div>
+
+          <div class="form-group">
+            <label>3. Overall satisfaction (1–10)</label><br>
+            <?php for($i=1;$i<=10;$i++): ?>
+              <label class="radio-inline">
+                <input type="radio" name="OverallSatisfaction" value="<?= $i ?>" required> <?= $i ?>
+              </label>
+            <?php endfor; ?>
+          </div>
+
+          <div class="form-group">
+            <label>Additional Comments</label>
+            <textarea name="Comments" class="form-control" rows="3" placeholder="Your feedback (optional)"></textarea>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Submit Feedback</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 $(function () {
-    $('table').DataTable({
-        responsive: true,
-        autoWidth: false
+
+
+    // Open modal and populate fields
+    $(document).on('click', '.openFeedbackModal', function() {
+        const meetingId = $(this).data('meetingid');
+        const classId = $(this).data('classid');
+        const tutorId = $(this).data('tutorid');
+        const subjectId = $(this).data('subjectid');
+        const tutorName = $(this).data('tutor');
+
+        $('#feedbackMeetingId').val(meetingId);
+        $('#feedbackClassId').val(classId);
+        $('#feedbackTutorId').val(tutorId);
+        $('#feedbackSubjectId').val(subjectId);
+        $('#feedbackTutorName').text(tutorName);
+
+        $('#feedbackForm')[0].reset();
+        $('#feedbackModal').modal('show');
     });
 });
+
+// Display SweetAlert feedback if session set
+<?php if (isset($_SESSION['alert_type']) && isset($_SESSION['alert_message'])): ?>
+Swal.fire({
+    icon: '<?= $_SESSION['alert_type'] ?>',
+    title: '<?= ($_SESSION['alert_type'] === "success") ? "Success" : "Notice" ?>',
+    text: '<?= $_SESSION['alert_message'] ?>',
+    confirmButtonColor: '#3085d6',
+    confirmButtonText: 'OK'
+});
+<?php 
+unset($_SESSION['alert_type']);
+unset($_SESSION['alert_message']);
+endif; ?>
 </script>
 
 </body>

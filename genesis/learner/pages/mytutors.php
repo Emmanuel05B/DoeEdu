@@ -64,7 +64,11 @@ $alertMessage = $_GET['message'] ?? '';
 
   <div class="content-wrapper">
     <section class="content-header">
-      <h1>My Tutors <small>Book a session directly from here</small></h1>
+      <h1>My Tutors-Classes <small>Book a session and attend classes directly from here</small></h1>
+      <ol class="breadcrumb">
+        <li><a href="learnerindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Classes</li>
+      </ol>
     </section>
 
     <section class="content">

@@ -63,7 +63,7 @@ if ($result) {
         <?php else: ?>
           <?php foreach ($tutors as $tutor): ?>
             <div class="col-md-4">
-              <div class="box box-primary" style="min-height: 350px;">
+              <div class="box box-primary" style="min-height: 300px;">
                 <div class="box-header with-border text-center">
                   <img 
                     src="<?= !empty($tutor['ProfilePicture']) ? '../' . htmlspecialchars($tutor['ProfilePicture']) : '../../uploads/doe.jpg' ?>" 
@@ -79,20 +79,25 @@ if ($result) {
                 </div>
                 <div class="box-body text-center">
                   <p><strong>Name:</strong> <?= htmlspecialchars($tutor['Name']) . ' ' . htmlspecialchars($tutor['Surname']) ?></p>
-                  <p><strong>Email:</strong> <?= htmlspecialchars($tutor['Email']) ?></p>
                   <p><strong>Availability:</strong> <?= htmlspecialchars($tutor['Availability']) ?: 'Not specified' ?></p>
                   <hr>
                   <div class="btn-group">
                     <a href="updatetutors.php?id=<?= $tutor['TutorId'] ?>" class="btn btn-sm btn-info">View / Update</a>                    
-                    <button 
-                      class="btn btn-success btn-sm" 
-                      data-toggle="modal" 
-                      data-target="#modal-performance"
-                      data-tutorid="<?= $tutor['TutorId'] ?>"
-                      data-name="<?= htmlspecialchars($tutor['Name'] . ' ' . $tutor['Surname']) ?>"
-                    >
-                      Performance
+                    
+                    
+                    
+
+                    <button class="btn btn-success btn-sm" data-toggle="modal" 
+                        data-target="#modal-summary" 
+                        data-tutorid="<?= $tutor['TutorId'] ?>" 
+                        data-name="<?= htmlspecialchars($tutor['Name'].' '.$tutor['Surname']) ?>">
+                        Performance
                     </button>
+
+
+
+
+
                     <button 
                       class="btn btn-primary btn-sm" 
                       data-toggle="modal" 
@@ -117,7 +122,6 @@ if ($result) {
 <!-- Scripts -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
-<!-- Contact Modal (exactly as before) -->
 <!-- Contact Modal -->
 <div class="modal fade" id="modal-contact" tabindex="-1" role="dialog" aria-labelledby="contactLabel" aria-hidden="true">
   <div class="modal-dialog modal-md" role="document">
@@ -157,40 +161,168 @@ if ($result) {
 </div>
 
 
-<!-- Performance Modal (separate, does not affect Contact modal) -->
-<div class="modal fade" id="modal-performance" tabindex="-1" role="dialog" aria-labelledby="performanceLabel" aria-hidden="true">
+<!-- SUMMARY MODAL  -->
+<div class="modal fade" id="modal-summary" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-md" role="document">
     <div class="modal-content">
-      
       <div class="modal-header bg-success">
-        <h4 class="modal-title" id="performanceLabel">Performance Ratings</h4>
+        <h4 class="modal-title" id="summaryTitle">Performance Summary</h4>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
-
       <div class="modal-body">
-        <div class="box box-success">
-          <div class="box-header">
-            <i class="fa fa-bar-chart"></i>
-            <h3 class="box-title">Tutor Performance</h3>
-          </div>
-          <div class="box-body">
-            <p><strong>Tutor:</strong> <span id="perfTutorName"></span></p>
-            <ul id="perfData">
-              <li>Average Rating: ⭐⭐⭐⭐☆ (4.2/5)</li>
-              <li>Classes Taught: 15</li>
-              <li>Attendance: 98%</li>
-              <li>Student Feedback: "Very engaging and clear explanations."</li>
-            </ul>
-          </div>
+        <p><strong>Tutor:</strong> <span id="summaryTutorName"></span></p>
+        <ul id="summaryData"><li>Loading...</li></ul>
+        <div class="text-center mt-2">
+          <button id="btnOneOnOne" class="btn btn-success btn-sm">1-on-1 Feedback</button>
+          <button id="btnClassMeeting" class="btn btn-info btn-sm">Class Feedback</button>
         </div>
       </div>
-
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Back</button>
+        <button class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
+
+<!--  ONE-ON-ONE FEEDBACK MODAL  -->
+<div class="modal fade" id="modal-oneonone" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-success">
+        <h4 class="modal-title">One-on-One Detailed Feedback</h4>
+        <button class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr><th>Subject</th><th>Rating</th><th>Comment</th></tr>
+          </thead>
+          <tbody id="oneOnOneBody"></tbody>
+        </table>
+      </div>
+      <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<!--  CLASS MEETING FEEDBACK MODAL  -->
+<div class="modal fade" id="modal-class" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h4 class="modal-title">Class Meeting Detailed Feedback</h4>
+        <button class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr><th>Subject</th><th>Rating</th><th>Comment</th></tr>
+          </thead>
+          <tbody id="classBody"></tbody>
+        </table>
+      </div>
+      <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Close</button></div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+
+$('#modal-summary').on('show.bs.modal', function(event){
+    var button = $(event.relatedTarget);
+    var tutorid = button.data('tutorid');
+    var name = button.data('name');
+    var modal = $(this);
+    modal.attr('data-tutorid', tutorid);
+    modal.find('#summaryTutorName').text(name);
+    modal.find('#summaryData').html('<li>Loading...</li>');
+
+    $.ajax({
+    url: 'fetch_tutor_feedback.php',
+    method: 'POST',
+    data: { tutor_id: tutorid, type: 'summary' }, 
+    dataType: 'json',
+    success: function(data) {
+        var html = '';
+        html += '<li>Average Rating: ' + (data.avg_rating ?? 'N/A') + ' ⭐</li>';
+        html += '<li>Total Feedbacks: ' + (data.count ?? 0) + '</li>';
+
+        if(data.comments && data.comments.length > 0){
+            html += '<li>Recent Comments:</li>';
+            html += '<ul style="padding-left: 20px;">';
+            
+            // First comment: One-on-One
+            if(data.comments[0]) html += '<li>[1-on-1] Questions Answered satisfactorily?: ' + data.comments[0] + '</li>';
+
+            // Second comment: Class Meeting
+            if(data.comments[1]) html += '<li>[Class Meeting] Comment: ' + data.comments[1] + '</li>';
+            
+            html += '</ul>';
+        }
+
+        modal.find('#summaryData').html(html);
+    },
+    error: function(err){
+        console.log(err);
+        modal.find('#summaryData').html('<li>Error fetching feedback.</li>');
+    }
+});
+
+});
+
+
+
+
+// ONE-ON-ONE BUTTON
+$('#btnOneOnOne').click(function(){
+    var tutorid = $('#modal-summary').attr('data-tutorid');
+    $.ajax({
+        url: 'fetch_tutor_feedback.php',
+        type: 'POST',
+        data: { tutor_id: tutorid, type: 'oneonone' },
+        dataType: 'json',
+        success: function(data){
+            var tbody = $('#oneOnOneBody');
+            tbody.empty();
+            if(!data.details || data.details.length===0) {
+                tbody.append('<tr><td colspan="3" class="text-center">No feedback found</td></tr>');
+                return;
+            }
+            data.details.forEach(f=>{
+                tbody.append('<tr><td>'+ (f.subject||'N/A') +'</td><td>'+f.rating+' ⭐</td><td>'+ (f.comment||'') +'</td></tr>');
+            });
+            $('#modal-oneonone').modal('show');
+        },
+        error: function(){ alert('Error fetching one-on-one feedback'); }
+    });
+});
+
+// CLASS MEETING BUTTON
+$('#btnClassMeeting').click(function(){
+    var tutorid = $('#modal-summary').attr('data-tutorid');
+    $.ajax({
+        url: 'fetch_tutor_feedback.php',
+        type: 'POST',
+        data: { tutor_id: tutorid, type: 'classmeeting' },
+        dataType: 'json',
+        success: function(data){
+            var tbody = $('#classBody');
+            tbody.empty();
+            if(!data.details || data.details.length===0) {
+                tbody.append('<tr><td colspan="3" class="text-center">No feedback found</td></tr>');
+                return;
+            }
+            data.details.forEach(f=>{
+                tbody.append('<tr><td>'+ (f.subject||'N/A') +'</td><td>'+f.rating+' ⭐</td><td>'+ (f.comment||'') +'</td></tr>');
+            });
+            $('#modal-class').modal('show');
+        },
+        error: function(){ alert('Error fetching class feedback'); }
+    });
+});
+</script>
 
 <script>
 $('#modal-contact').on('show.bs.modal', function (event) {
@@ -208,39 +340,45 @@ $('#modal-performance').on('show.bs.modal', function (event) {
     modal.find('#perfTutorName').text(tutorname);
     console.log("Performance modal opened for Tutor ID:", tutorid);
 });
+
+
+
+
 </script>
 
-<?php
-if (isset($_SESSION['success'])) {
-    $successMsg = $_SESSION['success'];
-    unset($_SESSION['success']);
-    echo "
-    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: '". addslashes($successMsg) ."',
-            confirmButtonText: 'OK'
-        });
-    </script>";
-}
 
-if (isset($_SESSION['error'])) {
-    $errorMsg = $_SESSION['error'];
-    unset($_SESSION['error']);
-    echo "
-    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: '". addslashes($errorMsg) ."',
-            confirmButtonText: 'OK'
-        });
-    </script>";
-}
+<?php
+  if (isset($_SESSION['success'])) {
+      $successMsg = $_SESSION['success'];
+      unset($_SESSION['success']);
+      echo "
+      <script>
+          Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: '". addslashes($successMsg) ."',
+              confirmButtonText: 'OK'
+          });
+      </script>";
+  }
+
+  if (isset($_SESSION['error'])) {
+      $errorMsg = $_SESSION['error'];
+      unset($_SESSION['error']);
+      echo "
+      <script>
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: '". addslashes($errorMsg) ."',
+              confirmButtonText: 'OK'
+          });
+      </script>";
+  }
 ?>
+
+
+
 
 </body>
 </html>
