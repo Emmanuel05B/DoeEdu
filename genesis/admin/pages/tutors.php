@@ -195,7 +195,7 @@ if ($result) {
       <div class="modal-body">
         <table class="table table-bordered table-striped">
           <thead>
-            <tr><th>Subject</th><th>Rating</th><th>Comment</th></tr>
+            <tr><th>Subject</th><th>Rating</th><th>Questions Answered satisfactorily?</th><th>How engaging was the tutor?</th><th>How clear were the tutor’s explanations?</th></tr>
           </thead>
           <tbody id="oneOnOneBody"></tbody>
         </table>
