@@ -135,40 +135,74 @@ ob_start();
   <tr>
     <td style="width:50%;">
       <b>Learner Details</b>
-      <p>
-        <b>Name:</b> <?= $final['Name'] ?><br>
-        <b>Surname:</b> <?= $final['Surname'] ?><br>
-        <b>Email:</b> <?= $final['Email'] ?>
-      </p>
+
+      <table style="width:100%; border:1px solid #ddd; border-collapse:collapse; margin-bottom:10px;">
+        <tr>
+            <td style="border:none; width:50%;"><b>Name:</b></td>
+            <td style="border:none;"><?= $final['Name'] ?></td>
+        </tr>
+        <tr>
+            <td style="border:none;"><b>Surname:</b></td>
+            <td style="border:none;"><?= $final['Surname'] ?></td>
+        </tr>
+        <tr>
+            <td style="border:none;"><b>Email:</b></td>
+            <td style="border:none;"><?= $final['Email'] ?></td>
+        </tr>
+       </table>
     </td>
     <td style="width:50%;">
       <b>Tutor Details</b>
-      <p>
-        <b>Name:</b> <?= $name ?><br>
-        <b>Surname:</b> <?= $sur ?><br>
-        <b>Email:</b> <?= $email ?>
-      </p>
+
+      <table style="width:100%; border:1px solid #ddd; border-collapse:collapse; margin-bottom:10px;">
+        <tr>
+            <td style="border:none; width:50%;"><b>Name:</b></td>
+            <td style="border:none;"><?= $name?></td>
+        </tr>
+        <tr>
+            <td style="border:none;"><b>Surname:</b></td>
+            <td style="border:none;"><?= $sur ?></td>
+        </tr>
+        <tr>
+            <td style="border:none;"><b>Email:</b></td>
+            <td style="border:none;"><?= $email ?></td>
+        </tr>
+       </table>
     </td>
   </tr>
-</table>
+</table><br>
 
 
 <!-- Attendance & Submission -->
+<b>Attendance & Submission Rates</b>
 <table>
   <tr>
     <td style="width:50%;">
       <b>Attendance</b>
-      <p>
-        <b>Attendance Rate:</b> <?= number_format($attendance_rate, 2) ?>%<br>
-        <b>Classes Missed:</b> <?= $missed_classes ?>/<?= $total_activities ?>
-      </p>
+      <table style="width:100%; border:1px solid #ddd; border-collapse:collapse; margin-bottom:10px;">
+        <tr>
+            <td style="border:none; width:50%;"><b>Attendance Rate:</b></td>
+            <td style="border:none;"><?= number_format($attendance_rate, 2) ?>%</td>
+        </tr>
+        <tr>
+            <td style="border:none;"><b>Classes Missed:</b></td>
+            <td style="border:none;"><?= $missed_classes ?>/<?= $total_activities ?></td>
+        </tr>
+       </table>
     </td>
     <td style="width:50%;">
       <b>Submission</b>
-      <p>
-        <b>Submission Rate:</b> <?= number_format($submission_rate, 2) ?>%<br>
-        <b>Activities Missed:</b> <?= $missed_activities ?>/<?= $total_activities ?>
-      </p>
+
+      <table style="width:100%; border:1px solid #ddd; border-collapse:collapse; margin-bottom:10px;">
+        <tr>
+            <td style="border:none; width:50%;"><b>Submission Rate:</b></td>
+            <td style="border:none;"><?= number_format($submission_rate, 2) ?>%</td>
+        </tr>
+        <tr>
+            <td style="border:none;"><b>Activities Missed:</b></td>
+            <td style="border:none;"><?= $missed_activities ?>/<?= $total_activities ?></td>
+        </tr>
+       </table>
     </td>
   </tr>
 </table>

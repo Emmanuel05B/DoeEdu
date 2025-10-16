@@ -1,663 +1,347 @@
 <?php
-    require '../../../vendor/autoload.php';
-    use Dompdf\Dompdf;
-    use Dompdf\Options;
+require '../../../vendor/autoload.php';
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
-    $imagePath = '../images/westtt.png'; // adjust if needed
-    $imageData = base64_encode(file_get_contents($imagePath));
-    $src = 'data:image/png;base64,' . $imageData;
+$imagePath = '../images/westtt.png'; 
+$imageData = base64_encode(file_get_contents($imagePath));
+$src = 'data:image/png;base64,' . $imageData;
 
-    session_start();
+session_start();
 
-    // Check if the user is logged in
-    if (!isset($_SESSION['email'])) {
-        header("Location: ../../common/login.php");
-        exit();
+if (!isset($_SESSION['email'])) {
+    header("Location: ../../common/login.php");
+    exit();
+}
+
+include(__DIR__ . "/../../partials/connect.php");
+
+$learner_id = isset($_POST['learnerId']) ? $_POST['learnerId'] : null;
+$SubjectId = isset($_POST['subjectId']) ? intval($_POST['subjectId']) : null;
+
+$tutorEmail = $_SESSION['email'];
+
+// Fetch tutor info
+$tutorQuery = $connect->prepare("
+    SELECT Name, Surname, Email, Gender
+    FROM users
+    WHERE Email = ?
+");
+$tutorQuery->bind_param("s", $tutorEmail);
+$tutorQuery->execute();
+$tutorData = $tutorQuery->get_result()->fetch_assoc();
+$tutorQuery->close();
+
+$name = $tutorData['Name'];
+$sur = $tutorData['Surname'];
+$email = $tutorData['Email'];
+$title = $tutorData['Gender'];
+
+// Fetch subject info
+$subjectQuery = $connect->prepare("
+    SELECT SubjectName, GradeId 
+    FROM subjects 
+    WHERE SubjectId = ?
+");
+$subjectQuery->bind_param("i", $SubjectId);
+$subjectQuery->execute();
+$subjectData = $subjectQuery->get_result()->fetch_assoc();
+$subjectQuery->close();
+
+$SubjectName = $subjectData['SubjectName'];
+$grade = $subjectData['GradeId'];
+
+// Fetch learner info
+$learner_sql = "SELECT * FROM users WHERE Id = $learner_id";
+$learner_results = $connect->query($learner_sql);
+$final = $learner_results->fetch_assoc();
+
+// Fetch learner activities
+$activity_sql = "
+    SELECT lam.ActivityId, lam.MarksObtained, a.ActivityName, a.MaxMarks, a.ChapterName, lam.DateAssigned,
+           lam.Attendance, lam.AttendanceReason, lam.Submission, lam.SubmissionReason
+    FROM learneractivitymarks lam
+    JOIN activities a ON lam.ActivityId = a.ActivityId
+    WHERE lam.LearnerId = ? AND a.SubjectId = ?
+    ORDER BY lam.DateAssigned ASC
+";
+$stmt = $connect->prepare($activity_sql);
+$stmt->bind_param('ii', $learner_id, $SubjectId);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Calculate attendance & submissions
+$total_activities = $result->num_rows;
+$missed_classes = 0;
+$missed_activities = 0;
+
+$attendance_data = [];
+$result->data_seek(0);
+while ($row = $result->fetch_assoc()) {
+    if ($row['Attendance'] == 'absent') $missed_classes++;
+    if ($row['Submission'] == 'No') $missed_activities++;
+    if ($row['Attendance'] == 'absent' || $row['Submission'] == 'No') {
+        $attendance_data[] = $row;
     }
+}
 
-    include(__DIR__ . "/../../partials/connect.php");
+$attendance_rate = ($total_activities > 0) ? (($total_activities - $missed_classes)/$total_activities)*100 : 0;
+$submission_rate = ($total_activities > 0) ? (($total_activities - $missed_activities)/$total_activities)*100 : 0;
 
-    $learner_id = isset($_POST['learnerId']) ? $_POST['learnerId'] : null;
-    $SubjectId = isset($_POST['subjectId']) ? intval($_POST['subjectId']) : null;
-
-    // Fetch subject name based on SubjectId
-    $SubjectName = '';
-    switch ($SubjectId) {
-        case 1:
-            $SubjectName = 'Mathematics';
-            $grade = '10';
-            $tutor = 'Ms Malesela';  
-            $name = 'Shirley';
-            $sur = 'Rakau';
-            $email = 'shirleytidimalo03@gmail.com';
-
-            break;
-        case 2:
-            $SubjectName = 'Mathematics';
-            $grade = '11';
-            $tutor = 'Ms Khumalo';  //fake
-            $name = 'Naledi';
-            $sur = 'Khumalo';
-            $email = 'nkhumalo@doe.co.za';
-
-            break;
-        case 3:
-         
-            $SubjectName = 'Mathematics';
-            $grade = '12';
-            $tutor = 'Ms Matlaisane';
-            $name = 'Siphumelele';
-            $sur = 'Matlaisane';
-            $email = 'siphumelelematlaisane@gmail.com';
-
-            break;
-        case 4:
-            $SubjectName = 'Physical Sciences';
-            $grade = '11';
-            $tutor = 'Mr Boshielo';
-            $name = 'Emmanuel';
-            $sur = 'Boshielo';
-            $email = 'emahlwele05@gmail.com';
-            break;
-        case 5:
-            
-            $SubjectName = 'Physical Sciences';
-            $grade = '12';
-            $tutor = 'Mr Mamogobo';
-            $name = 'Sydney';
-            $sur = 'Mamogobo';
-            $email = 'mamogobodsydney@gmail.com';
-
-            break;
-        case 6:
-            $SubjectName = 'Physical Sciences';
-            $grade = '10';
-            $tutor = 'Mr Boshielo';
-            $name = 'Emmanuel';
-            $sur = 'Boshielo';
-            $email = 'emahlwele05@gmail.com';
-            break;
-        default:
-            echo '<h1>Learners - Unknown Status</h1>';
-            exit();
-    }
-
-    // Fetch parent details from the database
-    // Fetch learner details for parent
-
-        $psql = "SELECT * FROM learners WHERE LearnerId = $learner_id";
-        $presults = $connect->query($psql);
-
-        // Check if the query was successful
-        if (!$presults) {
-            die('Error executing parent query: ' . $connect->error);
-        }
-
-        $pfinal = $presults->fetch_assoc();
-
-
-    // Fetch learner details from users
-    $learner_sql = "SELECT * FROM users WHERE Id = $learner_id";
-    $learner_results = $connect->query($learner_sql);
-
-    // Check if the query was successful
-    if (!$learner_results) {
-        die('Error executing learner query: ' . $connect->error);
-    }
-    $final = $learner_results->fetch_assoc();
-
-    /*/ Fetch teacher details.............unneeded
-    $userId = $_SESSION['user_id']; // for teacher
-    $tsql = "SELECT * FROM users WHERE Id = $userId";
-    $tresults = $connect->query($tsql);
-    $tfinal = $tresults->fetch_assoc();   */
-
-
-    // Fetch learner activity marks
-    $activity_sql = "
-        SELECT 
-            lam.ActivityId, 
-            lam.MarksObtained,
-            a.ActivityName,  
-            a.MaxMarks,
-            a.ChapterName,
-            lam.DateAssigned
-        FROM learneractivitymarks lam
-        JOIN activities a ON lam.ActivityId = a.ActivityId
-        WHERE lam.LearnerId = ? AND a.SubjectId = ?
-        ORDER BY lam.DateAssigned ASC
-    ";
-
-    $stmt = $connect->prepare($activity_sql);
-    $stmt->bind_param('ii', $learner_id, $SubjectId); // Bind the learner_id to the query
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    // Check if the query was successful
-    if (!$result) {
-        die('Error executing activity query: ' . $connect->error);
-    }
-
-    // Fetch the attendance and submission data for missed classes and activities
-    $attendance_submission_sql = "
-        SELECT 
-            lam.ActivityId, 
-            lam.Attendance, 
-            lam.AttendanceReason, 
-            lam.Submission, 
-            lam.SubmissionReason,
-            a.ChapterName,
-            a.ActivityName
-        FROM learneractivitymarks lam
-        JOIN activities a ON lam.ActivityId = a.ActivityId
-        WHERE lam.LearnerId = ? AND (lam.Attendance = 'absent' OR lam.Submission = 'No') 
-        AND a.SubjectId = ?  
-        ORDER BY lam.DateAssigned ASC
-    ";
-
-    $stmt2 = $connect->prepare($attendance_submission_sql);
-    $stmt2->bind_param('ii', $learner_id, $SubjectId); // Bind learner_id and SubjectId to the query
-    $stmt2->execute();
-    $attendance_submission_result = $stmt2->get_result();
-
-    // Check if the query was successful
-    if (!$attendance_submission_result) {
-        die('Error executing attendance submission query: ' . $connect->error);
-    }
-
-    // Fetch total activities count for calculating percentage
-    $total_activities_sql = "
-        SELECT COUNT(*) as total 
-        FROM learneractivitymarks lam
-        JOIN activities a ON lam.ActivityId = a.ActivityId
-        WHERE lam.LearnerId = ? AND a.SubjectId = ? 
-    ";
-    $total_activities_stmt = $connect->prepare($total_activities_sql);
-    $total_activities_stmt->bind_param('ii', $learner_id, $SubjectId);
-    $total_activities_stmt->execute();
-    $total_activities_result = $total_activities_stmt->get_result();
-
-    // Check if the query was successful
-    if (!$total_activities_result) {
-        die('Error executing total activities query: ' . $connect->error);
-    }
-
-    $total_activities = $total_activities_result->fetch_assoc()['total'];
-
-    // Calculate missed attendance and submissions
-    $missed_classes = 0;
-    $missed_activities = 0;
-    $stmt2->data_seek(0); // Reset result pointer
-    while ($row = $attendance_submission_result->fetch_assoc()) {
-        if ($row['Attendance'] == 'absent') {
-            $missed_classes++;
-        }
-        if ($row['Submission'] == 'No') {
-            $missed_activities++;
-        }
-    }
-
-    // Calculate attendance and submission rates
-    if ($total_activities > 0) {
-        $attendance_rate = (($total_activities - $missed_classes) / $total_activities) * 100;
-        $submission_rate = (($total_activities - $missed_activities) / $total_activities) * 100;
-    } else {
-        $attendance_rate = 0;
-        $submission_rate = 0;
-    }
-
-    // Prepare display variables
-    $numabsent = $missed_classes;
-    $submission_no_count = $missed_activities;
-
-    // Start capturing the HTML content
-    ob_start();
+// Capture HTML
+ob_start();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learner Report</title>
-    <style>
+<meta charset="UTF-8">
+<title>Learner Report</title>
 
-        body {
-            font-family: Arial, sans-serif;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        } 
-  
-        th, td {
-            padding: 8px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .top-left-image {
-           
-            position: absolute;
-            top: 0;
-            left: 0;
-            max-height: 160px; /* Keep image size */
-            margin-top: -70px; /* Space from top */
-            margin-left: 50px; /* Space from left */
-        }
-    </style>
+<style>
+    body { font-family: Arial, sans-serif; font-size:12px; }
+    table { width:100%; border-collapse: collapse; margin-bottom: 10px;}
+    th, td { border:1px solid #ddd; padding:5px; text-align:left; vertical-align:top;}
+    th { background-color:#f2f2f2; }
+    .header-table td { border:none; }
+    .top-left-image { width:120px; }
+    .center { text-align:center; }
+</style>
+
 </head>
-
 <body>
 
-        <div>
-            <table class="table">
-                        <tbody>
-                           
-                            <tr>
-                                <td>
-                                     <div>
-                                        <!-- Adding the image -->
-                                      <img src="<?= $src ?>" alt="Image" class="top-left-image" />
-                                    </div>                            
-                                </td>
+<!-- Header -->
+<table class="header-table" style="width:100%; margin-bottom:10px;">
+  <tr>
+    <td style="border:none; vertical-align:top; width:50%;">
+      <img src="<?= $src ?>" class="top-left-image">
+    </td>
+    <td style="border:none; text-align:right; font-size:12px; line-height:1.4;">
+      <p><b>Registration No:</b> 2022/735117/07</p>
+      <p><b>Telephone:</b> 081 461 8178</p>
+      <p><b>Email:</b> thedistributorsofedu@gmail.com</p>
+    </td>
+  </tr>
+</table>
 
-                                <td>
-                                    <div>
-                                    <p><strong>Registration No:</strong> 2022/735117/07</p>
-                                    <p><strong>Telephone:</strong> 081 461 8178</p>
-                                    <p><strong>Email:</strong> <a href="mailto:thedistributorsofedu@gmail.com">thedistributorsofedu@gmail.com</a></p>
-                                    </div>                             
-                                </td>
+<hr>
+<h3 class="center"><?= $final['Name']; ?>'s Report</h3>
+<p class="center"><b>Subject:</b> <?= $SubjectName ?> &nbsp;&nbsp; <b>Generated on:</b> <?= date('Y-m-d') ?></p>
+<hr>
 
-                            </tr>
+<!-- Learner / Tutor Details -->
+<table>
+  <tr>
+    <td style="width:50%;">
+      <b>Learner Details</b>
 
-                        </tbody>
-            </table>
+      <table style="width:100%; border:1px solid #ddd; border-collapse:collapse; margin-bottom:10px;">
+        <tr>
+            <td style="border:none; width:50%;"><b>Name:</b></td>
+            <td style="border:none;"><?= $final['Name'] ?></td>
+        </tr>
+        <tr>
+            <td style="border:none;"><b>Surname:</b></td>
+            <td style="border:none;"><?= $final['Surname'] ?></td>
+        </tr>
+        <tr>
+            <td style="border:none;"><b>Email:</b></td>
+            <td style="border:none;"><?= $final['Email'] ?></td>
+        </tr>
+       </table>
+    </td>
+    <td style="width:50%;">
+      <b>Tutor Details</b>
 
-        </div><hr>
-
-
-        <h4 style="display: block; text-align: center;"><?php echo $final['Name']; ?>'s Report </h4>
-<div style="text-align: center;">
-  <span><b>Subject: </b><?php echo $SubjectName; ?></span>
-  &nbsp;&nbsp;&nbsp;&nbsp; <!-- adds some space -->
-  <span><b>Generated on: </b><?php echo date('Y-m-d'); ?></span>
-</div>
-<hr><br>
-
-
-
-        <div>
-            <table class="table2">
-                        <tbody>
-                       
-                            <tr>
-                                <td>
-
-                                    <div class="col-xs-6">
-                                        <p class="lead">Learner Details:</p>
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                                <tr>
-                                                    <td>
-                                                        <p><b>Name: </b><span><?php echo $final['Name']; ?></span>
-                                                        <p><b>Surname: </b><span"><?php echo $final['Surname']; ?></span></p>
-                                                        <p><b>Email: </b><span><?php echo $final['Email']; ?></span></p>
-                                                    </td>
-                                                </tr>
-                                              
-                                            </table>
-                                        </div>
-                                    </div>
-                          
-                                </td>
-
-                                <td>
-
-                                    <div class="col-xs-6">
-                                        <p class="lead">Tutor Details:</p>
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                                <tr>
-                                                    <td>
-                                                        <p><b>Name: </b><span><?php echo $name; ?></span>
-                                                        <p><b>Surname: </b><span><?php echo $sur; ?></span></p>
-                                                        <p><b>Email: </b><span><?php echo $email; ?></span></p>
-                                                    </td>
-                                                </tr>
-                                              
-                                            </table>
-                                        </div>
-                                    </div>
-                                 
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-            </table>
-
-        </div><br>
+      <table style="width:100%; border:1px solid #ddd; border-collapse:collapse; margin-bottom:10px;">
+        <tr>
+            <td style="border:none; width:50%;"><b>Name:</b></td>
+            <td style="border:none;"><?= $name?></td>
+        </tr>
+        <tr>
+            <td style="border:none;"><b>Surname:</b></td>
+            <td style="border:none;"><?= $sur ?></td>
+        </tr>
+        <tr>
+            <td style="border:none;"><b>Email:</b></td>
+            <td style="border:none;"><?= $email ?></td>
+        </tr>
+       </table>
+    </td>
+  </tr>
+</table>
 
 
-
-
-    <!-- Attandance and submission Tables below-->
-    <div>
-        
-        <table class="table">
-                        <tbody>
-                            <tr>
-                                <!-- AttandanceTable -->
-                                <td>
-                                    <div class="col-xs-6">
-                                        <p class="lead">Attendance:</p>
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                                <tr>
-                                                    <th style="width:50%">Attendance Rate:</th>
-                                                    <td><?php echo number_format($attendance_rate, 2); ?>%</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Classes missed:</th>
-                                                    <td><?php echo $numabsent; ?>/<?php echo $total_activities; ?> classes</td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div>                   
-                                </td>
-
-                                <!--  Submission Table below-->
-                                <td>
-                                    <div class="col-xs-6">
-                                        <p class="lead">Submission:</p>
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                                <tr>
-                                                    <th style="width:50%">Submission rate:</th>
-                                                    <td><?php echo number_format($submission_rate, 2); ?>%</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Activities Missed:</th>
-                                                    <td><?php echo $submission_no_count; ?>/<?php echo $total_activities; ?> Activities</td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div>                   
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-        </table>
-
-    </div><br>
-    
-    <!-- Scores Table below-->
-    <div>
-        <table class="table">
-               <!-- Combined Attendance and Submission Reasons Table  below -->
-               <tbody>          
-                    <tr>
-                        <td>
-                                   
-                            <div class="col-xs-6">
-                                                   <p class="lead">Missed Attendance and Submissions Reasons:</p>
-                                                   <div class="table-responsive">
-                                                       <table class="table">
-                                                           <thead>
-                                                               <tr>
-                                                                   <th>Activity Name</th>
-                                                                   <th>Reason</th>
-                                                                   <th>Type</th>
-                                                               </tr>
-                                                           </thead>
-                                                           <tbody>
-                                                               <?php
-                                                               if ($attendance_submission_result->num_rows > 0) {
-                                                                   // Reset the pointer before re-looping through the result set
-                                                                   $attendance_submission_result->data_seek(0); // <-- Reset pointer to the beginning
-           
-                                                                   // Loop through the result set and add rows to the table
-                                                                   while ($row = $attendance_submission_result->fetch_assoc()) {
-                                                                       // Safely access values and provide fallback if null or undefined
-                                                                       $activityId = isset($row['ActivityId']) ? $row['ActivityId'] : 'N/A';
-                                                                       $attendance = isset($row['Attendance']) ? $row['Attendance'] : 'No Attendance';
-                                                                       $submission = isset($row['Submission']) ? $row['Submission'] : 'No Submission';
-                                                                       $attendanceReason = isset($row['AttendanceReason']) ? $row['AttendanceReason'] : 'No Reason';
-                                                                       $submissionReason = isset($row['SubmissionReason']) ? $row['SubmissionReason'] : 'No Reason';
-           
-                                                                       // Add a row for missed attendance
-                                                                       if ($attendance == 'absent') {
-                                                                           echo "<tr>";
-                                                                           echo "<td><b>{$row['ChapterName']}</b> <span>{$row['ActivityName']}</span></td>";
-                                                                           echo "<td>" . htmlspecialchars($attendanceReason) . "</td>";
-                                                                           echo "<td>Did Not Attend Class</td>";
-                                                                           echo "</tr>";
-                                                                       }
-           
-                                                                       // Add a row for missed submission
-                                                                       if ($submission == 'No') {
-                                                                           echo "<tr>";
-                                                                           echo "<td><b>{$row['ChapterName']}</b> <span>{$row['ActivityName']}</span></td>";
-                                                                           echo "<td>" . htmlspecialchars($submissionReason) . "</td>";
-                                                                           echo "<td>Did Not Submit Work</td>";
-                                                                           echo "</tr>";
-                                                                       }
-                                                                   }
-                                                               } else {
-                                                                   // If no results, show a message
-                                                                   echo "<tr><td colspan='3'>No missed attendance or submission records found.</td></tr>";
-                                                               }
-                                                               ?>
-                                                           </tbody>
-                                                       </table>
-                                                   </div>
-                            </div><br>                  
-                        </td>
-                    </tr>
-           
-                </tbody>
-
-            <tbody>
-                           
-                <tr>
-                    <td>
-                        <div class="col-xs-6">
-                                        <p class="lead">Activities Scores:</p>
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Activity Name</th>
-                                                        <th>Marks</th>
-                                                        <th>Percentage</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
-                                                    if ($result->num_rows > 0) {
-                                                        while ($activity = $result->fetch_assoc()) {
-                                                            // Calculate percentage for each activity
-                                                            $percentage = ($activity['MarksObtained'] / $activity['MaxMarks']) * 100;
-                                                    ?>
-                                                    <tr>
-                                                    <td><b><?php echo $activity['ChapterName']; ?></b> <span><?php echo $activity['ActivityName']; ?></span></td>
-                                                    <td><?php echo $activity['MarksObtained']; ?> / <?php echo $activity['MaxMarks']; ?></td>
-                                                        <td><?php echo number_format($percentage, 2); ?>%</td>
-                                                    </tr>
-                                                    <?php
-                                                        }
-                                                    } else {
-                                                        echo "<tr><td colspan='3'>No activities found.</td></tr>";
-                                                    }
-                                                    ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                        </div>                     
-                    </td>
-                </tr>
-
-            </tbody>
-
-  
-        </table>
-    </div><br>
+<!-- Attendance & Submission -->
+<b>Attendance & Submission Rates</b>
+<table>
+  <tr>
+    <td style="width:50%;">
+      
+      <table style="width:100%; border:1px solid #ddd; border-collapse:collapse; margin-bottom:10px;">
+        <tr>
+            <td style="border:none; width:50%;"><b>Attendance Rate:</b></td>
+            <td style="border:none;"><?= number_format($attendance_rate, 2) ?>%</td>
+        </tr>
+        <tr>
+            <td style="border:none;"><b>Classes Missed:</b></td>
+            <td style="border:none;"><?= $missed_classes ?>/<?= $total_activities ?></td>
+        </tr>
+       </table>
+    </td>
+    <td style="width:50%;">
+      
+      <table style="width:100%; border:1px solid #ddd; border-collapse:collapse; margin-bottom:10px;">
+        <tr>
+            <td style="border:none; width:50%;"><b>Submission Rate:</b></td>
+            <td style="border:none;"><?= number_format($submission_rate, 2) ?>%</td>
+        </tr>
+        <tr>
+            <td style="border:none;"><b>Activities Missed:</b></td>
+            <td style="border:none;"><?= $missed_activities ?>/<?= $total_activities ?></td>
+        </tr>
+       </table>
+    </td>
+  </tr>
+</table>
 
 
 
-                        <div class="col-xs-6">
-                            <p class="lead">Overall Performance Status:</p>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th style="display: inline-block; text-align: center; width: 100%;">Performance Summary</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                        <?php
-                                        // Initialize overall score
-                                        $total_marks_obtained = 0;
-                                        $total_max_marks = 0;
-                                        $activity_count = 0;
+<!-- Missed Attendance & Submissions -->
+<b>Missed Attendance & Submission Reasons</b>
+<table>
+  <tr>
+    <th>Activity</th>
+    <th>Reason</th>
+    <th>Type</th>
+  </tr>
+  <?php
+  if(count($attendance_data) > 0){
+      foreach($attendance_data as $row){
+          if($row['Attendance']=='absent'){
+              echo "<tr>
+                      <td>{$row['ChapterName']} - {$row['ActivityName']}</td>
+                      <td>".htmlspecialchars($row['AttendanceReason'])."</td>
+                      <td>Did Not Attend Class</td>
+                    </tr>";
+          }
+          if($row['Submission']=='No'){
+              echo "<tr>
+                      <td>{$row['ChapterName']} - {$row['ActivityName']}</td>
+                      <td>".htmlspecialchars($row['SubmissionReason'])."</td>
+                      <td>Did Not Submit Work</td>
+                    </tr>";
+          }
+      }
+  } else {
+      echo "<tr><td colspan='3'>No missed attendance or submission records.</td></tr>";
+  }
+  ?>
+</table>
 
-                                        // Calculate total marks obtained and max marks for activity performance
-                                        $result->data_seek(0); // Reset result pointer for calculation
-                                        while ($activity = $result->fetch_assoc()) {
-                                            $total_marks_obtained += $activity['MarksObtained'];
-                                            $total_max_marks += $activity['MaxMarks'];
-                                            $activity_count++;
-                                        }
+<!-- Activity Scores -->
+<b>Activity Scores</b>
+<table>
+  <tr>
+    <th>Activity</th>
+    <th>Marks</th>
+    <th>Percentage</th>
+  </tr>
+  <?php
+  $result->data_seek(0);
+  $total_marks = 0;
+  $total_max = 0;
+  while($row = $result->fetch_assoc()){
+      $percent = ($row['MarksObtained'] / $row['MaxMarks']) * 100;
+      $total_marks += $row['MarksObtained'];
+      $total_max += $row['MaxMarks'];
+      echo "<tr>
+              <td>{$row['ChapterName']} - {$row['ActivityName']}</td>
+              <td>{$row['MarksObtained']}/{$row['MaxMarks']}</td>
+              <td>".number_format($percent, 2)."%</td>
+            </tr>";
+  }
+  ?>
+</table>
 
-                                        // Calculate Overall Activity Score Percentage
-                                        $overall_activity_score = ($total_max_marks > 0) ? ($total_marks_obtained / $total_max_marks) * 100 : 0;
 
-                                        // Determine the performance category based on overall activity score
-                                        if ($overall_activity_score >= 90) {
-                                            $performance_category = 'Excellent';
-                                            $comment = "Outstanding performance! Keep up the great work!";
-                                        } elseif ($overall_activity_score >= 70) {
-                                            $performance_category = 'Good';
-                                            $comment = "Good performance. Keep pushing to reach even higher levels!";
-                                        } elseif ($overall_activity_score >= 50) {
-                                            $performance_category = 'Fair';
-                                            $comment = "You’ve done well, but there’s room for improvement. Stay focused!";
-                                        } else {
-                                            $performance_category = 'Poor';
-                                            $comment = "There’s significant room for improvement. Focus on your studies and submit work on time!";
-                                        }
+<!-- Overall Performance -->
+<?php
+$overall_score = ($total_max>0)?($total_marks/$total_max)*100:0;
+if($overall_score>=90){ $category='Excellent'; $comment="Outstanding performance! Keep up the great work!"; }
+elseif($overall_score>=70){ $category='Good'; $comment="Good performance. Keep pushing to reach even higher levels!"; }
+elseif($overall_score>=50){ $category='Fair'; $comment="You’ve done well, but there’s room for improvement. Stay focused!"; }
+else{ $category='Poor'; $comment="There’s significant room for improvement"; }
 
-                                        // Combine attendance and submission rates into the comment
-                                        if ($attendance_rate < 75) {
-                                            $comment .= " Your attendance rate is below 75%. Try to attend all classes for better learning.";
-                                        } else {
-                                            $comment .= " Your attendance rate is great!";
-                                        }
+// Combine attendance and submission rates into the comment
+    if ($attendance_rate < 75) {
+        $comment .= " Your attendance rate is below 75%. Try to attend all classes for better learning.";
+    } else {
+        $comment .= " Your attendance rate is great!";
+    }
 
-                                        if ($submission_rate < 75) {
-                                            $comment .= " Your submission rate needs improvement.";
-                                        } else {
-                                            $comment .= " Keep up the good work with your submissions!";
-                                        }
-                                        ?>
-                                    <tr>
-                                        <td style="display: inline-block; text-align: center; width: 100%;">
-                                            <b><?php echo $performance_category; ?></b><br>
-                                            Overall Activity Score: <?php echo number_format($overall_activity_score, 2); ?>%<br>
-                                            Attendance Rate: <?php echo number_format($attendance_rate, 2); ?>%<br>
-                                            Submission Rate: <?php echo number_format($submission_rate, 2); ?>%<br>
-                                            <br>
-                                            <i><?php echo $comment; ?></i>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                        </div><br>
+?>
+<table style="width:100%; border-collapse: collapse; margin-bottom:10px;">
+  <tr>
+    <th colspan="2" text-align:left; border:1px solid #ddd; padding:5px;">
+      Overall Performance
+    </th>
+  </tr>
+  <tr>
+    <td colspan="2" style="border:1px solid #ddd; padding:10px; text-align:center; line-height:1.6;">
+      <b>Status:</b> <?= htmlspecialchars($category) ?><br>
+      <b>Overall Score:</b> <?= number_format($overall_score, 2) ?>%<br>
+      <b>Attendance Rate:</b> <?= number_format($attendance_rate, 2) ?>%<br>
+      <b>Submission Rate:</b> <?= number_format($submission_rate, 2) ?>%<br>
+      <b>Comment:</b> <?= htmlspecialchars($comment) ?>
+    </td>
+  </tr>
+</table>
 
 
 
 
-    <div>
-        <table class="table">
-            <tr>
-                <td>
-                    
-                <div class="col-xs-6">
-                    <p class="lead">Financial Information:</p>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Total Fees</th>
-                                    <th>Total Paid</th>
-                                    <th>Total Owe</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                // SQL to fetch financial information
-                                $sql = "SELECT 
-                                            SUM(TotalFees) AS TotalFees,
-                                            SUM(TotalPaid) AS TotalPaid,
-                                            SUM(CASE WHEN TotalOwe > 0 THEN TotalOwe ELSE 0 END) AS TotalOwe
-                                        FROM learners
-                                        WHERE LearnerId = ?";
-                                
-                                // Prepare and execute the query
-                                $stmt = $connect->prepare($sql);
-                                $stmt->bind_param('i', $learner_id); // Bind the learner_id to the query
-                                $stmt->execute();
-                                $result = $stmt->get_result();
-                                $financial_info = $result->fetch_assoc();
-                                
-                                // Extract financial values
-                                $TotalFees = isset($financial_info['TotalFees']) ? $financial_info['TotalFees'] : 0;
-                                $TotalPaid = isset($financial_info['TotalPaid']) ? $financial_info['TotalPaid'] : 0;
-                                $TotalOwe = isset($financial_info['TotalOwe']) ? $financial_info['TotalOwe'] : 0;
+<!-- Financial Info -->
+<?php
+$sql = "
+SELECT TotalFees, TotalPaid, Balance
+                FROM finances
+                WHERE LearnerId = ?";
+$stmt_fin = $connect->prepare($sql);
 
-                                // Display financial information in the table
-                                echo "<tr>";
-                                echo "<td><b>R " . number_format($TotalFees, 2) . "</b></td>";
-                                echo "<td>R " . number_format($TotalPaid, 2) . "</td>";
-                                echo "<td>R " . number_format($TotalOwe, 2) . "</td>";
-                                echo "</tr>";
-                                ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                </td>
-            </tr>
-        </table>
-        
-    </div><br>
-
+$stmt_fin->bind_param('i',$learner_id);
+$stmt_fin->execute();
+$fin_result = $stmt_fin->get_result()->fetch_assoc();
+?>
+<b>Financial Info:</b>
+<table>
+  <tr>
+    <th>Total Fees</th>
+    <th>Total Paid</th>
+    <th>Total Owe</th>
+  </tr>
+  <tr>
+    <td>R <?= number_format($fin_result['TotalFees'], 2) ?></td>
+    <td>R <?= number_format($fin_result['TotalPaid'], 2) ?></td>
+    <td>R <?= number_format($fin_result['Balance'], 2) ?></td>
+  </tr>
+</table>
 
 </body>
 </html>
 
 <?php
-$html = ob_get_clean(); // Capture the HTML output
-
-// Initialize Dompdf
+$html = ob_get_clean();
 $options = new Options();
 $options->set('isHtml5ParserEnabled', true);
 $options->set('isPhpEnabled', true);
 $dompdf = new Dompdf($options);
 $dompdf->loadHtml($html);
-
-// Set Paper size and Orientation
-$dompdf->setPaper('A4', 'portrait');
-
-// Render PDF
+$dompdf->setPaper('A4','portrait');
 $dompdf->render();
+$dompdf->stream("learner_report.pdf", ["Attachment"=>false]);
 
-// Stream the generated PDF to the browser
-$dompdf->stream("learner_report.pdf", ["Attachment" => false]); // Change to true to force download
+
+
 ?>
