@@ -47,7 +47,7 @@ Swal.fire({
 
           <h1>My Classe(s) <small>Below are the classes you've been assigned.</small></h1>
           <ol class="breadcrumb">
-            <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
             <li class="active">Classes</li>
           </ol>
 
@@ -103,16 +103,19 @@ Swal.fire({
               <?php $btnClass = $learnerCount == 0 ? 'btn btn-default btn-sm' : 'btn btn-info btn-sm'; ?>
               <!-- Button that triggers modal -->
                      
+             
               <button 
-                  class="<?php echo $btnClass; ?> <?php echo $disabled; ?>" 
-                  style="width: 100px;" 
-                  data-toggle="modal" 
-                  data-target="#modal-recordMarks"
-                  data-grade="<?php echo $grade; ?>"
-                  data-subject="<?php echo $row['SubjectId']; ?>"
-                  data-group="<?php echo $group; ?>">
-                  Record Marks
+                class="<?php echo $btnClass; ?> <?php echo $disabled; ?>" 
+                style="width: 100px;" 
+                data-toggle="modal" 
+                data-target="#modal-recordMarks"
+                data-grade="<?php echo $grade; ?>"
+                data-subject="<?php echo $row['SubjectId']; ?>"
+                data-subjectname="<?php echo $subjectName; ?>"
+                data-group="<?php echo $group; ?>">
+                Record Marks
               </button>
+
 
               <!-- Quizzes button -->
               <a href="assignedquizzes.php?sub=<?php echo $row['SubjectID'] ?>&gra=<?php echo $grade ?>&group=<?php echo $group ?>" 
@@ -121,8 +124,17 @@ Swal.fire({
                 + Quizzes
               </a>
                           
-              <a href="managestudymaterials.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Resources</a>
-              <a href="alllearner.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Open Class</a>
+              <a href="managestudymaterials.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>"
+                class="btn btn-info btn-sm" 
+                style="width: 100px;">
+                Resources
+              </a>
+
+              <a href="alllearner.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>"
+                class="btn btn-info btn-sm" 
+                style="width: 100px;">
+                Open Class
+              </a>
               
               <button 
                 class="btn btn-info btn-sm" 
@@ -134,8 +146,18 @@ Swal.fire({
                 data-subject="<?php echo $row['SubjectID']; ?>"
                 data-subjectname="<?php echo $subjectName; ?>"
                 data-group="<?php echo $group; ?>">
-                
                 Add Link
+              </button>
+
+              <button 
+                class="btn btn-info btn-sm" 
+                style="width: 100px;"
+                data-toggle="modal" 
+                data-target="#modal-notifyClass"
+                data-grade="<?php echo $grade; ?>"
+                data-subject="<?php echo $subjectName; ?>"
+                data-group="<?php echo $group; ?>">
+                Notify Class
               </button>
 
 
@@ -168,6 +190,8 @@ Swal.fire({
 
       <form action="modalhandler.php" method="post">
         <div class="modal-body">
+          <p id="modalClassInfoRecord" style="margin-bottom:15px;"></p>
+
 
           <div class="row">
             <!-- Activity Name -->
@@ -254,6 +278,46 @@ Swal.fire({
 </div>
 
 
+<!-- Notify Class Modal -->
+<div class="modal fade" id="modal-notifyClass" tabindex="-1" role="dialog" aria-labelledby="notifyClassLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-info">
+        <h4 class="modal-title" id="notifyClassLabel">Notify Class</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <form action="addclassnoticeh.php" method="post">
+        <div class="modal-body">
+          <p id="modalClassInfoNotice" style="margin-bottom:15px;"></p>
+
+          <div class="form-group">
+            <label>Title <span style="color:red">*</span></label>
+            <input type="text" name="title" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label>Content <span style="color:red">*</span></label>
+            <textarea name="content" class="form-control" rows="5" placeholder="Write your notice here..." required></textarea>
+          </div>
+
+          <!-- Hidden inputs -->
+          <input type="hidden" name="subject" id="noticeSubject">
+          <input type="hidden" name="grade" id="noticeGrade">
+          <input type="hidden" name="group" id="noticeGroup">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Post Notice</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
 
 <script>
 $('#modal-recordMarks').on('show.bs.modal', function (event) {
@@ -264,12 +328,17 @@ $('#modal-recordMarks').on('show.bs.modal', function (event) {
     var grade = button.data('grade');
     var subject = button.data('subject');
     var group = button.data('group');
+    var subjectName = button.data('subjectname');
 
     // Fill hidden inputs
     modal.find('#graid').val(grade);
     modal.find('#subid').val(subject);
     modal.find('#groupid').val(group);
+
+     modal.find('#modalClassInfoRecord').text(`${subjectName} | ${grade} | Group: ${group}`);
 });
+
+
 </script>
 
 <script>
@@ -294,8 +363,27 @@ $('#modal-addMeetingLink').on('show.bs.modal', function (event) {
   // Display class info line
   modal.find('#modalClassInfo').text(`${grade} | ${subjectName} | Group: ${groupName}`);
 });
-
 </script>
+
+<script>
+$('#modal-notifyClass').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget); // Button that triggered the modal
+  var modal = $(this);
+
+  var grade = button.data('grade');
+  var subject = button.data('subject');
+  var group = button.data('group');
+
+  // Set hidden inputs
+  modal.find('#noticeGrade').val(grade);
+  modal.find('#noticeSubject').val(subject);
+  modal.find('#noticeGroup').val(group);
+
+  // Display class info at top of modal
+  modal.find('#modalClassInfoNotice').text(`${subject} | ${grade} | Group: ${group}`);
+});
+</script>
+
 
 
 

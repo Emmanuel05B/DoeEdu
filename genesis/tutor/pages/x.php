@@ -109,9 +109,7 @@ include(__DIR__ . "/../../partials/connect.php");
 
 </div>
 
-<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
-<script src="../bootstrap/js/bootstrap.min.js"></script>
-<script src="../dist/js/app.min.js"></script>
+<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
 </body>
 </html>

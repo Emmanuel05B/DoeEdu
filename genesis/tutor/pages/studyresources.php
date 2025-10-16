@@ -9,9 +9,7 @@
     include(__DIR__ . "/../../common/partials/head.php");
     include(__DIR__ . "/../../partials/connect.php");
     
-
-    // Assume tutor id for demo, replace with actual logged-in tutor ID in real
-    $tutorId = 25;
+    $tutorId = $_SESSION['user_id'];
 
     // Fetch tutor's assigned classes info for dropdowns
     $subjectGradeOptions = [];

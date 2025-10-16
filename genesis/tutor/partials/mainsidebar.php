@@ -45,30 +45,14 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
         <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> Activity Manegement</a></li>
         <li><a href="setupquestion.php"><i class="fa fa-circle-o"></i> Question Builder</a></li>
 
-          
-          <li><a href="admincreatenotifications.php"><i class="fa fa-circle-o"></i> Create Notifications</a></li>
-
-          
-
-
-
-
-        <li><a href="addsubjectnotice.php"><i class="fa fa-circle-o"></i> Add notices</a></li>
- 
+           
         <!-- Teaching & Content -->        
-        <li><a href="studyresources.php"><i class="fa fa-circle-o"></i> Resources</a></li>
+        <li><a href="studyresources.php"><i class="fa fa-circle-o"></i>Manage Resources</a></li>
         
-        <li><a href="manageactivities.php"><i class="fa fa-circle-o"></i> Manage Activities</a></li>
-        <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> My Activities</a></li>
-        <li><a href="managestudymaterials.php"><i class="fa fa-circle-o"></i> Manage Study Materials</a></li>
+        <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> Manage Activities</a></li>
 
-
-        <!-- Analysis & Reports -->
-        <li><a href="chartjs.php"><i class="fa fa-circle-o"></i> Activity Analysis</a></li>
 
         <!-- Communication & Engagement -->
-        <li><a href="announcements.php"><i class="fa fa-circle-o"></i> Announcements</a></li>
-        <li><a href="reminders.php"><i class="fa fa-circle-o"></i> Reminders</a></li>
         <li><a href="x.php"><i class="fa fa-circle-o"></i> Communications</a></li>
 
         <!-- Profile & Logout -->

@@ -9,20 +9,17 @@
     include(__DIR__ . "/../../common/partials/head.php");
     include(__DIR__ . "/../../partials/connect.php");
     
+    $tutorId = $_SESSION['user_id'];
 
-    // Assume tutor id for demo, replace with actual logged-in tutor ID in real
-    $tutorId = 25;
-
-    // Fetch tutor's assigned classes info for dropdowns
+    // Fetch director's assigned classes info for dropdowns
     $subjectGradeOptions = [];
+
     $stmt = $connect->prepare("
-      SELECT c.ClassID, s.SubjectName, c.Grade, c.GroupName
-      FROM classes c
-      JOIN subjects s ON c.SubjectID = s.SubjectId
-      WHERE c.TutorID = ?
-      ORDER BY c.Grade, s.SubjectName, c.GroupName
+    SELECT c.ClassID, s.SubjectName, c.Grade, c.GroupName
+    FROM classes c
+    JOIN subjects s ON c.SubjectID = s.SubjectId
+    ORDER BY c.Grade, s.SubjectName, c.GroupName
     ");
-    $stmt->bind_param("i", $tutorId);
     $stmt->execute();
     $subjectGradeOptions = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
