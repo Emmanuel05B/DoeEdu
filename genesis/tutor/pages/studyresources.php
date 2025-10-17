@@ -169,7 +169,7 @@
                     <td>
                       <?php
                       // Base URL path to uploads folder (adjust if your project URL changes)
-                      $baseUploadsUrl = '/DoeEdu/genesis/uploads/resources/';
+                      $baseUploadsUrl = '/DoE_Genesis/DoeEdu/genesis/uploads/resources/';
                       // Inside your foreach loop for each resource -->
 
                       $fileName = $res['FilePath'] ?? '';  // filename stored in DB
@@ -238,7 +238,7 @@
 <!-- Scripts -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
-<?php if (isset($_GET['uploaded']) && $_GET['uploaded'] == 1): ?>
+  <?php if (isset($_GET['uploaded']) && $_GET['uploaded'] == 1): ?>
     <?php  
       echo "<script>
           Swal.fire({

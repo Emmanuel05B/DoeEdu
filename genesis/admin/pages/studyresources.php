@@ -9,9 +9,9 @@
     include(__DIR__ . "/../../common/partials/head.php");
     include(__DIR__ . "/../../partials/connect.php");
     
-    $tutorId = $_SESSION['user_id'];
+    $tutorId = 2;
 
-    // Fetch director's assigned classes info for dropdowns
+    // Fetch director's classes info for dropdowns
     $subjectGradeOptions = [];
 
     $stmt = $connect->prepare("
@@ -24,27 +24,38 @@
     $subjectGradeOptions = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 
-    // Fetch all resources matching tutor's assigned subjects & grades
+
     $uploadedResources = [];
     $stmt = $connect->prepare("
-      SELECT r.ResourceID, r.Title, r.FilePath, r.ResourceType, r.Grade, s.SubjectName, r.UploadedAt
+      SELECT r.ResourceID, r.Title, r.FilePath, r.ResourceType, r.Grade, s.SubjectName, r.UploadedAt,
+            u.Name AS UploaderName, u.Surname AS UploaderSurname
       FROM resources r
       JOIN subjects s ON r.SubjectID = s.SubjectID
-      WHERE EXISTS (
-        SELECT 1 FROM classes c
-        WHERE c.TutorID = ? AND c.Grade = r.Grade AND c.SubjectID = r.SubjectID
-      )
+      LEFT JOIN users u ON r.UploadedBy = u.Id
       ORDER BY r.UploadedAt DESC
     ");
-    $stmt->bind_param("i", $tutorId);
     $stmt->execute();
     $uploadedResources = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 
+/*
+    $uploadedResources = [];
+    $stmt = $connect->prepare("
+        SELECT r.ResourceID, r.Title, r.FilePath, r.ResourceType, r.Grade, s.SubjectName, r.UploadedAt, r.UploadedBy
+        FROM resources r
+        JOIN subjects s ON r.SubjectID = s.SubjectID
+        ORDER BY r.UploadedAt DESC
+    ");
+    $stmt->execute();
+    $uploadedResources = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();  */
+
+
+    /*
     // Fetch tutor's assigned classes again for assigning resources dropdown (same as above, but separate variable)
     $assignedClasses = [];
     $stmt = $connect->prepare("
-      SELECT c.ClassID, CONCAT('Grade ', c.Grade, ' - ', c.GroupName, ' (', s.SubjectName, ')') AS label
+      SELECT c.ClassID, CONCAT(c.Grade, ' - ', c.GroupName, ' (', s.SubjectName, ')') AS label
       FROM classes c
       JOIN subjects s ON c.SubjectID = s.SubjectId
       WHERE c.TutorID = ?
@@ -53,8 +64,21 @@
     $stmt->bind_param("i", $tutorId);
     $stmt->execute();
     $assignedClasses = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
+    $stmt->close();  */
+
+
+    $allClasses = [];
+    $stmt = $connect->prepare("
+    SELECT c.ClassID, CONCAT(c.Grade, ' - ', c.GroupName, ' (', s.SubjectName, ')') AS label
+    FROM classes c
+    JOIN subjects s ON c.SubjectID = s.SubjectId
+    ORDER BY c.Grade, c.GroupName, s.SubjectName
+  ");
+  $stmt->execute();
+  $allClasses = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+  $stmt->close();
 ?>
+
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -76,9 +100,8 @@
     <section class="content">
 
       <div class="row">
-        <!-- Upload Resource - Left Side -->
-      
-        <div class="col-md-12">
+        <!-- Left Column: Upload Resource -->
+        <div class="col-md-6">
           <div class="box box-primary" style="border-top: 3px solid #3c8dbc;">
             <div class="box-header with-border" style="background-color:#f0f8ff;">
               <h3 class="box-title" style="color:#3c8dbc;">
@@ -88,75 +111,39 @@
             <div class="box-body" style="background-color:#ffffff;">
               <form action="upload_resource.php" method="POST" enctype="multipart/form-data">
                 <div class="row">
-
-                  <!-- Left Column: Form Fields (8 cols) -->
-                  <div class="col-md-8">
-                    <div class="row">
-                      <!-- Title -->
-                      <div class="col-md-6 form-group">
-                        <label for="title">Title</label>
-                        <input type="text" name="title" class="form-control" placeholder="E.g. Newton’s Laws Summary" required>
-                      </div>
-
-                      <!-- Subject & Grade -->
-                      <div class="col-md-6 form-group">
-                        <label for="subject_grade">Subject & Grade</label>
-                        <select name="classId" class="form-control" required>
-                          <option value="">Select Subject & Grade</option>
-                          <?php foreach ($subjectGradeOptions as $option): ?>
-                            <option value="<?= htmlspecialchars($option['ClassID']) ?>">
-                              Grade <?= htmlspecialchars($option['Grade']) ?> - Group <?= htmlspecialchars($option['GroupName']) ?> (<?= htmlspecialchars($option['SubjectName']) ?>)
-                            </option>
-                          <?php endforeach; ?>
-                        </select>
-                      </div>
-
-                      <!-- File Upload -->
-                      <div class="col-md-6 form-group">
-                        <label for="resource_file">Choose File</label>
-                        <input type="file" name="resource_file" class="form-control" required>
-                      </div>
-
-                      <!-- Visibility -->
-                      <div class="col-md-6 form-group">
-                        <label for="visibility">Visibility</label>
-                        <select name="visibility" class="form-control" required>
-                          <option value="private">Private (Only assigned classes)</option>
-                          <option value="public">Public (All learners can access)</option>
-                        </select>
-                      </div>
-
-                      <!-- Description -->
-                      <div class="col-md-12 form-group">
-                        <label for="description">Description / Notes (Optional)</label>
-                        <textarea name="description" class="form-control" rows="2" placeholder="Brief info about the resource"></textarea>
-                      </div>
-                    </div>
+                  <!-- Title -->
+                  <div class="col-md-12 form-group">
+                    <label for="title">Title</label>
+                    <input type="text" name="title" class="form-control" placeholder="E.g. Newton’s Laws Summary" required>
                   </div>
 
-                  <!-- Right Column: File Info (4 cols) -->
-                  <div class="col-md-4">
-                    <div class="form-group">
-                      <label>Supported File Types</label>
-                      <div class="alert alert-info" style="margin-bottom:0;">
-                        <strong>Allowed formats:</strong><br>
-                        <ul style="margin: 0; padding-left: 18px;">
-                          <li>PDF (.pdf)</li>
-                          <li>Images (.jpg, .jpeg, .png, .gif, .webp)</li>
-                          <li>Documents (.doc, .docx, .xls, .xlsx, .ppt, .pptx)</li>
-                          <li>Videos (.mp4, .avi, .mov, .mkv, .webm)</li>
-                          <li>Audio (.mp3, .wav, .m4a, .ogg)</li>
-                          <li>Compressed (.zip, .rar, .7z)</li>
-                          <li>Text files (.txt, .csv)</li>
-                        </ul>
-                        <p style="margin-top:5px;"><strong>Maximum size:</strong> 50 MB</p>
-                      </div>
-                    </div>
+                  <!-- Subject & Grade -->
+                  <div class="col-md-12 form-group">
+                    <label for="subject_grade">Subject & Grade</label>
+                    <select name="classId" class="form-control" required>
+                      <option value="">Select Subject & Grade</option>
+                      <?php foreach ($subjectGradeOptions as $option): ?>
+                        <option value="<?= htmlspecialchars($option['ClassID']) ?>">
+                          <?= htmlspecialchars($option['Grade']) ?> - Group <?= htmlspecialchars($option['GroupName']) ?> (<?= htmlspecialchars($option['SubjectName']) ?>)
+                        </option>
+                      <?php endforeach; ?>
+                    </select>
                   </div>
 
+                  <!-- File Upload -->
+                  <div class="col-md-12 form-group">
+                    <label for="resource_file">Choose File</label>
+                    <input type="file" name="resource_file" class="form-control" required>
+                  </div>
+
+                  <!-- Description -->
+                  <div class="col-md-12 form-group">
+                    <label for="description">Description / Notes (Optional)</label>
+                    <textarea name="description" class="form-control" rows="2" placeholder="Brief info about the resource"></textarea>
+                  </div>
                 </div>
 
-                <div class="col-md-12 text-right" style="margin-top: 10px;">
+                <div class="text-right" style="margin-top: 10px;">
                   <button type="submit" class="btn btn-primary">
                     <i class="fa fa-cloud-upload"></i> Upload Resource
                   </button>
@@ -166,9 +153,8 @@
           </div>
         </div>
 
-
-        <!-- Bulk Assign Resources to Class - Right Side -->
-        <div class="col-md-12">
+        <!-- Right Column: Bulk Assign Resources -->
+        <div class="col-md-6">
           <div class="box box-info" style="border-top: 3px solid #00c0ef;">
             <div class="box-header with-border" style="background-color:#d9f0fb;">
               <h3 class="box-title" style="color:#0073b7;">
@@ -179,11 +165,11 @@
               <form action="assign_resource.php" method="POST">
                 <div class="form-group">
                   <label>Select Resources</label>
-                  <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9;">
+                  <div style="max-height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9;">
                     <table class="table table-striped" style="margin-bottom: 0;">
                       <thead>
                         <tr>
-                          <th style="width: 40px;"></th> <!-- checkbox column -->
+                          <th style="width: 40px;"></th>
                           <th>Title</th>
                           <th>Grade</th>
                           <th>Subject</th>
@@ -194,7 +180,7 @@
                           <tr>
                             <td><input type="checkbox" name="resourceIds[]" value="<?= htmlspecialchars($res['ResourceID']) ?>"></td>
                             <td><?= htmlspecialchars($res['Title']) ?></td>
-                            <td>Grade <?= htmlspecialchars($res['Grade']) ?></td>
+                            <td><?= htmlspecialchars($res['Grade']) ?></td>
                             <td><?= htmlspecialchars($res['SubjectName']) ?></td>
                           </tr>
                         <?php endforeach; ?>
@@ -207,7 +193,7 @@
                   <div class="col-xs-8">
                     <select name="classId" id="classId" class="form-control" required>
                       <option value="">-- Select a Class/Group --</option>
-                      <?php foreach ($assignedClasses as $class): ?>
+                      <?php foreach ($allClasses as $class): ?>
                         <option value="<?= htmlspecialchars($class['ClassID']) ?>">
                           <?= htmlspecialchars($class['label']) ?>
                         </option>
@@ -226,6 +212,7 @@
         </div>
       </div>
 
+
       <!-- Uploaded Resources Table -->
       <div class="box box-solid" style="border-top: 3px solid #605ca8;">
         <div class="box-header with-border" style="background-color:#f3edff;">
@@ -243,6 +230,7 @@
                   <th>Grade</th>
                   <th style="width:130px;">Actions</th>
                   <th>Uploaded At</th>
+                  <th>Uploaded By</th>
                 </tr>
               </thead>
               <tbody>
@@ -252,7 +240,7 @@
                     <td>
                       <?php
                       // Base URL path to uploads folder (adjust if your project URL changes)
-                      $baseUploadsUrl = '/DoeEdu/genesis/uploads/resources/';
+                      $baseUploadsUrl = '/DoE_Genesis/DoeEdu/genesis/uploads/resources/';
                       // Inside your foreach loop for each resource -->
 
                       $fileName = $res['FilePath'] ?? '';  // filename stored in DB
@@ -262,7 +250,7 @@
 
                       if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
                           echo '<a href="' . $fileUrl . '" target="_blank" title="View Image">';
-                          echo '<img src="' . $fileUrl . '" style="max-width:80px; max-height:60px; border-radius:4px;" alt="Preview">';
+                          echo '<img src="' . $fileUrl . '" style="max-width:30px; max-height:20px;" alt="Preview">';
                           echo '</a>';
                       } elseif ($ext === 'pdf') {
                           echo '<a href="' . $fileUrl . '" target="_blank" title="View PDF">';
@@ -282,7 +270,7 @@
                     </td>
                     <td><?= htmlspecialchars($res['ResourceType']) ?></td>
                     <td><?= htmlspecialchars($res['SubjectName']) ?></td>
-                    <td>Grade <?= htmlspecialchars($res['Grade']) ?></td>
+                    <td><?= htmlspecialchars($res['Grade']) ?></td>
                     <td>
                       <a href="<?= $fileUrl ?>" class="btn btn-xs btn-primary" title="Download" download>
                         <i class="fa fa-download"></i>
@@ -295,7 +283,7 @@
                           <i class="fa fa-link"></i> Assign <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                          <?php foreach ($assignedClasses as $class): ?>
+                          <?php foreach ($allClasses as $class): ?>
                             <li><a href="assign_resource_single.php?resourceId=<?= htmlspecialchars($res['ResourceID']) ?>&classId=<?= htmlspecialchars($class['ClassID']) ?>">
                               <?= htmlspecialchars($class['label']) ?>
                             </a></li>
@@ -304,6 +292,8 @@
                       </div>
                     </td>
                     <td><?= htmlspecialchars($res['UploadedAt'] ?? 'Unknown') ?></td>
+                    <td><?= htmlspecialchars(($res['UploaderName'] ?? 'Unknown') . ' ' . ($res['UploaderSurname'] ?? '')) ?></td>
+
                   </tr>
                 <?php endforeach; ?>
               </tbody>

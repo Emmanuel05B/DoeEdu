@@ -24,9 +24,33 @@ $uploadedBy = $_SESSION['user_id'] ?? null;
 $file = $_FILES['resource_file'];
 $uploadDir = '../../uploads/resources/';
 
-
 $mimeType = $file['type'];
 $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+
+// Get SubjectID and Grade from ClassID  and group
+$classQuery = "SELECT SubjectID, Grade, GroupName FROM classes WHERE ClassID = ?";
+$classStmt = $connect->prepare($classQuery);
+$classStmt->bind_param("i", $classId);
+$classStmt->execute();
+$classResult = $classStmt->get_result();
+
+if ($classResult->num_rows === 0) {
+    echo "<script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid class selected',
+        }).then(() => {
+            window.location = 'resources.php';  
+        });
+    </script>";
+    exit();
+}
+
+$classRow = $classResult->fetch_assoc();
+$subjectId = $classRow['SubjectID'];
+$grade = $classRow['Grade'];
+$group = $classRow['GroupName'];
 
 // Determine resource type based on MIME or extension
 switch (true) {
@@ -115,22 +139,31 @@ if (!$title || !$classId || !$resourceType || !$uploadedBy) {
             title: 'Missing Fields',
             text: 'Please fill all required fields.',
         }).then(() => {
-            window.location = 'studyresources.php';
+            window.location.href = 'resources.php?gra=' + encodeURIComponent('{$grade}') +
+                                '&sub=' + encodeURIComponent('{$subjectId}') +
+                                '&group=' + encodeURIComponent('{$group}') +
+                                '&upload_failed=1';
         });
     </script>";
     exit();
 }
 
 if (!in_array($file['type'], $allowedTypes)) {
+
     echo "<script>
         Swal.fire({
             icon: 'error',
             title: 'Unsupported file type',
             text: 'File type {$file['type']} is not allowed.',
         }).then(() => {
-            window.location = 'studyresources.php';
+            // Redirect with parameters
+            window.location.href = 'resources.php?gra=' + encodeURIComponent('{$grade}') +
+                                '&sub=' + encodeURIComponent('{$subjectId}') +
+                                '&group=' + encodeURIComponent('{$group}') +
+                                '&upload_failed=1';
         });
     </script>";
+    
     exit();
 }
 
@@ -141,7 +174,10 @@ if ($file['error'] !== UPLOAD_ERR_OK) {
             title: 'Upload error',
             text: 'Error code: {$file['error']}',
         }).then(() => {
-            window.location = 'studyresources.php';
+            window.location.href = 'resources.php?gra=' + encodeURIComponent('{$grade}') +
+                                '&sub=' + encodeURIComponent('{$subjectId}') +
+                                '&group=' + encodeURIComponent('{$group}') +
+                                '&upload_failed=1';
         });
     </script>";
     exit();
@@ -156,28 +192,6 @@ $fileName = basename($file['name']);
 $uniqueFileName = uniqid() . "_" . preg_replace("/[^a-zA-Z0-9\.\-_]/", "_", $fileName);
 $targetPath = $uploadDir . $uniqueFileName;
 
-// Get SubjectID and Grade from ClassID
-$classQuery = "SELECT SubjectID, Grade FROM classes WHERE ClassID = ?";
-$classStmt = $connect->prepare($classQuery);
-$classStmt->bind_param("i", $classId);
-$classStmt->execute();
-$classResult = $classStmt->get_result();
-
-if ($classResult->num_rows === 0) {
-    echo "<script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid class selected',
-        }).then(() => {
-            window.location = 'studyresources.php';
-        });
-    </script>";
-    exit();
-}
-
-$classRow = $classResult->fetch_assoc();
-$subjectId = $classRow['SubjectID'];
-$grade = $classRow['Grade'];
 
 // Move file
 if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
@@ -187,7 +201,10 @@ if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
             title: 'Upload failed',
             text: 'Could not save uploaded file.',
         }).then(() => {
-            window.location = 'studyresources.php';
+            window.location.href = 'resources.php?gra=' + encodeURIComponent('{$grade}') +
+                                '&sub=' + encodeURIComponent('{$subjectId}') +
+                                '&group=' + encodeURIComponent('{$group}') +
+                                '&upload_failed=1';
         });
     </script>";
     exit();
@@ -212,7 +229,8 @@ $stmt->bind_param("sssisssi",
 
 if ($stmt->execute()) {
 
-    header("Location: studyresources.php?uploaded=1");
+    header("Location: resources.php?gra=" . urlencode($grade) . "&sub=" . urlencode($subjectId) . "&group=" . urlencode($group) . "&uploaded=1");
+
     exit;
     
 } else {
@@ -222,7 +240,10 @@ if ($stmt->execute()) {
             title: 'Database error',
             text: 'Could not save resource info.',
         }).then(() => {
-            window.location = 'studyresources.php';
+            window.location.href = 'resources.php?gra=' + encodeURIComponent('{$grade}') +
+                                '&sub=' + encodeURIComponent('{$subjectId}') +
+                                '&group=' + encodeURIComponent('{$group}') +
+                                '&save_failed=1';
         });
     </script>";
 }
