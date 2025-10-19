@@ -46,7 +46,7 @@ while($row = $subjectsRes->fetch_assoc()){
         <section class="content-header">
             <h1>Practice Questions Setup <small>Select details before creating questions</small></h1>
             <ol class="breadcrumb">
-                <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
                 <li class="active">Practice Questions Setup</li>
             </ol>
         </section>

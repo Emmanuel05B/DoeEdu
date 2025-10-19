@@ -46,9 +46,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
         <li><a href="setupquestion.php"><i class="fa fa-circle-o"></i> Question Builder</a></li>
 
            
-        <!-- Teaching & Content -->        
-        <li><a href="studyresources.php"><i class="fa fa-circle-o"></i>Manage Resources</a></li>
-        
+        <!-- Teaching & Content -->                
         <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> Manage Activities</a></li>
 
 

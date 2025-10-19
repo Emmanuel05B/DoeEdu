@@ -47,7 +47,7 @@ if (isset($_POST['submit'])) {
         $connect->commit();
 
         // Redirect with success
-        header("Location: classes.php?added=1");
+        header("Location: tutorindex.php?added=1");
         exit();
 
     } catch (Exception $e) {
@@ -56,7 +56,7 @@ if (isset($_POST['submit'])) {
         
     }
 } else {
-    header("Location: classes.php?error=1");
+    header("Location: tutorindex.php?error=1");
     exit();
 }
 ?>

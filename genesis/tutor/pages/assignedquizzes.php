@@ -62,7 +62,7 @@ $stmt->close();
   
   <div class="content-wrapper">
     <section class="content-header">
-       <h1>Current Activities <small>Assigned to <?php echo htmlspecialchars($grade . " - " . $SubjectName . " - " . $group); ?></small></h1>
+       <h1>Assigned Activities <small><?php echo htmlspecialchars($grade . " - " . $SubjectName . " - " . $group); ?></small></h1>
         <ol class="breadcrumb">
           <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
           <li class="active">Activities</li>
@@ -75,7 +75,7 @@ $stmt->close();
 
             <div class="box-header with-border">
             <h3 class="box-title">
-                Activities List
+              Activities List
             </h3>
             <div class="box-tools pull-right">
                 <!-- Assign Activity Button -->
@@ -172,6 +172,10 @@ $stmt->close();
                 ?>
                 </tbody>
             </table>
+            <a href="myactivities.php" 
+                class="btn btn-primary btn-sm" style="width: 100px; margin-left:5px;">
+                My Quizzes
+                </a>
           </div> 
         </div>
       </div>

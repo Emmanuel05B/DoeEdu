@@ -73,101 +73,16 @@ $alertMessage = $_GET['message'] ?? '';
 
     <section class="content">
       <div class="row">
-        <!-- Tutors -->
-          <?php
-
-            $activeMeetings = [];
-              if (!empty($classIds)) {
-                  $inClause = implode(',', array_map('intval', $classIds));
-                  
-                  $sql = "
-                      SELECT c.TutorID, s.SubjectName, cm.MeetingLink
-                      FROM classmeetings cm
-                      JOIN classes c ON cm.ClassId = c.ClassID
-                      JOIN subjects s ON c.SubjectID = s.SubjectId
-                      WHERE cm.Status = 'Active' AND c.ClassID IN ($inClause)
-                  ";
-                  
-                  $res = $connect->query($sql);
-                  while ($row = $res->fetch_assoc()) {
-                      $activeMeetings[$row['TutorID']][$row['SubjectName']] = $row['MeetingLink'];
-                  }
-              }
-
-            ?>
-
-                  <script>
-                      const activeMeetings = <?= json_encode($activeMeetings ?? []) ?>;
-                  </script>
-
-        <?php foreach ($tutors as $tutor): ?>
-          <div class="col-md-6">
-          
-            <div class="box box-primary" style="min-height: 280px;">
-              <div class="box-header with-border text-center">
-                <img 
-                  src="<?= !empty($tutor['ProfilePicture']) ? '../' . htmlspecialchars($tutor['ProfilePicture']) : '../../uploads/doe.jpg' ?>" 
-                  alt="Tutor Picture" class="img-circle" width="90" height="90" style="object-fit: cover;">
-                <h3 class="box-title" style="margin-top:10px;">
-                  <?= htmlspecialchars($tutor['Gender']) . ' ' . htmlspecialchars($tutor['Surname']) ?>
-                </h3>
-                <p>
-                  <span class="label label-info"><?= htmlspecialchars($tutor['Subjects']) ?></span>
-                </p>
-              </div>
-              <div class="box-body text-center">
-                <p><strong>Email...remove:</strong> <?= htmlspecialchars($tutor['Email']) ?></p>
-                <p><strong>Availability...to remove:</strong> <?= htmlspecialchars($tutor['Availability']) ?: 'Not specified' ?></p>
-                <hr>
-                <div class="btn-group">
-                  
-                  
-                  <?php if(!empty($tutor['Subjects'])): ?>
-                      <button 
-                          class="btn btn-sm btn-info openAttendModal"
-                          data-tutor="<?= $tutor['TutorId'] ?>"
-                          data-name="<?= htmlspecialchars($tutor['Name'] . ' ' . $tutor['Surname']) ?>"
-                          data-subjects="<?= htmlspecialchars($tutor['Subjects']) ?>"
-                      >
-                          Attend Class
-                      </button>
-                  <?php else: ?>
-                      <button class="btn btn-sm btn-info" disabled>
-                          Link not available
-                      </button>
-                  <?php endif; ?>
-                  
-                  
-
-
-
-                  <a href="class.php?tutor=<?= $tutor['TutorId'] ?>" class="btn btn-sm btn-success">Open Past Sessions</a>
-                  <button 
-                      class="btn btn-sm btn-primary openBookingModal"
-                      data-tutor="<?= $tutor['TutorId'] ?>"
-                      data-name="<?= htmlspecialchars($tutor['Name'] . ' ' . $tutor['Surname']) ?>"
-                      data-subjects="<?= htmlspecialchars($tutor['Subjects']) ?>"
-                      data-grade="<?= htmlspecialchars($tutor['Grades']) ?>" 
-                  >
-                      Book Session
-                  </button> 
-                </div>
-
-              </div>
-            </div>
-          </div>
-        <?php endforeach; ?>
-
         <!-- Bookings Table -->
         <div class="col-md-12">
-          <div class="box" style="border-top: 3px solid #3a3a72;">
-            <div class="box-header with-border">
-              <h3 class="box-title" style="color:#3a3a72; font-weight:600;">My Bookings</h3>
+          <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">My Bookings</h3>
             </div>
             <div class="box-body table-responsive">
               <table class="table table-bordered table-striped">
-                <thead>
-                  <tr style="background-color:#f0f4ff; color:#3a3a72;">
+                <thead style="background-color: #d1d9ff;">
+                  <tr>
                     <th>Date</th>
                     <th>Day---Time</th>
                     <th>Tutor</th>
@@ -273,59 +188,13 @@ $alertMessage = $_GET['message'] ?? '';
             </div>
           </div>
         </div>
-
+        
       </div>
     </section>
 
   </div>
 
   <div class="control-sidebar-bg"></div>
-</div>
-
-<!-- Booking Modal -->
-<div class="modal fade" id="bookingModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <form id="bookingForm" action="booksession.php" method="POST" enctype="multipart/form-data">
-
-      <div class="modal-content">
-        <div class="modal-header bg-blue">
-          <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-          <h4 class="modal-title">Book Session with <span id="tutorName"></span></h4>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" name="tutor_id" id="modalTutorId" value="">
-          
-          <div class="form-group">
-            <label>Subject</label>
-            <select name="subject" id="modalSubject" class="form-control" required></select>
-          </div>
-
-          <div class="form-group">
-            <label>Available Slot</label>
-            <select name="slot" id="modalSlot" class="form-control" required>
-              <option value="">-- Loading available slots --</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Why request a Session?</label>
-            <textarea name="notes" class="form-control" rows="3" placeholder="I need help with ..." required></textarea>
-          </div>
-          <div class="form-group">
-            <label>Attach File (PDF/Image, optional)</label>
-            <input type="file" name="attachment" accept=".pdf,image/*" class="form-control">
-            <small class="text-muted">This can be a PDF or image to show your questions/topics for discussion.</small>
-          </div>
-
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Confirm Booking</button>
-        </div>
-      </div>
-    </form>
-  </div>
 </div>
 
 <!-- Feedback Modal -->   
@@ -405,53 +274,40 @@ $alertMessage = $_GET['message'] ?? '';
 </div>
 
 
-<!-- Attend Class Modal -->
-<div class="modal fade" id="attendClassModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header bg-info">
-        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-        <h4 class="modal-title">Attend Class with <span id="attendTutorName"></span></h4>
-      </div>
-      <div class="modal-body">
-        <div id="attendSubjectsList">
-          <!-- Subjects and buttons to be  be populated here -->
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
 <script>
-document.querySelectorAll('.decline-form button').forEach(btn => {
-    btn.addEventListener('click', function(e){
-        e.preventDefault();
-        const form = this.closest('form');
-
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "This will delete the request!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, Cancel it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
+$(function () {
+    $('table').DataTable({
+        responsive: true,
+        autoWidth: false
     });
 });
+</script>
+
+<script>
+  //js for deleting/cancelling request
+  document.querySelectorAll('.decline-form button').forEach(btn => {
+      btn.addEventListener('click', function(e){
+          e.preventDefault();
+          const form = this.closest('form');
+
+          Swal.fire({
+              title: 'Are you sure?',
+              text: "This will delete the request!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#d33',
+              cancelButtonColor: '#3085d6',
+              confirmButtonText: 'Yes, Cancel it!'
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  form.submit();
+              }
+          });
+      });
+  });
 </script>
 
 <?php if(isset($_SESSION['alert'])): ?>
@@ -467,41 +323,6 @@ document.querySelectorAll('.decline-form button').forEach(btn => {
     });
   </script>
 <?php unset($_SESSION['alert']); endif; ?>
-
-<script>
-  $('.openBookingModal').on('click', function() {
-    const tutorId = $(this).data('tutor');
-    const tutorName = $(this).data('name');
-    const subjects = $(this).data('subjects').split(',');
-    const grade = $(this).data('grade'); 
-
-    $('#modalTutorId').val(tutorId);
-    $('#tutorName').text(tutorName);
-
-    // Populate Subjects
-    $('#modalSubject').empty();
-    subjects.forEach(s => {
-      const sub = s.trim();
-      $('#modalSubject').append(`<option value="${sub}">${sub}</option>`);
-    });
-
-    // Add hidden input for grade
-    if ($('#modalGrade').length === 0) {
-      $('#modalSubject').after(`<input type="hidden" name="grade" id="modalGrade" value="${grade}">`); // <<< ADDED
-    } else {
-      $('#modalGrade').val(grade); // <<< ADDED
-    }
-
-    // Load available slots
-    $('#modalSlot').html('<option>Loading available slots...</option>');
-    $.get('fetchslots.php', { tutor: tutorId }, function(data) {
-      $('#modalSlot').html(data);
-    });
-
-    $('#bookingModal').modal('show');
-  });
-</script>
-
 
 <script>
   // Feedback modal handler
@@ -525,42 +346,6 @@ document.querySelectorAll('.decline-form button').forEach(btn => {
 
     $('#feedbackModal').modal('show');
   });
-</script>
-
-<script>
-
-
-$('.openAttendModal').on('click', function() {
-    const tutorName = $(this).data('name');
-    const subjectsStr = $(this).data('subjects'); // comma-separated subjects
-    const tutorId = $(this).data('tutor');
-
-    $('#attendTutorName').text(tutorName);
-    const subjects = subjectsStr.split(',').map(s => s.trim());
-
-    let html = '<table class="table table-bordered table-striped">';
-    html += '<thead><tr><th>Subject</th><th>Link</th></tr></thead><tbody>';
-
-    subjects.forEach(sub => {
-        // Check if there's an active link for this tutor
-        const link = activeMeetings[tutorId]?.[sub] ?? '';
-        html += `<tr>
-                    <td>${sub}</td>
-                    <td class="text-center">
-                      ${link ? 
-                          `<a href="${link}" target="_blank" class="btn btn-sm btn-primary">Attend Class</a>` :
-                          `<button class="btn btn-sm btn-secondary" disabled>Link Not Available</button>`
-                      }
-                    </td>
-                 </tr>`;
-    });
-
-    html += '</tbody></table>';
-    $('#attendSubjectsList').html(html);
-    $('#attendClassModal').modal('show');
-});
-
-
 </script>
 
 

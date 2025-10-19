@@ -90,7 +90,7 @@ if (count($classResults) === 0) {
                     </div>
                     <div class="box-body table-responsive">
                         <table class="table table-bordered table-striped">
-                            <thead style="background-color: #3c8dbc; color: white;">
+                            <thead style="background-color: #d1d9ff;">
                                 <tr>
                                     <th>Date & Time</th>
                                     <th>Subject</th>
@@ -153,7 +153,7 @@ if (count($classResults) === 0) {
   <div class="modal-dialog" role="document">
     <form id="feedbackForm" method="POST" action="submit_class_feedback.php">
       <div class="modal-content">
-        <div class="modal-header bg-blue">
+        <div class="modal-header bg-info">
           <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
           <h4 class="modal-title">Feedback for <span id="feedbackTutorName"></span></h4>
         </div>

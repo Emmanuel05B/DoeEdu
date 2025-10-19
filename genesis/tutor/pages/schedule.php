@@ -109,8 +109,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <div class="content-wrapper" style="background-color: #f7f9fc;">
   <section class="content-header">
-    <h1>My Availability & Bookings</h1>
-    <p class="text-muted">Manage your weekly availability and see learner booking requests here.</p>
+    <h1>My Availability & Bookings <small>Manage your weekly availability and booking requests here.</small></h1>
+    <ol class="breadcrumb">
+      <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+      <li class="active">Bookings</li>
+    </ol>
   </section>
 
   <section class="content">

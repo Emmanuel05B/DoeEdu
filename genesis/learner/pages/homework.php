@@ -71,7 +71,7 @@ if (!isset($_SESSION['email'])) {
                     </div>
                     <div class="box-body table-responsive">
                         <table class="table table-bordered table-striped" style="width:100%;">
-                            <thead style="background-color: #3c8dbc; color: white;">
+                            <thead style="background-color: #d1d9ff;">
                             <tr>
                                 <th>Title</th>
                                 <th>Chapter</th>
@@ -140,19 +140,37 @@ if (!isset($_SESSION['email'])) {
                                         $memoBtn = "";
                                     }
 
+                                    
+                                    $dueDate = new DateTime($activity['DueDate']);
+                                    $now = new DateTime();
+                                    $isPast = $dueDate < $now;
+                                    $dueDateFormatted = $dueDate->format('Y-m-d');
+
+                                    // Style for past due vs upcoming
+                                    if ($isPast) {
+                                        $dueDateDisplay = "<span style='color: red; font-weight: bold;'>{$dueDateFormatted}</span>";
+                                    } else {
+                                        $dueDateDisplay = "<span style='color: green; font-weight: bold;'>{$dueDateFormatted}</span>";
+                                    }
+                                    
+
                                     // Updated Open button with subject parameter
+                                    $openBtn = $isPast 
+                                    ? "<button class='btn btn-danger btn-xs' disabled>Closed</button>" 
+                                    : "<a href='viewhomework.php?activityId={$activityId}&subject=" . urlencode($subjectName) . "' class='btn btn-primary btn-xs'>Open</a>";
+
                                     echo "<tr>
                                             <td>{$activity['Title']}</td>
                                             <td>{$activity['Topic']}</td>
                                             <td>{$activity['CreatedAt']}</td>
-                                            <td>{$activity['DueDate']}</td>
+                                            <td>{$dueDateDisplay}</td>
                                             <td>{$status}</td>
                                             <td>{$score}</td>
                                             <td>
-                                                <a href='viewhomework.php?activityId={$activityId}&subject=" . urlencode($subjectName) . "' class='btn btn-primary btn-xs'>Open</a>
+                                                {$openBtn}
                                                 {$memoBtn}
                                             </td>
-                                          </tr>";
+                                        </tr>";
                                 }
                             }
 

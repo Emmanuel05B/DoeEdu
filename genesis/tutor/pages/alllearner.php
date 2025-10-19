@@ -69,30 +69,7 @@ if (!isset($_SESSION['email'])) {
                   </thead>
                   <tbody>
                     <?php
-                    // Working query: only active learners (contract not expired) ... for this grade, subject and group
-
-
-
-                    /*
-                    $sql = "
-                        SELECT 
-                            lt.LearnerId,
-                            lt.Grade,
-                            u.Name,
-                            u.Surname,
-                            c.GroupName
-                        FROM learners lt
-                        INNER JOIN users u ON lt.LearnerId = u.Id
-                        INNER JOIN learnersubject ls 
-                            ON lt.LearnerId = ls.LearnerId 
-                            AND ls.ContractExpiryDate > CURDATE()   .. will be a problem., use status intead.
-                        INNER JOIN learnerclasses lc 
-                            ON lt.LearnerId = lc.LearnerID
-                        INNER JOIN classes c 
-                            ON lc.ClassID = c.ClassID
-                            AND c.SubjectID = ls.SubjectID
-                        WHERE ls.SubjectId = ? AND lt.Grade = ? AND c.GroupName = ?
-                    ";  */
+                
 
                     $sql = "
                             SELECT DISTINCT 

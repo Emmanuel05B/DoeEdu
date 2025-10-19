@@ -54,7 +54,7 @@ $stmt->close();
             <div class="box">
               <div class="box-header">
                 <h3 class="box-title">
-                  <?php echo htmlspecialchars($subject['SubjectName']) . " - Grade " . htmlspecialchars($subject['Grade']) . " (" . htmlspecialchars($subject['GroupName']) . ")"; ?>
+                  <?php echo htmlspecialchars($subject['SubjectName']) . " - " . htmlspecialchars($subject['Grade']) . " (" . htmlspecialchars($subject['GroupName']) . ")"; ?>
                 </h3>
               </div>
               <div class="box-body">

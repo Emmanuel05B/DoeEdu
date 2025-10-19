@@ -50,7 +50,7 @@ $tutorId = $_SESSION['user_id'];
         </div>
         <div class="box-body table-responsive">
           <table class="table table-bordered table-hover" id="activitiesTable" style="width:100%;">
-            <thead style="background-color: #3c8dbc; color: white;">
+            <thead style="background-color: #d1d9ff;">
               <tr>
                 <th>Title</th>
                 <th>Topic</th>
@@ -87,12 +87,12 @@ $tutorId = $_SESSION['user_id'];
                     <td>" . htmlspecialchars($row['CreatedAt']) . "</td>
                     <td>
                     <a href='viewactivity.php?activityId=" . $activityId . " ' class='btn btn-xs btn-primary' title='Edit'>
-                        <i class='fa fa-pencil'>Edit</i>
+                        <i class='fa fa-pencil'></i> Edit
                     </a>
                     </td>
                     <td>
                     <a href='masteractivityoverview.php?activityId=" . $activityId . "' class='btn btn-xs btn-info' title='Overview'>
-                        <i class='fa fa-info-circle'>Overview</i>
+                        <i class='fa fa-info-circle'></i> Overview
                     </a>
                   
                     </td>

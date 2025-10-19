@@ -20,35 +20,51 @@ $userId = $_SESSION['user_id']; // logged-in learner
 // Get subject name from URL if passed
 $subjectName = isset($_GET['subject']) ? $_GET['subject'] : '';
 
-// Fetch activity details
-$stmt = $connect->prepare("SELECT TutorId, SubjectId, Grade, Topic, Title, Instructions, 
-TotalMarks, DueDate, CreatedAt, ImagePath FROM onlineactivities WHERE id = ?");
 
+// First, get the learner's class for this activity
+$stmtClass = $connect->prepare("
+    SELECT ClassID 
+    FROM learnerclasses 
+    WHERE LearnerId = ?
+    LIMIT 1
+");
+$stmtClass->bind_param("i", $userId);
+$stmtClass->execute();
+$resClass = $stmtClass->get_result();
+if ($resClass->num_rows === 0) {
+    die("You are not enrolled in any class for this activity.");
+}
+$classRow = $resClass->fetch_assoc();
+$classId = $classRow['ClassID'];
+$stmtClass->close();
 
-                              SELECT a.Id, a.Title, a.Topic, a.CreatedAt, aa.DueDate, a.TotalMarks
-                                FROM onlineactivities a
-                                INNER JOIN onlineactivitiesassignments aa 
-                                    ON a.Id = aa.OnlineActivityId
-                                WHERE aa.ClassID = ?
-                                ORDER BY aa.AssignedAt DESC
-
+// Fetch activity details along with the correct due date from assignments
+$stmt = $connect->prepare("
+    SELECT a.TutorId, a.SubjectId, a.Grade, a.Topic, a.Title, a.Instructions, 
+           a.TotalMarks, aa.DueDate, a.CreatedAt, a.ImagePath
+    FROM onlineactivities a
+    INNER JOIN onlineactivitiesassignments aa 
+        ON a.Id = aa.OnlineActivityId
+    WHERE a.Id = ? AND aa.ClassID = ?
+    LIMIT 1
+");
 
 if (!$stmt) {
-  die("Prepare failed: " . $connect->error);
+    die("Prepare failed: " . $connect->error);
 }
 
-$stmt->bind_param("i", $activityId);
-
+$stmt->bind_param("ii", $activityId, $classId);
 $stmt->execute();
-
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
-    die("Activity not found.");
+    die("Activity not found for your class.");
 }
 
 $activity = $result->fetch_assoc();
 $stmt->close();
+
+
 
 if ($activity['TutorId'] == $userId) {   // Learner should NOT be tutor who created it
     die("You do not have permission to view this activity.");
