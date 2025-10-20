@@ -133,7 +133,7 @@ if (!isset($_SESSION['email'])) {
                                     if ($totalAnswered > 0) {
                                         $status = "<span class='label label-success'>Completed</span>";
                                         $score = "{$correct}/{$activity['TotalMarks']}";
-                                        $memoBtn = "<a href='viewmemo.php?activityid={$activityId}' class='btn btn-info btn-sm'>View Memo</a>";
+                                        $memoBtn = "<a href='viewmemo.php?activityid={$activityId}' class='btn btn-info btn-xs'>View Memo</a>";
                                     } else {
                                         $status = "<span class='label label-warning'>Not Started</span>";
                                         $score = "-";

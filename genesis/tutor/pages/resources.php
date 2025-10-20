@@ -11,9 +11,6 @@ if (!isset($_SESSION['user_id'])) {
 
 include(__DIR__ . "/../../partials/connect.php");
 
-// =========================================================
-// BASIC SETUP
-// =========================================================
 $tutorId   = $_SESSION['user_id'];
 $grade     = $_GET['gra'] ?? '';
 $SubjectId = intval($_GET['sub'] ?? 0);
@@ -23,9 +20,6 @@ if (!$grade || !$SubjectId || !$group) {
     die("Missing parameters.");
 }
 
-// =========================================================
-// FETCH SUBJECT NAME
-// =========================================================
 $SubjectName = "";
 $stmt = $connect->prepare("SELECT SubjectName FROM subjects WHERE SubjectId = ?");
 $stmt->bind_param("i", $SubjectId);
@@ -36,9 +30,7 @@ if ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-// =========================================================
-// FIND THE CLASS ID for this tutor, subject, grade, and group
-// =========================================================
+
 $currentClassId = null;
 $stmt = $connect->prepare("
     SELECT ClassID 
@@ -58,9 +50,8 @@ if (!$currentClassId) {
     die("Class not found for this tutor, subject, grade, or group.");
 }
 
-// =========================================================
 // FETCH UNASSIGNED RESOURCES (for this subject & grade)
-// =========================================================
+
 $uploadedResources = [];
 $stmt = $connect->prepare("
     SELECT 
@@ -80,9 +71,9 @@ $stmt->execute();
 $uploadedResources = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// =========================================================
-// FETCH ASSIGNED RESOURCES (for this class)
-// =========================================================
+
+// FETCH ASSIGNED RESOURCES for this class)
+
 $assignedResources = [];
 $stmt = $connect->prepare("
     SELECT 
@@ -93,6 +84,7 @@ $stmt = $connect->prepare("
         c.GroupName,
         ra.AssignedAt,
         ra.ClassID,
+        r.FilePath,
         r.ResourceID
     FROM resourceassignments ra
     JOIN resources r ON ra.ResourceID = r.ResourceID
@@ -258,31 +250,33 @@ $stmt->close();
                     <td>
                       <?php
                       // Base URL path to uploads folder (adjust if your project URL changes)
-                      $baseUploadsUrl = '/DoE_Genesis/DoeEdu/genesis/uploads/resources/';
+                      $baseUploadsUrl2 = '/DoE_Genesis/DoeEdu/genesis/uploads/resources/';
                       // Inside your foreach loop for each resource -->
 
-                      $fileName = $res['FilePath'] ?? '';  // filename stored in DB
-                      $fileUrl = $baseUploadsUrl . urlencode($fileName); // Proper URL to file
+                      $fileName = $row['FilePath'] ?? '';  // filename stored in DB
+                      $fileUrl2 = $baseUploadsUrl2 . urlencode($fileName); // Proper URL to file
 
                       $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
                       if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-                          echo '<a href="' . $fileUrl . '" target="_blank" title="View Image">';
-                          echo '<img src="' . $fileUrl . '" style="max-width:30px; max-height:20px;" alt="Preview">';
+                          echo '<a href="' . $fileUrl2 . '" target="_blank" title="View Image">';
+                          echo '<img src="' . $fileUrl2 . '" style="max-width:30px; max-height:20px;" alt="Preview">';
                           echo '</a>';
                       } elseif ($ext === 'pdf') {
-                          echo '<a href="' . $fileUrl . '" target="_blank" title="View PDF">';
+                          echo '<a href="' . $fileUrl2 . '" target="_blank" title="View PDF">';
                           echo '<i class="fa fa-file-pdf-o" style="font-size:24px; color:#d9534f;"></i></a>';
                       } elseif (in_array($ext, ['mp4', 'webm', 'ogg'])) {
-                          echo '<a href="' . $fileUrl . '" target="_blank" title="View Video">';
+                          echo '<a href="' . $fileUrl2 . '" target="_blank" title="View Video">';
                           echo '<i class="fa fa-file-video-o" style="font-size:24px; color:#5bc0de;"></i></a>';
                       } elseif (in_array($ext, ['mp3', 'wav', 'm4a'])) {
-                          echo '<a href="' . $fileUrl . '" target="_blank" title="Listen Audio">';
+                          echo '<a href="' . $fileUrl2 . '" target="_blank" title="Listen Audio">';
                           echo '<i class="fa fa-file-audio-o" style="font-size:24px; color:#f0ad4e;"></i></a>';
                       } else {
-                          echo '<a href="' . $fileUrl . '" target="_blank" title="Download File">';
+                          echo '<a href="' . $fileUrl2 . '" target="_blank" title="Download File">';
                           echo '<i class="fa fa-file-o" style="font-size:24px; color:#777;"></i></a>';
                       }
+
+                      
                       ?>
 
                     </td>

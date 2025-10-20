@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 
@@ -6,11 +7,10 @@ if (!isset($_SESSION['email'])) {
   exit();
 }
 
-include(__DIR__ . "/../../common/partials/queries.php"); // contains $connect
+include(__DIR__ . "/../../partials/connect.php");
 
-// Get classId from URL
 if (!isset($_GET['classId']) || intval($_GET['classId']) <= 0) {
-    die("Invalid class selected.");
+  die("Invalid class selected.");
 }
 $classId = intval($_GET['classId']);
 ?>
@@ -33,18 +33,26 @@ $classId = intval($_GET['classId']);
       </ol>
     </section>
 
+    <!-- Available Audio Lessons Table -->
     <section class="content">
-      <div class="row">
-        <div class="col-xs-12">
+      <div class="box box-solid" style="border-top:3px solid #605ca8;">
+        <div class="box-header with-border" style="background-color:#f3edff;">
+          <h3 class="box-title" style="color:#605ca8;">
+            <i class="fa fa-headphones"></i> Available Audio Lessons
+          </h3>
+        </div>
 
-          <div class="box box-primary">
-            <div class="box-header">
-              <h3 class="box-title">Available Audio Lessons</h3>
-            </div>
-
-            <div class="box-body">
-              <div class="row">
-
+        <div class="box-body" style="background-color:#ffffff;">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="resourceTable">
+              <thead style="background-color:#e6e0fa; color:#333;">
+                <tr>
+                  <th>Title</th>
+                  <th>Preview</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
                 <?php
                 // Fetch only audio resources assigned to this class
                 $sql = "
@@ -65,40 +73,44 @@ $classId = intval($_GET['classId']);
                   while ($row = $result->fetch_assoc()) {
                     $title = htmlspecialchars($row['Title']);
                     $filePath = htmlspecialchars($row['FilePath']);
-                    $description = htmlspecialchars($row['Description']);
-                ?>
-                  <div class="col-md-4">
-                    <div class="box box-widget widget-user" style="border-top: 3px solid #3c8dbc;">
-                      <div class="box-body" style="background-color: #f9f9f9;">
-                        <h5 class="text-primary"><?php echo $title; ?></h5>
-                        <audio controls style="width: 100%; margin-bottom: 10px;">
-                          <source src="<?php echo '/DoeEdu/genesis/uploads/resources/' . $filePath; ?>" type="audio/mpeg">
+                    $description = htmlspecialchars($row['Description'] ?: '---');
+                    $fileUrl = "/DoE_Genesis/DoeEdu/genesis/uploads/resources/" . $filePath;
+                    ?>
+                    <tr>
+                      <td><?= $title ?></td>
+                      <td style="width: 300px;">
+                        <audio controls style="width: 100%;">
+                          <source src="<?= $fileUrl ?>" type="audio/mpeg">
                           Your browser does not support the audio element.
                         </audio>
-                        <p class="text-muted"><?php echo $description; ?></p>
-                      </div>
-                    </div>
-                  </div>
-                <?php
+                      </td>
+                      <td><?= $description ?></td>
+                    </tr>
+                  <?php
                   }
                 } else {
-                  echo '<p class="text-muted">No audio lessons assigned to this class.</p>';
+                  echo '<tr><td colspan="4" class="text-muted">No audio lessons assigned to this class.</td></tr>';
                 }
                 $stmt->close();
                 ?>
-
-              </div>
-            </div>
+              </tbody>
+            </table>
           </div>
-
         </div>
       </div>
     </section>
 
   </div>
+
   <div class="control-sidebar-bg"></div>
 </div>
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<script>
+  $(function () {
+    $('#resourceTable').DataTable();
+  });
+</script>
 </body>
 </html>
+

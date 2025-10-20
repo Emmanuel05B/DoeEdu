@@ -1,188 +1,164 @@
-<!DOCTYPE html>
-<html>
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
-  exit();
+    header("Location: ../../common/pages/login.php");
+    exit();
 }
+
+include(__DIR__ . "/../../common/partials/head.php");
+include(__DIR__ . "/../../partials/connect.php");
+
+$LearnerId = $_SESSION['user_id'];
+
+// Step 1: Get all classes for this learner
+$stmtClasses = $connect->prepare("SELECT ClassID FROM learnerclasses WHERE LearnerID = ?");
+$stmtClasses->bind_param("i", $LearnerId);
+$stmtClasses->execute();
+$classResults = $stmtClasses->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmtClasses->close();
 ?>
-<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
-  <div class="wrapper">
-  <?php include(__DIR__ . "/../partials/header.php"); ?>
-  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+<div class="wrapper">
+    <?php include(__DIR__ . "/../partials/header.php"); ?>
+    <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
-      <section class="content-header">
-        <h1>My Perfomance <small>xxxx x x x</small></h1>
-        <ol class="breadcrumb">
-          <li><a href="learnerindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
-          <li class="active">xxxx</li>
-        </ol>
-      </section>
+        <section class="content-header">
+            <h1>My Performance <small>Online Quizzes & Manual Marks</small></h1>
+            <ol class="breadcrumb">
+                <li><a href="learnerindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li class="active">Performance</li>
+            </ol>
+        </section>
 
-    <section class="content">
-      <div class="row">
-        <!-- Summary Cards -->
-        <div class="col-lg-3 col-xs-6">
-          <div class="small-box bg-aqua">
-            <div class="inner">
-              <h3>78%</h3>
-              <p>Average Score</p>
-            </div>
-            <div class="icon">
-              <i class="fa fa-percent"></i>
-            </div>
-          </div>
-        </div>
+        <section class="content">
+            <div class="row">
+                <?php 
+                if (count($classResults) === 0) {
+                    echo "<div class='col-xs-12'><h3 class='text-center'>You are not assigned to any classes yet.</h3></div>";
+                } else {
+                    foreach ($classResults as $classRow) {
+                        $classID = $classRow['ClassID'];
 
-        <div class="col-lg-3 col-xs-6">
-          <div class="small-box bg-green">
-            <div class="inner">
-              <h3>24</h3>
-              <p>Total Activities</p>
-            </div>
-            <div class="icon">
-              <i class="fa fa-tasks"></i>
-            </div>
-          </div>
-        </div>
+                        // Step 2: Get class info: Grade, GroupName, SubjectId
+                        $stmtClassInfo = $connect->prepare("SELECT Grade, GroupName, SubjectId FROM classes WHERE ClassID = ? LIMIT 1");
+                        $stmtClassInfo->bind_param("i", $classID);
+                        $stmtClassInfo->execute();
+                        $classInfo = $stmtClassInfo->get_result()->fetch_assoc();
+                        $stmtClassInfo->close();
 
-        <div class="col-lg-3 col-xs-6">
-          <div class="small-box bg-yellow">
-            <div class="inner">
-              <h3>Maths</h3>
-              <p>Best Subject</p>
-            </div>
-            <div class="icon">
-              <i class="fa fa-star"></i>
-            </div>
-          </div>
-        </div>
+                        $grade = $classInfo['Grade'];
+                        $group = $classInfo['GroupName'];
+                        $subjectId = $classInfo['SubjectId'];
 
-        <div class="col-lg-3 col-xs-6">
-          <div class="small-box bg-red">
-            <div class="inner">
-              <h3>Physics</h3>
-              <p>Needs Improvement</p>
-            </div>
-            <div class="icon">
-              <i class="fa fa-warning"></i>
-            </div>
-          </div>
-        </div>
-      </div>
+                        // Step 3: Get subject name
+                        $stmtSubject = $connect->prepare("SELECT SubjectName FROM subjects WHERE SubjectId = ? LIMIT 1");
+                        $stmtSubject->bind_param("i", $subjectId);
+                        $stmtSubject->execute();
+                        $subjectRow = $stmtSubject->get_result()->fetch_assoc();
+                        $stmtSubject->close();
 
-      <!-- Charts Section -->
-      <div class="row">
-        <div class="col-md-6">
-          <div class="box box-primary">
-            <div class="box-header with-border">
-              <h3 class="box-title">Average per Subject</h3>
-            </div>
-            <div class="box-body">
-              <canvas id="barChart"></canvas>
-            </div>
-          </div>
-        </div>
+                        $subjectName = $subjectRow['SubjectName'];
 
-        <div class="col-md-6">
-          <div class="box box-info">
-            <div class="box-header with-border">
-              <h3 class="box-title">Score Over Time</h3>
-            </div>
-            <div class="box-body">
-              <canvas id="lineChart"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>
+                        // Step 4: Calculate Online Quizzes Avg for this subject
+                        $sqlActivities = "
+                            SELECT a.Id, a.TotalMarks
+                            FROM onlineactivities a
+                            JOIN onlineactivitiesassignments aa ON a.Id = aa.OnlineActivityId
+                            JOIN classes c ON aa.ClassID = c.ClassID
+                            WHERE c.SubjectId = ?
+                        ";
+                        $stmtActivities = $connect->prepare($sqlActivities);
+                        $stmtActivities->bind_param("i", $subjectId);
+                        $stmtActivities->execute();
+                        $activitiesResult = $stmtActivities->get_result();
 
-      <!-- Performance Table -->
-      <div class="box box-success">
-        <div class="box-header">
-          <h3 class="box-title">Detailed Performance</h3>
-        </div>
-        <div class="box-body table-responsive">
-          <table class="table table-bordered table-striped" id="performanceTable">
-            <thead>
-              <tr>
-                <th>Subject</th>
-                <th>Activity</th>
-                <th>Total Marks</th>
-                <th>Score</th>
-                <th>%</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Maths</td>
-                <td>Algebra Quiz</td>
-                <td>20</td>
-                <td>18</td>
-                <td>90%</td>
-                <td><span class="label label-success">Excellent</span></td>
-                <td><a href="#" class="btn btn-xs btn-primary">View</a></td>
-              </tr>
-              <tr>
-                <td>Physics</td>
-                <td>Forces Homework</td>
-                <td>25</td>
-                <td>14</td>
-                <td>56%</td>
-                <td><span class="label label-danger">Needs Improvement</span></td>
-                <td><a href="#" class="btn btn-xs btn-primary">View</a></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  </div>
+                        $totalScore = 0;
+                        $totalMarks = 0;
 
-  <div class="control-sidebar-bg"></div>
+                        while ($activity = $activitiesResult->fetch_assoc()) {
+                            $activityId = $activity['Id'];
+                            $maxMarks = $activity['TotalMarks'];
+
+                            // Get learner answers
+                            $sqlAnswers = "
+                                SELECT COUNT(*) AS correctCount
+                                FROM learneranswers la
+                                JOIN onlinequestions oq ON la.QuestionId = oq.Id
+                                WHERE la.UserId = ? AND la.ActivityId = ? AND la.SelectedAnswer = oq.CorrectAnswer
+                            ";
+                            $stmtAnswers = $connect->prepare($sqlAnswers);
+                            $stmtAnswers->bind_param("ii", $LearnerId, $activityId);
+                            $stmtAnswers->execute();
+                            $correctCount = $stmtAnswers->get_result()->fetch_assoc()['correctCount'];
+                            $stmtAnswers->close();
+
+                            $totalScore += $correctCount;
+                            $totalMarks += $maxMarks;
+                        }
+
+                        $stmtActivities->close();
+
+                        $onlineAvg = $totalMarks > 0 ? round(($totalScore / $totalMarks) * 100, 2) : 0;
+                ?>
+                
+                <!-- Subject Box -->
+                <div class="col-xs-12" style="margin-bottom:20px;">
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <h3 class="box-title"><?= htmlspecialchars($subjectName) ?> (<?= $grade . ' ' . $group ?>)</h3>
+                        </div>
+                        <div class="box-body">
+                            <div class="row">
+                                <!-- Left Block: Online Quizzes -->
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="box box-solid" style="background:#f0f7ff; padding:15px; text-align:center;">
+                                        <h4 style="color:#3a3a72;">Online Quizzes</h4>
+                                        <h2><?= $onlineAvg ?>%</h2>
+                                        <i class="fa fa-line-chart fa-2x" style="color:#0073e6;"></i>
+
+                                        <!-- Extra Info -->
+                                        <p style="margin-top:10px;">
+                                            Assignments:  = 5 <br>
+                                            Submitted: = 7 <br>
+                                            Submission Rate: 9%
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Right Block: Manual Marks -->
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="box box-solid" style="background:#fff3e6; padding:15px; text-align:center;">
+                                        <h4 style="color:#3a3a72;">Manual Marks</h4>
+                                        <h2><?= $manualAvg ?? '-' ?>%</h2>
+                                        <i class="fa fa-pencil fa-2x" style="color:#ff6600;"></i>
+
+                                        <!-- Extra Info -->
+                                        <p style="margin-top:10px;">
+                                            Assignments: <?= $manualAssignments ?? 0 ?> <br>
+                                            Submitted: <?= $manualSubmitted ?? 0 ?> <br>
+                                            Submission Rate: <?= $manualSubmissionRate ?? '-' ?>%
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <?php 
+                    } // end foreach classes
+                } // end if classes exist
+                ?>
+            </div>
+        </section>
+    </div>
+
+    <div class="control-sidebar-bg"></div>
 </div>
 
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  // Example Bar Chart
-  new Chart(document.getElementById("barChart"), {
-    type: 'bar',
-    data: {
-      labels: ['Maths', 'Science', 'English', 'Geography'],
-      datasets: [{
-        label: 'Average %',
-        data: [85, 70, 78, 65],
-        backgroundColor: '#3c8dbc'
-      }]
-    }
-  });
-
-  // Example Line Chart
-  new Chart(document.getElementById("lineChart"), {
-    type: 'line',
-    data: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-      datasets: [{
-        label: 'Score Over Time',
-        data: [65, 70, 75, 80, 78],
-        fill: false,
-        borderColor: '#00c0ef'
-      }]
-    }
-  });
-</script>
-
-<script>
-  $(function () {
-    $('#performanceTable').DataTable();
-  });
-</script>
 </body>
 </html>

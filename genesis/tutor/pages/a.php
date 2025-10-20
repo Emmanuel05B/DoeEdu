@@ -21,7 +21,7 @@ include(__DIR__ . "/../../common/partials/queries.php");
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <!-- Main Content -->
-  <div class="content-wrapper">
+  <div class="content-wrapper"> 
     <section class="content-header">
       <h1>
         <i class="fa fa-user"></i> Learner Submissions

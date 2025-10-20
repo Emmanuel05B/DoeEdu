@@ -119,29 +119,38 @@ if (count($classResults) > 0) {
 
 
 
+// Count completed homework
+$completedHomeworkCount = 0;
+if(count($classResults) > 0){
+    foreach ($classResults as $classRow) {
+        $classID = $classRow['ClassID'];
+        $stmtCompleted = $connect->prepare("
+            SELECT a.Id
+            FROM onlineactivities a
+            INNER JOIN onlineactivitiesassignments aa 
+                ON a.Id = aa.OnlineActivityId
+            WHERE aa.ClassID = ?
+        ");
+        $stmtCompleted->bind_param("i", $classID);
+        $stmtCompleted->execute();
+        $activities = $stmtCompleted->get_result();
+        while($activity = $activities->fetch_assoc()){
+            $activityId = $activity['Id'];
+            $stmtAns = $connect->prepare("SELECT Id FROM learneranswers WHERE ActivityId = ? AND UserId = ? LIMIT 1");
+            $stmtAns->bind_param("ii", $activityId, $learnerId);
+            $stmtAns->execute();
+            if($stmtAns->get_result()->num_rows > 0){
+                $completedHomeworkCount++;
+            }
+            $stmtAns->close();
+        }
+        $stmtCompleted->close();
+    }
+}
 
 
 
-
-  // Fetch Average Score from learneranswers and onlinequestions
-  $stmt = $connect->prepare("
-      SELECT AVG(score) FROM (
-          SELECT la.ActivityId, SUM(oq.CorrectAnswer = la.SelectedAnswer) / COUNT(*) * 100 AS score
-          FROM learneranswers la
-          JOIN onlinequestions oq ON la.QuestionId = oq.Id
-          WHERE la.UserId = ?
-          GROUP BY la.ActivityId
-      ) AS scores
-  ");
-  $stmt->bind_param("i", $learnerId);
-  $stmt->execute();
-  $stmt->bind_result($averageScore);
-  $stmt->fetch();
-  $stmt->close();
-
-  $averageScore = $averageScore ? round($averageScore) : 0;
-
-
+$activeClassesCount = count($classIds);
 
 
   
@@ -169,11 +178,71 @@ if (count($classResults) > 0) {
 ?>
 
 
+
               
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <?php include(__DIR__ . "/../partials/header.php"); ?>
+    <header class="main-header">
+    <!-- Logo -->
+    <a href="leranerindex.php" class="logo">
+      <!-- mini logo for sidebar mini 50x50 pixels -->
+      <span class="logo-mini"><b>Click</b></span>
+      <!-- logo for regular state and mobile devices -->
+      <span class="logo-lgd"><b>DoE_Genesis </b></span>
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+      <!-- Sidebar toggle button-->
+      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+        <span class="sr-only">Toggle navigation</span>
+        
+        <span class="logo-lg"><b>Distributors Of Education </b></span>
+
+      </a>
+      
+        <!-- Button to manually open the modal -->
+      <a href="#" data-toggle="modal" data-target="#learnerNotificationsModal">
+        <i class="fa fa-bell"></i> Notifications
+      </a>
+
+      <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+
+            <!-- pending homeworks -->
+            <li>
+              <a href="mytutors.php">
+                <i class="fa fa-envelope-open"></i>
+                <span class="label label-warning"><?= $pendingHomeworkCount ?></span>
+              </a>
+            </li>
+            <!-- confimed requests -->
+            <li>
+              <a href="mytutors.php">
+                <i class="fa fa-check-circle text-white"></i>
+                <span class="label label-success"><?= $confirmedCount ?></span>
+              </a>
+            </li>
+
+            <!-- Original notifications bell -->
+            <li>
+              <a href="#" data-toggle="modal" data-target="#learnerNotificationsModal">
+                <i class="fa fa-bell-o"></i>
+              </a>
+            </li>
+
+          <!-- User Account: style can be found in dropdown.less -->
+          <li class="dropdown user user-menu">
+            <a href="#">
+              <img src="../images/emma.jpg" class="user-image" alt="User Image">
+              <span class="hidden-xs"><?php ?></span>
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+    </nav>
+  </header>
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
@@ -190,41 +259,42 @@ if (count($classResults) > 0) {
     <section class="content">
 
       <div class="row">
-        <!-- Metric Cards -->
+        <!-- Online Quizzes Average -->
+        <div class="col-md-3">
+          <div class="box box-primary" style="background:#f9f1fe;">
+            <div class="box-body">
+              <h4 style="color:#3a3a72;">Online Quizzes Avg</h4>
+              <h2>...</h2>
+              <i class="fa fa-laptop fa-2x pull-right" style="color:#a06cd5;"></i>
+              <a href="#" class="btn btn-link">View Details</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tutor Marks Average -->
+        <div class="col-md-3">
+          <div class="box box-primary" style="background:#f0f7ff;">
+            <div class="box-body">
+              <h4 style="color:#3a3a72;">Vid Activities Avg</h4>
+              <h2>...</h2>
+              <i class="fa fa-user-circle fa-2x pull-right" style="color:#0073e6;"></i>
+              <a href="tracklearnerprogress.php?type=tutor" class="btn btn-link">View Details</a>
+            </div>
+          </div>
+        </div>
 
         <!-- Pending Homework Count -->
         <div class="col-md-3">
           <div class="box box-primary" style="background:#e6f0ff;">
             <div class="box-body">
               <h4 style="color:#3a3a72;">Pending Homework</h4>
-              <h2 style="font-weight:bold;"><?= $pendingHomeworkCount ?></h2>
+              <h2><?= $pendingHomeworkCount ?></h2>
               <i class="fa fa-tasks fa-2x pull-right" style="color:#6a52a3;"></i>
               <a href="homework.php" class="btn btn-link">View All</a>
             </div>
           </div>
         </div>
-        <!-- Average Score -->
-        <div class="col-md-3">
-          <div class="box box-primary" style="background:#f9f1fe;">
-            <div class="box-body">
-              <h4 style="color:#3a3a72;">Average Score</h4>
-              <h2><?= $averageScore ?>%</h2>
-              <i class="fa fa-bar-chart fa-2x pull-right" style="color:#a06cd5;"></i>
-              <a href="myresults.php" class="btn btn-link">View Results</a>
-            </div>
-          </div>
-        </div>
-        <!-- Attendance Rate -->
-        <div class="col-md-3">
-          <div class="box box-primary" style="background:#f0f7ff;">
-            <div class="box-body">
-              <h4 style="color:#3a3a72;">Attendance</h4>
-              <h2>95%</h2>
-              <i class="fa fa-calendar-check-o fa-2x pull-right" style="color:#0073e6;"></i>
-              <a href="attendance.php" class="btn btn-link">Track Attendance</a>
-            </div>
-          </div>
-        </div>
+
         <!-- Upcoming 1-1 Sessions Count -->
         <div class="col-md-3">
           <div class="box box-primary" style="background:#d1ffe0;">
@@ -237,6 +307,7 @@ if (count($classResults) > 0) {
           </div>
         </div>
       </div>
+
 
       <div class="row">
         <!-- Tutors -->
@@ -281,8 +352,8 @@ if (count($classResults) > 0) {
                 </p>
               </div>
               <div class="box-body text-center">
-                <p><strong>Email...remove:</strong> <?= htmlspecialchars($tutor['Email']) ?></p>
-                <p><strong>Availability...to remove:</strong> <?= htmlspecialchars($tutor['Availability']) ?: 'Not specified' ?></p>
+                <p><strong>Email...to remove:</strong> <?= htmlspecialchars($tutor['Email']) ?></p>
+                <p><strong>Availability:</strong> <?= htmlspecialchars($tutor['Availability']) ?: 'Not specified' ?></p>
                 <hr>
                 <div class="btn-group">
                   
@@ -321,6 +392,7 @@ if (count($classResults) > 0) {
         <?php endforeach; ?>
 
       </div>
+
     </section>
 
   </div>

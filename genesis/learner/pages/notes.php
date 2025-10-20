@@ -8,7 +8,6 @@ if (!isset($_SESSION['email'])) {
 
 include(__DIR__ . "/../../partials/connect.php");
 
-// Get classId from URL
 if (!isset($_GET['classId']) || intval($_GET['classId']) <= 0) {
     die("Invalid class selected.");
 }
@@ -79,9 +78,9 @@ $resources = $result->fetch_all(MYSQLI_ASSOC);
                         <tbody>
                         <?php if ($resources): ?>
                             <?php foreach ($resources as $res): 
-                                $fileUrl = '/DoeEdu/genesis/uploads/resources/' . urlencode($res['FilePath']);
+                                $fileUrl = '/DoE_Genesis/DoeEdu/genesis/uploads/resources/' . urlencode($res['FilePath']);
                                 $ext = strtolower(pathinfo($res['FilePath'], PATHINFO_EXTENSION));
-                                // Choose icon based on file type
+                                // Choose icon based on file type 
                                 if ($ext === 'pdf') {
                                     $icon = '<i class="fa fa-file-pdf-o" style="font-size:24px; color:#d9534f;"></i>';
                                 } elseif (in_array($ext, ['jpg','jpeg','png','gif','webp'])) {
@@ -91,6 +90,7 @@ $resources = $result->fetch_all(MYSQLI_ASSOC);
                                 } else {
                                     $icon = '<i class="fa fa-file-o" style="font-size:24px; color:#777;"></i>';
                                 }
+                                
                             ?>
                                 <tr>
                                     <td><?= htmlspecialchars($res['Title']) ?></td>

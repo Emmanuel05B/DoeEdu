@@ -21,14 +21,15 @@ $userId = $_SESSION['user_id']; // logged-in learner
 $subjectName = isset($_GET['subject']) ? $_GET['subject'] : '';
 
 
-// First, get the learner's class for this activity
+// First, get the learner's class for this activity from the assignments
 $stmtClass = $connect->prepare("
-    SELECT ClassID 
-    FROM learnerclasses 
-    WHERE LearnerId = ?
+    SELECT aa.ClassID 
+    FROM onlineactivitiesassignments aa
+    JOIN learnerclasses lc ON aa.ClassID = lc.ClassID
+    WHERE lc.LearnerId = ? AND aa.OnlineActivityId = ?
     LIMIT 1
 ");
-$stmtClass->bind_param("i", $userId);
+$stmtClass->bind_param("ii", $userId, $activityId);
 $stmtClass->execute();
 $resClass = $stmtClass->get_result();
 if ($resClass->num_rows === 0) {
@@ -37,6 +38,10 @@ if ($resClass->num_rows === 0) {
 $classRow = $resClass->fetch_assoc();
 $classId = $classRow['ClassID'];
 $stmtClass->close();
+
+
+
+
 
 // Fetch activity details along with the correct due date from assignments
 $stmt = $connect->prepare("
@@ -58,6 +63,8 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
+    echo 'Class ID = ' . $classId . '<br>';
+    echo 'Activity ID = ' . $activityId . '<br>';
     die("Activity not found for your class.");
 }
 
