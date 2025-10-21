@@ -41,6 +41,25 @@ include(__DIR__ . "/../../partials/connect.php");
 ?>
 
 
+<?php
+// --- GENERAL ANNOUNCEMENTS ---
+$generalAnnouncements = [];
+$sqlGeneral = "
+    SELECT n.NotificationId, n.Title, n.Content, n.SubjectName, n.CreatedAt, u.Name, u.Surname
+    FROM notifications n
+    LEFT JOIN users u ON n.CreatedBy = u.Id
+    WHERE n.CreatedFor IN (1, 12)
+      AND (n.ExpiryDate IS NULL OR n.ExpiryDate >= NOW())
+    ORDER BY n.CreatedAt DESC
+    LIMIT 20
+";
+$resultGeneral = $connect->query($sqlGeneral);
+while($row = $resultGeneral->fetch_assoc()){
+    $generalAnnouncements[] = $row;
+}
+
+?>
+
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
@@ -398,8 +417,22 @@ include(__DIR__ . "/../../partials/connect.php");
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
 
 <!-- Notification Modal -->
+<?php
+// Fetch general announcements for tutor
+$results = $connect->query("
+    SELECT n.NotificationId, n.Title, n.Content, n.SubjectName, n.CreatedAt, u.Name, u.Surname
+    FROM notifications n
+    LEFT JOIN users u ON n.CreatedBy = u.Id
+    WHERE n.CreatedFor IN (2, 12)
+      AND (n.ExpiryDate IS NULL OR n.ExpiryDate >= NOW())
+    ORDER BY n.CreatedAt DESC
+    LIMIT 20
+");
+?>
+
+<!-- Notification Modal -->
 <div class="modal fade" id="adminNotificationsModal" tabindex="-1" role="dialog" aria-labelledby="adminNotifTitle" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog"> <!-- modal-lg for wider content -->
     <div class="modal-content">
 
       <!-- Modal Header -->
@@ -413,17 +446,23 @@ include(__DIR__ . "/../../partials/connect.php");
         <?php if ($results && $results->num_rows > 0): ?>
           <?php while ($notice = $results->fetch_assoc()): ?>
             <div class="panel panel-default">
-              <div class="panel-heading" style="background-color:#f5f5f5;">
-                <strong>Date:</strong> <?php echo date('Y-m-d H:i', strtotime($notice['Date'])); ?>
+              <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center; background-color:#f5f5f5;">
+                <span><strong>Date:</strong> <?= date('Y-m-d H:i', strtotime($notice['CreatedAt'])) ?></span>
+                <span><strong>By:</strong> <?= htmlspecialchars($notice['Surname']) ?></span>
               </div>
               <div class="panel-body">
-                <strong><?php echo htmlspecialchars($notice['Title']); ?></strong> <a href="#">dynamic</a><br>
-                <?php echo nl2br(htmlspecialchars($notice['Content'])); ?>
+                <strong><?= htmlspecialchars($notice['Title']) ?></strong><br>
+                <?= nl2br(htmlspecialchars($notice['Content'])) ?>
+                <?php if (!empty($notice['Link'])): ?>
+                  <br><a href="<?= htmlspecialchars($notice['Link']) ?>" target="_blank">🔗 View Link</a>
+                <?php endif; ?>
               </div>
             </div>
           <?php endwhile; ?>
         <?php else: ?>
-          <p>No notifications available.</p>
+          <div class="text-center text-muted">
+            No general announcements at the moment.
+          </div>
         <?php endif; ?>
       </div>
 
@@ -435,6 +474,7 @@ include(__DIR__ . "/../../partials/connect.php");
     </div>
   </div>
 </div>
+
 
 <!-- To Do List Modal -->
 <div class="modal fade" id="modal-default" tabindex="-1" role="dialog" aria-labelledby="toDoListLabel" aria-hidden="true">

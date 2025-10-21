@@ -3,7 +3,7 @@
 <aside class="main-sidebar">
 <?php
  include('../../partials/connect.php');
-$userId = $_SESSION['user_id'];  //for looged in teacher
+$userId = $_SESSION['user_id'];
 
 $sql = "SELECT Surname FROM users WHERE Id =  $userId";
 
@@ -18,24 +18,14 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
       <!-- Sidebar user panel -->
       <div class="user-panel">
         <div class="pull-left image">
-          <img src="../uploads/doe.jpg" class="img-circle" alt="User Image">
+          <img src="../images/doe.jpg" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
-          <p>Mr <?php echo $Principalresultsfinal['Surname'] ?></p>
+          <p><?php echo $Principalresultsfinal['Surname'] ?></p>
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
-      <!-- search form -->
-      <form action="#" method="get" class="sidebar-form">
-        <div class="input-group">
-          <input type="text" name="q" class="form-control" placeholder="Search...">
-              <span class="input-group-btn">
-                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
-                </button>
-              </span>
-        </div>
-      </form>
-      <!-- /.search form -->
+     
       <!-- sidebar menu: : style can be found in sidebar.less --> 
       <ul class="sidebar-menu" data-widget="tree">
         <li class="header">MAIN NAVIGATION</li>
