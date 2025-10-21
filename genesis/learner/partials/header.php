@@ -112,7 +112,7 @@ if (count($classResults) > 0) {
 
   <header class="main-header">
     <!-- Logo -->
-    <a href="adminindex.php" class="logo">
+    <a href="learnerindex.php" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>Click</b></span>
       <!-- logo for regular state and mobile devices -->
