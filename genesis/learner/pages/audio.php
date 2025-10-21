@@ -40,6 +40,9 @@ $classId = intval($_GET['classId']);
           <h3 class="box-title" style="color:#605ca8;">
             <i class="fa fa-headphones"></i> Available Audio Lessons
           </h3>
+          <a href="audiogrid.php?classId=<?= $classId ?>" class="btn btn-sm btn-primary">
+            <i class="fa fa-th"></i> View as Grid
+          </a>
         </div>
 
         <div class="box-body" style="background-color:#ffffff;">

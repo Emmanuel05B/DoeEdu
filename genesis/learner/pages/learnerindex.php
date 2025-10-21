@@ -61,6 +61,7 @@
     }
   }
 
+
   $alertStatus = $_GET['status'] ?? '';
   $alertMessage = $_GET['message'] ?? '';
 
@@ -152,7 +153,6 @@ if(count($classResults) > 0){
 
 $activeClassesCount = count($classIds);
 
-
   
   // Count the number of confirmed 1-on-1 sessions that haven't passed yet
   $twoWeeksAgo = (new DateTime())->modify('-14 days')->format('Y-m-d H:i:s');
@@ -174,6 +174,28 @@ $activeClassesCount = count($classIds);
   $row3 = $result3->fetch_assoc();
   $confirmedCount = $row3['ConfirmedCount'];
 
+
+  
+  $notifications = [];
+
+  if (!empty($classIds)) {
+      $inClause = implode(',', array_map('intval', $classIds));
+      $notifSql = "
+          SELECT Title, Content, Subject, CreatedAt 
+          FROM classnotifications 
+          WHERE Grade IN (SELECT Grade FROM classes WHERE ClassID IN ($inClause))
+            AND Group_Class IN (SELECT Group_Class FROM classes WHERE ClassID IN ($inClause))
+            AND CreatedAt >= NOW() - INTERVAL 14 DAY
+          ORDER BY CreatedAt DESC
+          LIMIT 20
+      ";
+      $notifResult = $connect->query($notifSql);
+      while ($notif = $notifResult->fetch_assoc()) {
+          $notifications[] = $notif;
+      }
+  }
+
+
   
 ?>
 
@@ -184,65 +206,65 @@ $activeClassesCount = count($classIds);
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
     <header class="main-header">
-    <!-- Logo -->
-    <a href="leranerindex.php" class="logo">
-      <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>Click</b></span>
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lgd"><b>DoE_Genesis </b></span>
-    </a>
-    <!-- Header Navbar: style can be found in header.less -->
-    <nav class="navbar navbar-static-top">
-      <!-- Sidebar toggle button-->
-      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-        <span class="sr-only">Toggle navigation</span>
-        
-        <span class="logo-lg"><b>Distributors Of Education </b></span>
-
+      <!-- Logo -->
+      <a href="leranerindex.php" class="logo">
+        <!-- mini logo for sidebar mini 50x50 pixels -->
+        <span class="logo-mini"><b>Click</b></span>
+        <!-- logo for regular state and mobile devices -->
+        <span class="logo-lgd"><b>DoE_Genesis </b></span>
       </a>
-      
-        <!-- Button to manually open the modal -->
-      <a href="#" data-toggle="modal" data-target="#learnerNotificationsModal">
-        <i class="fa fa-bell"></i> Notifications
-      </a>
-
-      <div class="navbar-custom-menu">
-        <ul class="nav navbar-nav">
-
-            <!-- pending homeworks -->
-            <li>
-              <a href="mytutors.php">
-                <i class="fa fa-envelope-open"></i>
-                <span class="label label-warning"><?= $pendingHomeworkCount ?></span>
-              </a>
-            </li>
-            <!-- confimed requests -->
-            <li>
-              <a href="mytutors.php">
-                <i class="fa fa-check-circle text-white"></i>
-                <span class="label label-success"><?= $confirmedCount ?></span>
-              </a>
-            </li>
-
-            <!-- Original notifications bell -->
-            <li>
-              <a href="#" data-toggle="modal" data-target="#learnerNotificationsModal">
-                <i class="fa fa-bell-o"></i>
-              </a>
-            </li>
-
-          <!-- User Account: style can be found in dropdown.less -->
-          <li class="dropdown user user-menu">
-            <a href="#">
-              <img src="../images/emma.jpg" class="user-image" alt="User Image">
-              <span class="hidden-xs"><?php ?></span>
-            </a>
-          </li>
+      <!-- Header Navbar: style can be found in header.less -->
+      <nav class="navbar navbar-static-top">
+        <!-- Sidebar toggle button-->
+        <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+          <span class="sr-only">Toggle navigation</span>
           
-        </ul>
-      </div>
-    </nav>
-  </header>
+          <span class="logo-lg"><b>Distributors Of Education </b></span>
+
+        </a>
+        
+          <!-- Button to manually open the modal -->
+        <a href="#" data-toggle="modal" data-target="#learnerNotificationsModal">
+          <i class="fa fa-bell"></i> Notifications
+        </a>
+
+        <div class="navbar-custom-menu">
+          <ul class="nav navbar-nav">
+
+              <!-- pending homeworks -->
+              <li>
+                <a href="mytutors.php">
+                  <i class="fa fa-envelope-open"></i>
+                  <span class="label label-warning"><?= $pendingHomeworkCount ?></span>
+                </a>
+              </li>
+              <!-- confimed requests -->
+              <li>
+                <a href="mytutors.php">
+                  <i class="fa fa-check-circle text-white"></i>
+                  <span class="label label-success"><?= $confirmedCount ?></span>
+                </a>
+              </li>
+
+              <!-- Original notifications bell -->
+              <li>
+                <a href="#" data-toggle="modal" data-target="#learnerNotificationsModal">
+                  <i class="fa fa-bell-o"></i>
+                </a>
+              </li>
+
+            <!-- User Account: style can be found in dropdown.less -->
+            <li class="dropdown user user-menu">
+              <a href="#">
+                <img src="../images/emma.jpg" class="user-image" alt="User Image">
+                <span class="hidden-xs"><?php ?></span>
+              </a>
+            </li>
+            
+          </ul>
+        </div>
+      </nav>
+    </header>
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
@@ -553,57 +575,27 @@ $activeClassesCount = count($classIds);
       </div>  
 
       <div class="modal-body">
-          <!-- Sample notifications -->
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <strong>Date:</strong> 2025-08-20 10:30
-            </div>
-            <div class="panel-body">
-              <strong>New Resource Uploaded:</strong> <a href="#">Algebra Notes</a><br>
-              Check out the latest material uploaded for your Math class.
-            </div>
-          </div>
+        <?php if (!empty($notifications)): ?>
+            <?php foreach ($notifications as $notif): ?>
+                <div class="panel panel-default">
+                    <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center;">
+                      <span><strong>Date:</strong> <?= htmlspecialchars($notif['CreatedAt']) ?></span>
+                      <span><?= htmlspecialchars($notif['Subject']) ?></span>
+                   </div>
 
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <strong>Date:</strong> 2025-08-19 16:00
+                    <div class="panel-body">
+                        <strong><?= htmlspecialchars($notif['Title']) ?>:</strong><br>
+                        <?= nl2br(htmlspecialchars($notif['Content'])) ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="text-center text-muted">
+                No notifications at the moment.
             </div>
-            <div class="panel-body">
-              <strong>Upcoming Quiz Reminder:</strong> <a href="#">Science Quiz</a><br>
-              Don't forget your quiz scheduled for tomorrow at 10:00 AM.
-            </div>
-          </div>
-
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <strong>Date:</strong> 2025-08-18 09:00
-            </div>
-            <div class="panel-body">
-              <strong>Feedback Received:</strong> <a href="#">Math Assignment</a><br>
-              Your tutor has provided feedback on your recent submission.
-            </div>
-          </div>
-
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <strong>Date:</strong> 2025-08-17 12:45
-            </div>
-            <div class="panel-body">
-              <strong>Appreciation Received:</strong> <a href="#">Tutor John</a><br>
-              Your tutor appreciated your active participation in the class.
-            </div>
-          </div>
-
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <strong>Date:</strong> 2025-08-16 14:30
-            </div>
-            <div class="panel-body">
-              <strong>Missed Homework Alert:</strong> <a href="#">History Essay</a><br>
-              You missed the submission deadline. Please contact your tutor.
-            </div>
-          </div>
+        <?php endif; ?>
       </div>
+
 
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

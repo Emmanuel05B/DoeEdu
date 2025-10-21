@@ -39,6 +39,9 @@ $classId = intval($_GET['classId']);
           <h3 class="box-title" style="color:#605ca8;">
             <i class="fa fa-video-camera"></i> Available Video Lessons
           </h3>
+          <a href="videosgrid.php?classId=<?= $classId ?>" class="btn btn-sm btn-primary">
+            <i class="fa fa-th"></i> View as Grid
+          </a>
         </div>
 
         <div class="box-body" style="background-color:#ffffff;">
@@ -78,8 +81,8 @@ $classId = intval($_GET['classId']);
                     ?>
                     <tr>
                       <td><?= $title ?></td>
-                      <td style="width: 320px;">
-                        <video controls style="width:100%; height:180px;">
+                      <td style="width: 200px;">
+                        <video controls style="width:100%; height:100px;">
                           <source src="<?= $fileUrl ?>" type="video/mp4">
                           Your browser does not support the video element.
                         </video>

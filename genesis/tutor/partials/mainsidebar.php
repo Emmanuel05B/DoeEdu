@@ -40,7 +40,7 @@ $Principalresultsfinal = $Principalresults->fetch_assoc();
         <li><a href="tutorindex.php"><i class="fa fa-circle-o"></i> Home / Dashboard</a></li>
 
         <!-- Learner Management -->
-        <li><a href="classes.php"><i class="fa fa-circle-o"></i> My Class</a></li>
+        <!--  <li><a href="classes.php"><i class="fa fa-circle-o"></i> My Class</a></li> -->
         <li><a href="schedule.php"><i class="fa fa-circle-o"></i>Bookings & Availability</a></li>
         <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> Activity Manegement</a></li>
         <li><a href="setupquestion.php"><i class="fa fa-circle-o"></i> Question Builder</a></li>

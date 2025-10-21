@@ -143,13 +143,13 @@ include(__DIR__ . "/../../partials/connect.php");
         <div class="col-lg-3 col-xs-6">
           <div class="small-box" style="background:#a3bffa; color:#000;">
             <div class="inner">
-              <h3>11</h3>
+              <h3>...</h3>
               <p>Unmarked Submissions</p>
             </div>
             <div class="icon" style="font-size: 50px; top: 10px;">
               <i class="fa fa-tasks"></i>
             </div>
-            <a href="manageactivities.php" class="small-box-footer" style="color:#d4dbff;">
+            <a href="submissions.php" class="small-box-footer" style="color:#d4dbff;">
               Mark Scripts <i class="fa fa-arrow-circle-right"></i>
             </a>
           </div>
@@ -188,13 +188,13 @@ include(__DIR__ . "/../../partials/connect.php");
         <div class="col-lg-3 col-xs-6">
           <div class="small-box" style="background:#a3bffa; color:#000;">
             <div class="inner">
-              <h3>11</h3>
-              <p>Reminders(Due date for quiz)</p>
+              <h3>...</h3>
+              <p>(Quiz passed..alert parents)</p>
             </div>
             <div class="icon" style="font-size: 50px; top: 10px;">
               <i class="fa fa-calendar"></i>
             </div>
-            <a href="manageactivities.php" class="small-box-footer" style="color:#d7cafb;">
+            <a href="#" class="small-box-footer" style="color:#d7cafb;">
               View reminders <i class="fa fa-arrow-circle-right"></i>
             </a>
           </div>
@@ -616,6 +616,7 @@ include(__DIR__ . "/../../partials/connect.php");
             <label>Title <span style="color:red">*</span></label>
             <input type="text" name="title" class="form-control" required>
           </div>
+          
 
           <div class="form-group">
             <label>Content <span style="color:red">*</span></label>
@@ -626,9 +627,18 @@ include(__DIR__ . "/../../partials/connect.php");
           <input type="hidden" name="subject" id="noticeSubject">
           <input type="hidden" name="grade" id="noticeGrade">
           <input type="hidden" name="group" id="noticeGroup">
+          
         </div>
 
         <div class="modal-footer">
+          <button type="button" 
+            class="btn btn-link text-info" 
+            id="viewSentNoticesBtn"
+            data-grade=""
+            data-subject=""
+            data-group="">
+            <i class="fa fa-circle"></i> View Sent Notices
+          </button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-primary">Post Notice</button>
         </div>
@@ -637,6 +647,83 @@ include(__DIR__ . "/../../partials/connect.php");
   </div>
 </div>
 
+<!-- Tutor Sent Notifications Modal -->
+<div class="modal fade" id="tutorSentNotificationsModal" tabindex="-1" role="dialog" aria-labelledby="tutorSentNotifTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header bg-primary text-white">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title" id="tutorSentNotifTitle">Sent Notices for this Class</h4>
+      </div>  
+
+      <div class="modal-body" id="sentNoticesBody">
+          <p class="text-center text-muted">Loading...</p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>  
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+$('#viewSentNoticesBtn').on('click', function (e) {
+    e.preventDefault();
+
+    var grade = $('#noticeGrade').val();
+    var subject = $('#noticeSubject').val();
+    var group = $('#noticeGroup').val();
+
+    $('#tutorSentNotificationsModal').modal('show');
+    $('#sentNoticesBody').html('<p class="text-center text-muted">Loading...</p>');
+
+    $.ajax({
+        url: 'fetchSentNotices.php',
+        type: 'POST',
+        data: { grade: grade, subject: subject, group: group },
+        success: function (response) {
+            $('#sentNoticesBody').html(response);
+        },
+        error: function () {
+            $('#sentNoticesBody').html('<p class="text-center text-danger">Failed to load notices.</p>');
+        }
+    });
+});
+
+// Handle delete notice click dynamically
+$(document).on('click', '.delete-notice', function(e){
+    e.preventDefault();
+    var button = $(this);
+    var id = button.data('id');
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "This will permanently delete the notice!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if(result.isConfirmed){
+            $.post('deleteNotice.php', { id: id }, function(data){
+                var res = JSON.parse(data);
+                if(res.status === 'success'){
+                    $('#notif-'+id).remove();
+                    Swal.fire('Deleted!', res.msg, 'success');
+                } else {
+                    Swal.fire('Error!', res.msg, 'error');
+                }
+            });
+        }
+    });
+});
+</script>
 
 
 <script>

@@ -94,7 +94,7 @@ $stmt->close();
                       </div>
                       <div class="box-body">
                         <p>Watch topic videos.</p>
-                        <a href="videos.php?classId=<?php echo $subject['ClassID']; ?>" class="btn btn-sm btn-success">Watch Videos</a>
+                        <a href="videosgrid.php?classId=<?php echo $subject['ClassID']; ?>" class="btn btn-sm btn-success">Watch Videos</a>
                       </div>
                     </div>
                   </div>
@@ -107,7 +107,7 @@ $stmt->close();
                       </div>
                       <div class="box-body">
                         <p>Listen to audio lessons.</p>
-                        <a href="audio.php?classId=<?php echo $subject['ClassID']; ?>" class="btn btn-sm btn-warning">Open Audios</a>
+                        <a href="audiogrid.php?classId=<?php echo $subject['ClassID']; ?>" class="btn btn-sm btn-warning">Open Audios</a>
                       </div>
                     </div>
                   </div>
