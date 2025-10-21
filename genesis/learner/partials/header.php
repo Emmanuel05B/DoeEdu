@@ -93,6 +93,21 @@ if (count($classResults) > 0) {
   $confirmedCount = $row3['ConfirmedCount'];
 
   
+  // Count general announcements
+  $generalAnnouncementCount = 0;
+  $countSql = "
+      SELECT COUNT(*) as total
+      FROM notifications
+      WHERE CreatedFor IN (1, 12)
+        AND (ExpiryDate IS NULL OR ExpiryDate >= NOW())
+  ";
+  $resultCount = $connect->query($countSql);
+  if($rowCount = $resultCount->fetch_assoc()){
+      $generalAnnouncementCount = $rowCount['total'];
+  }
+
+
+  
 ?>
 
   <header class="main-header">
@@ -117,10 +132,16 @@ if (count($classResults) > 0) {
         <ul class="nav navbar-nav">
           <!-- Messages: style can be found in dropdown.less-->
 
+          <li>
+            <a href="announcements.php"> 
+                <i class="fa fa-envelope"></i> 
+                <span class="label label-warning"><?= $generalAnnouncementCount ?></span>
+            </a>
+          </li>
           <!-- pending homeworks -->
           <li>
             <a href="homework.php">
-              <i class="fa fa-envelope-open"></i>
+              <i class="fa fa-tasks"></i>
               <span class="label label-warning"><?= $pendingHomeworkCount ?></span>
             </a>
           </li>

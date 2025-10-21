@@ -151,7 +151,7 @@ if(count($classResults) > 0){
 
 
 
-$activeClassesCount = count($classIds);
+  $activeClassesCount = count($classIds);
 
   
   // Count the number of confirmed 1-on-1 sessions that haven't passed yet
@@ -196,6 +196,19 @@ $activeClassesCount = count($classIds);
   }
 
 
+    // Count general announcements
+  $generalAnnouncementCount = 0;
+  $countSql = "
+      SELECT COUNT(*) as total
+      FROM notifications
+      WHERE CreatedFor IN (1, 12)
+        AND (ExpiryDate IS NULL OR ExpiryDate >= NOW())
+  ";
+  $resultCount = $connect->query($countSql);
+  if($rowCount = $resultCount->fetch_assoc()){
+      $generalAnnouncementCount = $rowCount['total'];
+  }
+
   
 ?>
 
@@ -231,13 +244,20 @@ $activeClassesCount = count($classIds);
         <div class="navbar-custom-menu">
           <ul class="nav navbar-nav">
 
+              <li>
+                <a href="announcements.php"> 
+                    <i class="fa fa-envelope"></i> 
+                    <span class="label label-warning"><?= $generalAnnouncementCount ?></span>
+                </a>
+              </li>
               <!-- pending homeworks -->
               <li>
-                <a href="mytutors.php">
-                  <i class="fa fa-envelope-open"></i>
+                <a href="homework.php">
+                  <i class="fa fa-tasks"></i>
                   <span class="label label-warning"><?= $pendingHomeworkCount ?></span>
                 </a>
               </li>
+
               <!-- confimed requests -->
               <li>
                 <a href="mytutors.php">
