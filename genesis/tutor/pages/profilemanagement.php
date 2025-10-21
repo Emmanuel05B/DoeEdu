@@ -154,7 +154,7 @@ if ($result->num_rows > 0) {
                 </div> <!-- inner row -->
 
                 <div class="form-group text-right" style="margin-top: 15px;">
-                  <a href="changepassword.php" class="btn btn-default"><i class="fa fa-key"></i> Change Password</a>
+                  <a href="logout.php" class="btn btn-default"><i class="fa fa-key"></i> Change Password</a>
                 </div>
 
                 <div class="form-group text-right">
@@ -173,6 +173,17 @@ if ($result->num_rows > 0) {
 
 <!-- Scripts -->
 <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<?php if (isset($_SESSION['alert'])): ?>
+<script>
+Swal.fire({
+    icon: '<?= $_SESSION['alert']['icon'] ?>',
+    title: '<?= $_SESSION['alert']['title'] ?>',
+    text: '<?= $_SESSION['alert']['message'] ?>',
+    confirmButtonColor: '#3085d6'
+});
+</script>
+<?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
 
 </body>
 </html>

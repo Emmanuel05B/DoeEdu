@@ -117,10 +117,15 @@ include(__DIR__ . "/../../partials/connect.php");
               <a href="assignedquizzes.php?sub=<?php echo $row['SubjectID'] ?>&gra=<?php echo $grade ?>&group=<?php echo $group ?>" 
                 class="<?php echo $btnClass; ?> <?php echo $disabled; ?>" 
                 style="width: 100px;">
-                + Quizzes
+                Quizzes
+              </a>
+
+              <a href="resources.php?sub=<?php echo $row['SubjectID'] ?>&gra=<?php echo $grade ?>&group=<?php echo $group ?>" 
+                class="<?php echo $btnClass; ?> <?php echo $disabled; ?>" 
+                style="width: 100px;">
+                Resources
               </a>
               
-              <a href="managestudymaterials.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Resources</a>
               <a href="alllearner.php?subject=<?php echo $row['SubjectID'] ?>&grade=<?php echo $grade ?>&group=<?php echo $group ?>" class="btn btn-info btn-sm" style="width: 100px;">Open Class</a>
 
             </div>

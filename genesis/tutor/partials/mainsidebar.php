@@ -1,66 +1,59 @@
 <aside class="main-sidebar">
 <?php
- include('../../partials/connect.php');
-$userId = $_SESSION['user_id'];  //for looged in teacher
+include('../../partials/connect.php');
 
-$sql = "SELECT Surname FROM users WHERE Id =  $userId";
+$userId = $_SESSION['user_id']; // Logged-in tutor ID
 
-$usql = "SELECT * FROM users WHERE Id = $userId" ;
-$Principalresults = $connect->query($usql);
-$Principalresultsfinal = $Principalresults->fetch_assoc();  
+// Fetch user details (for name, surname, gender)
+$userSql = "SELECT Surname, Gender FROM users WHERE Id = ?";
+$userStmt = $connect->prepare($userSql);
+$userStmt->bind_param("i", $userId);
+$userStmt->execute();
+$userResult = $userStmt->get_result();
+$userData = $userResult->fetch_assoc();
 
+// Fetch tutor details (for profile image and other tutor info)
+$tutorSql = "SELECT ProfilePicture FROM tutors WHERE TutorId = ?";
+$tutorStmt = $connect->prepare($tutorSql);
+$tutorStmt->bind_param("i", $userId);
+$tutorStmt->execute();
+$tutorResult = $tutorStmt->get_result();
+$tutorData = $tutorResult->fetch_assoc();
+
+// Handle image fallback
+$profileImage = !empty($tutorData['ProfilePicture'])
+    ? "../uploads/" . htmlspecialchars($tutorData['ProfilePicture'])
+    : "../../uploads/doe.jpg";
 ?>
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
       <!-- Sidebar user panel -->
       <div class="user-panel">
         <div class="pull-left image">
-          <img src="../uploads/doe.jpg" class="img-circle" alt="User Image">
+          <img src="<?php echo $profileImage; ?>" class="img-circle" alt="User Image" style="width:45px; height:45px; object-fit:cover;">
         </div>
         <div class="pull-left info">
-          <p>Mr <?php echo $Principalresultsfinal['Surname'] ?></p>
+          <p><?php echo htmlspecialchars($userData['Gender']); ?> <?php echo htmlspecialchars($userData['Surname']); ?></p>
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
-      <!-- search form -->
-      <form action="#" method="get" class="sidebar-form">
-        <div class="input-group">
-          <input type="text" name="q" class="form-control" placeholder="Search...">
-              <span class="input-group-btn">
-                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
-                </button>
-              </span>
-        </div>
-      </form>
-      <!-- /.search form -->
+ 
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu" data-widget="tree">
         <li class="header">MAIN NAVIGATION</li>
-        <!-- Dashboard -->
-        <li><a href="tutorindex.php"><i class="fa fa-circle-o"></i> Home / Dashboard</a></li>
 
-        <!-- Learner Management -->
+        <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> <span>Home / Dashboard</span></a></li>
+        <li><a href="schedule.php"><i class="fa fa-calendar"></i> <span>Bookings & Availability</span></a></li>
+        <li><a href="myactivities.php"><i class="fa fa-tasks"></i> <span>Activity Management</span></a></li>
+        <li><a href="setupquestion.php"><i class="fa fa-cubes"></i> <span>Question Builder</span></a></li>
+
+        <li class="header">ACCOUNT</li>
+        <li><a href="profilemanagement.php"><i class="fa fa-user"></i> <span>My Profile</span></a></li>
+        <li><a href="logout.php"><i class="fa fa-sign-out"></i> <span>Log out</span></a></li>
+
         <!--  <li><a href="classes.php"><i class="fa fa-circle-o"></i> My Class</a></li> -->
-        <li><a href="schedule.php"><i class="fa fa-circle-o"></i>Bookings & Availability</a></li>
-        <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> Activity Manegement</a></li>
-        <li><a href="setupquestion.php"><i class="fa fa-circle-o"></i> Question Builder</a></li>
-
-           
-        <!-- Teaching & Content -->                
-        <li><a href="myactivities.php"><i class="fa fa-circle-o"></i> Manage Activities</a></li>
-
-
-        <!-- Communication & Engagement -->
-        <li><a href="x.php"><i class="fa fa-circle-o"></i> Communications</a></li>
-
-        <!-- Profile & Logout -->
-        <li><a href="profilemanagement.php"><i class="fa fa-circle-o"></i> My Profile</a></li>
-        <li><a href="logout.php"><i class="fa fa-circle-o"></i> Log out</a></li>
-
-        </li>
-        
+        <!-- <li><a href="x.php"><i class="fa fa-circle-o"></i> Communications</a></li>  -->
       </ul>
-
     </section>
     <!-- /.sidebar -->
-  </aside>
+</aside>

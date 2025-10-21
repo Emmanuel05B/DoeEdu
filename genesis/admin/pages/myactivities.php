@@ -44,13 +44,10 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
     </section>
 
     <section class="content">
-      <div class="box box-primary">
-        <div class="box-header">
-          <h3 class="box-title">Activities List</h3>
-        </div>
+      <div class="box box-info">
         <div class="box-body table-responsive">
           <table class="table table-bordered table-hover" id="activitiesTable" style="width:100%;">
-            <thead style="background-color: #3c8dbc; color: white;">
+            <thead style="background-color:#d9edf7; color:#333;">
               <tr>
                 <th>Title</th>
                 <th>Topic</th>

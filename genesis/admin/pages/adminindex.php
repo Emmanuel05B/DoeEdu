@@ -99,7 +99,7 @@
             <li class="dropdown user user-menu">
               
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <img src="../images/doe.jpg" class="user-image" alt="User Image">
+                <img src="../../uploads/doe.jpg" class="user-image" alt="User Image">
                 
               </a>
             </li>

@@ -118,8 +118,6 @@ if (count($classResults) > 0) {
 }
 
 
-
-
 // Count completed homework
 $completedHomeworkCount = 0;
 if(count($classResults) > 0){
@@ -148,7 +146,6 @@ if(count($classResults) > 0){
         $stmtCompleted->close();
     }
 }
-
 
 
   $activeClassesCount = count($classIds);
@@ -220,7 +217,7 @@ if(count($classResults) > 0){
 <div class="wrapper">
     <header class="main-header">
       <!-- Logo -->
-      <a href="leranerindex.php" class="logo">
+      <a href="learnerindex.php" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span class="logo-mini"><b>Click</b></span>
         <!-- logo for regular state and mobile devices -->
@@ -384,8 +381,10 @@ if(count($classResults) > 0){
             <div class="box box-primary" style="min-height: 280px;">
               <div class="box-header with-border text-center">
                 <img 
-                  src="<?= !empty($tutor['ProfilePicture']) ? '../' . htmlspecialchars($tutor['ProfilePicture']) : '../../uploads/doe.jpg' ?>" 
-                  alt="Tutor Picture" class="img-circle" width="90" height="90" style="object-fit: cover;">
+                src="<?= !empty($tutor['ProfilePicture']) ? htmlspecialchars($tutor['ProfilePicture']) : '../../uploads/doe.jpg' ?>" 
+                alt="Tutor Picture" class="img-circle" width="90" height="90" style="object-fit: cover;">
+
+
                 <h3 class="box-title" style="margin-top:10px;">
                   <?= htmlspecialchars($tutor['Gender']) . ' ' . htmlspecialchars($tutor['Surname']) ?>
                 </h3>

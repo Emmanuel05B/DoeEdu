@@ -13,7 +13,7 @@ include(__DIR__ . "/../../partials/connect.php");
 
 
 $activityId = isset($_GET['activityId']) ? intval($_GET['activityId']) : 0;
-$tutorId = $_SESSION['user_id']; // Logged-in tutor
+$tutorId = $_SESSION['user_id']; 
 
 // Fetch activity details including SubjectId
 $stmt = $connect->prepare("

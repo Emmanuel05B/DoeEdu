@@ -85,7 +85,7 @@
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="../images/emma.jpg" class="user-image" alt="User Image">
+              <img src="../images/doe.jpg" class="user-image" alt="User Image">
               <span class="hidden-xs"><?php echo $Teacherresultsfinal['Surname'] ?></span>
             </a>
 

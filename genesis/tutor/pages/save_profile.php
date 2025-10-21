@@ -3,7 +3,7 @@ session_start();
 
 if (!isset($_SESSION['email'])) {
     header("Location: ../../common/pages/login.php");
-  exit();
+    exit();
 }
 
 include(__DIR__ . "/../../partials/connect.php");
@@ -11,20 +11,21 @@ include(__DIR__ . "/../../partials/connect.php");
 $userId = $_SESSION['user_id'];
 
 // Retrieve form inputs
-$name = $_POST['name'];
-$surname = $_POST['surname'];
-$title = $_POST['title'];
-$email = $_POST['email'];
-$phone = $_POST['phone'];
-$availability = $_POST['availability'];
-$bio = $_POST['bio'];
-$qualifications = $_POST['qualifications'];
-$experience_years = $_POST['experience_years'];
+$name = $_POST['name'] ?? '';
+$surname = $_POST['surname'] ?? '';
+$title = $_POST['title'] ?? '';
+$email = $_POST['email'] ?? '';
+$phone = $_POST['phone'] ?? '';
+$availability = $_POST['availability'] ?? '';
+$bio = $_POST['bio'] ?? '';
+$qualifications = $_POST['qualifications'] ?? '';
+$experience_years = $_POST['experience_years'] ?? '';
+
+$imagePath = null;
 
 // Handle optional profile picture upload
-$imagePath = null;
 if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === 0) {
-    $uploadsDir = "../uploads/";
+    $uploadsDir = "../../uploads/";
     if (!is_dir($uploadsDir)) {
         mkdir($uploadsDir, 0755, true);
     }
@@ -35,7 +36,12 @@ if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === 0) {
     if (move_uploaded_file($_FILES['profile_pic']['tmp_name'], $filepath)) {
         $imagePath = $filepath;
     } else {
-        showAlert("error", "Upload Failed", "Failed to upload image.", "profile.php");
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Upload Failed',
+            'message' => 'Failed to upload image.'
+        ];
+        header("Location: profilemanagement.php");
         exit();
     }
 }
@@ -60,34 +66,24 @@ try {
 
     $connect->commit();
 
-    showAlert("success", "Profile Updated!", "Your profile changes have been saved.", "profilemanagement.php");
+    // Set SweetAlert session
+    $_SESSION['alert'] = [
+        'icon' => 'success',
+        'title' => 'Profile Updated!',
+        'message' => 'Your profile changes have been saved.'
+    ];
+
+    header("Location: profilemanagement.php");
+    exit();
+
 } catch (Exception $e) {
     $connect->rollback();
-    showAlert("error", "Update Failed", "Something went wrong. Please try again later.", "profilemanagement.php");
-}
-
-// Function to show SweetAlert inside HTML page
-function showAlert($icon, $title, $message, $redirect)
-{
-    echo "<!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset='UTF-8'>
-        <title>Notification</title>
-        <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-    </head>
-    <body>
-    <script>
-        Swal.fire({
-            icon: '$icon',
-            title: '$title',
-            text: '$message',
-            confirmButtonText: 'OK'
-        }).then(() => {
-            window.location.href = '$redirect';
-        });
-    </script>
-    </body>
-    </html>";
+    $_SESSION['alert'] = [
+        'icon' => 'error',
+        'title' => 'Update Failed',
+        'message' => 'Something went wrong. Please try again later.'
+    ];
+    header("Location: profilemanagement.php");
+    exit();
 }
 ?>

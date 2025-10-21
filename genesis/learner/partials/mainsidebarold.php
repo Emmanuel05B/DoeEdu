@@ -4,43 +4,44 @@ include('../../partials/connect.php');
 
 $userId = $_SESSION['user_id'];  // Logged-in learner
 
-// Fetch learner info
-$stmt = $connect->prepare("SELECT Surname, Gender FROM users WHERE Id = ?");
+// Fetch learner's surname
+$stmt = $connect->prepare("SELECT Surname FROM users WHERE Id = ?");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
 
-// --- Fetch subjects based on active learner classes ---
-$subjectSql = "
-    SELECT DISTINCT s.SubjectId, s.SubjectName
-    FROM learnerclasses lc
-    JOIN classes c ON lc.ClassID = c.ClassID
-    JOIN subjects s ON c.SubjectID = s.SubjectId
-    WHERE lc.LearnerId = ?
+// Fetch all subjects the learner is registered for/ will also have to take the group in to consderation
+$subStmt = $connect->prepare("
+    SELECT s.SubjectId, s.SubjectName
+    FROM learnersubject ls
+    JOIN subjects s ON ls.SubjectId = s.SubjectId
+    WHERE ls.LearnerId = ?
     ORDER BY s.SubjectName ASC
-";
-$subStmt = $connect->prepare($subjectSql);
-$subStmt->bind_param("i", $learnerId);
+");
+$subStmt->bind_param("i", $userId);
 $subStmt->execute();
-$subjects = $subStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$subjectsResult = $subStmt->get_result();
+$subjects = [];
+while ($row = $subjectsResult->fetch_assoc()) {
+    $subjects[] = $row;
+}
 $subStmt->close();
 ?>
-
 <section class="sidebar">
-  <!-- User Panel -->
+  <!-- Sidebar user panel -->
   <div class="user-panel">
     <div class="pull-left image">
       <img src="../images/emma.jpg" class="img-circle" alt="User Image">
     </div>
     <div class="pull-left info">
-      <p><?php echo htmlspecialchars($user['Gender']) . ' ' . htmlspecialchars($user['Surname']); ?></p>
+      <p>Mr <?php echo htmlspecialchars($user['Surname']); ?></p>
       <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
     </div>
   </div>
 
-  <!-- Search Form -->
+  <!-- search form -->
   <form action="#" method="get" class="sidebar-form">
     <div class="input-group">
       <input type="text" name="q" class="form-control" placeholder="Search...">
@@ -52,19 +53,18 @@ $subStmt->close();
     </div>
   </form>
 
-  <!-- Sidebar Menu -->
+  <!-- Sidebar menu -->
   <ul class="sidebar-menu" data-widget="tree">
     <li class="header">MAIN NAVIGATION</li>
-
-    <li><a href="learnerindex.php"><i class="fa fa-home"></i> <span>Home / Dashboard</span></a></li>
-    <li><a href="mytutors.php"><i class="fa fa-calendar-check-o"></i> <span>Sessions</span></a></li>
-    <li><a href="learningresources.php"><i class="fa fa-book"></i> <span>Learning Resources</span></a></li>
-    <li><a href="homework.php"><i class="fa fa-pencil-square-o"></i> <span>Homeworks</span></a></li>
+    <li><a href="learnerindex.php"><i class="fa fa-circle-o"></i> Home / Dashboard</a></li>
+    <li><a href="mytutors.php"><i class="fa fa-circle-o"></i> Sessions</a></li>
+    <li><a href="learningresources.php"><i class="fa fa-circle-o"></i> Learning Resources</a></li>
+    <li><a href="homework.php"><i class="fa fa-circle-o"></i> Homeworks</a></li>
 
     <!-- Training -->
     <li class="treeview">
       <a href="#">
-        <i class="fa fa-graduation-cap"></i> <span>Training</span>
+        <i class="fa fa-circle-o"></i> <span>Training</span>
         <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
       </a>
       <ul class="treeview-menu">
@@ -81,9 +81,13 @@ $subStmt->close();
       </ul>
     </li>
 
-    <li><a href="announcements.php"><i class="fa fa-bullhorn"></i> <span>Announcements / News</span></a></li>
-    <li><a href="studentvoices.php"><i class="fa fa-comments-o"></i> <span>Student Voice</span></a></li>
-    <li><a href="logout.php"><i class="fa fa-sign-out"></i> <span>Log Out</span></a></li>
+    <!-- <li><a href="perfomance.php"><i class="fa fa-circle-o"></i> My Performance</a></li> -->
+    <li><a href="announcements.php"><i class="fa fa-circle-o"></i> Announcements / News</a></li>
+    <!-- <li><a href="forums.php"><i class="fa fa-circle-o"></i> Discussion Forums</a></li> -->
+    <li><a href="studentvoices.php"><i class="fa fa-circle-o"></i> Student Voice</a></li>
+    <!-- <li><a href="help.php"><i class="fa fa-circle-o"></i> Help & Support</a></li> -->
+    <!-- <li><a href="profilesettings.php"><i class="fa fa-circle-o"></i> Profile Settings</a></li> -->
+    <li><a href="logout.php"><i class="fa fa-circle-o"></i> Log out</a></li>
   </ul>
 </section>
 </aside>

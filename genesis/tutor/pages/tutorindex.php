@@ -58,6 +58,20 @@ while($row = $resultGeneral->fetch_assoc()){
     $generalAnnouncements[] = $row;
 }
 
+// Fetch tutor details (for profile image and other tutor info)
+$tutorSql = "SELECT ProfilePicture FROM tutors WHERE TutorId = ?";
+$tutorStmt = $connect->prepare($tutorSql);
+$tutorStmt->bind_param("i", $tutorId);
+$tutorStmt->execute();
+$tutorResult = $tutorStmt->get_result();
+$tutorData = $tutorResult->fetch_assoc();
+
+// Handle image fallback
+$profileImage = !empty($tutorData['ProfilePicture'])
+    ? htmlspecialchars($tutorData['ProfilePicture'])
+    : "../../uploads/doe.jpg";
+
+
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -65,7 +79,7 @@ while($row = $resultGeneral->fetch_assoc()){
 
     <header class="main-header">
       <!-- Logo -->
-      <a href="adminindex.php" class="logo">
+      <a href="tutorindex.php" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span class="logo-mini"><b>Click</b></span>
         <!-- logo for regular state and mobile devices -->
@@ -108,7 +122,7 @@ while($row = $resultGeneral->fetch_assoc()){
             <!-- User account -->
             <li class="dropdown user user-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <img src="../images/doe.jpg" class="user-image" alt="User Image">
+                <img src="<?php echo $profileImage; ?>" class="img-circle" alt="User Image" style="width:18px; height:18px; object-fit:cover;">
               </a>
             </li>
 
