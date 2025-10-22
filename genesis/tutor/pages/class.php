@@ -251,8 +251,20 @@ include(__DIR__ . "/../../partials/connect.php");
                                 <td>
                                     <select name="attendancereasons[]" class="form-control input-sm">
                                         <option value="None" selected>None Provided</option>
-                                        <option value="Other">Other</option>
                                         <option value="Data Issues">Data Issues</option>
+                                        <option value="Power Outage">Power Outage</option>
+                                        <option value="No Internet Access">No Internet Access</option>
+                                        <option value="Device Issues">Device Issues</option>
+                                        <option value="Technical Difficulties">Technical Difficulties</option>
+                                        <option value="Was Not Aware of Class">Was Not Aware of Class</option>
+                                        <option value="Joined Late">Joined Late</option>
+                                        <option value="Illness">Illness</option>
+                                        <option value="Family Emergency">Family Emergency</option>
+                                        <option value="Personal Reasons">Personal Reasons</option>
+                                        <option value="Attended but Connection Dropped">Attended but Connection Dropped</option>
+                                        <option value="No Supervision or Support at Home">No Supervision or Support at Home</option>
+                                        <option value="Forgot Class Schedule">Forgot Class Schedule</option>
+                                        <option value="Other">Other</option>
                                     </select>
                                 </td>
                                 <td>
@@ -267,9 +279,19 @@ include(__DIR__ . "/../../partials/connect.php");
                                 <td>
                                     <select name="submissionreasons[]" class="form-control input-sm">
                                         <option value="None" selected>None Provided</option>
-                                        <option value="Other">Other</option>
                                         <option value="Data Issues">Data Issues</option>
                                         <option value="Did Not Write">Did Not Write</option>
+                                        <option value="Forgot to Submit">Forgot to Submit</option>
+                                        <option value="Was Absent">Was Absent</option>
+                                        <option value="Technical Issues">Technical Issues</option>
+                                        <option value="No Access to Materials">No Access to Materials</option>
+                                        <option value="Incomplete Work">Incomplete Work</option>
+                                        <option value="Personal Reasons">Personal Reasons</option>
+                                        <option value="Illness">Illness</option>
+                                        <option value="Family Emergency">Family Emergency</option>
+                                        <option value="Lack of Understanding">Lack of Understanding</option>
+                                        <option value="Lost or Damaged Work">Lost or Damaged Work</option>
+                                        <option value="Other">Other</option>
                                     </select>
                                 </td>
                             </tr>
@@ -299,9 +321,6 @@ include(__DIR__ . "/../../partials/connect.php");
                         <i class="fa fa-refresh"></i> Reset Form
                     </button>
                 </div>
-                <a href="feedback.php" class="btn btn-block btn-primary">
-                    <i class="fa fa-commenting"></i> Provide feedback to Parents
-                </a>
             </form>
         </div>
 

@@ -16,13 +16,11 @@ if (!isset($_SESSION['email'])) {
   <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
 
     <section class="content-header">
       <h1>Class List <small>Learners</small></h1>
       <ol class="breadcrumb">
-        <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">Class List</li>
       </ol>
 
@@ -67,7 +65,7 @@ if (!isset($_SESSION['email'])) {
       <div class="row">
         <div class="col-xs-12">
           <div class="box box-primary">
-            <div class="box-header with-border" style="background-color:#a3bffa;">
+            <div class="box-header with-border">
               <h3 class="box-title">
                 📋 Activity Overview:  
                 <span style="font-weight:normal;">"<?php echo htmlspecialchars($activityName) ?>" | Max Marks: <?php echo $maxmarks ?></span>
@@ -130,10 +128,21 @@ if (!isset($_SESSION['email'])) {
               </table>
               </div>
 
-              <div class="button-container mt-3">
-                <a href="feedback.php" class="btn btn-info"><i class="fa fa-commenting"></i> Provide Feedback to Parents</a>
-                <a href="classlist.php" class="btn btn-warning"><i class="fa fa-users"></i> Create Class List</a>
-              </div>
+              <!-- Feedback Form -->
+              <form id="feedbackForm" action="emailsuperhandler.php" method="post">
+                <input type="hidden" name="action" value="offline_feedback">
+                <input type="hidden" name="activityId" value="<?= $activityid ?>">
+                <input type="hidden" id="notSubmittedIds" name="notSubmittedIds" value="">
+
+                
+                <div class="button-container mt-3">
+                  <button type="button" class="btn btn-danger" id="sendFeedbackBtn">
+                    <i class="fa fa-envelope"></i> Send Feedback to Parents (Not Submitted or Attended)
+                  </button>
+                  <a href="classlist.php" class="btn btn-warning"><i class="fa fa-users"></i> Create Class List</a>
+                </div>
+              </form>
+
 
             </div>
           </div>
@@ -152,7 +161,76 @@ if (!isset($_SESSION['email'])) {
       "order": [[0, "asc"]]
     });
   });
+
+  document.getElementById('sendFeedbackBtn').addEventListener('click', function () {
+    // Collect learners who did not submit or attend
+    const rows = document.querySelectorAll('#example1 tbody tr');
+    const notSubmittedIds = [];
+
+    rows.forEach(row => {
+      const learnerId = row.children[0].textContent.trim();
+      const attendance = row.children[3].textContent.trim();
+      const submission = row.children[6].textContent.trim();
+
+      if (attendance.toLowerCase() === 'absent' || submission.toLowerCase() === 'no') {
+        notSubmittedIds.push(learnerId);
+      }
+    });
+
+    if (notSubmittedIds.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'No Learners Found',
+        text: 'All learners attended and submitted their work.',
+      });
+      return;
+    }
+
+    // Set the hidden input with IDs
+    document.getElementById('notSubmittedIds').value = notSubmittedIds.join(',');
+
+    // Confirm sending
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `This will send feedback to ${notSubmittedIds.length} parent(s).`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, send it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById('feedbackForm').submit();
+      }
+    });
+  });
 </script>
+
+
+<?php if (isset($_SESSION['success']) || isset($_SESSION['error'])): ?>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    <?php if (isset($_SESSION['success'])): ?>
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: '<?= addslashes($_SESSION['success']); ?>',
+        confirmButtonColor: '#3085d6'
+      });
+    <?php unset($_SESSION['success']); endif; ?>
+
+    <?php if (isset($_SESSION['error'])): ?>
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '<?= addslashes($_SESSION['error']); ?>',
+        confirmButtonColor: '#d33'
+      });
+    <?php unset($_SESSION['error']); endif; ?>
+  });
+</script>
+<?php endif; ?>
+
 
 </body>
 </html>

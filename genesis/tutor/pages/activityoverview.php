@@ -154,7 +154,7 @@ $isClosed = $now > new DateTime($dueDate);
     <section class="content-header">
         <h1>Activity Overview<small class="text-muted">Summary for: <strong><?= htmlspecialchars($activity['Title']) ?> - <?= $grade ?>, Group <?= $group ?></strong></small></h1>
         <ol class="breadcrumb">
-            <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
             <li class="active">Study Resources</li>
         </ol>
     </section>
