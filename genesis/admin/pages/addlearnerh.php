@@ -1,11 +1,17 @@
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
+
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
-include(__DIR__ . "/../../partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
+include_once(BASE_PATH . "/partials/connect.php");
+
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -14,8 +20,8 @@ use PHPMailer\PHPMailer\Exception;
 require __DIR__ . '/../../../vendor/autoload.php';
 
 // --- LOAD .env VARIABLES ---
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'); // project root
-$dotenv->load();
+//$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'); // project root
+//$dotenv->load();
 
 // Transaction start
 $connect->begin_transaction();
@@ -156,7 +162,7 @@ try {
     // Commit transaction
     sendEmailToLearner($email, $name, $verificationToken);
     
-    sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $connect, $learnerId);
+    sendEmailToParent($pemail, $pname, $name, $verificationToken, $connect, $learnerId);
 
     $connect->commit();
 
@@ -176,7 +182,7 @@ try {
 
 // Send email to parent to approve
 
-function sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $connect, $learnerId) {
+function sendEmailToParent($pemail, $pname, $name, $verificationToken, $connect, $learnerId) {
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
@@ -219,7 +225,7 @@ function sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $c
 
         $mail->Body = "
         <p>Dear $pname,</p>
-        <p>Your child <strong>$learnerName</strong> has been successfully registered with the Distributors of Education.</p>
+        <p>Your child <strong>$name</strong> has been successfully registered with the Distributors of Education.</p>
 
         <p>Please review the subjects and fees below. By verifying, you acknowledge awareness of the costs and approve your child's registration:</p>
 
@@ -241,7 +247,8 @@ function sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $c
         </table>
 
         <p style='text-align:center; margin:20px 0;'>
-            <a href='http://localhost/DoE_Genesis/DoeEdu/genesis/common/pages/verification.php?token=$verificationToken' 
+            
+            <a href='" . COMMON_URL . "/verification.php?token=$verificationToken'
                style='background-color: #008CBA; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>
                Verify & Approve Registration
             </a>
@@ -311,6 +318,7 @@ function sendEmailToLearner($email, $name, $verificationToken) {
 
     $_SESSION['error'] = "Email Send Failed " . $e->getMessage();
     header('Location: registration.php?token=' . $token);
+    
 
     exit();
 

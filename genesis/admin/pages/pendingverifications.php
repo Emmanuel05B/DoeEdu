@@ -2,12 +2,20 @@
 <html>
   
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
-  exit();
+
+
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
+    exit();
 }
-include(__DIR__ . "/../../partials/connect.php");
+
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
+
 
 
 $sql = "
@@ -25,15 +33,11 @@ $requests = $connect->query($sql);
 ?>
 
 
-
-
-<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
-
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include(__DIR__ . "/../partials/header.php"); ?>
-  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+<?php include_once(ADMIN_PATH . "/../partials/header.php"); ?>
+<?php include_once(ADMIN_PATH . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
     
@@ -115,7 +119,7 @@ $requests = $connect->query($sql);
 
 <!-- JS Libraries -->
 
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
 <script>
   // Single reminder confirmation

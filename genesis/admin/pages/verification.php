@@ -2,11 +2,18 @@
 <html>
 
 <?php
-session_start();
-include(__DIR__ . "/../../partials/connect.php");
-?>
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
 
-<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
+    exit();
+}
+
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php"); 
+?>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
@@ -68,11 +75,7 @@ include(__DIR__ . "/../../partials/connect.php");
 </div>
 
 
-  <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
-
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
 
 </body>

@@ -42,16 +42,22 @@
 <body class="hold-transition skin-blue sidebar-mini">
 
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
-include(__DIR__ . "/../../common/partials/head.php");
-include(__DIR__ . "/../partials/header.php");
-include(__DIR__ . "/../partials/mainsidebar.php");
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
+
+
+include_once(ADMIN_PATH . "/../partials/header.php"); 
+include_once(ADMIN_PATH . "/../partials/mainsidebar.php"); 
+
 
 $learner_id = isset($_GET['lid']) ? intval($_GET['lid']) : null;
 $SubjectId = isset($_GET['val']) ? intval($_GET['val']) : 0;
@@ -427,6 +433,6 @@ $LastPaymentDate = $financial_info['LastPaymentDate'] ?? '-';
     </section>
 </div>
 
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 </body>
 </html>

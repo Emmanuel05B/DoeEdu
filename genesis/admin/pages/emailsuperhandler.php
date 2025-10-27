@@ -1,17 +1,25 @@
 
 <?php
-session_start();
-include(__DIR__ . "/../../partials/connect.php");
+
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
+    exit();
+}
+
+include_once(BASE_PATH . "/partials/connect.php");
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// --- FIXED PATH TO COMPOSER AUTOLOAD ---
 require __DIR__ . '/../../../vendor/autoload.php'; // <-- fixed
 
 // --- LOAD .env VARIABLES ---
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'); // project root
-$dotenv->load();
+//$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'); // project root
+//$dotenv->load();
 
 // --- Determine action ---
 $action = $_POST['action'] ?? $_GET['action'] ?? null;
@@ -111,7 +119,7 @@ try {
             $mail = initMailer();
             $mail->addAddress($request['email'], $request['name']);
             $mail->Subject = "Your Invitation to Register at DoE Genesis";
-            $invite_link = "http://localhost/DoE_Genesis/DoeEdu/genesis/common/pages/registration.php?token=$token";
+            $invite_link = COMMON_URL . "/registration.php?token=$token";
             $mail->Body = "<p>Dear {$request['name']},</p>
                            <p>You have been invited to register at DoE Genesis.</p>
                            <p>Please click the button below to complete your registration:</p>
@@ -188,8 +196,7 @@ try {
                 $mail->addAddress($pemail, $pname);
                 $mail->Subject = 'Your Child Registration & Fees Approval - DoE';
 
-                $verify_link = "http://localhost/DoE_Genesis/DoeEdu/genesis/common/pages/verification.php?token={$verificationToken}";
-
+                $verify_link = COMMON_URL . "/verification.php?token={$verificationToken}";
                 $mail->Body = "
                     <p>Dear $pname,</p>
                     <p>Your child <strong>$learnerName</strong> has been successfully registered with the Distributors of Education.</p>
@@ -247,7 +254,7 @@ try {
                     $mail = initMailer();
                     $mail->addAddress($learner['Email'], $learner['Name']);
                     $mail->Subject = 'Reminder: Please Verify Your DoE Account';
-                    $verify_link = "http://localhost/DoeEdu/genesis/common/verification.php?token={$learner['VerificationToken']}";
+                    $verify_link = COMMON_URL . "/verification.php?token={$learner['VerificationToken']}";
                     $mail->Body = "<p>Dear {$learner['Name']},</p>
                                 <p>This is a friendly reminder to verify your email address to activate your DoE Genesis learner account:</p>
                                 <a href='$verify_link' style='background-color: #008CBA; color: white; padding: 10px 20px;'>Verify Email</a>
@@ -273,7 +280,7 @@ try {
             $activityId = intval($_POST['activityId'] ?? 0);
             if (!$activityId) throw new Exception("Invalid activity ID.");
 
-            // 1️⃣ Get activity info
+            // Get activity info
             $stmt = $connect->prepare("SELECT Title, LastFeedbackSent FROM onlineactivities WHERE Id = ?");
             $stmt->bind_param("i", $activityId);
             $stmt->execute();
@@ -283,8 +290,7 @@ try {
 
             $activityTitle = $activity['Title'];
 
-            // >>> NEW CODE <<<  
-            // 2️⃣ Get learners who did NOT submit (from form)
+            //Get learners who did NOT submit (from form)
             $notSubmittedIds = $_POST['notSubmittedIds'] ?? '';
             $notSubmittedIds = array_filter(array_map('intval', explode(',', $notSubmittedIds)));
 
@@ -307,9 +313,8 @@ try {
             $stmt->execute();
             $learnersToEmail = $stmt->get_result();
             $stmt->close();
-            // <<< NEW CODE <<<
 
-            // 3️⃣ Send emails
+            // Send emails
             $successCount = 0;
             $failures = [];
 
@@ -331,7 +336,7 @@ try {
                 }
             }
 
-            // 4️⃣ Update LastFeedbackSent
+            // Update LastFeedbackSent
             if ($successCount > 0) {
                 $updateStmt = $connect->prepare("UPDATE onlineactivities SET LastFeedbackSent = NOW() WHERE Id = ?");
                 $updateStmt->bind_param("i", $activityId);

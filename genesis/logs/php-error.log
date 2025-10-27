@@ -26,3 +26,7 @@
 [27-Oct-2025 16:06:42 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\admin\partials\header.php:84) in C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\common\config.php on line 43
 [27-Oct-2025 16:28:37 Europe/Berlin] Error [2]: Undefined variable $_SESSION in C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\admin\partials\header.php on line 8
 [27-Oct-2025 17:47:44 Europe/Berlin] Error [2]: Undefined variable $undefinedVar in C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\admin\pages\adminindex.php on line 29
+[27-Oct-2025 18:53:03 Europe/Berlin] Error [2]: Undefined variable $learnerName in C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\admin\pages\addlearnerh.php on line 165
+[27-Oct-2025 18:56:59 Europe/Berlin] Error [2]: Undefined variable $learnerName in C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\admin\pages\addlearnerh.php on line 228
+[27-Oct-2025 20:30:29 Europe/Berlin] Error [2]: Undefined variable $baseUploadsUrl in C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\admin\pages\studyresources.php on line 253
+[27-Oct-2025 20:30:29 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\admin\partials\header.php:84) in C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\common\config.php on line 31

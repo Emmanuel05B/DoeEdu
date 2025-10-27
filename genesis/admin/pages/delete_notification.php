@@ -1,14 +1,17 @@
 <?php
 
-session_start();
-if (!isset($_SESSION['email'])) {
-    http_response_code(403);
-    echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
 header('Content-Type: application/json');
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['NotificationId'])) {
     $notificationId = intval($_POST['NotificationId']);

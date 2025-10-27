@@ -1,20 +1,25 @@
 <?php
-require '../../../vendor/autoload.php';
-use Dompdf\Dompdf;
-use Dompdf\Options;
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
 
-$imagePath = '../images/westtt.png'; 
-$imageData = base64_encode(file_get_contents($imagePath));
-$src = 'data:image/png;base64,' . $imageData;
-
-session_start();
-
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/login.php");
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
+
+//require '../../../vendor/autoload.php';
+require_once BASE_PATH . '/vendor/autoload.php';
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
+//$imagePath = '../images/westtt.png'; 
+$imagePath = BASE_PATH . '/ProfilePictures/westtt.png';
+$imageData = base64_encode(file_get_contents($imagePath));
+$src = 'data:image/png;base64,' . $imageData;
+
 
 $learner_id = isset($_POST['learnerId']) ? $_POST['learnerId'] : null;
 $SubjectId = isset($_POST['subjectId']) ? intval($_POST['subjectId']) : null;

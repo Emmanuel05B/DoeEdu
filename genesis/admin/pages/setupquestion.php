@@ -210,7 +210,7 @@ while($row = $subjectsRes->fetch_assoc()){
 <?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
 
-<!-- DataTables initialization script -->
+<!-- DataTables initialization script --> 
 <script>
   $(function () {
     $('#example1').DataTable({

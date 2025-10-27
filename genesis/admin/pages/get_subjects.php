@@ -1,5 +1,5 @@
 <?php
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
 
 if(isset($_GET['grade']) && !empty($_GET['grade'])){
     $gradeName = $_GET['grade'];

@@ -3,13 +3,16 @@ require '../../../vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-session_start();
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
 
 // Get input parameters
 $subjectId = isset($_GET['subject']) ? intval($_GET['subject']) : 0;

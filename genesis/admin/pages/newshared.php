@@ -1,6 +1,10 @@
 <?php
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
 
-include(__DIR__ . "/../../partials/connect.php");
+
+include_once(BASE_PATH . "/partials/connect.php");
+
 
 
 if ($learner_id) {

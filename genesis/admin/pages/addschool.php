@@ -1,12 +1,15 @@
 <?php
-session_start();
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../../common/login.php");
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
+  
+include_once(BASE_PATH . "/partials/connect.php");
 
-include(__DIR__ . "/../../partials/connect.php");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $schoolName = trim($_POST['schoolName'] ?? '');
@@ -95,14 +98,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 ?>
 
-<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
+<?php include_once(COMMON_PATH . "/../partials/head.php"); ?>
 <!-- Load SweetAlert2  here -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-<?php include(__DIR__ . "/../partials/header.php"); ?>
-<?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+<?php include_once(ADMIN_PATH . "/../partials/header.php"); ?>
+<?php include_once(ADMIN_PATH . "/../partials/mainsidebar.php"); ?>
+
+
 
 <div class="content-wrapper">
   <section class="content-header">

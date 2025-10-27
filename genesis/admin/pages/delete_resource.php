@@ -1,5 +1,13 @@
 <?php
-session_start();
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
+    exit();
+}
+
 header('Content-Type: text/plain');
 
 if (!isset($_SESSION['user_id'])) {
@@ -14,7 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['id'])) {
     exit;
 }
 
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
+
 
 $resourceId = intval($_POST['id']);
 
@@ -32,9 +41,9 @@ if (!$resource) {
 }
 
 // Step 2: Delete file from server
-$filePath = __DIR__ . "/../../uploads/resources/" . $resource['FilePath'];
+$filePath = RESOURCES_PATH . '/' . $resource['FilePath'];
 if (file_exists($filePath)) {
-    unlink($filePath); // attempt to delete file
+    unlink($filePath); // attempt to delete file 
 }
 
 // Step 3: Delete from database

@@ -1,7 +1,8 @@
 <?php
 use Dompdf\Dompdf;
 
-require_once '../../../vendor/autoload.php';
+require_once BASE_PATH . '/vendor/autoload.php';
+
 
 // Initialize Dompdf
 $dompdf = new Dompdf();

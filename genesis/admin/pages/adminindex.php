@@ -7,25 +7,17 @@ require_once __DIR__ . '/../../common/config.php';
 
 <?php
 
-require_once __DIR__ . '/../../common/config.php';  // for error logging
-
-  // Load path constants
+require_once __DIR__ . '/../../common/config.php';  
 include_once(__DIR__ . "/../../partials/paths.php");
-
-// Start session securely
 include_once(BASE_PATH . "/partials/session_init.php");
-
 
 if (!isLoggedIn()) {
     header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
-// Includes
-include_once(COMMON_PATH . "/../partials/head.php");  //correct
-
+include_once(COMMON_PATH . "/../partials/head.php");  
 include_once(BASE_PATH . "/partials/connect.php");
-
 
 ?>
 
@@ -128,7 +120,7 @@ include_once(BASE_PATH . "/partials/connect.php");
       </nav>
     </header>
 
-    <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+    <?php include_once(ADMIN_PATH . "/../partials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
       <!-- cover section --> 
@@ -362,7 +354,7 @@ include_once(BASE_PATH . "/partials/connect.php");
 
   <!-- Scripts -->
 
-  <?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+  <?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
   <?php
     if (isset($_SESSION['success'])) {

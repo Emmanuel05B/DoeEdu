@@ -1,10 +1,18 @@
 <?php
-session_start();
 
-if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
-  exit();
+
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
+    exit();
 }
+
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
+
 ?>
 
 <!DOCTYPE html>
@@ -63,7 +71,6 @@ if (!isset($_SESSION['email'])) {
 <body>
 
 <?php
-include(__DIR__ . "/../../partials/connect.php");
 $userId = $_SESSION['user_id'];
 
 $usql = "SELECT * FROM users WHERE Id = ?";
