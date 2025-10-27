@@ -1,0 +1,13 @@
+# Block direct web access to environment files
+<FilesMatch "^\.env">
+    Require all denied
+</FilesMatch>
+
+# Prevent directory listings
+Options -Indexes
+
+# Add basic security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>

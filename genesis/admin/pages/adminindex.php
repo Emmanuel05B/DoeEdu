@@ -1,15 +1,34 @@
+<?php
+require_once __DIR__ . '/../../common/config.php'; 
+?> 
+
 <!DOCTYPE html>
 <html>
 
 <?php
-  session_start();
-  if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
+
+require_once __DIR__ . '/../../common/config.php';  // for error logging
+
+  // Load path constants
+include_once(__DIR__ . "/../../partials/paths.php");
+
+// Start session securely
+include_once(BASE_PATH . "/partials/session_init.php");
+
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
-  }
+}
+
+// Includes
+include_once(COMMON_PATH . "/../partials/head.php");  //correct
+
+include_once(BASE_PATH . "/partials/connect.php");
+
+
 ?>
 
-<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 
 
@@ -34,7 +53,6 @@
       
         <div class="navbar-custom-menu">
           <?php 
-          include('../../partials/connect.php');
 
           // Pending verification users
           $usersQuery = $connect->query("SELECT COUNT(*) as count FROM users WHERE IsVerified = 1 AND UserType = '2'");

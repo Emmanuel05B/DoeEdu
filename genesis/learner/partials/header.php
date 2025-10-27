@@ -1,4 +1,8 @@
 <?php
+require_once __DIR__ . '/../../common/config.php'; 
+?> 
+
+<?php
   if (!isset($_SESSION['email'])) {
     header("Location: ../../common/pages/login.php");
     exit();

@@ -1,4 +1,8 @@
-            <?php
+<?php
+require_once __DIR__ . '/../../common/config.php'; 
+?> 
+       
+       <?php
                 include('../../partials/connect.php');
 
                 $userId = $_SESSION['user_id'];  //for looged in teacher

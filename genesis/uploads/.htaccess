@@ -1,0 +1,14 @@
+# Prevent execution of PHP or other server-side scripts
+<FilesMatch "\.(php|php5|phtml|phar)$">
+    Require all denied
+</FilesMatch>
+
+# Optional: prevent scripts of other types (just in case)
+<FilesMatch "\.(asp|aspx|jsp|cgi|sh|pl|py)$">
+    Require all denied
+</FilesMatch>
+
+# Allow normal files (images, pdfs, audio, etc.)
+<FilesMatch "\.(jpg|jpeg|png|gif|pdf|mp4|mp3|wav|pptx|docx|txt)$">
+    Require all granted
+</FilesMatch>

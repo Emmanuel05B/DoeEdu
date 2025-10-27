@@ -110,8 +110,14 @@
 <body>
 
 <?php
-session_start();
-include('../../partials/connect.php');
+include_once(__DIR__ . "/../../partials/paths.php"); 
+
+// Start session securely
+include_once(BASE_PATH . "/partials/session_init.php"); 
+
+// Include database connection
+include_once(BASE_PATH . "/partials/connect.php"); 
+
 
 if (isset($_POST['login'])) {
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);

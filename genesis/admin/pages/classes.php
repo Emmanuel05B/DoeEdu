@@ -10,6 +10,9 @@ include(__DIR__ . "/../../common/partials/head.php");
 include(__DIR__ . "/../../partials/connect.php");
 
 ?>
+<?php
+//echo $undefined_variable; // This variable does not exist
+?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
