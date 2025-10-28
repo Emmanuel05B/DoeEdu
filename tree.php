@@ -42,10 +42,17 @@ C:\xampp\htdocs\DoE_Genesis\DoeEdu
 
 
 
-
+.
 
 
 <?php
+
+
+
+
+
+
+
 require_once __DIR__ . '/../../common/config.php';  
 include_once(__DIR__ . "/../../partials/paths.php");
 include_once(BASE_PATH . "/partials/session_init.php");
@@ -61,8 +68,8 @@ include_once(COMMON_PATH . "/../partials/head.php");
 
 
 
-<?php include_once(ADMIN_PATH . "/../partials/header.php"); ?>
-<?php include_once(ADMIN_PATH . "/../partials/mainsidebar.php"); ?>
+<?php include_once(LEARNER_PATH . "/../partials/header.php"); ?>
+<?php include_once(LEARNER_PATH . "/../partials/mainsidebar.php"); ?>
 
 
 
@@ -72,6 +79,8 @@ include_once(COMMON_PATH . "/../partials/head.php");
 require_once BASE_PATH . '/vendor/autoload.php';
 
 ?>
+
+notes.php, booksession.php, notesgrid.php
 
 
 

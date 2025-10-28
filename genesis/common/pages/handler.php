@@ -121,14 +121,18 @@ try {
     $insertLearner->close();
 
     // SUBJECTS
-    foreach ($_POST['SubjectID'] as $i => $sid) {    //SubjectID  from the form
-        $sid = (int)$sid;
-        $duration = $_POST['Duration'][$i];
-        if($duration > 0){  // check if subject has been registered or not. 
-            $currentLevel = $_POST['CurrentLevel'][$i];
-            $targetLevel  = $_POST['TargetLevel'][$i];
 
-            $stmtSub = $connect->prepare("
+    foreach ($_POST['SubjectID'] as $i => $sid) {
+        $sid = (int)$sid;
+
+        // Make sure Duration exists for this index
+        $duration = isset($_POST['Duration'][$i]) ? (int)$_POST['Duration'][$i] : 0;
+
+        if($duration > 0) {  // only proceed if duration is valid
+            $currentLevel = isset($_POST['CurrentLevel'][$i]) ? $_POST['CurrentLevel'][$i] : '';
+            $targetLevel  = isset($_POST['TargetLevel'][$i]) ? $_POST['TargetLevel'][$i] : '';
+
+                        $stmtSub = $connect->prepare("
                 SELECT ThreeMonthsPrice, SixMonthsPrice, TwelveMonthsPrice, DefaultTutorId, MaxClassSize 
                 FROM subjects WHERE SubjectId = ?
             ");
@@ -166,17 +170,9 @@ try {
             $insertLS->close();
 
             // CLASS ASSIGNMENT
-            // -------------------here
+        }
+    }
 
-
-
-            }
-        
-    } // End of subjects loop
-
-    // FINANCES (single row per learner) 
-    // ------------------- here
-   
 
     // Commit transaction
     sendEmailToLearner($email, $name, $verificationToken);

@@ -1,15 +1,9 @@
-<?php
-require_once __DIR__ . '/../../common/config.php'; 
-?> 
 
 <?php
-  if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
-    exit();
-  }
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
 
-  include(__DIR__ . "/../../common/partials/head.php");
-  include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
 
   $learnerId = $_SESSION['user_id'];
 
@@ -162,7 +156,7 @@ if (count($classResults) > 0) {
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="../images/emma.jpg" class="user-image" alt="User Image">
+             <!-- <img src="<? //= PROFILE_PICS_URL . '/doe.jpg' ?>" class="user-image" alt="User Image"> -->
               <span class="hidden-xs"><?php echo $learnerName ?></span>
             </a>
 

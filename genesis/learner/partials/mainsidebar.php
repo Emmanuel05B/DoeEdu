@@ -1,6 +1,9 @@
 <aside class="main-sidebar">
 <?php
-include('../../partials/connect.php');
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+
+include_once(BASE_PATH . "/partials/connect.php");
 
 $userId = $_SESSION['user_id'];  // Logged-in learner
 
@@ -32,7 +35,8 @@ $subStmt->close();
   <!-- User Panel -->
   <div class="user-panel">
     <div class="pull-left image">
-      <img src="../images/emma.jpg" class="img-circle" alt="User Image">
+      <img src="<?= PROFILE_PICS_URL . '/doe.jpg' ?>" class="img-circle" alt="User Image">
+
     </div>
     <div class="pull-left info">
       <p><?php echo htmlspecialchars($user['Gender']) . ' ' . htmlspecialchars($user['Surname']); ?></p>

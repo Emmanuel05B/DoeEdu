@@ -1,12 +1,16 @@
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
-include(__DIR__ . "/../../common/partials/head.php");
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php"); 
+
 
 // Ensure subjectId exists
 if (!isset($_GET['subjectId']) || !is_numeric($_GET['subjectId'])) {
@@ -99,8 +103,8 @@ function isEligible($levelId, $chapterName, $learnerLevels){
 <html>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-    <?php include(__DIR__ . "/../partials/header.php"); ?>
-    <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+    <?php include_once(LEARNER_PATH . "/../partials/header.php"); ?>
+    <?php include_once(LEARNER_PATH . "/../partials/mainsidebar.php"); ?>
 
     <?php if (isset($_GET['levelCompleted']) && $_GET['levelCompleted'] == 1): ?>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -249,7 +253,7 @@ function isEligible($levelId, $chapterName, $learnerLevels){
     <div class="control-sidebar-bg"></div>
 </div>
 
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
 <!-- DataTables -->
 <script>

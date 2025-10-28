@@ -1,12 +1,15 @@
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
-include(__DIR__ . "/../../common/partials/head.php");
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php"); 
 
 $LearnerId = $_SESSION['user_id'];
 
@@ -20,8 +23,8 @@ $stmtClasses->close();
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-    <?php include(__DIR__ . "/../partials/header.php"); ?>
-    <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+<?php include_once(LEARNER_PATH . "/../partials/header.php"); ?>
+<?php include_once(LEARNER_PATH . "/../partials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
         <section class="content-header">
@@ -159,6 +162,6 @@ $stmtClasses->close();
     <div class="control-sidebar-bg"></div>
 </div>
 
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 </body>
 </html>

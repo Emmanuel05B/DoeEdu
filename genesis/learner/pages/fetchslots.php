@@ -1,5 +1,15 @@
 <?php
-include(__DIR__ . "/../../partials/connect.php");
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
+    exit();
+}
+
+include_once(BASE_PATH . "/partials/connect.php");
+
 
 // Get tutor and learner IDs
 $tutorId   = intval($_GET['tutor']);   

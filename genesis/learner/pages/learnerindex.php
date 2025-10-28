@@ -2,14 +2,18 @@
 <html>
     
 <?php
-  session_start();
-  if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
-    exit();
+  require_once __DIR__ . '/../../common/config.php';  
+  include_once(__DIR__ . "/../../partials/paths.php");
+  include_once(BASE_PATH . "/partials/session_init.php");
+
+  if (!isLoggedIn()) {
+      header("Location: " . COMMON_URL . "/login.php");
+      exit();
   }
 
-  include(__DIR__ . "/../../common/partials/head.php");
-  include(__DIR__ . "/../../partials/connect.php");
+  include_once(BASE_PATH . "/partials/connect.php");
+  include_once(COMMON_PATH . "/../partials/head.php");  
+
 
   $learnerId = $_SESSION['user_id'];
   $tutors = [];
@@ -273,7 +277,7 @@ if(count($classResults) > 0){
             <!-- User Account: style can be found in dropdown.less -->
             <li class="dropdown user user-menu">
               <a href="#">
-                <img src="../images/emma.jpg" class="user-image" alt="User Image">
+                <img src="<?= PROFILE_PICS_URL . '/doe.jpg' ?>" class="user-image" alt="User Image">
                 <span class="hidden-xs"><?php ?></span>
               </a>
             </li>
@@ -282,7 +286,7 @@ if(count($classResults) > 0){
         </div>
       </nav>
     </header>
-  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+<?php include_once(LEARNER_PATH . "/../partials/mainsidebar.php"); ?>
 
   <div class="content-wrapper">
 
@@ -381,7 +385,7 @@ if(count($classResults) > 0){
             <div class="box box-primary" style="min-height: 280px;">
               <div class="box-header with-border text-center">
                 <img 
-                src="<?= !empty($tutor['ProfilePicture']) ? htmlspecialchars($tutor['ProfilePicture']) : '../../uploads/doe.jpg' ?>" 
+                src="<?= !empty($tutor['ProfilePicture']) ? htmlspecialchars($tutor['ProfilePicture']) : PROFILE_PICS_URL . '/doe.jpg' ?>" 
                 alt="Tutor Picture" class="img-circle" width="90" height="90" style="object-fit: cover;">
 
 
@@ -630,7 +634,7 @@ if(count($classResults) > 0){
 
 
 
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
 <script>
 document.querySelectorAll('.decline-form button').forEach(btn => {

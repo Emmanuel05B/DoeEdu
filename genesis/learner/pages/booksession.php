@@ -1,8 +1,18 @@
 
 
 <?php
-session_start();
-include(__DIR__ . "/../../partials/connect.php");
+
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
+    exit();
+}
+
+include_once(BASE_PATH . "/partials/connect.php");
+
 
 $learnerId = $_SESSION['user_id'];
 $tutorId = $_POST['tutor_id'] ?? '';
@@ -16,7 +26,7 @@ $message = "";
 $attachmentPath = null; 
 
 //  Handle file upload ---
-$attachmentPath = null; // Default
+$attachmentPath = null; 
 
 if (!empty($_FILES['attachment']['name'])) {
     $allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
@@ -30,14 +40,14 @@ if (!empty($_FILES['attachment']['name'])) {
         $status = "error";
         $message = "File too large. Max 5MB.";
     } else {
-        $uploadDir = __DIR__ . '/../../uploads/attachments/';
+        $uploadDir = ATTACHMENTS_PATH . '/';
         if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
 
         $fileName = time() . '_' . basename($_FILES['attachment']['name']);
         $targetFile = $uploadDir . $fileName;
 
         if (move_uploaded_file($_FILES['attachment']['tmp_name'], $targetFile)) {
-            $attachmentPath = '../../uploads/attachments/' . $fileName; // Path saved in DB
+            $attachmentPath = ATTACHMENTS_URL . '/' . $fileName; // Path saved in DB
         } else {
             $status = "error";
             $message = "Failed to upload the file.";

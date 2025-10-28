@@ -1,12 +1,14 @@
 <?php
-session_start();
-include(__DIR__ . "/../../partials/connect.php");
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
 
-if (!isset($_SESSION['email']) || !isset($_SESSION['user_id'])) {
-    header("Location: ../../common/pages/login.php");
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
+include_once(BASE_PATH . "/partials/connect.php");
 
 //this handler is for submitting feedback for a class meeting/session that happened... this meeting was for a whole class and not one on one.
 
