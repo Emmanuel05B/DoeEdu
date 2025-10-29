@@ -1,20 +1,24 @@
 <?php
-require '../../../vendor/autoload.php';
-use Dompdf\Dompdf;
-use Dompdf\Options;
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
 
-$imagePath = '../images/westtt.png'; 
-$imageData = base64_encode(file_get_contents($imagePath));
-$src = 'data:image/png;base64,' . $imageData;
-
-session_start();
-
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/login.php");
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
+
+require_once BASE_PATH . '/../vendor/autoload.php';
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
+
+$imagePath = PROFILE_PICS_URL . '/doep.png';
+$imageData = base64_encode(file_get_contents($imagePath));
+$src = 'data:image/png;base64,' . $imageData;
+
 
 $learner_id = isset($_POST['learnerId']) ? $_POST['learnerId'] : null;
 $SubjectId = isset($_POST['subjectId']) ? intval($_POST['subjectId']) : null;
@@ -170,7 +174,7 @@ ob_start();
        </table>
     </td>
   </tr>
-</table>
+</table><br>
 
 
 <!-- Attendance & Submission -->
@@ -178,7 +182,7 @@ ob_start();
 <table>
   <tr>
     <td style="width:50%;">
-      
+      <b>Attendance</b>
       <table style="width:100%; border:1px solid #ddd; border-collapse:collapse; margin-bottom:10px;">
         <tr>
             <td style="border:none; width:50%;"><b>Attendance Rate:</b></td>
@@ -191,7 +195,8 @@ ob_start();
        </table>
     </td>
     <td style="width:50%;">
-      
+      <b>Submission</b>
+
       <table style="width:100%; border:1px solid #ddd; border-collapse:collapse; margin-bottom:10px;">
         <tr>
             <td style="border:none; width:50%;"><b>Submission Rate:</b></td>
@@ -205,7 +210,6 @@ ob_start();
     </td>
   </tr>
 </table>
-
 
 
 <!-- Missed Attendance & Submissions -->
@@ -340,7 +344,7 @@ $dompdf = new Dompdf($options);
 $dompdf->loadHtml($html);
 $dompdf->setPaper('A4','portrait');
 $dompdf->render();
-$dompdf->stream("learner_report.pdf", ["Attachment"=>false]);
+$dompdf->stream("learner_report.pdf", ["Attachment"=>true]);
 
 
 

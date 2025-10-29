@@ -1,11 +1,15 @@
 <?php
-session_start();
-include(__DIR__ . "/../../partials/connect.php");
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../common/login.php");
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
+
+include_once(BASE_PATH . "/partials/connect.php");
+
 
 $tutorId = $_SESSION['user_id'];
 
@@ -35,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        // 🔍 Step 1: Check for duplicate or overlapping slots
+        // Step 1: Check for duplicate or overlapping slots
         $checkSql = "
             SELECT * 
             FROM tutoravailability 
@@ -51,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ";
 
         $stmt = $connect->prepare($checkSql);
-        // ✅ Correct number of placeholders (10 total)
+        // Correct number of placeholders (10 total)
         $stmt->bind_param(
             "isssssssss",
             $tutorId,
@@ -77,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $stmt->close();
 
-        // ✅ Step 2: Insert new availability
+        // Step 2: Insert new availability
         $sql = "INSERT INTO tutoravailability (TutorId, DayOfWeek, StartTime, EndTime, AvailabilityType)
                 VALUES (?, ?, ?, ?, 'OnceOff')";
         $stmt = $connect->prepare($sql);

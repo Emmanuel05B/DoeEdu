@@ -1,15 +1,16 @@
 <?php
-session_start();
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../../common/login.php");
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
 ?>
-
-<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
@@ -30,7 +31,8 @@ $description = trim($_POST['description'] ?? '');
 $uploadedBy = $_SESSION['user_id'] ?? null;
 
 $file = $_FILES['resource_file'];
-$uploadDir = '../../uploads/resources/';
+$uploadDir = RESOURCES_PATH . '/';
+
 
 $allowedTypes = [
     'application/pdf',

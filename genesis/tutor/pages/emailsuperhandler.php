@@ -1,17 +1,27 @@
 
 <?php
-session_start();
-include(__DIR__ . "/../../partials/connect.php");
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
+    exit();
+}
+
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
+
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 // --- FIXED PATH TO COMPOSER AUTOLOAD ---
-require __DIR__ . '/../../../vendor/autoload.php'; // <-- fixed
+require_once BASE_PATH . '/vendor/autoload.php';
 
 // --- LOAD .env VARIABLES ---
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'); // project root
-$dotenv->load();
+//$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'); // project root
+//$dotenv->load();
 
 // --- Determine action ---
 $action = $_POST['action'] ?? $_GET['action'] ?? null;

@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html>
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
-  exit();
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
+    exit();
 }
-include(__DIR__ . "/../../common/partials/head.php");  //
-include(__DIR__ . "/../../partials/connect.php");
+
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
+
 
 ?>
 <body class="hold-transition skin-blue sidebar-mini">
@@ -15,7 +20,7 @@ include(__DIR__ . "/../../partials/connect.php");
 
     <header class="main-header">
       <!-- Logo -->
-      <a href="adminindex.php" class="logo">
+      <a href="tutorindex.php" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span class="logo-mini"><b>Click</b></span>
         <!-- logo for regular state and mobile devices -->
@@ -31,7 +36,6 @@ include(__DIR__ . "/../../partials/connect.php");
       
         <div class="navbar-custom-menu">
           <?php 
-          include('../../partials/connect.php');
 
           // Pending verification users
           $usersQuery = $connect->query("SELECT COUNT(*) as count FROM users WHERE IsVerified = 1 AND UserType = '2'");
@@ -127,7 +131,7 @@ include(__DIR__ . "/../../partials/connect.php");
         </div>
       </nav>
     </header>
-  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+<?php include_once(TUTOR_PATH . "/../partials/mainsidebar.php"); ?>
 
   <?php if (isset($_GET['added']) && $_GET['added'] == 1): ?>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -427,7 +431,7 @@ Swal.fire({
 </div>
 
 <!-- Scripts -->
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
 <!-- Notification Modal -->
 <div class="modal fade" id="adminNotificationsModal" tabindex="-1" role="dialog" aria-labelledby="adminNotifTitle" aria-hidden="true">

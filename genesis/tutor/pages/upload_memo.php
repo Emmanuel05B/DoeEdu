@@ -1,11 +1,15 @@
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
+
 
 $subject = $_POST['subject'] ?? '';
 $grade = $_POST['grade'] ?? '';
@@ -31,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Create upload directory if not exists
-    $uploadDir = __DIR__ . "/../../uploads/practicequestionsmemos/";
+    $uploadDir = PQ_MEMOS_PATH . "/";
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }

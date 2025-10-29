@@ -1,8 +1,4 @@
 <?php
-require '../../../vendor/autoload.php';
-use Dompdf\Dompdf;
-use Dompdf\Options;
-
 require_once __DIR__ . '/../../common/config.php';  
 include_once(__DIR__ . "/../../partials/paths.php");
 include_once(BASE_PATH . "/partials/session_init.php");
@@ -13,13 +9,26 @@ if (!isLoggedIn()) {
 }
 
 include_once(BASE_PATH . "/partials/connect.php");
+require_once BASE_PATH . '/../vendor/autoload.php';
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
-// Get input parameters
-$subjectId = isset($_GET['subject']) ? intval($_GET['subject']) : 0;
-$grade     = isset($_GET['grade']) ? $_GET['grade'] : '';
-$group     = isset($_GET['group']) ? $_GET['group'] : '';
+// Get input from POST
+$subjectId = isset($_POST['subjectId']) ? intval($_POST['subjectId']) : 0;
+$grade     = isset($_POST['grade']) ? $_POST['grade'] : '';
+$group     = isset($_POST['group']) ? $_POST['group'] : '';
+$learnerIdsJson = $_POST['learnerIds'] ?? '[]';
+$learnerIds = json_decode($learnerIdsJson, true);
 
-// Fetch subject info
+// Remove duplicates
+$learnerIds = array_unique($learnerIds);
+
+// Prepare DOE logo
+$imagePath = PROFILE_PICS_URL . '/doe.jpg';
+$imageData = base64_encode(file_get_contents($imagePath));
+$src = 'data:image/png;base64,' . $imageData;
+
+// Fetch subject name
 $subjectName = '';
 if ($subjectId > 0) {
     $stmtSub = $connect->prepare("SELECT SubjectName FROM subjects WHERE SubjectId = ?");
@@ -33,142 +42,115 @@ if ($subjectId > 0) {
     $stmtSub->close();
 }
 
-// Build query for learners in this subject/grade/group, contract active
-$sql = "
-    SELECT DISTINCT lt.LearnerId, lt.Grade, u.Name, u.Surname, c.GroupName
-    FROM learners lt
-    JOIN users u ON lt.LearnerId = u.Id
-    LEFT JOIN learnersubject ls ON lt.LearnerId = ls.LearnerId
-    LEFT JOIN learnerclasses lc ON lt.LearnerId = lc.LearnerID
-    LEFT JOIN classes c ON lc.ClassID = c.ClassID
-    WHERE ls.SubjectId = ? AND ls.ContractExpiryDate > CURDATE()
-";
-
-$params = [$subjectId];
-$types  = "i";
-
-if ($grade !== '') {
-    $sql .= " AND lt.Grade = ?";
-    $types .= "s";
-    $params[] = $grade;
+// Fetch learner info
+$learners = [];
+if(count($learnerIds) > 0){
+    $in  = str_repeat('?,', count($learnerIds) - 1) . '?';
+    $types = str_repeat('i', count($learnerIds));
+    $sql = "SELECT Id, Name, Surname FROM users WHERE Id IN ($in) ORDER BY Name ASC";
+    $stmt = $connect->prepare($sql);
+    $stmt->bind_param($types, ...$learnerIds);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    while($row = $res->fetch_assoc()){
+        $learners[] = $row;
+    }
+    $stmt->close();
 }
 
-if ($group !== '') {
-    $sql .= " AND c.GroupName = ?";
-    $types .= "s";
-    $params[] = $group;
-}
-
-$stmt = $connect->prepare($sql);
-$stmt->bind_param($types, ...$params);
-$stmt->execute();
-$results = $stmt->get_result();
-
-// Capture HTML output
+// Capture HTML
 ob_start();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learner Report</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .top-right-image { position: absolute; top: 0; right: 0; max-height: 130px; margin-right: 30px; }
-    </style>
+<meta charset="UTF-8">
+<title>Class Form</title>
+<style>
+    body { font-family: Arial, sans-serif; font-size:12px; }
+    table { width:100%; border-collapse: collapse; margin-bottom: 10px;}
+    th, td { border:1px solid #ddd; padding:5px; text-align:left; vertical-align:top;}
+    th { background-color:#f2f2f2; }
+    .header-table td { border:none; vertical-align:top; }
+    .top-left-image { width:120px; }
+    .center { text-align:center; }
+</style>
 </head>
 <body>
-    <div>
-        <h2 style="text-align: center;"><b>The DOE Weekly Participation Form</b></h2>
-        <hr><br>
-        <table class="table">
-            <tr>
-                <td>
-                    <p><strong>Registration No:</strong> 2022/735117/07</p>
-                    <p><strong>Telephone:</strong> 081 461 8178</p>
-                    <p><strong>Email:</strong> <a href="mailto:thedistributorsofedu@gmail.com">thedistributorsofedu@gmail.com</a></p>
-                </td>
-                <td>
-                    <img src="../images/westtt.png" alt="DOE Logo" class="top-right-image">
-                </td>
-            </tr>
-        </table>
-    </div>
-    <br>
 
-    <p style="text-align: center;">
-        <b>Grade: </b><?php echo htmlspecialchars($grade); ?> 
-        <b>| Subject: </b><?php echo htmlspecialchars($subjectName); ?> 
-        <?php if($group) echo "<b>| Group: </b>".htmlspecialchars($group); ?>
-    </p>
-    <p style="text-align: center;"><b>Total Learners: </b><?php echo $results->num_rows; ?></p>
-    <small style="display: block; text-align: center;"><b>Generated on: </b><?php echo date('Y-m-d'); ?></small><br>
+<!-- Header -->
+<table class="header-table" style="width:100%; margin-bottom:10px;">
+  <tr>
+    <td style="width:50%;"><img src="<?= $src ?>" class="top-left-image"></td>
+    <td style="width:50%; text-align:right; font-size:12px; line-height:1.4;">
+      <p><b>Registration No:</b> 2022/735117/07</p>
+      <p><b>Telephone:</b> 081 461 8178</p>
+      <p><b>Email:</b> thedistributorsofedu@gmail.com</p>
+    </td>
+  </tr>
+</table>
 
-    <section class="content">
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="box">
-                    <div class="box-body">
-                        <small>Marks: any number between 0 and the total marks.</small><br>
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Surname</th>
-                                    <th>Attendance</th>
-                                    <th>Reason</th>
-                                    <th>Submission</th>
-                                    <th>Reason</th>
-                                    <th>Mark</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php while($learner = $results->fetch_assoc()): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($learner['Name']); ?></td>
-                                    <td><?php echo htmlspecialchars($learner['Surname']); ?></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <?php endwhile; ?>
-                            </tbody>
-                           
-                        </table>
-                    </div>
-                    <br>
-                    <small>Key:</small>
-                    <hr>
-                    <p><b>Attendance: </b><span><b>A</b>=Absent</span> <span><b>P</b>=Present</span> <span><b>L</b>=Late</span></p>
-                    <p><b>Reason Provided (for not attending): </b><span><b>O</b>=Other</span> <span><b>DI</b>=Data Issues</span> <span><b>NP</b>=None Provided</span></p>
-                    <hr>
-                    <p><b>Submission: </b><span><b>N(no)</b>=Did Not Submit</span> <span><b>Y(yes)</b>=Submitted</span></p>
-                    <p><b>Reason Provided (for not submitting): </b><span><b>O</b>=Other</span> <span><b>DI</b>=Data Issues</span> <span><b>NW</b>=Did Not Write</span> <span><b>NP</b>=None Provided</span></p>
-                    <hr>
-                </div>
-            </div>
-        </div>
-    </section>
+<hr>
+<h2 class="center">The DOE Weekly Participation Form</h2>
+<p class="center"><b>Grade:</b> <?= htmlspecialchars($grade) ?> &nbsp; | &nbsp; <b>Subject:</b> <?= htmlspecialchars($subjectName) ?> <?php if($group) echo " &nbsp; | &nbsp; <b>Group:</b> ".htmlspecialchars($group); ?></p>
+<p class="center"><b>Total Learners:</b> <?= count($learners) ?> &nbsp; | &nbsp; <b>Generated on:</b> <?= date('Y-m-d') ?></p>
+<br>
+
+<!-- Learner Table -->
+<table>
+    <thead>
+        <tr>
+            <th>StNo.</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Attendance</th>
+            <th>Reason</th>
+            <th>Submission</th>
+            <th>Reason</th>
+            <th>Mark</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($learners as $index => $learner): ?>
+        <tr>
+            <td><?= $index + 1 ?></td>
+            <td><?= htmlspecialchars($learner['Name']) ?></td>
+            <td><?= htmlspecialchars($learner['Surname']) ?></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <?php endforeach; ?>
+        <?php if(count($learners) === 0): ?>
+        <tr>
+            <td colspan="8" class="center">No learners found for this class.</td>
+        </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
+
+<!-- Key / Legend -->
+<hr>
+<p><b>Attendance:</b> <b>A</b>=Absent, <b>P</b>=Present, <b>L</b>=Late</p>
+<p><b>Reason for absence:</b> <b>O</b>=Other, <b>DI</b>=Data Issues, <b>NP</b>=None Provided</p>
+<p><b>Submission:</b> <b>N</b>=Did Not Submit, <b>Y</b>=Submitted</p>
+<p><b>Reason for non-submission:</b> <b>O</b>=Other, <b>DI</b>=Data Issues, <b>NW</b>=Did Not Write, <b>NP</b>=None Provided</p>
+
 </body>
 </html>
 
 <?php
 $html = ob_get_clean();
-
 $options = new Options();
 $options->set('isHtml5ParserEnabled', true);
 $options->set('isPhpEnabled', true);
-
+$options->set('isRemoteEnabled', true);
 $dompdf = new Dompdf($options);
 $dompdf->loadHtml($html);
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
-$dompdf->stream("learner_report.pdf", ["Attachment" => false]);
+$dompdf->stream("class_form.pdf", ["Attachment" => true]);
 ?>

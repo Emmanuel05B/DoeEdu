@@ -1,12 +1,15 @@
 <?php
-session_start();
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
 
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
+
 
 $userId = $_SESSION['user_id'];
 
@@ -25,7 +28,8 @@ $imagePath = null;
 
 // Handle optional profile picture upload
 if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === 0) {
-    $uploadsDir = "../../uploads/";
+    $uploadsDir = PROFILE_PICS_PATH . '/';
+
     if (!is_dir($uploadsDir)) {
         mkdir($uploadsDir, 0755, true);
     }

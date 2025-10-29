@@ -1,6 +1,10 @@
 <aside class="main-sidebar">
 <?php
-include('../../partials/connect.php');
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+
+include_once(BASE_PATH . "/partials/connect.php");
+
 
 $userId = $_SESSION['user_id']; // Logged-in tutor ID
 
@@ -21,10 +25,12 @@ $tutorResult = $tutorStmt->get_result();
 $tutorData = $tutorResult->fetch_assoc();
 
 // Handle image fallback
-$profileImage = !empty($tutorData['ProfilePicture'])
-    ? "../uploads/" . htmlspecialchars($tutorData['ProfilePicture'])
-    : "../../uploads/doe.jpg";
+
+    $profileImage = !empty($tutorData['ProfilePicture'])
+    ? PROFILE_PICS_URL . '/' . basename($tutorData['ProfilePicture'])
+    : PROFILE_PICS_URL . '/doe.jpg';
 ?>
+
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
       <!-- Sidebar user panel -->

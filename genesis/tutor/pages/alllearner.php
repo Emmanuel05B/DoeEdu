@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html>
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
+
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
 ?>
-<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
-<?php include('../../partials/connect.php'); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <?php include(__DIR__ . "/../partials/header.php"); ?>
-  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+<?php include_once(TUTOR_PATH . "/../partials/header.php"); ?> 
+<?php include_once(TUTOR_PATH . "/../partials/mainsidebar.php"); ?>
+
 
   <div class="content-wrapper">
     <section class="content-header">
       <h1>Class List <small>Learners</small></h1>
       <ol class="breadcrumb">
-        <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">Class List</li>
       </ol>
     </section>
@@ -138,9 +143,27 @@ if (!isset($_SESSION['email'])) {
               <!-- Buttons row -->
               <div class="row" style="margin-top:15px;">
                   <div class="col-xs-6">
-                      <a href="classform.php?subject=<?php echo $_GET['subject']; ?>" class="btn btn-primary btn-block">
-                          Create Class Form
-                      </a>
+                    
+                    <form action="classform.php" method="POST" target="_blank">
+                      <input type="hidden" name="subjectId" value="<?= $subjectId ?>">
+                      <input type="hidden" name="grade" value="<?= htmlspecialchars($grade) ?>">
+                      <input type="hidden" name="group" value="<?= htmlspecialchars($group) ?>">
+                      
+                      <?php 
+                      // Pass all learner IDs
+                      $learnerIds = [];
+                      $results->data_seek(0); // reset pointer
+                      while($row = $results->fetch_assoc()) {
+                          $learnerIds[] = $row['LearnerId'];
+                      }
+                      ?>
+                      <input type="hidden" name="learnerIds" value='<?= json_encode($learnerIds) ?>'>
+                      
+                      <button type="submit" class="btn btn-primary btn-block">
+
+                          Generate PDF for this Class
+                      </button>
+                    </form>
                   </div>
                   <div class="col-xs-6">
                       <!-- Button to open modal -->
@@ -158,7 +181,6 @@ if (!isset($_SESSION['email'])) {
   </div>
 </div>
 
-<!-- Expired Learners Modal -->
 <!-- Expired / Cancelled Learners Modal -->
 <div class="modal fade" id="expiredModal" tabindex="-1" role="dialog" aria-labelledby="expiredModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -257,7 +279,7 @@ if (!isset($_SESSION['email'])) {
 
 
 
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
 <script>
   $(function () {

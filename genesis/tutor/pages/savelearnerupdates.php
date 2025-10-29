@@ -1,11 +1,15 @@
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
     exit();
 }
 
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
+
 
 $learnerId = intval($_POST['LearnerId'] ?? 0);
 $action = $_POST['Action'] ?? '';
@@ -14,11 +18,10 @@ if (!$learnerId || !$action) {
     die("Invalid request.");
 }
 
-// --------------------
-// 1. UPDATE OR DEREGISTER EXISTING SUBJECT
-// --------------------
 
-//ok, we have to stop using the combined learnerSubjectId. .. we have LearnerId and SubjectId
+// 1. UPDATE OR DEREGISTER EXISTING SUBJECT
+
+//ok, I have to stop using the combined learnerSubjectId. .. I have LearnerId and SubjectId
 if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "DeregisterSubject_")) {
     $isUpdate = str_starts_with($action, "UpdateSubject_");
     $isDrop   = str_starts_with($action, "DeregisterSubject_");
@@ -49,9 +52,8 @@ if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "Dere
             $stmt->execute();
             $stmt->close();
 
-            // ------------------------
             // FINANCES   for editing a new subject.... 
-            // ------------------------
+
             $stmtTotal = $connect->prepare("
                 SELECT SUM(ContractFee - IFNULL(DiscountAmount,0)) AS TotalFees
                 FROM learnersubject
@@ -163,10 +165,7 @@ if (str_starts_with($action, "UpdateSubject_") || str_starts_with($action, "Dere
     exit();
 }
 
-
-// --------------------
 // 2. REGISTER NEW SUBJECT
-// --------------------
 if ($action === "RegisterNewSubject") {
     $newSub = $_POST['NewSubject'] ?? [];
     $subjectId = $newSub['SubjectId'] ?? 0;
@@ -192,9 +191,7 @@ if ($action === "RegisterNewSubject") {
             // Start transaction
             $connect->begin_transaction();
 
-            // ------------------------
             // INSERT NEW SUBJECT
-            // ------------------------
             $Status = 'Active';
             $gradeName = $newSub['GradeName'];
 
@@ -217,9 +214,7 @@ if ($action === "RegisterNewSubject") {
             $stmt->execute();
             $stmt->close();
 
-            // ------------------------
             // CLASS ASSIGNMENT
-            // ------------------------
             $stmtSub = $connect->prepare("
                 SELECT DefaultTutorId, MaxClassSize 
                 FROM subjects WHERE SubjectId = ?
@@ -294,9 +289,7 @@ if ($action === "RegisterNewSubject") {
             $assign->execute();
             $assign->close();
 
-            // ------------------------
             // FINANCES
-            // ------------------------
             $stmtTotal = $connect->prepare("
                 SELECT SUM(ContractFee - IFNULL(DiscountAmount,0)) AS TotalFees
                 FROM learnersubject
@@ -334,10 +327,7 @@ if ($action === "RegisterNewSubject") {
     exit();
 }
 
-
-// --------------------
 // 3. UPDATE PERSONAL INFO
-// --------------------
 if ($action === "UpdatePersonalInfo") {
     $stmt = $connect->prepare("
         UPDATE users u
@@ -365,7 +355,6 @@ if ($action === "UpdatePersonalInfo") {
     exit();
 }
 
-// --------------------
 // UNKNOWN ACTION
-// --------------------
+
 die("Unknown action. Died");

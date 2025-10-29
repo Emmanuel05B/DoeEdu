@@ -66,21 +66,31 @@ include_once(BASE_PATH . "/partials/connect.php");
 include_once(COMMON_PATH . "/../partials/head.php");  
 
 
-
-
-<?php include_once(LEARNER_PATH . "/../partials/header.php"); ?>
-<?php include_once(LEARNER_PATH . "/../partials/mainsidebar.php"); ?>
-
-
+<?php include_once(TUTOR_PATH . "/../partials/header.php"); ?> 
+<?php include_once(TUTOR_PATH . "/../partials/mainsidebar.php"); ?>
 
 <?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
 
-require_once BASE_PATH . '/vendor/autoload.php';
+require_once BASE_PATH . '/../vendor/autoload.php';
 
 ?>
 
-notes.php, booksession.php, notesgrid.php
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

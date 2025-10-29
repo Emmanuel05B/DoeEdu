@@ -1,9 +1,16 @@
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
-  exit();
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
+    exit();
 }
+
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
+
 
 // Grab alert from session if any, then clear it
 $alert = null;
@@ -12,8 +19,6 @@ if (isset($_SESSION['alert'])) {
     unset($_SESSION['alert']);
 }
 
-include(__DIR__ . "/../../common/partials/head.php");
-include(__DIR__ . "/../../partials/connect.php");
 
 $subject = isset($_POST['subject']) ? trim($_POST['subject']) : (isset($_GET['subject']) ? trim($_GET['subject']) : '');
 $grade = isset($_POST['grade']) ? trim($_POST['grade']) : (isset($_GET['grade']) ? trim($_GET['grade']) : '');
@@ -31,7 +36,7 @@ function handleImageUpload($fileInputName) {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
         if (in_array($imgType, $allowedTypes)) {
-            $uploadDir = __DIR__ . "/../../uploads/practice_question_images/";
+            $uploadDir = PQ_IMAGES_PATH . "/"; 
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -42,7 +47,7 @@ function handleImageUpload($fileInputName) {
 
             if (move_uploaded_file($imgTmpPath, $destPath)) {
                 // Return relative path for DB storage
-                return "uploads/practice_question_images/" . $newImgName;
+                return PQ_IMAGES_URL . "/" . $newImgName;
             } else {
                 return false; // Failed to move file
             }
@@ -109,8 +114,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $oldImage = $resultImg->fetch_assoc()['ImagePath'] ?? null;
                     $stmtImg->close();
 
-                    if ($oldImage && file_exists(__DIR__ . "/../../" . $oldImage)) {
-                        unlink(__DIR__ . "/../../" . $oldImage);
+                    
+                    if ($oldImage && file_exists(PQ_IMAGES_PATH . '/' . basename($oldImage))) {
+                        unlink(PQ_IMAGES_PATH . '/' . basename($oldImage));
                     }
 
                     $stmt = $connect->prepare("UPDATE practicequestions SET Text=?, OptionA=?, OptionB=?, OptionC=?, OptionD=?, Answer=?, ImagePath=? WHERE Id=?");
@@ -162,8 +168,9 @@ if ($selectedQuestionId > 0) {
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <?php include(__DIR__ . "/../partials/header.php"); ?>
-  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+<?php include_once(TUTOR_PATH . "/../partials/header.php"); ?> 
+<?php include_once(TUTOR_PATH . "/../partials/mainsidebar.php"); ?>
+
 
   <div class="content-wrapper">
     <!-- jQuery and SweetAlert2 -->
@@ -192,7 +199,7 @@ if ($selectedQuestionId > 0) {
     <section class="content-header">
       <h1>Create Questions <small>Create and edit practice questions.</small></h1>
       <ol class="breadcrumb">
-        <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">Practice Questions</li>
       </ol>
     </section>
@@ -408,7 +415,7 @@ if ($selectedQuestionId > 0) {
   <div class="control-sidebar-bg"></div>
 </div>
 
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
 </body>
 </html>

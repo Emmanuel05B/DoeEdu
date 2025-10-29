@@ -3,22 +3,24 @@
 
 
 <?php
-session_start();
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
 
-if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
-  exit();
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
+    exit();
 }
 
-include(__DIR__ . "/../../common/partials/queries.php");
-?>
-<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
+ ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
+<?php include_once(TUTOR_PATH . "/../partials/header.php"); ?> 
+<?php include_once(TUTOR_PATH . "/../partials/mainsidebar.php"); ?>
 
-  <?php include(__DIR__ . "/../partials/header.php"); ?>
-  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
 
   <!-- Main Content -->
   <div class="content-wrapper"> 
@@ -115,16 +117,13 @@ include(__DIR__ . "/../../common/partials/queries.php");
   </div>
 
   <footer class="main-footer text-center">
-    <small>© 2025 Tutor Panel</small>
+    <small>© 2026 Tutor Panel</small>
   </footer>
 
 </div>
 
-<!-- JS scripts -->
-<script src="../../bower_components/jquery/dist/jquery.min.js"></script>
-<script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="../../bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="../../bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
+
 <script>
   $(function () {
     $('#submissionTable').DataTable();

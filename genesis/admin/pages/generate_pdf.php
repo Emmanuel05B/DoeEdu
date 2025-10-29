@@ -10,13 +10,12 @@ if (!isLoggedIn()) {
 
 include_once(BASE_PATH . "/partials/connect.php");
 
-//require '../../../vendor/autoload.php';
-require_once BASE_PATH . '/vendor/autoload.php';
+require_once BASE_PATH . '/../vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-//$imagePath = '../images/westtt.png'; 
-$imagePath = BASE_PATH . '/ProfilePictures/westtt.png';
+
+$imagePath = PROFILE_PICS_URL . '/doep.png';
 $imageData = base64_encode(file_get_contents($imagePath));
 $src = 'data:image/png;base64,' . $imageData;
 
@@ -345,7 +344,7 @@ $dompdf = new Dompdf($options);
 $dompdf->loadHtml($html);
 $dompdf->setPaper('A4','portrait');
 $dompdf->render();
-$dompdf->stream("learner_report.pdf", ["Attachment"=>false]);
+$dompdf->stream("learner_report.pdf", ["Attachment"=>true]);
 
 
 

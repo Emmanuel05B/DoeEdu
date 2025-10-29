@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html>
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-    header("Location: ../../common/pages/login.php");
-  exit();
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
+
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
+    exit();
 }
-include(__DIR__ . "/../../common/partials/head.php");  //
-include(__DIR__ . "/../../partials/connect.php");
+
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
 
 ?>
 
@@ -67,11 +71,9 @@ $tutorResult = $tutorStmt->get_result();
 $tutorData = $tutorResult->fetch_assoc();
 
 // Handle image fallback
-$profileImage = !empty($tutorData['ProfilePicture'])
-    ? htmlspecialchars($tutorData['ProfilePicture'])
-    : "../../uploads/doe.jpg";
-
-
+ $profileImage = !empty($tutorData['ProfilePicture'])
+    ? PROFILE_PICS_URL . '/' . basename($tutorData['ProfilePicture'])
+    : PROFILE_PICS_URL . '/doe.jpg';
 ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -123,6 +125,8 @@ $profileImage = !empty($tutorData['ProfilePicture'])
             <li class="dropdown user user-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <img src="<?php echo $profileImage; ?>" class="img-circle" alt="User Image" style="width:18px; height:18px; object-fit:cover;">
+              
+              
               </a>
             </li>
 
@@ -131,7 +135,7 @@ $profileImage = !empty($tutorData['ProfilePicture'])
         </div>
       </nav>
     </header>
-  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+<?php include_once(TUTOR_PATH . "/../partials/mainsidebar.php"); ?>
 
   <?php if (isset($_GET['added']) && $_GET['added'] == 1): ?>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -428,7 +432,7 @@ $profileImage = !empty($tutorData['ProfilePicture'])
 </div>
 
 <!-- Scripts -->
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
 <!-- Notification Modal -->
 <?php

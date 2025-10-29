@@ -77,29 +77,6 @@ include_once(BASE_PATH . "/partials/connect.php");
                     <?php
                     // Working query: only active learners (contract not expired) ... for this grade, subject and group
 
-
-
-                    /*
-                    $sql = "
-                        SELECT 
-                            lt.LearnerId,
-                            lt.Grade,
-                            u.Name,
-                            u.Surname,
-                            c.GroupName
-                        FROM learners lt
-                        INNER JOIN users u ON lt.LearnerId = u.Id
-                        INNER JOIN learnersubject ls 
-                            ON lt.LearnerId = ls.LearnerId 
-                            AND ls.ContractExpiryDate > CURDATE()   .. will be a problem., use status intead.
-                        INNER JOIN learnerclasses lc 
-                            ON lt.LearnerId = lc.LearnerID
-                        INNER JOIN classes c 
-                            ON lc.ClassID = c.ClassID
-                            AND c.SubjectID = ls.SubjectID
-                        WHERE ls.SubjectId = ? AND lt.Grade = ? AND c.GroupName = ?
-                    ";  */
-
                     $sql = "
                             SELECT DISTINCT 
                                 lt.LearnerId,
@@ -167,9 +144,27 @@ include_once(BASE_PATH . "/partials/connect.php");
               <!-- Buttons row -->
               <div class="row" style="margin-top:15px;">
                   <div class="col-xs-6">
-                      <a href="classform.php?subject=<?php echo $_GET['subject']; ?>" class="btn btn-primary btn-block">
-                          Create Class Form
-                      </a>
+                    
+                    <form action="classform.php" method="POST" target="_blank">
+                      <input type="hidden" name="subjectId" value="<?= $subjectId ?>">
+                      <input type="hidden" name="grade" value="<?= htmlspecialchars($grade) ?>">
+                      <input type="hidden" name="group" value="<?= htmlspecialchars($group) ?>">
+                      
+                      <?php 
+                      // Pass all learner IDs
+                      $learnerIds = [];
+                      $results->data_seek(0); // reset pointer
+                      while($row = $results->fetch_assoc()) {
+                          $learnerIds[] = $row['LearnerId'];
+                      }
+                      ?>
+                      <input type="hidden" name="learnerIds" value='<?= json_encode($learnerIds) ?>'>
+                      
+                      <button type="submit" class="btn btn-primary btn-block">
+
+                          Generate PDF for this Class
+                      </button>
+                    </form>
                   </div>
                   <div class="col-xs-6">
                       <!-- Button to open modal -->

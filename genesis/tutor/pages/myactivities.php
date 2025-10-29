@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html>
 <?php
-session_start();
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
 
-if (!isset($_SESSION['email'])) {
-  header("Location: ../../common/pages/login.php");
-  exit();
+if (!isLoggedIn()) {
+    header("Location: " . COMMON_URL . "/login.php");
+    exit();
 }
 
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
+
 
 $tutorId = $_SESSION['user_id']; 
 ?>
 
-<?php include(__DIR__ . "/../../common/partials/head.php"); ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include(__DIR__ . "/../partials/header.php"); ?>
-  <?php include(__DIR__ . "/../partials/mainsidebar.php"); ?>
+<?php include_once(TUTOR_PATH . "/../partials/header.php"); ?> 
+<?php include_once(TUTOR_PATH . "/../partials/mainsidebar.php"); ?>
+
 
   <?php if (isset($_GET['deleted']) && $_GET['deleted'] == 1): ?>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -38,7 +42,7 @@ $tutorId = $_SESSION['user_id'];
     <section class="content-header">
        <h1>Master Activities <small>List of all your created activities</small></h1>
         <ol class="breadcrumb">
-          <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
+          <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
           <li class="active">Activities</li>
         </ol>
     </section>
@@ -113,8 +117,9 @@ $tutorId = $_SESSION['user_id'];
   <div class="control-sidebar-bg"></div>
 </div>
 
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
-<?php include(__DIR__ . "/../../common/partials/queries.php"); ?>
+
 
 <script>
 $(function () {

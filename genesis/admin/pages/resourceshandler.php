@@ -32,7 +32,8 @@ $description = trim($_POST['description'] ?? '');
 $uploadedBy = $_SESSION['user_id'] ?? null;
 
 $file = $_FILES['resource_file'];
-$uploadDir = '../../uploads/resources/';
+$uploadDir = RESOURCES_PATH . '/';
+
 
 $allowedTypes = [
     'application/pdf',

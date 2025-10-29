@@ -1,9 +1,9 @@
 <?php
 
     require_once __DIR__ . '/../../common/config.php';  
-include_once(__DIR__ . "/../../partials/paths.php");
+    include_once(__DIR__ . "/../../partials/paths.php");
 
-include_once(BASE_PATH . "/partials/connect.php");
+    include_once(BASE_PATH . "/partials/connect.php");
 
     // Handle the POST upload request here
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -14,7 +14,8 @@ include_once(BASE_PATH . "/partials/connect.php");
         $uploadedBy = $_SESSION['user_id'] ?? null;
 
         $file = $_FILES['resource_file'];
-        $uploadDir = '../../uploads/resources/';
+        $uploadDir = RESOURCES_PATH . '/';
+
 
         $mimeType = $file['type'];
         $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -193,7 +194,6 @@ include_once(BASE_PATH . "/partials/connect.php");
 
 
 <?php
-require_once __DIR__ . '/../../common/config.php';  
 include_once(__DIR__ . "/../../partials/paths.php");
 include_once(BASE_PATH . "/partials/session_init.php");
 

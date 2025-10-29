@@ -36,7 +36,7 @@ function handleImageUpload($fileInputName) {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
         if (in_array($imgType, $allowedTypes)) {
-            $uploadDir = __DIR__ . "/../../uploads/practice_question_images/";
+            $uploadDir = PQ_IMAGES_PATH . "/"; 
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -47,7 +47,7 @@ function handleImageUpload($fileInputName) {
 
             if (move_uploaded_file($imgTmpPath, $destPath)) {
                 // Return relative path for DB storage
-                return "uploads/practice_question_images/" . $newImgName;
+                return PQ_IMAGES_URL . "/" . $newImgName;
             } else {
                 return false; // Failed to move file
             }
@@ -114,8 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $oldImage = $resultImg->fetch_assoc()['ImagePath'] ?? null;
                     $stmtImg->close();
 
-                    if ($oldImage && file_exists(__DIR__ . "/../../" . $oldImage)) {
-                        unlink(__DIR__ . "/../../" . $oldImage);
+                    if ($oldImage && file_exists(PQ_IMAGES_PATH . '/' . basename($oldImage))) {
+                        unlink(PQ_IMAGES_PATH . '/' . basename($oldImage));
                     }
 
                     $stmt = $connect->prepare("UPDATE practicequestions SET Text=?, OptionA=?, OptionB=?, OptionC=?, OptionD=?, Answer=?, ImagePath=? WHERE Id=?");
