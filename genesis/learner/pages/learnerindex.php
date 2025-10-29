@@ -384,11 +384,15 @@ if(count($classResults) > 0){
           <div class="col-md-6">
             <div class="box box-primary" style="min-height: 280px;">
               <div class="box-header with-border text-center">
-                <img 
-                src="<?= !empty($tutor['ProfilePicture']) ? htmlspecialchars($tutor['ProfilePicture']) : PROFILE_PICS_URL . '/doe.jpg' ?>" 
-                alt="Tutor Picture" class="img-circle" width="90" height="90" style="object-fit: cover;">
+      
+                <?php
+                $profilePic = !empty($tutor['ProfilePicture']) 
+                    ? PROFILE_PICS_URL . '/' . basename($tutor['ProfilePicture'])
+                    : PROFILE_PICS_URL . '/doe.jpg';
+                ?>
+                <img src="<?= htmlspecialchars($profilePic) ?>" alt="Profile Picture" class="img-circle" style="width: 90px; height: 90px; margin-top:5px;">
 
-
+ 
                 <h3 class="box-title" style="margin-top:10px;">
                   <?= htmlspecialchars($tutor['Gender']) . ' ' . htmlspecialchars($tutor['Surname']) ?>
                 </h3>
