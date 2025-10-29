@@ -1,8 +1,5 @@
-
-<!DOCTYPE html>
-<html>
 <?php
-require_once __DIR__ . '/../../common/config.php'; 
+require_once __DIR__ . '/../../common/config.php';  
 include_once(__DIR__ . "/../../partials/paths.php");
 include_once(BASE_PATH . "/partials/session_init.php");
 
@@ -12,7 +9,18 @@ if (!isLoggedIn()) {
 }
 
 include_once(BASE_PATH . "/partials/connect.php");
-include_once(COMMON_PATH . "/../partials/head.php");  
+include_once(COMMON_PATH . "/../partials/head.php"); 
+
+?>
+
+<!DOCTYPE html>
+<html>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+<?php include_once(LEARNER_PATH . "/../partials/header.php"); ?>
+<?php include_once(LEARNER_PATH . "/../partials/mainsidebar.php"); ?>
+<?php
 
 // Validate GET parameters
 if (!isset($_GET['activityId']) || !is_numeric($_GET['activityId'])) {
@@ -24,8 +32,9 @@ if (!isset($_GET['classId']) || !is_numeric($_GET['classId'])) {
 
 $activityId = intval($_GET['activityId']);
 $classId = intval($_GET['classId']);
-$userId = $_SESSION['user_id']; // logged-in learner
+$userId = $_SESSION['user_id']; 
 $subjectName = isset($_GET['subject']) ? $_GET['subject'] : '';
+
 
 // Fetch activity details
 $stmt = $connect->prepare("
@@ -48,6 +57,16 @@ if (!$result || $result->num_rows === 0) {
 $activity = $result->fetch_assoc();
 $stmt->close();
 
+//the below data was getting lost after pulling it from the db
+$grade =  $activity['Grade'];
+$title =  $activity['Title'];
+$topic =  $activity['Topic'];
+$instructions =  $activity['Instructions'];
+$totalmarks =  $activity['TotalMarks'];
+$duedate =  $activity['DueDate'];
+$createdat =  $activity['CreatedAt'];
+$imagepath =  $activity['ImagePath'];
+
 // Fetch questions
 $qstmt = $connect->prepare("
     SELECT id, QuestionText, OptionA, OptionB, OptionC, OptionD, CorrectAnswer
@@ -63,16 +82,13 @@ while ($row = $qresult->fetch_assoc()) {
     $questions[] = $row;
 }
 $qstmt->close();
-?>
 
-<body class="hold-transition skin-blue sidebar-mini">
-<div class="wrapper">
-<?php include_once(LEARNER_PATH . "/../partials/header.php"); ?>
-<?php include_once(LEARNER_PATH . "/../partials/mainsidebar.php"); ?>
+
+?>
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
 <!-- SweetAlert popups -->
 <?php if (isset($_GET['alreadysubmitted']) && $_GET['alreadysubmitted'] == 1): ?>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 Swal.fire({
     icon: 'info',
@@ -92,7 +108,6 @@ Swal.fire({
 <?php endif; ?>
 
 <?php if (isset($_GET['submitted']) && $_GET['submitted'] == 1): ?>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php  
 $score = intval($_GET['score']);
 ?>
@@ -118,29 +133,56 @@ Swal.fire({
     <section class="content-header">
         <h1>
             Quiz Details
-            <small><?=htmlspecialchars($activity['Title'])?></small>
+            <small><?=htmlspecialchars($title)?></small>
+            
         </h1>
         <ol class="breadcrumb">
             <li><a href="learnerindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li class="active"><?=htmlspecialchars($activity['Topic'])?></li>
+            <li class="active"><?=htmlspecialchars($topic)?></li>
         </ol>
     </section>
-
     <section class="content">
         <div class="row">
             <!-- Activity Info -->
             <div class="col-xs-12">
                 <div class="box box-solid box-info">
                     <div class="box-header with-border">
-                        <h3 class="box-title"><?=htmlspecialchars($activity['Title'])?></h3>
+                        <h3 class="box-title"><?=htmlspecialchars($title)?></h3>
                     </div>
                     <div class="box-body">
                         <p>
                             <strong>Subject:</strong> <?=htmlspecialchars($subjectName)?> &nbsp;|&nbsp;
-                            <strong>Grade:</strong> <?=htmlspecialchars($activity['Grade'])?> &nbsp;|&nbsp;
-                            <strong>Topic:</strong> <?=htmlspecialchars($activity['Topic'])?> &nbsp;|&nbsp;
-                            <strong>Due Date:</strong> <?=htmlspecialchars($activity['DueDate'])?>
+                            <strong>Grade:</strong> <?=htmlspecialchars($grade)?> &nbsp;|&nbsp;
+                            <strong>Topic:</strong> <?=htmlspecialchars($topic)?> &nbsp;|&nbsp;
+                            <strong>Due Date:</strong> <?=htmlspecialchars($duedate)?>
                         </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom:15px;">
+                <div class="box box-primary">
+                    <div class="box-body">
+                        <h4>Instructions</h4>
+                        <p><?=nl2br(htmlspecialchars($instructions))?></p>
+                        <?php 
+                            if (!empty($imagepath)) {
+                                $imageURL = (strpos($imagepath, 'http') === 0) ? $imagepath : QUIZ_IMAGES_URL . '/' . basename($imagepath);
+                                $imageFile = QUIZ_IMAGES_PATH . '/' . basename($imagepath);
+                                if (file_exists($imageFile)): ?>
+
+                                    <div class="text-center" style="margin-bottom:10px;">
+                                        <img src="<?=htmlspecialchars($imageURL)?>" 
+                                            alt="Activity Image" 
+                                            class="img-responsive" 
+                                            style="max-width:100%; max-height:150px; height:auto; margin:0 auto;">
+                                    </div>
+                        <?php 
+                                endif;
+                            } 
+                        ?>
+
                     </div>
                 </div>
             </div>
@@ -151,21 +193,6 @@ Swal.fire({
                     <input type="hidden" name="activityId" value="<?=$activityId?>">
                     <input type="hidden" name="classId" value="<?=$classId?>">
                     <input type="hidden" name="subjectName" value="<?=htmlspecialchars($subjectName)?>">
-
-                    <!-- Instructions -->
-                    <div class="col-xs-12" style="margin-bottom:15px;">
-                        <div class="box box-primary">
-                            <div class="box-body">
-                                <?php if (!empty($activity['ImagePath']) && file_exists($activity['ImagePath'])): ?>
-                                    <div class="text-center" style="margin-bottom:10px;">
-                                        <img src="<?=htmlspecialchars($activity['ImagePath'])?>" alt="Activity Image" class="img-responsive" style="max-height:180px; margin:0 auto;">
-                                    </div>
-                                <?php endif; ?>
-                                <h4>Instructions</h4>
-                                <p><?=nl2br(htmlspecialchars($activity['Instructions']))?></p>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Questions -->
                     <?php foreach ($questions as $index => $question): ?>
@@ -196,6 +223,5 @@ Swal.fire({
 <div class="control-sidebar-bg"></div>
 </div>
 
-<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 </body>
 </html>

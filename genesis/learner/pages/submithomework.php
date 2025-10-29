@@ -39,7 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['activityId']) || !is
 
 $userId = $_SESSION['user_id'];
 $activityId = intval($_POST['activityId']);
+$classId = intval($_POST['classId']);
 $answers = $_POST['answers'];
+
+echo $activityId;
 
 // Prevent duplicate submissions
 $checkStmt = $connect->prepare("SELECT Id FROM learnerhomeworkresults WHERE UserId = ? AND ActivityId = ?");
@@ -50,7 +53,7 @@ $checkStmt->store_result();
 if ($checkStmt->num_rows > 0) {
     $checkStmt->close();
 
-    header("Location: viewhomework.php?activityId=" . urlencode($activityId) . "&alreadysubmitted=1");
+    header("Location: viewhomework.php?activityId=" . urlencode($activityId) . "&classId=" . urlencode($classId) . "&alreadysubmitted=1");
     exit;
 }
 $checkStmt->close();
@@ -91,8 +94,8 @@ $resultStmt->close();
 
 $connect->close();
 
-// Final SweetAlert....//note that the id at the memo is causing that flag
-    header("Location: viewhomework.php?score=" . urlencode($score) . "&activityId=" . urlencode($activityId) . "&submitted=1");
+// Final SweetAlert....//
+    header("Location: viewhomework.php?score=" . urlencode($score) . "&activityId=" . urlencode($activityId) . "&classId=" . urlencode($classId) . "&submitted=1");
     exit;
 
 ?>

@@ -74,35 +74,50 @@ if ($activity['TutorId'] != $tutorId && $user['UserType'] != 0) {
 
 // Handle image
 $imagePath = $activity['ImagePath'];
-if (isset($_FILES['ImagePath']) && $_FILES['ImagePath']['error'] == 0) {
-    $targetDir = __DIR__ . "/../../uploads/images/";
-    if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
+if (isset($_FILES['ImagePath']) && $_FILES['ImagePath']['error'] === 0) {
+    if (!is_dir(QUIZ_IMAGES_PATH)) mkdir(QUIZ_IMAGES_PATH, 0755, true);
 
-    $ext = pathinfo($_FILES['ImagePath']['name'], PATHINFO_EXTENSION);
+    $ext = strtolower(pathinfo($_FILES['ImagePath']['name'], PATHINFO_EXTENSION));
     $newFileName = "activity_{$activityId}_" . time() . "." . $ext;
-    $targetFile = $targetDir . $newFileName;
+    $targetFile = QUIZ_IMAGES_PATH . '/' . $newFileName;
 
     if (move_uploaded_file($_FILES['ImagePath']['tmp_name'], $targetFile)) {
-        if (!empty($imagePath) && file_exists(__DIR__ . "/../../" . $imagePath)) unlink(__DIR__ . "/../../" . $imagePath);
-        $imagePath = "uploads/images/" . $newFileName;
+        if (!empty($imagePath)) {
+            $oldFile = str_replace(QUIZ_IMAGES_URL, QUIZ_IMAGES_PATH, $imagePath);
+            if (file_exists($oldFile)) unlink($oldFile);
+        }
+        $imagePath = QUIZ_IMAGES_URL . '/' . $newFileName;
     }
 }
 
 // Handle memo
 $memoPath = $activity['MemoPath'];
-if (isset($_FILES['MemoPath']) && $_FILES['MemoPath']['error'] == 0) {
-    $targetDir = __DIR__ . "/../../uploads/memos/";
-    if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
+if (isset($_FILES['MemoPath']) && $_FILES['MemoPath']['error'] === 0) {
+    if (!is_dir(QUIZ_MEMOS_PATH)) mkdir(QUIZ_MEMOS_PATH, 0755, true);
 
-    $ext = pathinfo($_FILES['MemoPath']['name'], PATHINFO_EXTENSION);
+    $ext = strtolower(pathinfo($_FILES['MemoPath']['name'], PATHINFO_EXTENSION));
+    if ($ext !== 'pdf') {
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Invalid File',
+            'text' => 'The memo must be a PDF file.'
+        ];
+        header("Location: viewactivity.php?activityId={$activityId}");
+        exit();
+    }
+
     $newFileName = "memo_{$activityId}_" . time() . "." . $ext;
-    $targetFile = $targetDir . $newFileName;
+    $targetFile = QUIZ_MEMOS_PATH . '/' . $newFileName;
 
     if (move_uploaded_file($_FILES['MemoPath']['tmp_name'], $targetFile)) {
-        if (!empty($memoPath) && file_exists(__DIR__ . "/../../" . $memoPath)) unlink(__DIR__ . "/../../" . $memoPath);
-        $memoPath = "uploads/memos/" . $newFileName;
+        if (!empty($memoPath)) {
+            $oldFile = str_replace(QUIZ_MEMOS_URL, QUIZ_MEMOS_PATH, $memoPath);
+            if (file_exists($oldFile)) unlink($oldFile);
+        }
+        $memoPath = QUIZ_MEMOS_URL . '/' . $newFileName;
     }
 }
+
 
 // Update
 $updateStmt = $connect->prepare("UPDATE onlineactivities SET Title = ?, Instructions = ?, ImagePath = ?, MemoPath = ? WHERE Id = ?");

@@ -28,10 +28,12 @@ $questions = $_POST['questions'] ?? [];
 $instructions = $_POST['instructions'] ?? "This quiz must be completed in one sitting. Answer all questions before submitting. Once completed, you can access the memo. Ensure you read each question carefully. No external help allowed.";
 
 
+
+
 // Handle the optional image upload for the activity
 $imagePath = null;
 if (isset($_FILES['activity_image']) && $_FILES['activity_image']['error'] === 0) {
-    $uploadsDir = "../uploads/";
+    $uploadsDir = QUIZ_IMAGES_PATH . '/';
     if (!is_dir($uploadsDir)) {
         mkdir($uploadsDir, 0755, true);
     }
@@ -40,38 +42,35 @@ if (isset($_FILES['activity_image']) && $_FILES['activity_image']['error'] === 0
     $filepath = $uploadsDir . $filename;
 
     if (move_uploaded_file($_FILES['activity_image']['tmp_name'], $filepath)) {
-        $imagePath = $filepath;
+        $imagePath = QUIZ_IMAGES_URL . '/' . $filename; // store web-accessible path
     } else {
         die("Failed to upload image.");
     }
 }
 
-
 // Handle the optional memo upload (PDF only)
 $memoPath = null;
 if (isset($_FILES['memo_file']) && $_FILES['memo_file']['error'] === 0) {
-    $uploadsDir = "../uploads/memos/";
+    $uploadsDir = QUIZ_MEMOS_PATH . '/';
     if (!is_dir($uploadsDir)) {
         mkdir($uploadsDir, 0755, true);
     }
 
     $fileExt = strtolower(pathinfo($_FILES['memo_file']['name'], PATHINFO_EXTENSION));
     if ($fileExt !== 'pdf') {
-        
-        header("Location: generateactivity.php?gra=" . urlencode($grade) . "&cha=" . urlencode($chapter) . "&group=" . urlencode($group) . "&sub=" . urlencode($subject) . "&memo=1");
-
+        die("Memo file must be a PDF.");
     }
 
-    $memoFilename = time() . '_' . basename($_FILES['memo_file']['name']);
-    $memoFilepath = $uploadsDir . $memoFilename;
+    $filename = time() . '_' . basename($_FILES['memo_file']['name']);
+    $filepath = $uploadsDir . $filename;
 
-    if (move_uploaded_file($_FILES['memo_file']['tmp_name'], $memoFilepath)) {
-        $memoPath = $memoFilepath;
+    if (move_uploaded_file($_FILES['memo_file']['tmp_name'], $filepath)) {
+        $memoPath = QUIZ_MEMOS_URL . '/' . $filename; // store web-accessible path
     } else {
         die("Failed to upload memo file.");
-
     }
 }
+
 
 // Calculate total marks (e.g., 1 mark per question)
 $totalMarks = count($questions);

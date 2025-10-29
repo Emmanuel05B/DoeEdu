@@ -38,6 +38,7 @@ include_once(COMMON_PATH . "/../partials/head.php");
       <div class="row">
         <div class="col-xs-12">
           <div class="box box-deault">
+            
             <?php
               if (!isset($_GET['activityid'])) {
                   echo "<div class='alert alert-danger'>No activity selected.</div>";
@@ -64,6 +65,26 @@ include_once(COMMON_PATH . "/../partials/head.php");
                   $columnsPerRowTablet = 2;
                   $columnsPerRow = $columnsPerRowDesktop;
                   $colCount = 0;
+                  
+                  
+                  // Fetch memo path for this activity
+                  $memoStmt = $connect->prepare("SELECT MemoPath FROM onlineactivities WHERE Id = ? LIMIT 1");
+                  $memoStmt->bind_param("i", $activityId);
+                  $memoStmt->execute();
+                  $memoResult = $memoStmt->get_result();
+                  $memoRow = $memoResult->fetch_assoc();
+                  $memoStmt->close();
+
+                  if (!empty($memoRow['MemoPath']) && file_exists(QUIZ_MEMOS_PATH . '/' . basename($memoRow['MemoPath']))) {
+                      $memoURL = QUIZ_MEMOS_URL . '/' . basename($memoRow['MemoPath']);
+                      echo "<div style='margin-bottom:15px;'>
+                              <a href='" . htmlspecialchars($memoURL) . "' target='_blank' class='btn btn-primary'>
+                                  <i class='fa fa-file-pdf-o'></i> pdf Memo
+                              </a>
+                            </div>";
+                  }
+                  
+
 
                   while ($row = $result->fetch_assoc()) {
                       $isCorrect = ($row['SelectedAnswer'] === $row['CorrectAnswer']);

@@ -27,6 +27,8 @@ define('IMAGES_PATH', UPLOADS_PATH . '/images');
 define('RESOURCES_PATH', UPLOADS_PATH . '/resources');
 define('PQ_MEMOS_PATH', UPLOADS_PATH . '/practicequestionsmemos');
 define('PROFILE_PICS_PATH', UPLOADS_PATH . '/ProfilePictures');
+define('QUIZ_MEMOS_PATH', UPLOADS_PATH . '/quizmemos');
+define('QUIZ_IMAGES_PATH', UPLOADS_PATH . '/quizimages');
 
 // ---------------------------
 // Subfolder URLs (for HTML links)
@@ -42,3 +44,5 @@ define('IMAGES_URL', UPLOADS_URL . '/images');
 define('RESOURCES_URL', UPLOADS_URL . '/resources');
 define('PQ_MEMOS_URL', UPLOADS_URL . '/practicequestionsmemos');
 define('PROFILE_PICS_URL', UPLOADS_URL . '/ProfilePictures');
+define('QUIZ_MEMOS_URL', UPLOADS_URL . '/quizmemos');
+define('QUIZ_IMAGES_URL', UPLOADS_URL . '/quizimages');
