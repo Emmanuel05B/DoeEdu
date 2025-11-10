@@ -66,11 +66,10 @@ include_once(BASE_PATH . "/partials/connect.php");
                 <table id="example1" class="table table-bordered table-hover">
                   <thead style="background-color: #d1d9ff;">
                     <tr>
-                      <th>StNo.</th>
-                      <th>First Name</th>
-                      <th>Last Name</th>
-
-                      <th class="text-center">Actions</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th class="text-center">Progress</th>
+                      <th class="text-center">Profile</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -111,14 +110,16 @@ include_once(BASE_PATH . "/partials/connect.php");
                     ?>
 
                     <tr>
-                      <td><?php echo htmlspecialchars($final['LearnerId']); ?></td>
+                      
                       <td><?php echo htmlspecialchars($final['Name']); ?></td>
                       <td><?php echo htmlspecialchars($final['Surname']); ?></td>
                       <!-- <td><?php //echo htmlspecialchars($final['Grade']); ?></td> -->
                       <!-- <td><?php// echo htmlspecialchars($final['GroupName']); ?></td> -->
                       <td class="text-center">
-                        <a href="tracklearnerprogress.php?id=<?php echo $final['LearnerId']; ?>&val=<?php echo $subjectId; ?>" class="btn btn-xs btn-primary">Track Progress</a>
-                        <a href="learnerprofile.php?id=<?php echo $final['LearnerId']; ?>&val=<?php echo $subjectId; ?>" class="btn btn-xs btn-success">Open Profile</a>
+                        <a href="tracklearnerprogress.php?id=<?php echo $final['LearnerId']; ?>&val=<?php echo $subjectId; ?>" class="btn btn-xs btn-primary">Progress</a>
+                      </td>
+                      <td class="text-center">
+                          <a href="learnerprofile.php?id=<?php echo $final['LearnerId']; ?>&val=<?php echo $subjectId; ?>" class="btn btn-xs btn-success">Profile</a>
                       </td>
                     </tr>
                     <?php
@@ -132,10 +133,10 @@ include_once(BASE_PATH . "/partials/connect.php");
                   </tbody>
                   <tfoot style="background-color: #f9f9f9;">
                     <tr>
-                      <th>StNo.</th>
-                      <th>First Name</th>
-                      <th>Last Name</th>
-                      <th class="text-center">Actions</th>
+                      <th>Name</th>
+                      <th>Surname</th>
+                      <th class="text-center">Progress</th>
+                      <th class="text-center">Profile</th>
                     </tr>
                   </tfoot>
                 </table>
@@ -162,7 +163,7 @@ include_once(BASE_PATH . "/partials/connect.php");
                       
                       <button type="submit" class="btn btn-primary btn-block">
 
-                          Generate PDF for this Class
+                          Generate Class List
                       </button>
                     </form>
                   </div>
@@ -282,6 +283,7 @@ include_once(BASE_PATH . "/partials/connect.php");
 
 <?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 <script>
+    /*
   $(function () {
     $('#example1').DataTable({
       "paging": true,
@@ -293,6 +295,7 @@ include_once(BASE_PATH . "/partials/connect.php");
       "responsive": true
     });
   });
+  */
 </script>
 
 </body>

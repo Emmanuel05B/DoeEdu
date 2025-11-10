@@ -53,14 +53,14 @@ $tutorData = $tutorResult->fetch_assoc();
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span class="logo-mini"><b>Click</b></span>
         <!-- logo for regular state and mobile devices -->
-        <span class="logo-lgd"><b>DoE_Genesis </b></span>
+        <span class="logo-lgd"><b>DoE_Genesis</b></span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
         <!-- Sidebar toggle button-->
         <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
             <span class="sr-only">Toggle navigation</span>
-            <span class="logo-lg"><b>Distributors Of Education </b></span>
+            <span class="logo-lg"><b>Distributors Of Education</b></span>
         </a>
 
         <div class="navbar-custom-menu">

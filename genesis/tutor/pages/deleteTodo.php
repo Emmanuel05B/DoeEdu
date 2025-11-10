@@ -19,7 +19,7 @@ if (isset($_GET['todo_id'])) {
     // Validate the TodoId
     if (is_numeric($todoId)) {
         // Prepare the SQL statement to delete the task
-        $sql = "DELETE FROM TodoList WHERE TodoId = ? AND CreatorId = ?";
+        $sql = "DELETE FROM todolist WHERE TodoId = ? AND CreatorId = ?";
         
         // Prepare the statement
         $stmt = $connect->prepare($sql);

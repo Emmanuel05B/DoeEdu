@@ -116,7 +116,6 @@ $cancelledsubjects = $connect->query("
           <li><a href="adminindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
           <li class="active">Update Learner</li>
       </ol>
-      <small>For now Learner ID: <?= $learnerId ?></small>
   </section>
 
   <section class="content">

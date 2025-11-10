@@ -19,7 +19,7 @@
   $tutors = [];
 
   // Fetch learner full name (fallback to session var or 'Learner')
-  $stmt = $connect->prepare("SELECT CONCAT(Name, ' ', Surname) AS fullname FROM users WHERE Id = ?");
+  $stmt = $connect->prepare("SELECT CONCAT(Name) AS fullname FROM users WHERE Id = ?");
   $stmt->bind_param("i", $learnerId);
   $stmt->execute();
   $stmt->bind_result($learnerName);
@@ -225,7 +225,7 @@ if(count($classResults) > 0){
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span class="logo-mini"><b>Click</b></span>
         <!-- logo for regular state and mobile devices -->
-        <span class="logo-lgd"><b>DoE_Genesis </b></span>
+        <span class="logo-lgd"><b>DoE_Genesis</b></span>
       </a>
       <!-- Header Navbar: style can be found in header.less -->
       <nav class="navbar navbar-static-top">
@@ -233,13 +233,8 @@ if(count($classResults) > 0){
         <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
           <span class="sr-only">Toggle navigation</span>
           
-          <span class="logo-lg"><b>Distributors Of Education </b></span>
+          <span class="logo-lg"><b>Distributors Of Edu</b></span>
 
-        </a>
-        
-          <!-- Button to manually open the modal -->
-        <a href="#" data-toggle="modal" data-target="#learnerNotificationsModal">
-          <i class="fa fa-bell"></i> Notifications
         </a>
 
         <div class="navbar-custom-menu">
@@ -302,53 +297,81 @@ if(count($classResults) > 0){
     <section class="content">
 
       <div class="row">
-        <!-- Online Quizzes Average -->
-        <div class="col-md-3">
-          <div class="box box-primary" style="background:#f9f1fe;">
-            <div class="box-body">
-              <h4 style="color:#3a3a72;">Online Quizzes Avg</h4>
-              <h2>...</h2>
-              <i class="fa fa-laptop fa-2x pull-right" style="color:#a06cd5;"></i>
-              <a href="#" class="btn btn-link">View Details</a>
+        
+         <!-- Online Quizzes Average -->
+        <!--
+         
+        <div class="col-lg-3 col-xs-6">
+          <div class="small-box" style="background:#e2c7fb;">
+            <div class="inner">
+              <h3>...</h3>
+              <p style="font-size:16px;">Online Quizzes Avg</p>
             </div>
+            <div class="icon" style="font-size:50px; top:10px;">
+              <i class="fa fa-laptop"></i>
+            </div>
+            <a href="#" class="small-box-footer">
+              View Details <i class="fa fa-arrow-circle-right"></i>
+            </a>
           </div>
         </div>
+        -->
+
 
         <!-- Tutor Marks Average -->
-        <div class="col-md-3">
-          <div class="box box-primary" style="background:#f0f7ff;">
-            <div class="box-body">
-              <h4 style="color:#3a3a72;">Vid Activities Avg</h4>
-              <h2>...</h2>
-              <i class="fa fa-user-circle fa-2x pull-right" style="color:#0073e6;"></i>
-              <a href="tracklearnerprogress.php?type=tutor" class="btn btn-link">View Details</a>
+        <!--
+        
+        <div class="col-lg-3 col-xs-6">
+          <div class="small-box" style="background:#cce5ff;">
+            <div class="inner">
+              <h3>...</h3>
+              <p style="font-size:16px;">Vid Activities Avg</p>
             </div>
+            
+            <div class="icon" style="font-size:50px; top:10px;">
+              <i class="fa fa-user-circle"></i>
+            </div>
+            <a href="tracklearnerprogress.php?type=tutor" class="small-box-footer">
+              View Details <i class="fa fa-arrow-circle-right"></i>
+            </a>
           </div>
         </div>
-
+        -->
+        
         <!-- Pending Homework Count -->
-        <div class="col-md-3">
-          <div class="box box-primary" style="background:#e6f0ff;">
-            <div class="box-body">
-              <h4 style="color:#3a3a72;">Pending Homework</h4>
-              <h2><?= $pendingHomeworkCount ?></h2>
-              <i class="fa fa-tasks fa-2x pull-right" style="color:#6a52a3;"></i>
-              <a href="homework.php" class="btn btn-link">View All</a>
+        <div class="col-lg-6 col-xs-6">
+          <div class="small-box" style="background:#c2daff;">
+            <div class="inner">
+              <h3><?= $pendingHomeworkCount ?></h3>
+              <p style="font-size:16px;">Pending Homework</p>
             </div>
+            <div class="icon" style="font-size:50px; top:10px;">
+              <i class="fa fa-tasks"></i>
+            </div>
+            <a href="homework.php" class="small-box-footer">
+              View All <i class="fa fa-arrow-circle-right"></i>
+            </a>
           </div>
         </div>
-
+        
+        
         <!-- Upcoming 1-1 Sessions Count -->
-        <div class="col-md-3">
-          <div class="box box-primary" style="background:#d1ffe0;">
-            <div class="box-body">
-              <h4 style="color:#3a3a72;">Upcoming 1-1 Sessions</h4>
-              <h2><?= $confirmedCount ?></h2>
-              <i class="fa fa-check-circle fa-2x pull-right" style="color:#28a745;"></i>
-              <a href="mytutors.php" class="btn btn-link">View Sessions</a>
+        <div class="col-lg-6 col-xs-6">
+          <div class="small-box" style="background:#a8f0be;">
+            <div class="inner">
+              <h3><?= $confirmedCount ?></h3>
+              <p style="font-size:16px;">Upcoming 1-1 Sessions</p>
             </div>
+            <div class="icon" style="font-size:50px; top:10px;">
+              <i class="fa fa-check-circle"></i>
+            </div>
+            <a href="mytutors.php" class="small-box-footer">
+              View Sessions <i class="fa fa-arrow-circle-right"></i>
+            </a>
           </div>
         </div>
+        
+        
       </div>
 
 
@@ -401,7 +424,7 @@ if(count($classResults) > 0){
                 </p>
               </div>
               <div class="box-body text-center">
-                <p><strong>Email...to remove:</strong> <?= htmlspecialchars($tutor['Email']) ?></p>
+                <p><strong>Email:</strong> <?= htmlspecialchars($tutor['Email']) ?></p>
                 <p><strong>Availability:</strong> <?= htmlspecialchars($tutor['Availability']) ?: 'Not specified' ?></p>
                 <hr>
                 <div class="btn-group">
@@ -423,7 +446,7 @@ if(count($classResults) > 0){
                   <?php endif; ?>
                   
 
-                  <a href="class.php?tutor=<?= $tutor['TutorId'] ?>" class="btn btn-sm btn-success">Open Past Sessions</a>
+                  <a href="class.php?tutor=<?= $tutor['TutorId'] ?>" class="btn btn-sm btn-success">Past Sessions</a>
                   <button 
                       class="btn btn-sm btn-primary openBookingModal"
                       data-tutor="<?= $tutor['TutorId'] ?>"
@@ -699,12 +722,16 @@ document.querySelectorAll('.decline-form button').forEach(btn => {
     } else {
       $('#modalGrade').val(grade); // <<< ADDED
     }
-
-    // Load available slots
+    
+   // Show loading message first
     $('#modalSlot').html('<option>Loading available slots...</option>');
-    $.get('fetchslots.php', { tutor: tutorId }, function(data) {
+    
+    // Send both tutor and learner IDs
+    const learnerId = <?= $learnerId ?>;  // inject learner ID from PHP
+    $.get('fetchslots.php', { tutor: tutorId, learner: learnerId }, function(data) {
       $('#modalSlot').html(data);
     });
+
 
     $('#bookingModal').modal('show');
   });

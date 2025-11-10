@@ -67,7 +67,8 @@ $alertMessage = $_GET['message'] ?? '';
 
   <div class="content-wrapper">
     <section class="content-header">
-      <h1>My Bookings <small>...</small></h1>
+      <h1>My Bookings <small>View all session requests.</small></h1>
+
       <ol class="breadcrumb">
         <li><a href="learnerindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">Bookings</li>
@@ -87,7 +88,7 @@ $alertMessage = $_GET['message'] ?? '';
                 <thead style="background-color: #d1d9ff;">
                   <tr>
                     <th>Date</th>
-                    <th>Day---Time</th>
+                    <th>Day_Time</th>
                     <th>Tutor</th>
                     <th>Subject</th>
                     <th>Status</th>
@@ -128,7 +129,7 @@ $alertMessage = $_GET['message'] ?? '';
                   ?>
                   <tr>
                     <td><?= $dt->format('Y-m-d') ?></td>
-                    <td><?= $dt->format('l' . '---' . 'H:i') ?></td>
+                    <td><?= $dt->format('l' . '_' . 'H:i') ?></td>
                     <td><?= htmlspecialchars($booking['Gender'] . ' ' . $booking['Surname']) ?></td>
                     <td><?= htmlspecialchars($booking['Subject']) ?></td>
                     <td>

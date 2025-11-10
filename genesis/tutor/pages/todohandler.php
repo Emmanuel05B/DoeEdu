@@ -38,7 +38,7 @@ if (empty($taskName)) {
 }
 
 // Insert into database
-$sql = "INSERT INTO TodoList (CreatorId, TaskText, DueDate, Priority, Category, CreationDate) 
+$sql = "INSERT INTO todolist (CreatorId, TaskText, DueDate, Priority, Category, CreationDate) 
         VALUES (?, ?, ?, ?, ?, NOW())";
 
 $stmt = $connect->prepare($sql);

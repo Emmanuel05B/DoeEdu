@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tutorId'], $_POST['cl
 
                     while ($class = $classes->fetch_assoc()) {
                         $assigned = ($class['TutorID'] != $class['DefaultTutorId']) ? "✅" : "❌";
-                        $label = "{$assigned} {$class['Grade']} - Group {$class['GroupName']} ({$class['SubjectName']})";
+                        $label = "{$assigned} {$class['Grade']} - {$class['GroupName']} ({$class['SubjectName']})";
                         echo "<option value='{$class['ClassID']}' 
                                 data-subject='{$class['SubjectId']}' 
                                 data-grade='{$class['Grade']}'>
@@ -135,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tutorId'], $_POST['cl
                       $tutorName = $row['Name'] ? "{$row['Name']} {$row['Surname']}" : "<i>Unassigned</i>";
                       $status = ($row['TutorID'] != $row['DefaultTutorId']) ? "✅ Assigned" : "❌ Default";
                       echo "<tr>
-                              <td>{$row['Grade']} - Group {$row['GroupName']}</td>
+                              <td>{$row['Grade']} - {$row['GroupName']}</td>
                               <td>{$row['SubjectName']}</td>
                               <td>{$tutorName}</td>
                               <td>{$status}</td>

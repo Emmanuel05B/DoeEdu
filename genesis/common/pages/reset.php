@@ -1,6 +1,9 @@
 <?php
-session_start();
-include '../../partials/Connect.php';
+include_once(__DIR__ . "/../../partials/paths.php"); 
+
+include_once(BASE_PATH . "/partials/session_init.php"); 
+
+include_once(BASE_PATH . "/partials/connect.php"); 
 
 if (isset($_POST["Submit"])) {
 
@@ -190,7 +193,7 @@ if (isset($_POST["Submit"])) {
 <body>
 <div class="login-container">
   <div class="login-box">
-    <img src="../../admin/images/westtt.png" alt="Reset Password">
+    <img src="../../uploads/ProfilePictures/doep.png" alt="Reset Password">
     <h2>Reset Password</h2>
     <p>Enter your reset code and new password below.</p>
 

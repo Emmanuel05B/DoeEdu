@@ -69,10 +69,11 @@ $requests = $connect->query($sql);
                 <tr>
                   <th>Name</th>
                   <th>Surname</th>
-                  <th>Parent Email</th>
-                  <th>Registered At</th>
+                  <th>Parent_Email</th>
+                  <th>Registered_On</th>
                   <th>Status</th>
-                  <th>Actions</th>
+                  <th>Remind</th>
+                  <th>Delete</th>
                 </tr>
               </thead>
               <tbody>
@@ -90,24 +91,15 @@ $requests = $connect->query($sql);
                         <input type="hidden" name="id" value="<?= $req['Id'] ?>">
                         <button type="submit" class="btn btn-primary btn-xs btn-send-reminder">Send Reminder</button>
                       </form>
-                      <button type="button" class="btn btn-danger btn-xs btn-delete" data-id="<?= $req['Id'] ?>">Delete (Deregister)</button>
-
                     </td>
                     <td>
+                      <button type="button" class="btn btn-danger btn-xs btn-delete" data-id="<?= $req['Id'] ?>">Delete</button>
+                    </td>
+                    
 
                   </tr>
                 <?php endwhile; ?>
               </tbody>
-              <tfoot>
-                <tr>
-                  <th>Name</th>
-                  <th>Surname</th>
-                  <th>Email</th>
-                  <th>Registered At</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </tfoot>
             </table>
           </div>
         </div>
@@ -163,9 +155,11 @@ $requests = $connect->query($sql);
 
 
 <script>
+    
   $(function () {
 
-    $('#example1').DataTable({
+    $('#example11').DataTable({
+        /*
       "paging": true,
       "lengthChange": true,
       "searching": true,
@@ -173,7 +167,9 @@ $requests = $connect->query($sql);
       "info": true,
       "autoWidth": false,
       "responsive": true
-    });
+      */
+    });  
+    
 
   // Alerts for success or error
   <?php if(isset($_SESSION['success'])): ?>

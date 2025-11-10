@@ -22,7 +22,7 @@ if (empty($sessionId) || empty($meetingLink)) {
     $_SESSION['alert'] = [
         'type' => 'error',
         'title' => 'Missing Information',
-        'text' => 'Session ID or meeting link is missing.'
+        'message' => 'Session ID or meeting link is missing.'
     ];
     header("Location: schedule.php");
     exit();
@@ -33,7 +33,7 @@ if (!filter_var($meetingLink, FILTER_VALIDATE_URL)) {
     $_SESSION['alert'] = [
         'type' => 'error',
         'title' => 'Invalid URL',
-        'text' => 'Please provide a valid meeting link.'
+        'message' => 'Please provide a valid meeting link.'
     ];
     header("Location: schedule.php");
     exit();
@@ -51,13 +51,13 @@ if ($stmt->execute() && $stmt->affected_rows > 0) {
     $_SESSION['alert'] = [
         'type' => 'success',
         'title' => 'Saved!',
-        'text' => 'Meeting link has been shared successfully.'
+        'message' => 'Meeting link has been shared successfully.'
     ];
 } else {
     $_SESSION['alert'] = [
         'type' => 'error',
         'title' => 'Failed!',
-        'text' => 'Could not share the meeting link. Make sure the session exists.'
+        'message' => 'Could not share the meeting link. Make sure the session exists.'
     ];
 }
 

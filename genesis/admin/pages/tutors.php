@@ -69,9 +69,13 @@ if ($result) {
             <div class="col-md-4">
               <div class="box box-primary" style="min-height: 300px;">
                 <div class="box-header with-border text-center">
-                  <img 
-                    src="<?= !empty($tutor['ProfilePicture']) ? htmlspecialchars($tutor['ProfilePicture']) : '../../uploads/doe.jpg' ?>" 
-                    alt="Tutor Picture" class="img-circle" width="90" height="90" style="object-fit: cover;">
+                    <?php
+                    $profilePic = !empty($tutor['ProfilePicture']) 
+                        ? PROFILE_PICS_URL . '/' . basename($tutor['ProfilePicture'])
+                        : PROFILE_PICS_URL . '/doe.jpg';
+                    ?>
+                    <img src="<?= htmlspecialchars($profilePic) ?>" alt="Profile Picture" class="img-circle" style="width: 80px; height: 80px; margin-top:5px;">
+
                   
                   <h3 class="box-title" style="margin-top:10px;">
                     <?= htmlspecialchars($tutor['Gender']) . ' ' . htmlspecialchars($tutor['Surname']) ?>
@@ -198,12 +202,14 @@ if ($result) {
         <button class="close" data-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body">
+        <div class="table-responsive" style="overflow-x:auto;">
         <table class="table table-bordered table-striped">
           <thead>
             <tr><th>Subject</th><th>Rating</th><th>Questions Answered satisfactorily?</th><th>How engaging was the tutor?</th><th>How clear were the tutor’s explanations?</th></tr>
           </thead>
           <tbody id="oneOnOneBody"></tbody>
         </table>
+        </div>
       </div>
       <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Close</button></div>
     </div>

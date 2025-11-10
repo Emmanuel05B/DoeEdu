@@ -118,13 +118,12 @@ include_once(COMMON_PATH . "/../partials/head.php");
                             <div class="box-footer" style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
                                     <button class="btn btn-info" data-toggle="modal" data-target="#sentNotificationsModal">
-                                        View Sent Announcements
+                                        View Sent
                                     </button>
                                 </div>
 
                                 <div>
-                                    <button type="submit" class="btn btn-primary">Create Notification</button>
-                                    <a href="adminindex.php" class="btn btn-default">Cancel</a>
+                                    <button type="submit" class="btn btn-primary">Add Notice</button>
                                 </div>
                             </div>
 
@@ -214,13 +213,13 @@ $sentNotifications = $connect->query("
             <?php while ($notice = $sentNotifications->fetch_assoc()): ?>
                 <div class="panel panel-default" style="margin-bottom:10px;">
                     <div class="panel-heading" style="display:flex; justify-content:space-between; align-items:center; background:#f5f5f5;">
-                        <span><strong>Created At: </strong><?= htmlspecialchars($notice['CreatedAt']) ?> <strong>| Expiry:</strong> <?= $notice['ExpiryDate'] ?></span>
+                        <span><strong>Sent On: </strong><?= htmlspecialchars($notice['CreatedAt']) ?> <strong>| Expiry:</strong> <?= $notice['ExpiryDate'] ?></span>
 
                         <form method="POST" action="delete_notification.php" style="margin:0;">
                             <input type="hidden" name="NotificationId" value="<?= $notice['NotificationId'] ?>">
 
                             <button type="button" class="btn btn-xs btn-danger deleteNotificationBtn" data-id="<?= $notice['NotificationId'] ?>">
-                            <i class="fa fa-trash"></i> Delete
+                            <i class="fa fa-trash"></i>
                             </button>
                         </form>
                     </div>

@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../../common/config.php'; 
+include_once(__DIR__ . "/../../partials/paths.php");
 include_once(BASE_PATH . "/partials/connect.php");
 
 if(isset($_GET['grade']) && !empty($_GET['grade'])){

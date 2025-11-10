@@ -114,7 +114,7 @@ if (count($classResults) > 0) {
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>Click</b></span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lgd"><b>DoE_Genesis </b></span>
+      <span class="logo-lgd"><b>Distributors Of Education </b></span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
@@ -122,7 +122,7 @@ if (count($classResults) > 0) {
       <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
         <span class="sr-only">Toggle navigation</span>
         
-        <span class="logo-lg"><b>Distributors Of Education </b></span>
+        <span class="logo-lg"><b>DoE_Genesis</b></span>
 
       </a>
 

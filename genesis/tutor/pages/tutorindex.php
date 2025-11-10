@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html>
 <?php
 require_once __DIR__ . '/../../common/config.php';  
 include_once(__DIR__ . "/../../partials/paths.php");
@@ -14,6 +12,10 @@ include_once(BASE_PATH . "/partials/connect.php");
 include_once(COMMON_PATH . "/../partials/head.php");  
 
 ?>
+
+<!DOCTYPE html>
+<html>
+
 
 <?php 
           //pending tutor sessions (invite requests)
@@ -42,10 +44,7 @@ include_once(COMMON_PATH . "/../partials/head.php");
           $countAcceptedResult = $countAcceptedQuery->get_result();
           $upcomingAcceptedCount = $countAcceptedResult->fetch_assoc()['count'] ?? 0;
 
-?>
 
-
-<?php
 // --- GENERAL ANNOUNCEMENTS ---
 $generalAnnouncements = [];
 $sqlGeneral = "
@@ -78,6 +77,7 @@ $tutorData = $tutorResult->fetch_assoc();
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
+    <?php include_once(TUTOR_PATH . "/../partials/mainsidebar.php"); ?>
 
     <header class="main-header">
       <!-- Logo -->
@@ -135,7 +135,7 @@ $tutorData = $tutorResult->fetch_assoc();
         </div>
       </nav>
     </header>
-<?php include_once(TUTOR_PATH . "/../partials/mainsidebar.php"); ?>
+
 
   <?php if (isset($_GET['added']) && $_GET['added'] == 1): ?>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -177,6 +177,7 @@ $tutorData = $tutorResult->fetch_assoc();
     <section class="content">
 
       <div class="row">
+        <!--
         <div class="col-lg-3 col-xs-6">
           <div class="small-box" style="background:#a3bffa; color:#000;">
             <div class="inner">
@@ -191,8 +192,9 @@ $tutorData = $tutorResult->fetch_assoc();
             </a>
           </div>
         </div>
+        -->
 
-        <div class="col-lg-3 col-xs-6">
+        <div class="col-lg-6 col-xs-6">
           <div class="small-box" style="background:#a3bffa; color:#000;">
             <div class="inner">
               <h3><?= $inviteRequests ?></h3>
@@ -207,7 +209,7 @@ $tutorData = $tutorResult->fetch_assoc();
           </div>
         </div>
 
-        <div class="col-lg-3 col-xs-6">
+        <div class="col-lg-6 col-xs-6">
           <div class="small-box" style="background:#a3bffa; color:#000;">
             <div class="inner">
               <h3><?= $upcomingAcceptedCount ?></h3>
@@ -221,7 +223,8 @@ $tutorData = $tutorResult->fetch_assoc();
             </a>
           </div>
         </div>
-
+        
+        <!--
         <div class="col-lg-3 col-xs-6">
           <div class="small-box" style="background:#a3bffa; color:#000;">
             <div class="inner">
@@ -236,6 +239,7 @@ $tutorData = $tutorResult->fetch_assoc();
             </a>
           </div>
         </div>
+        -->
       </div>
 
       <div class="row">
@@ -371,7 +375,7 @@ $tutorData = $tutorResult->fetch_assoc();
                 $creatorId = $_SESSION['user_id']; 
 
                 // Fetch the tasks for the logged-in user from the database
-                $sql = "SELECT * FROM TodoList WHERE CreatorId = ? ORDER BY DueDate ASC";  // You can adjust the sorting as needed
+                $sql = "SELECT * FROM todolist WHERE CreatorId = ? ORDER BY DueDate ASC";  // You can adjust the sorting as needed
                 $stmt = $connect->prepare($sql);
                 $stmt->bind_param("i", $creatorId);
                 $stmt->execute();

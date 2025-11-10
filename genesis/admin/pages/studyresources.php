@@ -233,9 +233,10 @@
                   <th>Type</th>
                   <th>Subject</th>
                   <th>Grade</th>
-                  <th style="width:130px;">Actions</th>
-                  <th>Uploaded At</th>
-                  <th>Uploaded By</th>
+                  <th>~~</th>
+                  <th>^^</th>
+                  <th>Uploaded_At</th>
+                  <th>Uploaded_By</th>
                 </tr>
               </thead>
               <tbody>
@@ -276,13 +277,13 @@
                     <td><?= htmlspecialchars($res['ResourceType']) ?></td>
                     <td><?= htmlspecialchars($res['SubjectName']) ?></td>
                     <td><?= htmlspecialchars($res['Grade']) ?></td>
+                   
                     <td>
-                      <a href="<?= $fileUrl ?>" class="btn btn-xs btn-primary" title="Download" download>
-                        <i class="fa fa-download"></i>
-                      </a>
                       <button class="btn btn-xs btn-danger delete-resource-btn" data-id="<?= htmlspecialchars($res['ResourceID']) ?>" title="Delete">
                         <i class="fa fa-trash"></i>
                       </button>
+                    </td>
+                    <td>
                       <div class="btn-group">
                         <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown" title="Assign Resource">
                           <i class="fa fa-link"></i> Assign <span class="caret"></span>

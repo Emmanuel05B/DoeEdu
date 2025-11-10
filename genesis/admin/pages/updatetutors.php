@@ -69,7 +69,7 @@ $stmt->close();
 
     <section class="content">
 
-    <div class="row" style="margin-top:20px;">
+    <div class="row" style="margin-top:5px;">
         <!-- Personal Info (left) -->
         <div class="col-md-6">
             <form method="POST" action="update_tutor_handler.php">

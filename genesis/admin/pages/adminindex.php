@@ -1,12 +1,4 @@
 <?php
-require_once __DIR__ . '/../../common/config.php'; 
-?> 
-
-<!DOCTYPE html>
-<html>
-
-<?php
-
 require_once __DIR__ . '/../../common/config.php';  
 include_once(__DIR__ . "/../../partials/paths.php");
 include_once(BASE_PATH . "/partials/session_init.php");
@@ -16,8 +8,36 @@ if (!isLoggedIn()) {
     exit();
 }
 
-include_once(COMMON_PATH . "/../partials/head.php");  
 include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
+
+?>
+
+<!DOCTYPE html>
+<html>
+<?php 
+
+// Get the logged-in user's ID
+$creatorId = $_SESSION['user_id']; 
+  
+
+// Pending verification users
+$usersQuery = $connect->query("SELECT COUNT(*) as count FROM users WHERE IsVerified = 1 AND UserType = '2'");
+$pendingUsers = $usersQuery ? $usersQuery->fetch_assoc()['count'] : 0;
+
+// Invite requests
+$inviteQuery = $connect->query("SELECT COUNT(*) as count FROM inviterequests");
+$inviteRequests = $inviteQuery ? $inviteQuery->fetch_assoc()['count'] : 0;
+
+// Unread student voices
+$voicesQuery = $connect->query("SELECT COUNT(*) as count FROM studentvoices WHERE IsRead = 0");
+$unreadVoices = $voicesQuery ? $voicesQuery->fetch_assoc()['count'] : 0;
+
+// Expired contracts
+$expiredQuery = $connect->query("SELECT COUNT(*) AS count FROM learnersubject WHERE ContractExpiryDate < CURDATE() AND Status = 'Active'");
+$expiredContracts = $expiredQuery ? $expiredQuery->fetch_assoc()['count'] : 0;
+
+
 
 ?>
 
@@ -40,30 +60,11 @@ include_once(BASE_PATH . "/partials/connect.php");
         <!-- Sidebar toggle button-->
         <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
           <span class="sr-only">Toggle navigation</span>
-          <span class="logo-lg"><b>Distributors Of Education </b></span>
+          <span class="logo-lg"><b>DoE </b></span>
         </a>
+  
       
         <div class="navbar-custom-menu">
-          <?php 
-
-          // Pending verification users
-          $usersQuery = $connect->query("SELECT COUNT(*) as count FROM users WHERE IsVerified = 1 AND UserType = '2'");
-          $pendingUsers = $usersQuery ? $usersQuery->fetch_assoc()['count'] : 0;
-
-          // Invite requests
-          $inviteQuery = $connect->query("SELECT COUNT(*) as count FROM inviterequests");
-          $inviteRequests = $inviteQuery ? $inviteQuery->fetch_assoc()['count'] : 0;
-
-          // Unread student voices
-          $voicesQuery = $connect->query("SELECT COUNT(*) as count FROM studentvoices WHERE IsRead = 0");
-          $unreadVoices = $voicesQuery ? $voicesQuery->fetch_assoc()['count'] : 0;
-
-          // Expired contracts
-          $expiredQuery = $connect->query("SELECT COUNT(*) AS count FROM learnersubject WHERE ContractExpiryDate < CURDATE() AND Status = 'Active'");
-          $expiredContracts = $expiredQuery ? $expiredQuery->fetch_assoc()['count'] : 0;
-          ?>
-
-
           <ul class="nav navbar-nav">
 
             <!-- Pending verification -->
@@ -97,20 +98,20 @@ include_once(BASE_PATH . "/partials/connect.php");
                 <span class="label label-danger"><?= $expiredContracts ?></span>
               </a>
             </li>
-
             <!-- Original notifications bell -->
+
             <li>
               <a href="#" data-toggle="modal" data-target="#adminNotificationsModal">
                 <i class="fa fa-bell-o"></i>
               </a>
             </li>
 
+           
             <!-- User account -->
             <li class="dropdown user user-menu">
-              
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <img src="../../uploads/doe.jpg" class="user-image" alt="User Image">
-                
+              <a href="#">
+                <img src="<?= PROFILE_PICS_URL . '/doe.jpg' ?>" class="user-image" alt="User Image">
+                <span class="hidden-xs"><?php ?></span>
               </a>
             </li>
 
@@ -123,7 +124,6 @@ include_once(BASE_PATH . "/partials/connect.php");
     <?php include_once(ADMIN_PATH . "/../partials/mainsidebar.php"); ?>
 
     <div class="content-wrapper">
-      <!-- cover section --> 
 
       <section class="content-header">
         <h1>Dashboard <small>Control panel</small></h1>
@@ -136,31 +136,6 @@ include_once(BASE_PATH . "/partials/connect.php");
 
       <section class="content">
        
-        <?php 
-          include('../../partials/connect.php');
-          
-          // Pending verification users
-          $usersQuery = $connect->query("SELECT COUNT(*) as count FROM users WHERE IsVerified = 0 AND UserType = '2'");
-          $pendingusers = $usersQuery ? $usersQuery->fetch_assoc()['count'] : 0;
-
-          // Invite requests
-          $inviteQuery = $connect->query("SELECT COUNT(*) as countinvites FROM inviterequests");
-          $inviteRequests = $inviteQuery ? $inviteQuery->fetch_assoc()['countinvites'] : 0;
-
-          // Unread student voices
-          $voicesQuery = $connect->query("SELECT COUNT(*) as unreadCount FROM studentvoices WHERE IsRead = 0");
-          $unreadVoices = $voicesQuery ? $voicesQuery->fetch_assoc()['unreadCount'] : 0;
-
-          // Expired contracts
-          $expiredQuery = $connect->query("
-              SELECT COUNT(*) AS count 
-              FROM learnersubject 
-              WHERE ContractExpiryDate < CURDATE() AND Status = 'Active'
-          ");
-          $expiredCount = $expiredQuery ? $expiredQuery->fetch_assoc()['count'] : 0;
-
-          
-        ?>
 
         <!-- Stat Boxes -->
         <div class="row">
@@ -168,7 +143,7 @@ include_once(BASE_PATH . "/partials/connect.php");
           <div class="col-lg-3 col-xs-6">
             <div class="small-box" style="background-color: #7bd3f6ff;">
               <div class="inner">
-                <h3><?= $pendingusers ?></h3>
+                <h3><?= $pendingUsers ?></h3>
                 <p>Pending Verification</p>
               </div>
               <a href="pendingverifications.php">
@@ -213,7 +188,7 @@ include_once(BASE_PATH . "/partials/connect.php");
           <div class="col-lg-3 col-xs-6">
             <div class="small-box" style="background-color: #dd90d3ff;">
                 <div class="inner">
-                    <h3><?php echo $expiredCount; ?></h3>
+                    <h3><?= $expiredContracts ?></h3>
                     <p>Expired Contracts</p>
                 </div>
 
@@ -252,12 +227,9 @@ include_once(BASE_PATH . "/partials/connect.php");
               <!-- /.box-header -->
 
               <?php
-              // Get the logged-in user's ID
-              $creatorId = $_SESSION['user_id']; 
-
+              
               // Fetch the tasks for the logged-in user from the database
-              $sql = "SELECT * FROM TodoList WHERE CreatorId = ? ORDER BY DueDate ASC";  // You can adjust the sorting as needed
-              $stmt = $connect->prepare($sql);
+              $stmt = $connect->prepare("SELECT * FROM todolist WHERE CreatorId = ? ORDER BY DueDate ASC");
               $stmt->bind_param("i", $creatorId);
               $stmt->execute();
               $result = $stmt->get_result();
@@ -361,7 +333,6 @@ include_once(BASE_PATH . "/partials/connect.php");
         $msg = $_SESSION['success'];
         unset($_SESSION['success']);
         echo "
-        <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
         <script>
             Swal.fire({
                 icon: 'success',
@@ -376,7 +347,6 @@ include_once(BASE_PATH . "/partials/connect.php");
         $msg = $_SESSION['error'];
         unset($_SESSION['error']);
         echo "
-        <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
         <script>
             Swal.fire({
                 icon: 'error',
@@ -427,24 +397,18 @@ include_once(BASE_PATH . "/partials/connect.php");
 
 
   <?php
-    //include('../partials/connect.php');
     $userId = $_SESSION['user_id'];
 
-    // Load user data
-    /*
-    $usql = "SELECT * FROM users WHERE Id = ?";
-    $stmtUser = $connect->prepare($usql);
-    $stmtUser->bind_param("i", $userId);
-    $stmtUser->execute();
-    $resultUser = $stmtUser->get_result();
-    $userData = $resultUser->fetch_assoc();
-    $stmtUser->close();
-
-    */
-
     // Fetch notices
-    $sql = "SELECT NoticeNo, Title, Content, Date FROM notices WHERE ExpiryDate >= CURDATE() ORDER BY Date DESC";
-    $results = $connect->query($sql);
+      $results = $connect->query("
+        SELECT n.NotificationId, n.Title, n.Content, n.SubjectName, n.CreatedAt, u.Name, u.Surname
+        FROM notifications n
+        LEFT JOIN users u ON n.CreatedBy = u.Id
+        WHERE n.CreatedFor IN (2)
+          AND (n.ExpiryDate IS NULL OR n.ExpiryDate >= NOW())
+        ORDER BY n.CreatedAt DESC
+        LIMIT 20
+    ");
   ?>
 
 
@@ -737,13 +701,6 @@ $(document).ready(function() {
     //end
 });
 </script>
-
-
-
-
-
-
-
 
 
 </body>

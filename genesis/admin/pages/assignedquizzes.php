@@ -100,9 +100,10 @@ $stmt->close();
                 <tr>
                     <th>Title</th>
                     <th>Topic</th>
-                    <th>Assigned On</th>
-                    <th>Due Date</th>
-                    <th>Action</th>
+                    <th>Assigned_On</th>
+                    <th>Due_Date</th>
+                    <th>**</th>
+                    <th>++</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -161,6 +162,10 @@ $stmt->close();
                             <a href='#' class='btn btn-xs btn-warning unassign-activity-btn' data-id='$activityId' title='Unassign from Class'>
                                 <i class='fa fa-unlink'></i>
                             </a>
+
+                        </td>
+                        <td>
+                        
                             <a href='activityoverview.php?activityId=$activityId&gra=" . urlencode($grade) . "&group=" . urlencode($group) . "' 
                               class='btn btn-xs btn-info' 
                               title='Overview'>

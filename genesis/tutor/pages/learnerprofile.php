@@ -207,10 +207,10 @@ include_once(COMMON_PATH . "/../partials/head.php");
         <div class="nav-tabs-custom">
           <ul class="nav nav-tabs">
             <li class="active"><a href="#aboutme" data-toggle="tab">About Me</a></li>
-            <li><a href="#supportme" data-toggle="tab">Support Me</a></li>
-            <li><a href="#record" data-toggle="tab">Record Marks</a></li>
+            <!-- <li><a href="#supportme" data-toggle="tab">Support Me</a></li> -->
+            <li><a href="#record" data-toggle="tab">Add Marks</a></li>
             <li><a href="#goals" data-toggle="tab">Goals</a></li>
-            <li><a href="#practicequestionsprogress" data-toggle="tab">Practice Q Progress</a></li>
+            <li><a href="#practicequestionsprogress" data-toggle="tab">Practice Rate</a></li>
           </ul>
 
           <div class="tab-content">

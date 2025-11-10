@@ -189,7 +189,7 @@ Swal.fire({
 
 <!-- Read Voices Modal -->
 <div class="modal fade" id="readVoicesModal" tabindex="-1" role="dialog" aria-labelledby="readVoicesModalLabel">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog role="document">
     <div class="modal-content">
       <div class="modal-header" style="background-color:#3c8dbc; color:white;">
         <h4 class="modal-title" id="readVoicesModalLabel"> Read Student Voices</h4>
@@ -197,7 +197,7 @@ Swal.fire({
           <span style="color:white;">&times;</span>
         </button>
       </div>
-      <div class="modal-body" style="max-height:500px; overflow-y:auto;">
+      <div class="modal-body" style="max-height:400px; overflow-y:auto;">
         <ul class="list-group">
             <?php foreach($readVoices as $voice): ?>
               <li class="list-group-item">

@@ -3,12 +3,15 @@ require_once __DIR__ . '/../../common/config.php';
 include_once(__DIR__ . "/../../partials/paths.php");
 include_once(BASE_PATH . "/partials/session_init.php");
 
-if (!isLoggedIn()) {
-    header("Location: " . COMMON_URL . "/login.php");
-    exit();
-}
 
 include_once(BASE_PATH . "/partials/connect.php");
+
+
+header('Content-Type: text/html; charset=UTF-8');
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+
+date_default_timezone_set('Africa/Johannesburg'); // Match your local time
+$connect->query("SET time_zone = '+02:00'");
 
 
 // Get tutor and learner IDs

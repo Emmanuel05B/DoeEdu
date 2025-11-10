@@ -153,7 +153,7 @@ $stmt->close();
                   <th>Type</th>
                   <th>Class</th>
                   <th style="width:130px;">Actions</th>
-                  <th>Uploaded At</th>
+                  <th>Uploaded_At</th>
                 </tr>
               </thead>
               <tbody>
@@ -192,7 +192,7 @@ $stmt->close();
 
                     </td>
                     <td><?= htmlspecialchars($res['ResourceType']) ?></td>
-                    <td><?= htmlspecialchars($res['SubjectName'] . ' - ' . $res['Grade'] . ' - ' . $group) ?></td>
+                    <td><?= htmlspecialchars($res['SubjectName'] . '_' . $res['Grade'] . '_' . $group) ?></td>
                     
 
                     <td>

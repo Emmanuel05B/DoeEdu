@@ -61,6 +61,7 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
                   <th>Requested On</th>
                   <th>Status</th>
                   <th>Actions</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -97,10 +98,9 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
                             <input type="hidden" name="redirect" value="manage_inviterequests.php">
                             <button type="submit" class="btn btn-primary btn-xs swal-send">Send Invite</button>
                         </form>
-
-
-
-
+                      
+                    </td>
+                    <td>
                       <button class="btn btn-danger btn-xs swal-delete"
                               data-id="<?= $req['id'] ?>"
                               data-name="<?= htmlspecialchars($req['name']) ?>"
@@ -118,6 +118,7 @@ $requests = $connect->query("SELECT * FROM inviterequests ORDER BY created_at DE
                   <th>Message</th>
                   <th>Requested At</th>
                   <th>Status</th>
+                  <th>Actions</th>
                   <th>Actions</th>
                 </tr>
               </tfoot>

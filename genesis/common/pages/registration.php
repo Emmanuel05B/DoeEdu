@@ -1,11 +1,14 @@
 
 
 <?php
-session_start(); // must be first line
-include(__DIR__ . "/../partials/queries.php");
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
 
-include(__DIR__ . "/../partials/head.php");
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");
+include_once(COMMON_PATH . "/../partials/queries.php");
+
 
 if (!isset($_GET['token']) || empty($_GET['token'])) {
     die("Invalid invite link. No token provided.");
@@ -90,7 +93,7 @@ while($row = $gradesResult->fetch_assoc()){
       <section class="content">
         <div class="row">
           <div class="image-box">
-          <img src="../../admin/images/westtt.png" alt="fghhjk kj">
+          <img src="../../uploads/ProfilePictures/doep.png" alt="fghhjk kj">
         </div>
 
           <div class="col-xs-12">

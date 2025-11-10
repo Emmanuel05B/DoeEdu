@@ -29,14 +29,33 @@
         .lead {
             font-weight: bold;
         }
-        .top-right-image {
-            position: absolute;
-            top: 0;
-            right: 0;
-            max-height: 130px;
-            margin-top: 0px;
-            margin-right: 30px;
+   
+        
+        @media (max-width: 767px) {
+        .content-wrapper {
+            padding: 10px;
         }
+    
+        h2.page-header {
+            font-size: 18px;
+            line-height: 1.4;
+        }
+    
+        .invoice-info .invoice-col {
+            margin-bottom: 2px;
+        }
+    
+        .table th, .table td {
+            font-size: 12px;
+            white-space: nowrap; /* prevents text from wrapping oddly */
+        }
+    
+        .lead {
+            font-size: 14px;
+        }
+
+}
+
     </style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
@@ -192,80 +211,77 @@ $LastPaymentDate = $financial_info['LastPaymentDate'] ?? '-';
 <div class="content-wrapper">
     <section class="invoice">
         <div class="row">
-            <div class="col-xs-12">
-                <div>
-                    <p><strong>Registration No:</strong> 2022/735117/07</p>
-                    <p><strong>Residential Address:</strong> 50188 Makoshala, Block E, Phokoane, Nebo, Limpopo, 1059</p>
-                    <p><strong>Telephone:</strong> 081 461 8178</p>
-                    <p><strong>Email:</strong> <a href="mailto:thedistributorsofedu@gmail.com">thedistributorsofedu@gmail.com</a></p>
-                </div><br>
                 <h2 class="page-header" style="text-align:center;">
-                    Report for: <?php echo $final['Name']; ?><br>
-                    Subject: <?php echo $SubjectName; ?>
-                    <img src="../images/westtt.png" alt="Image" class="top-right-image">
+                    <?php echo $final['Name']; ?> - Report<br>
+                    <?php echo $SubjectName; ?>
                 </h2>
-            </div>
         </div>
 
         <div class="row invoice-info">
-            <div class="col-sm-4 invoice-col">
+            <div class="col-sm-12 invoice-col">
                 <b>Learner Details:</b><br>
-                Name: <?php echo $final['Name']; ?><br>
-                Surname: <?php echo $final['Surname']; ?><br>
+                Name: <?php echo $final['Name']; ?> <?php echo $final['Surname']; ?><br>
                 Grade: <?php echo $pfinal['Grade']; ?><br>
-                Contact: <?php echo $final['Contact']; ?><br>
-                Email: <?php echo $final['Email']; ?>
+                Contact: <?php echo $final['Contact']; ?> / <?php echo $final['Email']; ?>
             </div>
-            <div class="col-sm-4 invoice-col">
-                <b>Tutor Details:</b><br>
-                Name: <?php echo $tfinal['Name']; ?><br>
-                Surname: <?php echo $tfinal['Surname']; ?><br>
-                Email: <?php echo $tfinal['Email']; ?>
+            <!-- <div class="col-sm-6 invoice-col">
+                <b> Tutor Details:</b><br>
+                Name: <?php // echo $tfinal['Name']; ?><br>
+                Surname: <?php //echo $tfinal['Surname']; ?><br>
+                Email: <?php// echo $tfinal['Email']; ?>
             </div>
-            <div class="col-sm-4 invoice-col">
-                <b>Parent Details:</b><br>
-                Title: <?php echo $pfinal['ParentTitle']; ?><br>
-                Name: <?php echo $pfinal['ParentName']; ?><br>
-                Surname: <?php echo $pfinal['ParentSurname']; ?><br>
-                Email: <?php echo $pfinal['ParentEmail']; ?>
-            </div>
+            
+             <div class="col-sm-4 invoice-col">
+                <b> Parent Details:</b><br>
+                Title: <?php //echo $pfinal['ParentTitle']; ?><br>
+                Name: <?php //echo $pfinal['ParentName']; ?><br>
+                Surname: <?php // echo $pfinal['ParentSurname']; ?><br>
+                Email: <?php // echo $pfinal['ParentEmail']; ?>
+            </div> -->
+            
+            
         </div>
-        <hr><br>
+        <hr>
 
         <!-- Attendance and Submission Tables -->
         <div class="row">
             <div class="col-xs-6">
                 <p class="lead">Attendance:</p>
+                <div class="table-responsive">
                 <table class="table">
                     <tr>
-                        <th>Attendance Rate:</th>
+                        <th>Attendance:</th>
                         <td><?php echo number_format($attendance_rate, 2); ?>%</td>
                     </tr>
                     <tr>
-                        <th>Classes Missed:</th>
+                        <th>Absences</th>
                         <td><?php echo $numabsent; ?>/<?php echo $total_activities; ?></td>
                     </tr>
                 </table>
+                </div>
             </div>
             <div class="col-xs-6">
-                <p class="lead">Submission:</p>
+                <p class="lead">Submissions:</p>
+                <div class="table-responsive">
                 <table class="table">
                     <tr>
-                        <th>Submission Rate:</th>
+                        <th>Rate:</th>
                         <td><?php echo number_format($submission_rate, 2); ?>%</td>
                     </tr>
                     <tr>
-                        <th>Activities Missed:</th>
+                        <th>Missed Tasks:</th>
                         <td><?php echo $submission_no_count; ?>/<?php echo $total_activities; ?></td>
                     </tr>
                 </table>
+                </div>
             </div>
         </div>
 
         <!-- Activity Scores Table -->
         <div class="row">
-            <div class="col-xs-6">
+            <div class="col-xs-12 col-sm-6">
                 <p class="lead">Activities Scores:</p>
+                <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
@@ -292,10 +308,12 @@ $LastPaymentDate = $financial_info['LastPaymentDate'] ?? '-';
                         ?>
                     </tbody>
                 </table>
+                </div>
             </div>
 
-            <div class="col-xs-6">
+            <div class="col-xs-12 col-sm-6">
                 <p class="lead">Missed Attendance and Submissions:</p>
+                <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
@@ -330,13 +348,15 @@ $LastPaymentDate = $financial_info['LastPaymentDate'] ?? '-';
                         ?>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
 
         <!-- Overall Performance -->
         <div class="row">
-            <div class="col-xs-6">
+            <div class="col-xs-12 col-sm-6">
                 <p class="lead">Overall Performance Status:</p>
+                <div class="table-responsive">
                 <table class="table">
                     <tbody>
                         <?php
@@ -367,53 +387,53 @@ $LastPaymentDate = $financial_info['LastPaymentDate'] ?? '-';
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
 
             <!-- Financial Information -->
-            <!-- Financial Information -->
-<div class="col-xs-6">
-    <p class="lead">Financial Information:</p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Total Fees</th>
-                <th>Total Paid</th>
-                <th>Balance</th>
-                <th>Payment Status</th>
-                <th>Due Date</th>
-                <th>Last Payment</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            $stmtFin = $connect->prepare("
-                SELECT TotalFees, TotalPaid, Balance, PaymentStatus, DueDate, LastPaymentDate
-                FROM finances
-                WHERE LearnerId = ?
-            ");
-            $stmtFin->bind_param("i", $learner_id);
-            $stmtFin->execute();
-            $fin_result = $stmtFin->get_result();
-            
-            if ($fin_result->num_rows > 0) {
-                while ($fin = $fin_result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>R " . number_format($fin['TotalFees'], 2) . "</td>";
-                    echo "<td>R " . number_format($fin['TotalPaid'], 2) . "</td>";
-                    echo "<td>R " . number_format($fin['Balance'], 2) . "</td>";
-                    echo "<td>" . htmlspecialchars($fin['PaymentStatus']) . "</td>";
-                    echo "<td>" . ($fin['DueDate'] ? $fin['DueDate'] : '-') . "</td>";
-                    echo "<td>" . ($fin['LastPaymentDate'] ? $fin['LastPaymentDate'] : '-') . "</td>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr><td colspan='6'>No financial records found.</td></tr>";
-            }
-            $stmtFin->close();
-            ?>
-        </tbody>
-    </table>
-</div>
+            <div class="col-xs-12 col-sm-6">
+                <p class="lead">Financial Information:</p>
+                <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Total Fees</th>
+                            <th>Total Paid</th>
+                            <th>Balance</th>
+                            <th>Payment_Status</th>
+                            <th>Last_Payment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $stmtFin = $connect->prepare("
+                            SELECT TotalFees, TotalPaid, Balance, PaymentStatus, DueDate, LastPaymentDate
+                            FROM finances
+                            WHERE LearnerId = ?
+                        ");
+                        $stmtFin->bind_param("i", $learner_id);
+                        $stmtFin->execute();
+                        $fin_result = $stmtFin->get_result();
+                        
+                        if ($fin_result->num_rows > 0) {
+                            while ($fin = $fin_result->fetch_assoc()) {
+                                echo "<tr>";
+                                echo "<td>R " . number_format($fin['TotalFees'], 2) . "</td>";
+                                echo "<td>R " . number_format($fin['TotalPaid'], 2) . "</td>";
+                                echo "<td>R " . number_format($fin['Balance'], 2) . "</td>";
+                                echo "<td>" . htmlspecialchars($fin['PaymentStatus']) . "</td>";
+                                echo "<td>" . ($fin['LastPaymentDate'] ? $fin['LastPaymentDate'] : '-') . "</td>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='6'>No financial records found.</td></tr>";
+                        }
+                        $stmtFin->close();
+                        ?>
+                    </tbody>
+                </table>
+                </div>
+            </div>
 
         </div>
 

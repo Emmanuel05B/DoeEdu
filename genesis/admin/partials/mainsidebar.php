@@ -1,6 +1,9 @@
 <aside class="main-sidebar">
 <?php
-include('../../partials/connect.php');
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+
+include_once(BASE_PATH . "/partials/connect.php");
 
 $userId = $_SESSION['user_id'];
 
@@ -13,16 +16,14 @@ $userResult = $userStmt->get_result();
 $userData = $userResult->fetch_assoc();
 
 
-// Fetch admin profile picture (if stored in a separate table, otherwise use fallback)
-$adminImagePath = "../uploads/admin_" . $userId . ".jpg";
-$profileImage = file_exists($adminImagePath) ? $adminImagePath : "../images/doe.jpg";
 ?>
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
       <!-- Sidebar user panel -->
       <div class="user-panel">
         <div class="pull-left image">
-          <img src="<?php echo $profileImage; ?>" class="img-circle" alt="User Image" style="width:45px; height:45px; object-fit:cover;">
+            <img src="<?= PROFILE_PICS_URL . '/doe.jpg' ?>" class="img-circle" alt="User Image">
+
         </div>
         <div class="pull-left info">
           <p><?php echo htmlspecialchars($userData['Surname']); ?></p>

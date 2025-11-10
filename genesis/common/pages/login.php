@@ -112,10 +112,8 @@
 <?php
 include_once(__DIR__ . "/../../partials/paths.php"); 
 
-// Start session securely
 include_once(BASE_PATH . "/partials/session_init.php"); 
 
-// Include database connection
 include_once(BASE_PATH . "/partials/connect.php"); 
 
 
@@ -234,7 +232,8 @@ if (isset($_POST['login'])) {
   <div class="form-column">
 
     <div class="image-column">
-      <img src="../../admin/images/westtt.png" alt="Login Image">
+      <img src="<?php echo PROFILE_PICS_URL . '/doep.png'; ?>" alt="Login Image">
+
     </div>
     
       <h2>Login</h2>
@@ -247,7 +246,9 @@ if (isset($_POST['login'])) {
       ?>
 
       <!-- Login Form -->
-      <form action="login.php" method="post">
+      
+        <form action="/learn/genesis/common/pages/login.php" method="post">
+
         <div class="container">
           <input type="text" placeholder="Enter Email" id="email" name="email" maxlength="100" required>
         </div>

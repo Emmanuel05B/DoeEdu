@@ -97,14 +97,13 @@ $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 <?php include_once(TUTOR_PATH . "/../partials/header.php"); ?> 
 <?php include_once(TUTOR_PATH . "/../partials/mainsidebar.php"); ?>
 
-
 <?php if (isset($_SESSION['alert'])): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     Swal.fire({
         icon: '<?php echo $_SESSION['alert']['type']; ?>',
         title: '<?php echo addslashes($_SESSION['alert']['title']); ?>',
-        text: '<?php echo addslashes($_SESSION['alert']['text']); ?>',
+        text: '<?php echo addslashes($_SESSION['alert']['message']); ?>',
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'OK'
     });
@@ -112,9 +111,11 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <?php unset($_SESSION['alert']); endif; ?>
 
+
+
 <div class="content-wrapper" style="background-color: #f7f9fc;">
   <section class="content-header">
-    <h1>My Availability & Bookings <small>Manage your weekly availability and booking requests here.</small></h1>
+    <h1>Schedule & Bookings <small>Manage your weekly availability and booking requests here.</small></h1>
     <ol class="breadcrumb">
       <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
       <li class="active">Bookings</li>
@@ -128,9 +129,9 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="col-md-12">
         <div class="box box-primary">
           <div class="box-header with-border">
-            <h3 class="box-title">Availability</h3>
-            <button class="btn btn-sm btn-info pull-right" data-toggle="modal" data-target="#availabilityModalOnceOff">Set Availability Once-Off</button>
-            <button class="btn btn-sm btn-primary pull-right" data-toggle="modal" data-target="#availabilityModal">Edit Availability Recurring</button>
+            <h3 class="box-title">Manage Schedule</h3>
+            <button class="btn btn-sm btn-info pull-right" data-toggle="modal" data-target="#availabilityModalOnceOff">Set Once-Off</button>
+            <button class="btn btn-sm btn-primary pull-right" data-toggle="modal" data-target="#availabilityModal">Edit Recurring</button>
 
           </div>
           <div class="box-body table-responsive">

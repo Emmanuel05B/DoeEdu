@@ -1,17 +1,16 @@
 <?php
 
-session_start();
+require_once __DIR__ . '/../../common/config.php';  
+include_once(__DIR__ . "/../../partials/paths.php");
+include_once(BASE_PATH . "/partials/session_init.php");
 
-include(__DIR__ . "/../../partials/connect.php");
+include_once(BASE_PATH . "/partials/connect.php");
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 // Load Composer's autoloader
 require __DIR__ . '/../../../vendor/autoload.php';
-
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'); 
-$dotenv->load();
 
 // Transaction start
 $connect->begin_transaction();
@@ -39,7 +38,7 @@ try {
     $stmtGrade->close();
 
 
-    $nockouttime       = $_POST['knockout_time'];
+    $nockouttime = $_POST['knockout_time'];
 
     // Parent details
     $pname     = $_POST['parentname'];
@@ -125,7 +124,7 @@ try {
     foreach ($_POST['SubjectID'] as $i => $sid) {
         $sid = (int)$sid;
 
-        // Make sure Duration exists for this index
+        // Making sure Duration exists for this index
         $duration = isset($_POST['Duration'][$i]) ? (int)$_POST['Duration'][$i] : 0;
 
         if($duration > 0) {  // only proceed if duration is valid
@@ -177,7 +176,7 @@ try {
     // Commit transaction
     sendEmailToLearner($email, $name, $verificationToken);
     
-    sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $connect, $learnerId);
+    sendEmailToParent($pemail, $pname, $name, $verificationToken, $connect, $learnerId);
     $connect->commit();
 
     $_SESSION['success'] = "Registered successfully! One final step — a verification email has been sent to the parent. You’ll be able to log in once they approve.";
@@ -195,7 +194,7 @@ try {
 
 // Send email to parent
 
-function sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $connect, $learnerId) {
+function sendEmailToParent($pemail, $pname, $name, $verificationToken, $connect, $learnerId) {
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
@@ -238,7 +237,7 @@ function sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $c
 
         $mail->Body = "
         <p>Dear $pname,</p>
-        <p>Your child <strong>$learnerName</strong> has been successfully registered with the Distributors of Education.</p>
+        <p>Your child <strong>$name</strong> has been successfully registered with the Distributors of Education.</p>
 
         <p>Please review the subjects and fees below. By verifying, you acknowledge awareness of the costs and approve your child's registration:</p>
 
@@ -260,7 +259,7 @@ function sendEmailToParent($pemail, $pname, $learnerName, $verificationToken, $c
         </table>
 
         <p style='text-align:center; margin:20px 0;'>
-            <a href='http://localhost/DoE_Genesis/DoeEdu/genesis/common/pages/verification.php?token=$verificationToken' 
+            <a href='" . COMMON_URL . "/verification.php?token=$verificationToken'
                style='background-color: #008CBA; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>
                Verify & Approve Registration
             </a>

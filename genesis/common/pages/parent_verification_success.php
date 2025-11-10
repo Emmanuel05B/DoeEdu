@@ -1,6 +1,9 @@
 <?php
-session_start();
-include('../../partials/connect.php');
+include_once(__DIR__ . "/../../partials/paths.php"); 
+
+include_once(BASE_PATH . "/partials/session_init.php"); 
+
+include_once(BASE_PATH . "/partials/connect.php"); 
 
 if (!isset($_GET['learner_id'])) {
     die("Invalid request.");
@@ -159,15 +162,15 @@ $stmt->close();
 
 
 <?php 
- include(__DIR__ . "/../partials/queries.php");   //included in queries is src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
- ?>
+include_once(COMMON_PATH . "/../partials/queries.php");
+?>
 
 </head>
 <body>
 
 <div class="container">
     <!-- Logo -->
-    <img src="../../admin/images/westtt.png" alt="DoE Logo">
+    <img src="../../uploads/ProfilePictures/doep.png" alt="DoE Logo">
 
     <h3>Parent Verification Success</h3>
 

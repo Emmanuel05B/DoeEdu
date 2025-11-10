@@ -72,7 +72,7 @@ include_once(COMMON_PATH . "/../partials/head.php");
             <div class="col-xs-12">
                 <div class="box">
                     <div class="box-header">
-                        <h3 class="box-title"><?php echo htmlspecialchars($subjectName); ?> - Assigned Homework (<?php echo $grade . ' ' . $group; ?>)</h3>
+                        <h3 class="box-title"><?php echo htmlspecialchars($subjectName); ?> - Homeworks (<?php echo $grade . ' ' . $group; ?>)</h3>
                     </div>
                     <div class="box-body table-responsive">
                         <table class="table table-bordered table-striped" style="width:100%;">
@@ -80,11 +80,12 @@ include_once(COMMON_PATH . "/../partials/head.php");
                             <tr>
                                 <th>Title</th>
                                 <th>Chapter</th>
-                                <th>Received On</th>
-                                <th>Due Date</th>
+                                <th>Received_On</th>
+                                <th>Due_Date</th>
                                 <th>Status</th>
                                 <th>Score</th>
-                                <th>Action</th>
+                                <th>***</th>
+                                <th>***</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -173,6 +174,8 @@ include_once(COMMON_PATH . "/../partials/head.php");
                                             <td>{$score}</td>
                                             <td>
                                                 {$openBtn}
+                                            </td>
+                                            <td>
                                                 {$memoBtn}
                                             </td>
                                         </tr>";

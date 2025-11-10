@@ -28,7 +28,7 @@ if (empty($day) || empty($start) || empty($end)) {
     $_SESSION['alert'] = [
         'type' => 'error',
         'title' => 'Missing Fields',
-        'text' => 'Please fill in all required fields.'
+        'message' => 'Please fill in all required fields.'
     ];
     header("Location: schedule.php");
     exit();
@@ -38,7 +38,7 @@ if ($start >= $end) {
     $_SESSION['alert'] = [
         'type' => 'error',
         'title' => 'Invalid Time Range',
-        'text' => 'Start time must be before end time.'
+        'message' => 'Start time must be before end time.'
     ];
     header("Location: schedule.php");
     exit();
@@ -57,13 +57,13 @@ try {
         $_SESSION['alert'] = [
             'type' => 'success',
             'title' => 'Availability Deleted',
-            'text' => "Your once-off availability for {$day} ({$start} - {$end}) has been removed."
+            'message' => "Your once-off availability for {$day} ({$start} - {$end}) has been removed."
         ];
     } else {
         $_SESSION['alert'] = [
             'type' => 'error',
             'title' => 'Invalid Action',
-            'text' => 'Unsupported operation requested.'
+            'message' => 'Unsupported operation requested.'
         ];
     }
 
@@ -71,7 +71,7 @@ try {
     $_SESSION['alert'] = [
         'type' => 'error',
         'title' => 'Database Error',
-        'text' => 'There was a problem deleting your availability. Please try again.'
+        'message' => 'There was a problem deleting your availability. Please try again.'
     ];
 }
 

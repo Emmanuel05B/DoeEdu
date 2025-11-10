@@ -1,5 +1,9 @@
 <?php
-session_start();
+include_once(__DIR__ . "/../../partials/paths.php"); 
+
+include_once(BASE_PATH . "/partials/session_init.php"); 
+
+include_once(BASE_PATH . "/partials/connect.php"); 
 ?>
 
 <!DOCTYPE html>
@@ -113,7 +117,7 @@ session_start();
 <div class="login-container">
   <div class="login-box">
     <!-- Image above form -->
-    <img src="../../admin/images/westtt.png" alt="Forgot Password">
+    <img src="../../uploads/ProfilePictures/doep.png" alt="Forgot Password">
 
     <h2>Forgot Password?</h2>
     <p>Enter your email address and we will send you a code to reset your password.</p>
@@ -149,12 +153,6 @@ session_start();
 </div>
 
 <?php
-session_start();
-include '../../partials/Connect.php';
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;

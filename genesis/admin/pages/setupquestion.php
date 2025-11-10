@@ -1,7 +1,5 @@
 <?php
-
-
-// Load path constants
+require_once __DIR__ . '/../../common/config.php'; 
 include_once(__DIR__ . "/../../partials/paths.php");
 
 // Start session securely
@@ -153,7 +151,7 @@ while($row = $subjectsRes->fetch_assoc()){
                 </h3>
               </div>
               <div class="box-body">
-                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <div class="table-responsive" style="max-height: 700px; overflow-y: auto;">
                   <?php if (empty($existingSets)): ?>
                     <p>No existing question sets found.</p>
                   <?php else: ?>

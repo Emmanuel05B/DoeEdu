@@ -56,8 +56,10 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                 <th>Topic</th>
                 <th>Grade</th>
                 <th>Subject</th>
-                <th>Created On</th>
-                <th>Action</th>
+                <th>Created_On</th>
+                <th>E**</th>
+                <th>D**</th>
+                <th>O**</th>
               </tr>
             </thead>
             <tbody>
@@ -88,15 +90,17 @@ $tutorId = $_SESSION['user_id']; // Logged-in tutor id
                     <a href='viewactivity.php?activityId=" . $activityId . " ' class='btn btn-xs btn-primary' title='Edit'>
                         <i class='fa fa-pencil'></i>
                     </a>
+                  </td>
+                  <td>
                     <a href='#' class='btn btn-xs btn-danger delete-activity-btn' data-id='" . intval($row['Id']) . "' title='Delete'>
                         <i class='fa fa-trash'></i>
                     </a>
+                  </td>
+                  <td>
                     <a href='masteractivityoverview.php?activityId=" . $activityId . "' class='btn btn-xs btn-info' title='Overview'>
                         <i class='fa fa-info-circle'></i>
                     </a>
-                    
-
-                  </td>
+                   </td>
                     
                 </tr>";
 

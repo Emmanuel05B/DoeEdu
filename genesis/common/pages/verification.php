@@ -1,6 +1,9 @@
 <?php
-session_start();
-include('../../partials/connect.php');
+include_once(__DIR__ . "/../../partials/paths.php"); 
+
+include_once(BASE_PATH . "/partials/session_init.php"); 
+
+include_once(BASE_PATH . "/partials/connect.php"); 
 
 if (!isset($_GET['token'])) {
     die("Invalid verification link.");

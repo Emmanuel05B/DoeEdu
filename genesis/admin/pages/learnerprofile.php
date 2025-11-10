@@ -142,7 +142,7 @@ include_once(COMMON_PATH . "/../partials/head.php");
         <div class="box box-primary">
           <div class="box-body box-profile">
             <div class="profile-photo-square">
-              <img class="profile-user-img img-responsive img-circle" src="../../uploads/doe.jpg" alt="User profile picture">
+              <img class="profile-user-img img-responsive img-circle" src="<?= PROFILE_PICS_URL . '/doe.jpg' ?>" alt="User profile picture">
             </div>
 
             <h3 class="profile-username text-center"><?php echo $final['Name'] ?> <?php echo $final['Surname'] ?></h3>
@@ -215,10 +215,10 @@ include_once(COMMON_PATH . "/../partials/head.php");
         <div class="nav-tabs-custom">
           <ul class="nav nav-tabs">
             <li class="active"><a href="#aboutme" data-toggle="tab">About Me</a></li>
-            <li><a href="#supportme" data-toggle="tab">Support Me</a></li>
-            <li><a href="#record" data-toggle="tab">Record Marks</a></li>
+           <!-- <li><a href="#supportme" data-toggle="tab">Support Me</a></li> -->
+            <li><a href="#record" data-toggle="tab">Add Marks</a></li>
             <li><a href="#goals" data-toggle="tab">Goals</a></li>
-            <li><a href="#practicequestionsprogress" data-toggle="tab">Practice Q Progress</a></li>
+            <li><a href="#practicequestionsprogress" data-toggle="tab">Practice Rate</a></li>
           </ul>
 
           <div class="tab-content">

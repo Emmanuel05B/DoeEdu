@@ -131,7 +131,7 @@ if ($status !== "error") {
 }
 
 // Redirect back to mytutors.php with status and message
-header("Location: mytutors.php?status={$status}&message=" . urlencode($message));
+header("Location: learnerindex.php?status={$status}&message=" . urlencode($message));
 exit();
 ?>
 

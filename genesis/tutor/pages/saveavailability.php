@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['alert'] = [
             'type' => 'error',
             'title' => 'No days selected',
-            'text' => 'Please select at least one day.'
+            'message' => 'Please select at least one day.'
         ];
         header("Location: schedule.php");
         exit();
@@ -103,13 +103,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['alert'] = [
             'type' => 'error',
             'title' => 'Validation Errors',
-            'text' => implode("\\n", $errors)
+            'message' => implode("\\n", $errors)
         ];
     } else {
         $_SESSION['alert'] = [
             'type' => 'success',
             'title' => 'Availability Saved',
-            'text' => 'Your weekly availability has been updated successfully.'
+            'message' => 'Your weekly availability has been updated successfully.'
         ];
     }
 

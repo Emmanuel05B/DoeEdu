@@ -3,10 +3,6 @@ require_once __DIR__ . '/../../common/config.php';
 include_once(__DIR__ . "/../../partials/paths.php");
 include_once(BASE_PATH . "/partials/session_init.php");
 
-if (!isLoggedIn()) {
-    header("Location: " . COMMON_URL . "/login.php");
-    exit();
-}
 
 include_once(BASE_PATH . "/partials/connect.php");
 
@@ -22,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['alert'] = [
             'type' => 'error',
             'title' => 'Missing Information',
-            'text' => 'Please fill in all fields before saving.'
+            'message' => 'Please fill in all fields before saving.'
         ];
         header("Location: schedule.php");
         exit();
@@ -32,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['alert'] = [
             'type' => 'error',
             'title' => 'Invalid Time Range',
-            'text' => 'Start time must be before end time.'
+            'message' => 'Start time must be before end time.'
         ];
         header("Location: schedule.php");
         exit();
@@ -73,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['alert'] = [
                 'type' => 'error',
                 'title' => 'Time Conflict',
-                'text' => "You already have an availability that overlaps with {$start} - {$end} on {$day}."
+                'message' => "You already have an availability that overlaps with {$start} - {$end} on {$day}."
             ];
             $stmt->close();
             header("Location: schedule.php");
@@ -92,13 +88,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['alert'] = [
             'type' => 'success',
             'title' => 'Availability Added',
-            'text' => "Once-off availability for {$day} ({$start} - {$end}) was saved successfully."
+            'message' => "Once-off availability for {$day} ({$start} - {$end}) was saved successfully."
         ];
     } catch (Exception $e) {
         $_SESSION['alert'] = [
             'type' => 'error',
             'title' => 'Database Error',
-            'text' => 'There was an issue saving your availability. Please try again.'
+            'message' => 'There was an issue saving your availability. Please try again.'
         ];
     }
 

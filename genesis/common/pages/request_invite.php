@@ -1,6 +1,9 @@
 <?php
-session_start();
-include('../../partials/connect.php');
+include_once(__DIR__ . "/../../partials/paths.php"); 
+
+include_once(BASE_PATH . "/partials/session_init.php"); 
+
+include_once(BASE_PATH . "/partials/connect.php"); 
 
 $errors = [];
 $success = '';
@@ -183,6 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         padding: 15px;
         border-radius: 5px;
         margin-top: 20px;
+        font-size: 14px;
     }
 
     #rules-pricing p {
@@ -196,19 +200,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 15px;
-      margin-bottom: 15px;
+      margin-top: 8px;
+      margin-bottom: 8px;
     }
 
     th, td {
       border: 1px solid #ccc;
-      padding: 8px;
+      padding: 4px;
       text-align: center;
+      font-size: 14px;
     }
 
     th {
-      background-color: #5e88afff;
-      color: white;
+      background-color: white;
+      color: black;
     }
 
   </style>
@@ -217,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="container">
     <!-- Image above form -->
-    <img src="../../admin/images/westtt.png" alt="Request Invite">
+    <img src="../../uploads/ProfilePictures/doep.png" alt="Request Invite">
     <h3>Request an Invite</h3>
 
     <?php if ($errors): ?>
@@ -259,7 +264,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div id="rules-pricing">
       <h4>Rules & Payment Information</h4>
-      <h4>Pricing & Payment Information</h4>
       <table>
         <thead>
           <tr>
@@ -282,7 +286,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <td>R750.00</td>
             <td>R1199.00</td>
           </tr>
-          <!-- Add more subjects here -->
         </tbody>
       </table>
 

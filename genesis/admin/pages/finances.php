@@ -108,11 +108,12 @@ include_once(COMMON_PATH . "/../partials/head.php");
                       <tr>
                         <th>Name</th>
                         <th>Surname</th>
-                        <th>Total Fees</th>
-                        <th>Total Paid</th>
+                        <th>Total_Fees</th>
+                        <th>Total_Paid</th>
                         <th>Balance</th>
-                        <th>Last Payment Date</th>
-                        <th>Record Payment</th>
+                        <th>Last_Paid_On</th>
+                        <th>**</th>
+                        <th>**</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -146,8 +147,10 @@ include_once(COMMON_PATH . "/../partials/head.php");
                               <td>
                                 <form action="payhandler.php" method="POST" class="horizontal-container">
                                   <input type="number" class="form-control2" id="newamount" name="newamount" min="-5000" max="5000" required>
-                                  <input type="hidden" name="learnerid" value="<?= htmlspecialchars($final['LearnerId']) ?>">                                                                        
-                                  <button type="submit" name="updateby" class="btn btn-sm btn-primary py-3 px-4">Pay</button>
+                                  <input type="hidden" name="learnerid" value="<?= htmlspecialchars($final['LearnerId']) ?>">                                                                     
+                              </td>
+                              <td>
+                                  <button type="submit" name="updateby" class="btn btn-xs btn-primary py-3 px-4">Pay</button>
                                 </form>
                               </td>
                             </tr>

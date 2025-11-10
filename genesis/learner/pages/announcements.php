@@ -11,7 +11,7 @@ if (!isLoggedIn()) {
 }
 
 include_once(BASE_PATH . "/partials/connect.php");
-include_once(COMMON_PATH . "/../partials/head.php");  
+include_once(COMMON_PATH . "/../partials/head.php"); 
 
 
 $learnerId = $_SESSION['user_id'] ?? 0;
@@ -67,6 +67,7 @@ if (!empty($classIds)) {
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
+    
 <?php include_once(LEARNER_PATH . "/../partials/header.php"); ?>
 <?php include_once(LEARNER_PATH . "/../partials/mainsidebar.php"); ?>
 
@@ -93,6 +94,8 @@ if (!empty($classIds)) {
           <h3 class="box-title">Latest Announcements</h3>
         </div>
         <div class="box-body">
+            
+            
           <?php
           if (!empty($generalAnnouncements)) {
               foreach ($generalAnnouncements as $notice) {
@@ -109,7 +112,7 @@ if (!empty($classIds)) {
                     <p>$content</p>
                   </div>
                   <hr>
-                  HTML;
+HTML;
               }
           } else {
               echo "<p>No announcements available at the moment.</p>";

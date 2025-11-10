@@ -100,9 +100,10 @@ $stmt->close();
                 <tr>
                     <th>Title</th>
                     <th>Topic</th>
-                    <th>Assigned On</th>
-                    <th>Due Date</th>
-                    <th>Action</th>
+                    <th>Assigned_On</th>
+                    <th>Due_Date</th>
+                    <th>Unassign</th>
+                    <th>Info</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -157,16 +158,16 @@ $stmt->close();
                             </a>
                         </td>
                         <td>
-                            
                             <a href='#' class='btn btn-xs btn-warning unassign-activity-btn' data-id='$activityId' title='Unassign from Class'>
                                 <i class='fa fa-unlink'></i>
                             </a>
+                        </td>
+                        <td>
                             <a href='activityoverview.php?activityId=$activityId&gra=" . urlencode($grade) . "&group=" . urlencode($group) . "' 
                               class='btn btn-xs btn-info' 
                               title='Overview'>
                                 <i class='fa fa-info-circle'></i>
                             </a>
-
                         </td>
                     </tr>";
                     }
@@ -311,14 +312,15 @@ $(function () {
       </script>
 
       <div class="modal-body">
+        <div style="max-height: 550px; overflow-y: auto;">
         <div class="table-responsive">
         <table id="assignActivityTable" class="table table-bordered table-striped">
           <thead>
             <tr>
               <th>Title</th>
-              <th>Chapter / Topic</th>
+              <th>Chapter</th>
               <th>Orig. Class</th>
-              <th>Status</th>
+              <!-- <th>Status</th> -->
               <th>Assign For My Class (<?php echo htmlspecialchars($group); ?>) / (Due Date?)</th>
             </tr>
           </thead>
@@ -332,8 +334,11 @@ $(function () {
                   LEFT JOIN onlineactivitiesassignments b 
                     ON a.Id = b.OnlineActivityId 
                     AND b.ClassID = (SELECT ClassID FROM classes WHERE Grade = ? AND SubjectId = ? AND GroupName = ? LIMIT 1)
-                  WHERE a.Grade = ? AND a.SubjectId = ?
-                  ORDER BY a.CreatedAt DESC
+                  
+                  WHERE a.Grade = ? 
+                  AND a.SubjectId = ?
+                  AND b.OnlineActivityId IS NULL
+                ORDER BY a.CreatedAt DESC
                 ");
                 $stmt->bind_param("iisii", $grade, $SubjectId, $group, $grade, $SubjectId);
                 $stmt->execute();
@@ -345,10 +350,10 @@ $(function () {
                     echo '<td>' . htmlspecialchars($row['Title']) . '</td>';
                     echo '<td>' . htmlspecialchars($row['Topic']) . '</td>';
                     echo '<td>' . htmlspecialchars($row['GroupName']) . '</td>';
-                    echo '<td>' . ($assigned ? '<span class="text-success">Assigned</span>' : '<span class="text-warning">Not Assigned</span>') . '</td>';
+                    // echo '<td>' . ($assigned ? '<span class="text-success">Assigned</span>' : '<span class="text-warning">Not Assigned</span>') . '</td>';
                     echo '<td>';
                     if ($assigned) {
-                        echo '<button class="btn btn-default btn-sm" disabled>Assign</button>';
+                      //  echo '<button class="btn btn-default btn-sm" disabled>Assign</button>';
                     } else {
                         echo '
                             <form method="POST" action="assignactivityhandler.php" style="display:flex; align-items:center; gap:5px;">
@@ -356,7 +361,7 @@ $(function () {
                                 <input type="hidden" name="grade" value="' . $grade . '">
                                 <input type="hidden" name="subject" value="' . $SubjectId . '">
                                 <input type="hidden" name="group" value="' . $group . '">
-                                <input type="date" name="dueDate" class="form-control input-sm" required style="width:140px;">
+                                <input type="date" name="dueDate" class="form-control input-sm" required style="width:80px;">
                                 <button type="submit" class="btn btn-success btn-sm">Assign</button>
                             </form>
                             ';
@@ -371,6 +376,7 @@ $(function () {
             ?>
           </tbody>
         </table>
+        </div>
         </div>
       </div>
 
