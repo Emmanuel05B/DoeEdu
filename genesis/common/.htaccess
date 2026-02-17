@@ -1,0 +1,25 @@
+# Prevent web access to config.php
+<Files "config.php">
+    Require all denied
+</Files>
+
+# Prevent directory listings
+Options -Indexes
+
+# Add basic security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# ---------------------------------------
+# URL Rewriting for Login Page Only
+# ---------------------------------------
+RewriteEngine On
+
+# Internally rewrite /login → actual PHP file
+RewriteRule ^login$ genesis/common/pages/login.php [L]
+
+# Optional: Redirect any direct access to login.php to /login
+RewriteCond %{THE_REQUEST} /genesis/common/pages/login\.php [NC]
+RewriteRule ^genesis/common/pages/login\.php$ /learn/login [R=301,L]
