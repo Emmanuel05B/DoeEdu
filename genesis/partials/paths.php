@@ -20,11 +20,13 @@ define('ADMIN_PATH', BASE_PATH . '/admin/pages');
 define('TUTOR_PATH', BASE_PATH . '/tutor/pages');
 define('LEARNER_PATH', BASE_PATH . '/learner/pages');
 define('COMMON_PATH', BASE_PATH . '/common/pages');
+define('APPLICATIONS_PATH', BASE_PATH . '/applications/pages');
 
 define('UPLOADS_PATH', BASE_PATH . '/uploads');
 define('ATTACHMENTS_PATH', UPLOADS_PATH . '/attachments');
 define('IMAGES_PATH', UPLOADS_PATH . '/images');
 define('RESOURCES_PATH', UPLOADS_PATH . '/resources');
+define('DOCUMENTS_PATH', UPLOADS_PATH . '/documents');
 define('PQ_MEMOS_PATH', UPLOADS_PATH . '/practicequestionsmemos');
 define('PQ_IMAGES_PATH', UPLOADS_PATH . '/practice_question_images');
 define('PROFILE_PICS_PATH', UPLOADS_PATH . '/ProfilePictures');
@@ -39,11 +41,15 @@ define('ADMIN_URL', BASE_URL . '/admin/pages');
 define('TUTOR_URL', BASE_URL . '/tutor/pages');
 define('LEARNER_URL', BASE_URL . '/learner/pages');
 define('COMMON_URL', BASE_URL . '/common/pages');
+define('APPLICATIONS_URL', BASE_URL . '/applications/pages');
 
 define('UPLOADS_URL', BASE_URL . '/uploads');
 define('ATTACHMENTS_URL', UPLOADS_URL . '/attachments');
 define('IMAGES_URL', UPLOADS_URL . '/images');
 define('RESOURCES_URL', UPLOADS_URL . '/resources');
+define('CVS_URL', UPLOADS_URL . '/cvs');
+define('DOCUMENTS_URL', UPLOADS_URL . '/documents');
+
 define('PQ_MEMOS_URL', UPLOADS_URL . '/practicequestionsmemos');
 define('PQ_IMAGES_URL', UPLOADS_URL . '/practice_question_images');
 define('PROFILE_PICS_URL', UPLOADS_URL . '/ProfilePictures');
