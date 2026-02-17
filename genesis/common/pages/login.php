@@ -235,7 +235,7 @@ if (isset($_POST['login'])) {
       <img src="../../admin/images/westtt.png" alt="Login Image">
     </div>
     
-      <h2>Login</h2>
+      <h2>Login66</h2>
 
       <?php
       if (isset($_SESSION['error_message'])) {
