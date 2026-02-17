@@ -1,25 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
-  <head>
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/x-icon" href="mm.ico">
-
-  <!-- SEO Meta Tags for Login Page -->
-  <title>DoE | Login</title>
-  <meta name="description" content="Login to access your Distributors of Edu online tutoring account.">
-  <meta name="robots" content="index, follow">
-
-  <!-- Canonical URL for SEO -->
-  <link rel="canonical" href="https://doetutoring.com/learn/login" />
-
-  <!-- Optional Open Graph / Social -->
-  <meta property="og:title" content="DoE | Login" />
-  <meta property="og:description" content="Login to access your Distributors of Edu online tutoring account." />
-  <meta property="og:url" content="https://doetutoring.com/learn/login" />
-  <meta property="og:type" content="website" />
-  
   <style>
       body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -128,8 +111,11 @@
 
 <?php
 include_once(__DIR__ . "/../../partials/paths.php"); 
+
 include_once(BASE_PATH . "/partials/session_init.php"); 
+
 include_once(BASE_PATH . "/partials/connect.php"); 
+
 
 if (isset($_POST['login'])) {
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
@@ -139,8 +125,7 @@ if (isset($_POST['login'])) {
 
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL) || empty($password)) {
         $_SESSION['error_message'] = $genericError;
-       // header('Location: ' . BASE_URL . '/learn/login');
-        header('Location: /learn/login');
+        header('Location: login.php');
         exit;
     }
 
@@ -156,16 +141,14 @@ if (isset($_POST['login'])) {
     if (!$user) {
         // Email doesn't exist: generic error
         $_SESSION['error_message'] = $genericError;
-       // header('Location: login.php');
-        header('Location: /learn/login');
+        header('Location: login.php');
         exit;
     }
 
     // Check if permanently blocked
     if ($user['PermanentlyBlocked']) {
     $_SESSION['error_message'] = '<span class="error-message">Your account has been blocked due to multiple failed attempts. Please reset your password to regain access.</span>';
-    //header('Location: reset.php');
-    header('Location: /learn/genesis/common/pages/reset.php');
+    header('Location: reset.php');
     exit;
 }
 
@@ -178,7 +161,7 @@ if (isset($_POST['login'])) {
 
     if ($failedAttempts >= 5 && ($currentTime - $lastFailed) < $lockTime) {
         $_SESSION['error_message'] = $genericError;
-        header('Location: /learn/login');
+        header('Location: login.php');
         exit;
     }
 
@@ -205,12 +188,12 @@ if (isset($_POST['login'])) {
         $_SESSION['email'] = $email;
 
         switch ($user['UserType']) {
-            case 0: header('Location: ' . ADMIN_URL . '/adminindex.php'); break;
-            case 1: header('Location: ' . TUTOR_URL . '/tutorindex.php'); break;
-            case 2: header('Location: ' . LEARNER_URL . '/learnerindex.php'); break;
+            case 0: header('Location: ../../admin/pages/adminindex.php'); break;
+            case 1: header('Location: ../../tutor/pages/tutorindex.php'); break;
+            case 2: header('Location: ../../learner/pages/learnerindex.php'); break;
             default: 
                 $_SESSION['error_message'] = $genericError;
-                header('Location: /learn/login');
+                header('Location: login.php'); 
                 break;
         }
         exit;
@@ -232,7 +215,7 @@ if (isset($_POST['login'])) {
         }
 
         $_SESSION['error_message'] = $genericError;
-        header('Location: /learn/login');
+        header('Location: login.php');
         exit;
         
     }
@@ -249,8 +232,7 @@ if (isset($_POST['login'])) {
   <div class="form-column">
 
     <div class="image-column">
-      <img src="<?php echo PROFILE_PICS_URL . '/doep.png'; ?>" alt="Login Image">
-
+      <img src="../../admin/images/westtt.png" alt="Login Image">
     </div>
     
       <h2>Login</h2>
@@ -263,10 +245,7 @@ if (isset($_POST['login'])) {
       ?>
 
       <!-- Login Form -->
-      
-        <form action="/learn/login" method="post">
-            
-
+      <form action="login.php" method="post">
         <div class="container">
           <input type="text" placeholder="Enter Email" id="email" name="email" maxlength="100" required>
         </div>
@@ -282,7 +261,7 @@ if (isset($_POST['login'])) {
         <div style="text-align: center; margin-top: 10px;">
           <label style="font-size: 13px;">
             Reset 
-            <a href="/learn/genesis/common/pages/forgotpassword.php" style="color:#007bff; text-decoration:none; font-size: 13px;">
+            <a href="forgotpassword.php" style="color:#007bff; text-decoration:none; font-size: 13px;">
               password?
             </a>
           </label>
@@ -290,7 +269,7 @@ if (isset($_POST['login'])) {
         <div style="text-align: center; margin-top: 10px;">
           <label style="font-size: 13px;">
             Don't have an account? 
-            <a href="/learn/genesis/common/pages/request_invite.php" style="color:#007bff; text-decoration:none; font-size: 13px;">
+            <a href="request_invite.php" style="color:#007bff; text-decoration:none; font-size: 13px;">
               Request an Invite
             </a>
           </label>
