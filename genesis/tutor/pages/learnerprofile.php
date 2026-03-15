@@ -35,8 +35,6 @@ include_once(COMMON_PATH . "/../partials/head.php");
       display: flex;
       align-items: center;
       margin-left: 10px; 
-      flex-wrap: wrap; /* ensures wrapping if screen is narrow */
-      margin-left: 0;  /* remove extra left margin */
     }
 
     .profile-personal-info .col-3 {
@@ -67,38 +65,22 @@ include_once(COMMON_PATH . "/../partials/head.php");
       margin: 20px 0;
     }
 
-    .bubble-row .bubble {
-        border: 2px solid #add8e6; 
-        padding: 6px 12px; /* slightly smaller for desktop */
-        border-radius: 50px; 
-        text-align: center;
-        font-size: 13px; /* smaller font so bubbles don’t look huge */
-        margin-bottom: 10px; /* spacing between rows */
-        transition: all 0.2s;
+    .bubble-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    
-    .bubble-row .bubble:hover {
-        border-color: #007bff; 
-        color: #007bff; 
+
+    .bubble {
+      border: 2px solid #add8e6; 
+      padding: 10px 20px;
+      border-radius: 50px; 
+      text-align: center;
     }
-    
-    /* Medium screens (tablets/desktops) */
-    @media (min-width: 768px) {
-        .bubble-row .bubble {
-            padding: 12px 30px;
-            font-size: 12px;
-            margin-right: 10px; /* spacing between bubbles horizontally */
-            min-width: 180px; /* sets a minimum width */
-        }
-    }
-    
-    /* Extra small screens (mobile) */
-    @media (max-width: 576px) {
-        .bubble-row .bubble {
-            padding: 6px 10px;
-            font-size: 12px;
-            margin-right: 5px; /* horiz space between the bubbles */
-        }
+
+    .bubble:hover {
+      border-color: #007bff; 
+      color: #007bff; 
     }
 </style>
 
@@ -146,17 +128,10 @@ include_once(COMMON_PATH . "/../partials/head.php");
         echo 'Invalid learner ID.';
         exit();
     }
-    
-        // Fetch learner profile(about)
-    $stmt = $connect->prepare("SELECT * FROM learnerprofiles WHERE LearnerId = ?");
-    $stmt->bind_param("i", $learnerId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $profile = $result->fetch_assoc();
   ?>
 
   <section class="content-header">
-    <h1>Learner Profile  <small>Academic Overview</small></h1>
+    <h1>Learner Profile  <small>...</small></h1>
     <ol class="breadcrumb">
       <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
       <li class="active">Learner Profile</li>
@@ -170,7 +145,7 @@ include_once(COMMON_PATH . "/../partials/head.php");
         <div class="box box-primary">
           <div class="box-body box-profile">
             <div class="profile-photo-square">
-              <img class="profile-user-img img-responsive img-circle" src="<?= PROFILE_PICS_URL . '/doe.jpg' ?>" alt="User profile picture">
+              <img class="profile-user-img img-responsive img-circle" src="../../uploads/doe.jpg" alt="User profile picture">
             </div>
 
             <h3 class="profile-username text-center"><?php echo $final['Name'] ?> <?php echo $final['Surname'] ?></h3>
@@ -194,16 +169,19 @@ include_once(COMMON_PATH . "/../partials/head.php");
                   </button>
 
                 </div>
-
-                
+            
                 <div class="col-auto">
-                  <a href="tracklearnerprogress.php?id=<?php echo $final['LearnerId']; ?>" 
-                     class="btn btn-primary btn-sm" 
-                     style="min-width: 180px;">
-                     Track Progress
-                  </a>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 180px;">
+                      Track Progress <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <?php foreach($subjectOptions as $sub): ?>
+                        <li><a href="tracklearnerprogress.php?val=<?php echo $sub['SubjectId']; ?>&id=<?php echo $final['LearnerId'] ?>"><?php echo $sub['SubjectName']; ?></a></li>
+                      <?php endforeach; ?>
+                    </ul>
+                  </div>
                 </div>
-
 
                 <div class="col-auto">
                   <div class="btn-group">
@@ -237,77 +215,37 @@ include_once(COMMON_PATH . "/../partials/head.php");
 
           <div class="tab-content">
 
-            <!-- About Me / Learning Profile -->
+            <!-- About Me -->
             <div class="active tab-pane" id="aboutme">
+              <div class="profile-personal-info">
+                <h4>About Me</h4>
+                <p>I'm a creative and curious kid who loves exploring new ideas and finding joy in my favorite activities.
+                  I do well in a calm, structured environment where I can learn and grow at my own pace.</p>
+              </div>
 
               <div class="profile-personal-info">
-                  <h4>About Me</h4>
-                  <p><?= htmlspecialchars($profile['AboutLearner'] ?? 'No information provided.') ?></p>
+                <h4>Personal Information</h4>
+                <div class="row mb-3">
+                  <div class="col-3"><strong><p>Name: </p></strong></div>
+                  <div class="col-9"><strong><p><?php echo $final['Name'] ?></p></strong></div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-3"><p>Surname: </p></div>
+                  <div class="col-9"><strong><p><?php echo $final['Surname'] ?></p></strong></div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-3"><strong><p>Grade: </p></strong></div>
+                  <div class="col-9"><strong><p><?php echo $final['Grade'] ?></p></strong></div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-3"><strong><p>Email: </p></strong></div>
+                  <div class="col-9"><strong><p><?php echo $final['Email'] ?></p></strong></div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-3"><strong><p>Contact Number: </p></strong></div>
+                  <div class="col-9"><strong><p><?php echo $final['Contact'] ?></p></strong></div>
+                </div>
               </div>
-
-              <div class="row">
-
-                <!-- Left Column -->
-                <div class="col-md-6">
-
-                  <div class="profile-personal-info">
-                      <h4>Preferred Session Style</h4>
-                      <p><strong>Session Format:</strong> <?= htmlspecialchars($profile['SessionFormat'] ?? 'N/A') ?></p>
-                      <p><strong>Break Preferences:</strong> <?= htmlspecialchars($profile['BreakPreferences'] ?? 'N/A') ?></p>
-                      <p><strong>Motivations & Goals:</strong> <?= htmlspecialchars($profile['MotivationsGoals'] ?? 'N/A') ?></p>
-                  </div>
-
-                </div>
-
-                <!-- Right Column -->
-                <div class="col-md-6">
-
-                  <div class="profile-personal-info">
-                      <h4>Technical Setup</h4>
-                      <p><strong>Devices:</strong> <?= htmlspecialchars($profile['Devices'] ?? 'N/A') ?></p>
-                      <p><strong>Internet Reliability:</strong> <?= htmlspecialchars($profile['InternetReliability'] ?? 'N/A') ?></p>
-                      <p><strong>Top Strength / Skill:</strong> <?= htmlspecialchars($profile['StrengthsSkills'] ?? 'N/A') ?></p>
-                  </div>
-
-                </div>
-                
-              </div>
-
-              <div class="row">
-
-                <!-- Left Column -->
-                <div class="col-md-6">
-
-                  <div class="profile-personal-info">
-                      <h4>Learning Profile</h4>
-                      <p><strong>Preferred Learning Style:</strong> <?= htmlspecialchars($profile['LearningStyle'] ?? 'N/A') ?></p>
-                      <p><strong>Study Challenges:</strong> 
-                          <?php 
-                              $challenges = json_decode($profile['StudyChallenges'] ?? '[]', true);
-                              echo $challenges ? implode(', ', $challenges) : 'N/A';
-                          ?>
-                      </p>
-                      <p><strong>Concentration Span:</strong> <?= htmlspecialchars($profile['ConcentrationSpan'] ?? 'N/A') ?></p>
-                  </div>
-
-                </div>
-
-                  <!-- Right Column -->
-                <div class="col-md-6">
-
-                  <div class="profile-personal-info">
-                      <h4>Availability</h4>
-                      <p><strong>Preferred Day:</strong> <?= htmlspecialchars($profile['PreferredDay'] ?? 'N/A') ?></p>
-                      <p><strong>Preferred Time:</strong> <?= htmlspecialchars($profile['PreferredTime'] ?? 'N/A') ?></p>
-                      <p><strong>Session Length:</strong> <?= htmlspecialchars($profile['SessionLength'] ?? 'N/A') ?></p>
-                      <p><strong>Other Classes:</strong> <?= htmlspecialchars($profile['OtherClasses'] ?? 'N/A') ?></p>
-                      <p><strong>Chores at Home:</strong> <?= htmlspecialchars($profile['ChoresHome'] ?? 'N/A') ?></p>
-                  </div>
-
-                </div>
-
-              </div>
-
             </div>
 
             <!-- Support Me -->
@@ -324,9 +262,8 @@ include_once(COMMON_PATH . "/../partials/head.php");
                 <div class="profile-skills border-bottom mb-3 pb-2">
                   <h4 class="text-primary mb-2">Capture Learner Marks</h4>
                   <form action="save_marks.php" method="POST">
-                      
                     <div class="row">
-                      <div class="form-group col-md-4" style="padding-left: 5px;">
+                      <div class="form-group col-md-3" style="padding-left: 5px;">
                         <label>Subject:</label>
                         <select name="subjectId" class="form-control input-sm" required>
                           <option value="">-- Select --</option>
@@ -341,22 +278,22 @@ include_once(COMMON_PATH . "/../partials/head.php");
                         <input type="text" name="chaptername" class="form-control input-sm" placeholder="e.g. Fractions" required>
                         <input type="hidden" name="learnerId" value="<?php echo $learnerId; ?>" class="form-control input-sm" >
                       </div>
-                      
                       <div class="form-group col-md-4" style="padding-left: 5px;">
                         <label>Activity Name:</label>
                         <input type="text" name="activityname" class="form-control input-sm" placeholder="e.g. Quiz 1" required>
                       </div>
+                    </div>
+
+                    <div class="row">
                       
-                      <div class="form-group col-md-4" style="padding: 0 5px;">
-                        <label>Total(Out Of):</label>
+                      <div class="form-group col-md-3" style="padding: 0 5px;">
+                        <label>Total Marks:</label>
                         <input type="number" name="activitytotal" class="form-control input-sm" placeholder="e.g. 20" required>
                       </div>
-                      
-                      <div class="form-group col-md-4" style="padding-left: 5px;">
+                      <div class="form-group col-md-3" style="padding-left: 5px;">
                         <label>Marks Obtained:</label>
                         <input type="number" name="marksobtained" class="form-control input-sm" placeholder="e.g. 15" required>
                       </div>
-                      
                     </div>
 
                     <button type="submit" class="btn btn-xs btn-primary">Save Record</button>
@@ -454,22 +391,12 @@ include_once(COMMON_PATH . "/../partials/head.php");
                         <div class="profile-skills border-bottom mb-4 pb-2">
                             <h4 class="text-primary mb-3"><?= htmlspecialchars($goal['SubjectName']) ?></h4>
 
-                            <div class="bubble-row row" style="margin-bottom: 15px;">
-                                <div class="bubble col-6 col-sm-4 col-md-2">
-                                    Start Level: <span class="label label-primary"><?= $startLevel ?></span>
-                                </div>
-                                <div class="bubble col-6 col-sm-4 col-md-2">
-                                    Current Level: <span class="label label-warning"><?= $nowLevel ?></span>
-                                </div>
-                                <div class="bubble col-6 col-sm-4 col-md-2">
-                                    Target Level: <span class="label label-success"><?= $targetLevel ?></span>
-                                </div>
-                                <div class="bubble col-6 col-sm-4 col-md-2">
-                                    Average Mark: <span class="label label-danger"><?= round($averageMark, 2) ?>%</span>
-                                </div>
-                                <div class="bubble col-6 col-sm-4 col-md-2">
-                                    Attendance Rate: <span class="label label-default"><?= round($attendanceRate, 2) ?>%</span>
-                                </div>
+                            <div class="bubble-container row" style="margin-bottom: 15px;">
+                                <div class="bubble col-md-2">Start Level: <span class="label label-primary"><?= $startLevel ?></span></div>
+                                <div class="bubble col-md-2">Current Level: <span class="label label-warning"><?= $nowLevel ?></span></div>
+                                <div class="bubble col-md-2">Target Level: <span class="label label-success"><?= $targetLevel ?></span></div>
+                                <div class="bubble col-md-2">Average Mark: <span class="label label-danger"><?= round($averageMark, 2) ?>%</span></div>
+                                <div class="bubble col-md-2">Attendance Rate: <span class="label label-default"><?= round($attendanceRate, 2) ?>%</span></div>
                             </div>
 
                             <label>Progress Toward Goal:</label>
@@ -494,158 +421,167 @@ include_once(COMMON_PATH . "/../partials/head.php");
             <!-- //////////////////////////////////////////////////////////////////////////////////////////////  -->
             <!-- Practice Q Progress -->
             <div class="tab-pane" id="practicequestionsprogress">
-            
-            <?php
-            $levelDetails = [];
-            
-            // Fetch all learner levels
-            $stmt = $connect->prepare("
-                SELECT ChapterName, LevelId, NumberAttempts, Mark, TotalTimeTaken, Complete
-                FROM learnerlevel
-                WHERE LearnerId = ?
-            ");
-            $stmt->bind_param("i", $learnerId);
-            $stmt->execute();
-            $res = $stmt->get_result();
-            while ($row = $res->fetch_assoc()) {
-                $key = $row['ChapterName'] . '_' . $row['LevelId'];
-                $levelDetails[$key] = $row;
-            }
-            $stmt->close();
-            
-            foreach($subjectOptions as $sub):
-                $subjectId = $sub['SubjectId'];
-                $subjectName = $sub['SubjectName'];
-            
-                // Fetch GradeName for this subject
-                $subjectInfoSql = "
-                    SELECT g.GradeName
-                    FROM subjects s
-                    JOIN grades g ON s.GradeId = g.GradeId
-                    WHERE s.SubjectId = ?
-                    LIMIT 1
-                ";
-                $subjectStmt = $connect->prepare($subjectInfoSql);
-                $subjectStmt->bind_param("i", $subjectId);
-                $subjectStmt->execute();
-                $subjectRes = $subjectStmt->get_result();
-                $subjectInfo = $subjectRes->fetch_assoc();
-                $subjectStmt->close();
-            
-                $gradeName = $subjectInfo['GradeName'] ?? 'N/A';
-            
-                // Fetch chapters and levels
-                $chaptersSql = "
-                    SELECT Chapter, LevelId
-                    FROM practicequestions
-                    WHERE SubjectName = ? AND GradeName = ?
-                    ORDER BY Chapter, LevelId
-                ";
-                $stmt = $connect->prepare($chaptersSql);
-                $stmt->bind_param("ss", $subjectName, $gradeName);
-                $stmt->execute();
-                $res = $stmt->get_result();
-            
-                $chapters = [];
-                while($row = $res->fetch_assoc()) {
-                    $chapter = $row['Chapter'];
-                    $levelId = $row['LevelId'];
-            
-                    if(!isset($chapters[$chapter])) {
-                        $chapters[$chapter] = ['Easy'=>null,'Medium'=>null,'Hard'=>null];
-                    }
-            
-                    if($levelId==1) $chapters[$chapter]['Easy'] = $levelId;
-                    if($levelId==2) $chapters[$chapter]['Medium'] = $levelId;
-                    if($levelId==3) $chapters[$chapter]['Hard'] = $levelId;
-                }
-                $stmt->close();
-            
-                // Fetch learner completion for this subject
-                $learnerLevelsStmt = $connect->prepare("
-                    SELECT LevelId, ChapterName, Complete, NumberAttempts, Mark, TotalTimeTaken
-                    FROM learnerlevel
-                    WHERE LearnerId=? 
-                ");
-                $learnerLevelsStmt->bind_param("i", $learnerId);
-                $learnerLevelsStmt->execute();
-                $resLevels = $learnerLevelsStmt->get_result();
-                $learnerLevels = [];
-                while($row = $resLevels->fetch_assoc()){
-                    $learnerLevels[$row['ChapterName']][$row['LevelId']] = $row;
-                }
-                $learnerLevelsStmt->close();
-            ?>
-            
-            <div class="profile-personal-info">
-                <h4 class="text-primary mb-2"><?= htmlspecialchars($subjectName) ?>, <?= htmlspecialchars($gradeName) ?></h4>
-            
-                <div class="box box-default">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover table-condensed">
-                            <thead>
-                                <tr>
-                                    <th>Chapter</th>
-                                    <th class="text-center">Easy</th>
-                                    <th class="text-center">Medium</th>
-                                    <th class="text-center">Hard</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <?php if(empty($chapters)): ?>
-                                <tr><td colspan="4" class="text-center">No chapters found.</td></tr>
-                            <?php else: ?>
-                              <?php foreach($chapters as $chapterName => $levels): ?>
-                              <tr>
-                                  <td><?= htmlspecialchars($chapterName) ?></td>
-                                  <?php foreach(['Easy'=>1,'Medium'=>2,'Hard'=>3] as $levelName => $lvlId): ?>
-                                  <td class="text-center">
-                                      <?php 
-                                      $lvlData = $learnerLevels[$chapterName][$lvlId] ?? null;
-                                      $symbol = '○';
-                                      $btnClass = 'default';
-                                      $attempts = 0; $mark = 0; $totalTime = 0; $complete = 0;
-            
-                                      if($lvlData){
-                                          $symbol = $lvlData['Complete']==1 ? '✔' : '○';
-                                          $btnClass = $lvlData['Complete']==1 ? 'default' : 'default';
-                                          $attempts = $lvlData['NumberAttempts'];
-                                          $mark = $lvlData['Mark'];
-                                          $totalTime = $lvlData['TotalTimeTaken'];
-                                          $complete = $lvlData['Complete'];
-                                      }
-                                      ?>
-                                      
-                                      <button type="button"
-                                        class="btn btn-xs btn-<?= $btnClass ?>"
-                                        data-toggle="modal"
-                                        data-target="#levelModal"
-                                        data-chapter="<?= htmlspecialchars($chapterName) ?>"
-                                        data-level="<?= $levelName ?>"
-                                        data-attempts="<?= $attempts ?>"
-                                        data-mark="<?= $mark ?>"
-                                        data-time="<?= $totalTime ?>"
-                                        data-complete="<?= $complete ?>"
-                                        data-completiondate="<?= htmlspecialchars($lvlData['CompletionDate'] ?? 'N/A') ?>"
-                                    >
-                                        <?= $symbol ?>
-                                    </button>
-                                  </td>
-                                  <?php endforeach; ?>
-                              </tr>
-                              <?php endforeach; ?>
-            
-                            <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
+
+                  <?php
+                  foreach($subjectOptions as $sub):
+                      $subjectId = $sub['SubjectId'];
+                      $subjectName = $sub['SubjectName'];
+                      // Fetch GradeName for this subject
+                      $subjectInfoSql = "
+                          SELECT g.GradeName
+                          FROM subjects s
+                          JOIN grades g ON s.GradeId = g.GradeId
+                          WHERE s.SubjectId = ?
+                          LIMIT 1
+                      ";
+                      $subjectStmt = $connect->prepare($subjectInfoSql);
+                      if (!$subjectStmt) {
+                          die("Prepare failed: " . $connect->error);
+                      }
+                      $subjectStmt->bind_param("i", $subjectId);
+                      $subjectStmt->execute();
+                      $subjectRes = $subjectStmt->get_result();
+                      $subjectInfo = $subjectRes->fetch_assoc();
+                      $subjectStmt->close();
+
+                      $gradeName = $subjectInfo['GradeName'] ?? 'N/A';
+
+                      // Fetch chapters and levels for this subject
+                      $chaptersSql = "
+                          SELECT Chapter, LevelId
+                          FROM practicequestions
+                          WHERE SubjectName = ? AND GradeName = ?
+                          ORDER BY Chapter, LevelId
+                      ";
+                      $stmt = $connect->prepare($chaptersSql);
+                      $stmt->bind_param("ss", $subjectName, $gradeName);
+                      $stmt->execute();
+                      $res = $stmt->get_result();
+
+                      $chapters = [];
+                      while($row = $res->fetch_assoc()) {
+                          $chapter = $row['Chapter'];
+                          $levelId = $row['LevelId'];
+
+                          if(!isset($chapters[$chapter])) {
+                              $chapters[$chapter] = ['Easy'=>null,'Medium'=>null,'Hard'=>null];
+                          }
+
+                          if($levelId==1) $chapters[$chapter]['Easy'] = $levelId;
+                          if($levelId==2) $chapters[$chapter]['Medium'] = $levelId;
+                          if($levelId==3) $chapters[$chapter]['Hard'] = $levelId;
+                      }
+                      $stmt->close();
+
+                      // Fetch learner's completion for this subject
+                      $learnerLevelsStmt = $connect->prepare("
+                          SELECT LevelId, ChapterName, Complete
+                          FROM learnerlevel
+                          WHERE LearnerId=? 
+                      ");
+                      $learnerLevelsStmt->bind_param("i", $learnerId);
+                      $learnerLevelsStmt->execute();
+                      $resLevels = $learnerLevelsStmt->get_result();
+                      $learnerLevels = [];
+                      while($row = $resLevels->fetch_assoc()){
+                          $learnerLevels[$row['ChapterName']][$row['LevelId']] = $row['Complete'];
+                      }
+                      $learnerLevelsStmt->close();
+                  ?>
+                  <div class="profile-personal-info">
+                      <h4 class="text-primary mb-2"><?= htmlspecialchars($subjectName) ?>, <?= htmlspecialchars($gradeName) ?></h4>
+
+                      <div class="box box-default">
+                          
+                          
+                              <div class="table-responsive">
+                                  <table class="table table-bordered table-hover table-condensed">
+                                      <thead>
+                                          <tr>
+                                              <th>Chapter</th>
+                                              <th class="text-center">Easy</th>
+                                              <th class="text-center">Medium</th>
+                                              <th class="text-center">Hard</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                        <?php if(empty($chapters)): ?>
+                                            <tr><td colspan="4" class="text-center">No chapters found.</td></tr>
+                                        <?php else: ?>
+                                            <?php foreach($chapters as $chapterName => $levels): ?>
+                                                <tr>
+                                                    <td><?= htmlspecialchars($chapterName) ?></td>
+                                                    <?php foreach(['Easy'=>1,'Medium'=>2,'Hard'=>3] as $levelName=>$lvlId): ?>
+                                                        <td class="text-center">
+                                                            <?php 
+                                                                if($levels[$levelName]){
+                                                                    $isCompleted = !empty($learnerLevels[$chapterName][$lvlId]) && $learnerLevels[$chapterName][$lvlId]==1;
+                                                                    $labelClass = $isCompleted ? 'success' : 'default';
+                                                                    $symbol = $isCompleted ? '✔' : '○'; // ✔ = Completed, ○ = Not completed
+                                                                    ?>
+                                                                    <button type="button" class="btn btn-xs btn-<?= $labelClass ?>" 
+                                                                        data-toggle="modal" data-target="#levelModal"
+                                                                        data-subject="<?= htmlspecialchars($subjectName) ?>"
+                                                                        data-chapter="<?= htmlspecialchars($chapterName) ?>"
+                                                                        data-level="<?= $levelName ?>"
+                                                                        title="<?= $isCompleted ? 'Completed' : 'Not Completed' ?>"
+                                                                    >
+                                                                        <?= $symbol ?>
+                                                                    </button>
+                                                                <?php 
+                                                                } else {
+                                                                    echo '<span class="text-muted">N/A</span>';
+                                                                }
+                                                            ?>
+                                                        </td>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                      </tbody>
+
+                                  </table>
+                              </div>
+                          
+                      </div>
+                    
+                  </div>
+                  <?php endforeach; ?>
+                
+            </div>
+
+            <!-- Static Modal -->
+            <div class="modal fade" id="levelModal" tabindex="-1" role="dialog" aria-labelledby="levelModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="levelModalLabel">Level Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <!-- Static content for now -->
+                    <p>Level details will be displayed here.</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
                 </div>
-            </div>
-            
-            <?php endforeach; ?>
+              </div>
             </div>
 
-
+            <!-- Optional JS to update modal title dynamically -->
+            <script>
+            $('#levelModal').on('show.bs.modal', function (event) {
+              var button = $(event.relatedTarget); 
+              var subject = button.data('subject');
+              var chapter = button.data('chapter');
+              var level = button.data('level');
+              var modal = $(this);
+              modal.find('.modal-title').text(subject + " — " + chapter + " (" + level + ")");
+            });
+            </script>
             <!-- /////////////////////////////////////////////////////////////////////////////////////////////// -->
           
           </div>
@@ -697,76 +633,6 @@ include_once(COMMON_PATH . "/../partials/head.php");
     </div>
   </div>
 </div>
-
-
-<!-- Level Details Modal -->
-<div class="modal fade" id="levelModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <div class="modal-header bg-default">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Level Details</h4>
-      </div>
-
-      <div class="modal-body" id="levelModalBody">
-        Loading...
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-
-<script>
-$(document).ready(function(){
-    $('#levelModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-
-        var chapter = button.data('chapter');
-        var level = button.data('level');
-        var attempts = parseInt(button.data('attempts')) || 0;
-        var mark = parseFloat(button.data('mark')) || 0;
-        var totalTime = parseInt(button.data('time')) || 0;
-        var complete = parseInt(button.data('complete')) || 0;
-        var completionDate = button.data('completiondate') || 'N/A'; // optional, pass from backend
-
-        // Calculate best score (assuming mark is total for all attempts; adapt if you store individually)
-        var bestScore = mark; // if you have separate column for best, replace this
-
-        // Calculate average score
-        var averageScore = attempts ? (mark / attempts).toFixed(2) : 0;
-
-        // Time per attempt
-        var timePerAttempt = attempts ? Math.floor(totalTime / attempts) : 0;
-        var minutesPerAttempt = Math.floor(timePerAttempt / 60);
-        var secondsPerAttempt = timePerAttempt % 60;
-
-        var minutesTotal = Math.floor(totalTime / 60);
-        var secondsTotal = totalTime % 60;
-
-        var modal = $(this);
-        modal.find('.modal-title').text(chapter + ' — ' + level);
-        modal.find('#levelModalBody').html(
-            '<table class="table table-bordered">'+
-            '<tr><th>Attempts</th><td>'+attempts+'</td></tr>'+
-            '<tr><th>Best Score</th><td>'+bestScore+'</td></tr>'+
-            '<tr><th>Average Score</th><td>'+averageScore+'</td></tr>'+
-            '<tr><th>Total Time</th><td>'+minutesTotal+'m '+secondsTotal+'s</td></tr>'+
-            '<tr><th>Time per Attempt</th><td>'+minutesPerAttempt+'m '+secondsPerAttempt+'s</td></tr>'+
-            '<tr><th>Status</th><td><span class="label label-'+(complete==1?'success':'warning')+'">'+(complete==1?'Completed':'Incomplete')+'</span></td></tr>'+
-            '<tr><th>Completion Date</th><td>'+completionDate+'</td></tr>'+
-            '</table>'
-        );
-    });
-});
-</script>
-
-
 
 <?php
     if (isset($_SESSION['success'])) {

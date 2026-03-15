@@ -8,17 +8,20 @@ if (!isLoggedIn()) {
     exit();
 }
 
+include_once(BASE_PATH . "/partials/connect.php");
+include_once(COMMON_PATH . "/../partials/head.php");  
+
 ?>
 
 <!DOCTYPE html>
 <html>
-<?php include_once(COMMON_PATH . "/../partials/head.php");  ?>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php include_once(TUTOR_PATH . "/../partials/header.php"); ?> 
-  <?php include_once(TUTOR_PATH . "/../partials/mainsidebar.php"); ?>
+<?php include_once(TUTOR_PATH . "/../partials/header.php"); ?> 
+<?php include_once(TUTOR_PATH . "/../partials/mainsidebar.php"); ?>
+
 
   <div class="content-wrapper">
      <section class="content-header">
@@ -30,12 +33,10 @@ if (!isLoggedIn()) {
       </section>
     <section class="content">
       <?php
-        include_once(BASE_PATH . "/partials/connect.php"); 
 
       if (isset($_GET['id'])) {
         $learnerId = intval($_GET['id']);
         $max = intval($_GET['max']);
-        $activityId = intval($_GET['aid']);
 
         if (isset($_POST["update"])) {
           $learnerFakeid = $_POST['learnerFakeid'];
@@ -46,7 +47,7 @@ if (!isLoggedIn()) {
           $AttendanceReason = $_POST['attendancereason'];
           $SubmissionReason = $_POST['submissionreason'];
 
-          $sql = "UPDATE learneractivitymarks
+          $sql = "UPDATE learneractivitymarks 
                   SET Attendance = ?, MarksObtained = ?, Submission = ?, AttendanceReason = ?, SubmissionReason = ? 
                   WHERE LearnerId = ? AND ActivityId = ?";
           $stmt = $connect->prepare($sql);
@@ -55,28 +56,24 @@ if (!isLoggedIn()) {
             $stmt->bind_param("sisssii", $Attendance, $Marks, $Submitted, $AttendanceReason, $SubmissionReason, $learnerFakeid, $activityId);
             $stmt->execute();
             $stmt->close();
-            
-            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                <script>
-                    Swal.fire({
-                        icon: "success",
-                        title: "Updated",
-                        text: "Learner data updated successfully.",
-                        confirmButtonText: "OK"
-                    }).then(() => {
-                        window.location.href = "classhandler.php?aid=' . $activityId . '";
-                    });
-                </script>';
 
+            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                  <script>
+                    Swal.fire({
+                      icon: "success",
+                      title: "Updated",
+                      text: "Learner data updated successfully.",
+                      confirmButtonText: "OK"
+                    }).then(() => {
+                      window.location.href = "editmarks.php?id=' . $learnerId . '&max=' . $max . '";
+                    });
+                  </script>';
             exit();
           } else {
             echo '<script>
                     alert("Prepare failed: ' . $connect->error . '");
                   </script>';
           }
-          
-          
-          
         }
 
         // Fetch learner details
@@ -95,10 +92,9 @@ if (!isLoggedIn()) {
           $surname = $row['Surname'];
           ?>
 
-          <form method="post" action="editmarks.php?id=<?= $learnerId ?>&max=<?= $max ?>&aid=<?= $activityId ?>">
-
+          <form method="post" action="editmarks.php?id=<?= $learnerId ?>&max=<?= $max ?>">
             <input type="hidden" name="learnerFakeid" value="<?= $learnerId ?>">
-            <input type="hidden" name="activityid" value="<?= $activityId ?>">
+            <input type="hidden" name="activityid" value="<?= $learnerId ?>">
 
             <div class="box box-primary">
                <h3 class="text-center">Edit Learner Marks</h3>
@@ -128,26 +124,13 @@ if (!isLoggedIn()) {
                           <option value="Absent">Absent</option>
                           <option value="Late">Late</option>
                         </select>
-                        
                       </td>
                       <td>
                         <select name="attendancereason" class="form-control">
-                                        <option value="None" selected>None Provided</option>
-                                        <option value="Data Issues">Data Issues</option>
-                                        <option value="Power Outage">Power Outage</option>
-                                        <option value="No Internet Access">No Internet Access</option>
-                                        <option value="Device Issues">Device Issues</option>
-                                        <option value="Technical Difficulties">Technical Difficulties</option>
-                                        <option value="Was Not Aware of Class">Was Not Aware of Class</option>
-                                        <option value="Joined Late">Joined Late</option>
-                                        <option value="Illness">Illness</option>
-                                        <option value="Family Emergency">Family Emergency</option>
-                                        <option value="Personal Reasons">Personal Reasons</option>
-                                        <option value="Attended but Connection Dropped">Attended but Connection Dropped</option>
-                                        <option value="No Supervision or Support at Home">No Supervision or Support at Home</option>
-                                        <option value="Forgot Class Schedule">Forgot Class Schedule</option>
-                                        <option value="Other">Other</option>
-                                    </select>
+                          <option value="None">None Provided</option>
+                          <option value="Other">Other</option>
+                          <option value="Data Issues">Data Issues</option>
+                        </select>
                       </td>
                       <td>
                         <input type="number" name="marks" min="0" max="<?= $max ?>" class="form-control" required>
@@ -160,20 +143,10 @@ if (!isLoggedIn()) {
                       </td>
                       <td>
                         <select name="submissionreason" class="form-control">
-                          <option value="None" selected>None Provided</option>
-                                        <option value="Data Issues">Data Issues</option>
-                                        <option value="Did Not Write">Did Not Write</option>
-                                        <option value="Forgot to Submit">Forgot to Submit</option>
-                                        <option value="Was Absent">Was Absent</option>
-                                        <option value="Technical Issues">Technical Issues</option>
-                                        <option value="No Access to Materials">No Access to Materials</option>
-                                        <option value="Incomplete Work">Incomplete Work</option>
-                                        <option value="Personal Reasons">Personal Reasons</option>
-                                        <option value="Illness">Illness</option>
-                                        <option value="Family Emergency">Family Emergency</option>
-                                        <option value="Lack of Understanding">Lack of Understanding</option>
-                                        <option value="Lost or Damaged Work">Lost or Damaged Work</option>
-                                        <option value="Other">Other</option>
+                          <option value="None">None Provided</option>
+                          <option value="Other">Other</option>
+                          <option value="Data Issues">Data Issues</option>
+                          <option value="Did Not Write">Did Not Write</option>
                         </select>
                       </td>
                     </tr>
@@ -203,7 +176,6 @@ if (!isLoggedIn()) {
 </div>
 
 <!-- Scripts -->
-
 <?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
 
 </body>

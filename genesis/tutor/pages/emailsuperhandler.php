@@ -17,8 +17,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 // --- FIXED PATH TO COMPOSER AUTOLOAD ---
-//require_once BASE_PATH . '/vendor/autoload.php';
-require __DIR__ . '/../../../vendor/autoload.php'; // <-- fixed
+require_once BASE_PATH . '/vendor/autoload.php';
 
 // --- LOAD .env VARIABLES ---
 //$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'); // project root
@@ -38,14 +37,14 @@ if (!$action) {
 function initMailer() {
     $mail = new PHPMailer(true);
     $mail->isSMTP();
-    $mail->Host       = $_ENV['EMAIL_HOST'];     
+    $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
     $mail->Username   = $_ENV['EMAIL_ADDRESS'];  
     $mail->Password   = $_ENV['EMAIL_APP_PASSWORD']; 
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-    $mail->Port       = $_ENV['EMAIL_PORT']; 
-    $mail->setFrom($_ENV['EMAIL_ADDRESS'], $_ENV['EMAIL_FROM_NAME']);
-    $mail->addReplyTo($_ENV['EMAIL_ADDRESS'], $_ENV['EMAIL_FROM_NAME']);
+    $mail->Port       = 465;
+    $mail->setFrom($_ENV['EMAIL_ADDRESS'], 'DoE_Genesis');
+    $mail->addReplyTo($_ENV['EMAIL_ADDRESS'], 'DoE_Genesis');
     $mail->isHTML(true);
     return $mail;
 }

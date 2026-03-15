@@ -12,15 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $surname = trim($_POST['surname'] ?? '');
     $email = trim($_POST['email'] ?? '');
-    $contact = trim($_POST['contact'] ?? '');
     $message = trim($_POST['message'] ?? '');
     $agreed = isset($_POST['agree']);
 
     if (empty($name)) $errors[] = "Name is required.";
     if (empty($surname)) $errors[] = "Surname is required.";
-    if (!empty($contact) && !preg_match('/^[0-9+\-\s]+$/', $contact)) {
-        $errors[] = "Contact can only contain numbers, spaces, + or -.";
-    }
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "A valid Email is required.";
     if (!$agreed) $errors[] = "You must agree to the Rules & Pricing before submitting.";
     
@@ -36,12 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = "This email has already been used to request an invite.";
         } else {
             // Safe to insert new request
-            $sql = "INSERT INTO inviterequests (name, surname, email, contact, message) VALUES (?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO inviterequests (name, surname, email, message) VALUES (?, ?, ?, ?)";
             if ($stmt = $connect->prepare($sql)) {
-                $stmt->bind_param("sssss", $name, $surname, $email, $contact, $message);
+                $stmt->bind_param("ssss", $name, $surname, $email, $message);
                 if ($stmt->execute()) {
                     $success = "Your invite request has been submitted. Please keep an eye on your email — we’ll be in touch shortly.";
-                    $name = $surname = $email = $contact = $message = '';
+                    $name = $surname = $email = $message = '';
                 } else {
                     $errors[] = "Database error. Please try again later.";
                 }
@@ -219,18 +215,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       background-color: white;
       color: black;
     }
-    
-    button[type="submit"]:disabled {
-        background-color: #b5b5b5 !important;
-        color: #666 !important;
-        border-color: #999 !important;
-        cursor: not-allowed !important;
-        opacity: 1 !important;
-    }
-    
-    button[type="submit"]:disabled:hover {
-        background-color: #b5b5b5 !important;
-    }
 
   </style>
 </head>
@@ -240,7 +224,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Image above form -->
     <img src="../../uploads/ProfilePictures/doep.png" alt="Request Invite">
     <h3>Request an Invite</h3>
-    <p>Only for learner registration.</p>
 
     <?php if ($errors): ?>
         <div class="message error"><?php echo implode('<br>', $errors); ?></div>
@@ -248,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="message success"><?php echo $success; ?></div>
     <?php endif; ?>
 
-    <form action="request_invite.php" method="post">
+    <form action="request_invite.php" method="post" novalidate>
         <div class="name-surname-row">
             <div>
                 <input type="text" name="name" maxlength="150" placeholder="Name *" value="<?php echo htmlspecialchars($name ?? ''); ?>" required>
@@ -257,35 +240,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" name="surname" maxlength="150" placeholder="Surname *" value="<?php echo htmlspecialchars($surname ?? ''); ?>" required>
             </div>
         </div>
-        
-        <div class="name-surname-row">
-            <div>
-              <input type="email" name="email" maxlength="100" placeholder="Email *" value="<?php echo htmlspecialchars($email ?? ''); ?>" required>
-            </div>
-            <div>
-              <input type="text" name="contact" maxlength="20" placeholder="Contact Number *" value="<?php echo htmlspecialchars($contact ?? ''); ?>" required>
-            </div>
-        </div>
 
-
+        <input type="email" name="email" maxlength="100" placeholder="Email *" value="<?php echo htmlspecialchars($email ?? ''); ?>" required>
         <textarea name="message" maxlength="500" placeholder="Why you would like to join us. (Optional)"><?php echo htmlspecialchars($message ?? ''); ?></textarea>
 
-
-        
-        <label class="checkbox-wrapper">
-            <input type="checkbox" id="agreeCheckbox" name="agree">
+        <label class="checkbox-wrapper" id="checkboxWrapper">
+            <input type="checkbox" name="agree" id="agreeCheckbox" disabled>
             <span class="custom-checkbox"></span>
-            I agree to the <a href="#rules-pricing">Pricing & Consent</a>
+            I have read and agree to the <a href="#rules-pricing" id="rulesPricingLink">Rules & Pricing</a>
         </label>
 
-
-        <button type="submit" id="submitBtn" class="btn btn-primary btn-block" disabled>Submit Request</button>
-        
-        <p id="agreeWarning" style="text-align:center; color:red; font-size:13px; margin-top:8px; display:block;">
-            Please agree to the pricing & consent before submitting.
-        </p>
-        
-        
+        <button type="submit">Submit Request</button>
 
         <div style="text-align: center; margin-top: 10px;">
           <label style="font-size: 13px;">
@@ -295,103 +260,101 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </form>
 
-    <div id="rules-pricing">
-    <h4>Payment Information</h4>
+    
 
-    <table>
+    <div id="rules-pricing">
+      <h4>Rules & Payment Information</h4>
+      <table>
         <thead>
-            <tr>
-                <th>Subject</th>
-                <th>3 Months</th>
-                <th>6 Months</th>
-                <th>12 Months</th>
-            </tr>
+          <tr>
+            <th>Subject</th>
+            <th>3 Months</th>
+            <th>6 Months</th>
+            <th>12 Months</th>
+          </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>Mathematics</td>
-                <td>R540.00</td>
-                <td>R1000.00</td>
-                <td>R1800.00</td>
-            </tr>
-            <tr>
-                <td>Physical Sciences</td>
-                <td>R540.00</td>
-                <td>R1000.00</td>
-                <td>R1800.00</td>
-            </tr>
+          <tr>
+            <td>Mathematics</td>
+            <td>R450.00</td>
+            <td>R750.00</td>
+            <td>R1199.00</td>
+          </tr>
+          <tr>
+            <td>Physical Sciences</td>
+            <td>R450.00</td>
+            <td>R750.00</td>
+            <td>R1199.00</td>
+          </tr>
         </tbody>
-    </table>
+      </table>
 
-    <h4>Payment Options</h4>
-    <ul>
-        <li>✔ Monthly instalments from <strong>R180/month</strong>.</li>
-        <li>✔ Pay once-off or split into monthly payments.</li>
-        <li>✔ Custom plans available upon request.</li>
-    </ul>
-
-    <p>
+      <h4>Payment Options</h4>
+      <ul>
+        <li>✅ Monthly instalments from <strong>R150/month</strong>.</li>
+        <li>✅ Pay once-off or split into monthly payments.</li>
+        <li>✅ Custom plans available upon request.</li>
+      </ul>
+      <p>
         <strong>Contact:</strong><br>
-        📧 <a href="mailto:info@doetutoring.com">info@doetutoring.com</a><br>
-    </p>
+        📧 <a href="mailto:thedistributorsofedu@gmail.com">thedistributorsofedu@gmail.com</a><br>
+        📞 <a href="tel:+27814618178">+27 81 461 8178</a>
+      </p>
 
-    <hr style="margin: 20px 0;">
+      
+        <h3>Rules, Duties & Responsibilities</h3>
+      <strong>Duties and Responsibilities of a Learner:</strong>
+      <ol>
+        <li><b>Civil Behaviour:</b> Treat tutors and peers with respect...</li>
+        <li><b>Using Videos:</b> Do not share videos...</li>
+        <li><b>Resource Use:</b> Use all resources but complement them with additional research.</li>
+        <li><b>Seeking Clarity:</b> Contact your tutor as soon as anything is unclear.</li>
+        <li><b>Personal Effort:</b> Complete all tasks independently...</li>
+        <li><b>Accountability:</b> You are responsible for your academic outcomes...</li>
+        <li><b>Payment Requirements:</b> Stick to your selected payment plan...</li>
+        <li><b>Requirements for Access:</b> Ensure you have a smartphone and a data plan.</li>
+        <li><b>Attendance:</b> Regular attendance is required...</li>
+        <li><b>Service Schedule:</b> The service follows the school calendar...</li>
+      </ol>
 
-    <h4>Privacy & Personal Information Consent</h4>
-    <p>
-        When requesting an invite, you provide us with the following information:
-    </p>
+      <strong>Duties and Responsibilities of a Tutor:</strong>
+      <ol>
+        <li><b>Equitable Treatment:</b> Tutors must treat all learners fairly...</li>
+        <li><b>Professional Boundaries:</b> Tutors must maintain academic-only relationships...</li>
+        <li><b>Time Devotion:</b> Tutors are expected to spend at least 3 hours/week...</li>
+        <li><b>Thorough Evaluation:</b> All work must be carefully reviewed...</li>
+        <li><b>Prompt Assistance:</b> Educational videos must be provided on time.</li>
+        <li><b>Guardian Communication:</b> Parents should be notified if homework isn't submitted.</li>
+        <li><b>Quarterly Reports:</b> Tutors must send parents a progress report every term.</li>
+      </ol>
 
-    <ul>
-        <li>Your Name</li>
-        <li>Your Surname</li>
-        <li>Your Email Address</li>
-        <li>Your Message (optional)</li>
-    </ul>
+      <strong>Every learner should report if:</strong>
+      <ul>
+        <li>The tutor appears incompetent or misses sessions.</li>
+        <li>Exercises are not marked or feedback is lacking.</li>
+        <li>Discriminatory behavior occurs.</li>
+        <li>Tutors contact learners inappropriately outside hours.</li>
+      </ul>
+      <p>Email concerns to: <a href="mailto:thedistributorsofedu@gmail.com">thedistributorsofedu@gmail.com</a></p>
 
-    <p>
-        This information is collected for the following purposes:
-    </p>
+      <strong>Termination Clause:</strong>
+      <p>Violation of the above rules may result in suspension or removal. No refunds for services already rendered.</p>
 
-    <ul>
-        <li>To contact you regarding your invite request</li>
-        <li>To verify and manage your application</li>
-        <li>To keep a record of invite submissions</li>
-    </ul>
-
-    <p>
-        We do <strong>not</strong> sell, share, or give your personal information to any external parties.
-        Your information is stored securely and is used only for internal admin and communication.
-    </p>
-
-    <p>
-        By ticking the checkbox and submitting this form, you confirm that you:
-    </p>
-
-    <ul>
-        <li>✔ Agree to the pricing and payment information listed above</li>
-        <li>✔ Understand why your personal information is being collected</li>
-        <li>✔ Give consent for us to store and use your information for invite processing</li>
-    </ul>
-
-    <p>If you have any questions about data privacy, contact us at:
-        <a href="mailto:info@doetutoring.com">info@doetutoring.com</a>
-    </p>
+    </div>
 </div>
-
-
-</div>
-
 
 <script>
-    const checkbox = document.getElementById('agreeCheckbox');
-    const submitBtn = document.getElementById('submitBtn');
-    const agreeWarning = document.getElementById('agreeWarning');
+const rulesPricingLink = document.getElementById('rulesPricingLink');
+const agreeCheckbox = document.getElementById('agreeCheckbox');
 
-    checkbox.addEventListener('change', function () {
-        submitBtn.disabled = !this.checked;
-        agreeWarning.style.display = this.checked ? 'none' : 'block';
-    });
+rulesPricingLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    agreeCheckbox.disabled = false;
+    agreeCheckbox.parentElement.classList.add('checkbox-enabled');
+
+    const rulesSection = document.getElementById('rules-pricing');
+    rulesSection.scrollIntoView({ behavior: 'smooth' });
+});
 </script>
 
 </body>

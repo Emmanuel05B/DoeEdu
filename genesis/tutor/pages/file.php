@@ -122,6 +122,10 @@ $tresults = $stmtTeacher->get_result();
 $tfinal = $tresults->fetch_assoc();
 $stmtTeacher->close();
 
+
+
+
+//-------------------------------------------------------------------------------------//
 // Fetch learner activities
 $activity_sql = "
     SELECT lam.ActivityId, lam.MarksObtained,
@@ -136,7 +140,8 @@ $stmt->bind_param('ii', $learner_id, $SubjectId);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Fetch missed attendance and submissions
+
+// Fetch missed attendance and submissions   for Activities
 $attendance_sql = "
     SELECT lam.ActivityId, lam.Attendance, lam.AttendanceReason,
            lam.Submission, lam.SubmissionReason,
@@ -164,7 +169,7 @@ $stmtTotal->execute();
 $total_activities_result = $stmtTotal->get_result();
 $total_activities = $total_activities_result->fetch_assoc()['total'];
 
-// Calculate missed classes and submissions
+// Calculate missed classes and submissions  for Activities
 $missed_classes = 0;
 $missed_activities = 0;
 $attendance_submission_result->data_seek(0);
@@ -178,6 +183,9 @@ $submission_rate = ($total_activities > 0) ? (($total_activities - $missed_activ
 
 $numabsent = $missed_classes;
 $submission_no_count = $missed_activities;
+
+
+//-------------------------------------------------------------------------------------//
 
 // Fetch financial info for the learner
 $fin_sql = "
@@ -277,8 +285,15 @@ $LastPaymentDate = $financial_info['LastPaymentDate'] ?? '-';
             </div>
         </div>
 
-        <!-- Activity Scores Table -->
+
+
+        
+
         <div class="row">
+
+
+            <!-- Activity Scores Table -->
+
             <div class="col-xs-12 col-sm-6">
                 <p class="lead">Activities Scores:</p>
                 <div class="table-responsive">
@@ -350,6 +365,94 @@ $LastPaymentDate = $financial_info['LastPaymentDate'] ?? '-';
                 </table>
                 </div>
             </div>
+
+
+            <!-- System Online Quizzes Performance -->
+            <div class="col-xs-12 col-sm-6">
+                <p class="lead">Online Quizzes Scores:</p>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Homework Name</th>
+                                <th>Marks</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+
+                        $onlineSql = "
+                            SELECT 
+                                a.Id AS ActivityId, a.Title, a.Topic AS Chapter, a.TotalMarks,
+                                COUNT(la.Id) AS Answered,
+                                SUM(
+                                    CASE 
+                                        WHEN la.SelectedAnswer = oq.CorrectAnswer 
+                                        THEN 1 ELSE 0 
+                                    END
+                                ) AS Correct
+                            FROM onlineactivities a
+                            INNER JOIN onlineactivitiesassignments aa 
+                                ON aa.OnlineActivityId = a.Id
+                            INNER JOIN classes c 
+                                ON c.ClassID = aa.ClassID
+                            INNER JOIN learnersubject ls
+                                ON ls.LearnerId = ?
+                            AND ls.SubjectId = c.SubjectId
+                            LEFT JOIN learneranswers la 
+                                ON la.ActivityId = a.Id 
+                            AND la.UserId = ?
+                            LEFT JOIN onlinequestions oq 
+                                ON oq.Id = la.QuestionId
+                            WHERE c.SubjectId = ?
+                            AND aa.DueDate > ls.ContractStartDate
+                            GROUP BY a.Id
+                            ORDER BY aa.AssignedAt ASC
+                        ";
+
+
+                        $stmtOnline = $connect->prepare($onlineSql);
+                        $stmtOnline->bind_param("iii", $learner_id, $learner_id, $SubjectId);
+                        $stmtOnline->execute();
+                        $onlineResults = $stmtOnline->get_result();
+
+                        if ($onlineResults->num_rows > 0) {
+                            while ($row = $onlineResults->fetch_assoc()) {
+
+                                if ($row['Answered'] > 0) {
+                                    $marks = $row['Correct'];
+                                    $percentage = ($marks / $row['TotalMarks']) * 100;
+                                    $marksDisplay = "{$marks} / {$row['TotalMarks']}";
+                                    $percentDisplay = number_format($percentage, 2) . "%";
+                                } else {
+                                    $marksDisplay = "-";
+                                    $percentDisplay = "Not Attempted";
+                                }
+
+                                $homeworkName = "{$row['Chapter']} - {$row['Title']}";
+
+                                echo "<tr>
+                                        <td><b>{$homeworkName}</b></td>
+                                        <td>{$marksDisplay}</td>
+                                        <td>{$percentDisplay}</td>
+                                    </tr>";
+
+                            }
+                        } else {
+                            echo "<tr><td colspan='3'>No online homework found.</td></tr>";
+                        }
+
+                        $stmtOnline->close();
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+
+
         </div>
 
         <!-- Overall Performance -->
@@ -436,6 +539,112 @@ $LastPaymentDate = $financial_info['LastPaymentDate'] ?? '-';
             </div>
 
         </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?php
+
+// ================= ONLINE QUIZZES OVERALL CALCULATION =================
+
+$onlineOverallSql = "
+    SELECT 
+        a.Id,
+        a.TotalMarks,
+        COUNT(la.Id) AS Answered,
+        SUM(
+            CASE 
+                WHEN la.SelectedAnswer = oq.CorrectAnswer 
+                THEN 1 ELSE 0 
+            END
+        ) AS Correct
+    FROM onlineactivities a
+    INNER JOIN onlineactivitiesassignments aa 
+        ON aa.OnlineActivityId = a.Id
+    INNER JOIN classes c 
+        ON c.ClassID = aa.ClassID
+    INNER JOIN learnersubject ls
+        ON ls.LearnerId = ?
+       AND ls.SubjectId = c.SubjectId
+    LEFT JOIN learneranswers la 
+        ON la.ActivityId = a.Id
+       AND la.UserId = ?
+    LEFT JOIN onlinequestions oq 
+        ON oq.Id = la.QuestionId
+    WHERE c.SubjectId = ?
+      AND aa.DueDate > ls.ContractStartDate
+    GROUP BY a.Id
+";
+
+$stmtOnlineOverall = $connect->prepare($onlineOverallSql);
+$stmtOnlineOverall->bind_param("iii", $learner_id, $learner_id, $SubjectId);
+$stmtOnlineOverall->execute();
+$onlineOverallRes = $stmtOnlineOverall->get_result();
+
+$onlineTotalCorrect = 0;
+$onlineTotalMarks   = 0;
+$onlineAttempted    = 0;
+
+while ($row = $onlineOverallRes->fetch_assoc()) {
+    if ($row['Answered'] > 0) {
+        $onlineTotalCorrect += $row['Correct'];
+        $onlineTotalMarks   += $row['TotalMarks'];
+        $onlineAttempted++;
+    }
+}
+
+$onlineOverallPercent = ($onlineTotalMarks > 0)
+    ? ($onlineTotalCorrect / $onlineTotalMarks) * 100
+    : 0;
+
+// Status logic
+if ($onlineOverallPercent >= 90) {
+    $onlineCategory = "Excellent";
+    $onlineComment = "Outstanding online quiz performance!";
+} elseif ($onlineOverallPercent >= 70) {
+    $onlineCategory = "Good";
+    $onlineComment = "Good performance in online quizzes.";
+} elseif ($onlineOverallPercent >= 50) {
+    $onlineCategory = "Fair";
+    $onlineComment = "Fair performance, needs improvement.";
+} else {
+    $onlineCategory = "Poor";
+    $onlineComment = "Low performance in online quizzes.";
+}
+
+$stmtOnlineOverall->close();
+
+?>
+
+
+        <div class="col-xs-12 col-sm-6">
+            <p class="lead">Overall Online Quizzes Performance:</p>
+            <div class="table-responsive">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td style="text-align:center;">
+                                <b><?php echo $onlineCategory; ?></b><br>
+                                Overall Score: <?php echo number_format($onlineOverallPercent, 2); ?>%<br>
+                                Total Quizzes Attempted: <?php echo $onlineAttempted; ?><br>
+                                Total Correct Answers: <?php echo $onlineTotalCorrect; ?><br>
+                                <i><?php echo $onlineComment; ?></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
 
         <!-- PDF Button -->
         <div class="row no-print">

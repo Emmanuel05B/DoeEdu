@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Find a Tutor</title>
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@2.4.18/dist/css/AdminLTE.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@2.4.18/dist/css/skins/_all-skins.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    .tutor-card { border:1px solid #ddd; padding:20px; border-radius:8px; background:#fff; display:flex; align-items:center; margin-bottom:20px;}
+    .tutor-card img { width:80px; height:80px; border-radius:50%; margin-right:20px; object-fit:cover; }
+    .tutor-info { flex:1; }
+    .rating { color:#f39c12; }
+    .book-btn { background:#1e2a38; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer; }
+    .book-btn:hover { background:#2a3b4d; }
+  </style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+
+<div class="wrapper">
+  <div class="content-wrapper">
+    <section class="content-header">
+      <h1>Find a Tutor</h1>
+    </section>
+    <section class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <!-- Example Tutor Card -->
+          <div class="tutor-card">
+            <img src="https://via.placeholder.com/80" alt="Tutor Picture">
+            <div class="tutor-info">
+              <h4>John Doe</h4>
+              <p>Subjects: Maths, Physics | Grades: 10, 11</p>
+              <p>Bio: Experienced tutor for high school students...</p>
+              <p class="rating">
+                <i class="fa fa-star"></i><i class="fa fa-star"></i>
+                <i class="fa fa-star"></i><i class="fa fa-star"></i>
+                <i class="fa fa-star-half-o"></i>
+              </p>
+            </div>
+            <button class="book-btn">Book Now</button>
+          </div>
+
+          <div class="tutor-card">
+            <img src="https://via.placeholder.com/80" alt="Tutor Picture">
+            <div class="tutor-info">
+              <h4>Jane Smith</h4>
+              <p>Subjects: English, History | Grades: 9, 10</p>
+              <p>Bio: Passionate about helping learners succeed...</p>
+              <p class="rating">
+                <i class="fa fa-star"></i><i class="fa fa-star"></i>
+                <i class="fa fa-star"></i><i class="fa fa-star-half-o"></i>
+                <i class="fa fa-star-o"></i>
+              </p>
+            </div>
+            <button class="book-btn">Book Now</button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@2.4.18/dist/js/adminlte.min.js"></script>
+</body>
+</html>

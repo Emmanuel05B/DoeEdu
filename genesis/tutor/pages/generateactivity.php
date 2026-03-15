@@ -13,6 +13,10 @@ if (!isLoggedIn()) {
 include_once(BASE_PATH . "/partials/connect.php");
 include_once(COMMON_PATH . "/../partials/head.php");  
 ?>
+<!-- MathQuill CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathquill/build/mathquill.css">
+<!-- MathQuill JS -->
+<script src="https://cdn.jsdelivr.net/npm/mathquill/build/mathquill.min.js"></script>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -123,58 +127,73 @@ include_once(COMMON_PATH . "/../partials/head.php");
             
             </div>
 
-            <div id="questions_container">
              
-              <div class="question-block">
-                <hr>
-                <h4>Question 1</h4>
-                <div class="form-group">
-                  <label>Question</label>
-                  <textarea name="questions[0][text]" class="form-control input-sm" required></textarea>
-                </div>
-                <div class="row">
-                  <div class="col-sm-2">
-                    <div class="form-group">
-                      <label>Option A</label>
-                      <input type="text" name="questions[0][options][A]" class="form-control input-sm" required>
-                    </div>
-                  </div>
-                  <div class="col-sm-2">
-                    <div class="form-group">
-                      <label>Option B</label>
-                      <input type="text" name="questions[0][options][B]" class="form-control input-sm" required>
-                    </div>
-                  </div>
-                  <div class="col-sm-2">
-                    <div class="form-group">
-                      <label>Option C</label>
-                      <input type="text" name="questions[0][options][C]" class="form-control input-sm" required>
-                    </div>
-                  </div>
-                  <div class="col-sm-2">
-                    <div class="form-group">
-                      <label>Option D</label>
-                      <input type="text" name="questions[0][options][D]" class="form-control input-sm" required>
-                    </div>
-                  </div>
+<div id="questions_container">
+  <div class="question-block">
+    <hr>
+    <h4>Question 1</h4>
 
-                  <div class="col-sm-4">
-                    <div class="form-group">
-                      <label>Set Correct Answer</label>
-                      <select name="questions[0][correct]" class="form-control input-sm" required>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
-                      </select>
-                    </div>
-                  </div>
+    <!-- Main question -->
+    <div class="form-group">
+      <label>Question</label>
+      <div class="mathquill-container">
+        <div class="mathquill-field"></div>
+        <input type="hidden" name="questions[0][text]">
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Option A -->
+      <div class="col-sm-3">
+        <label>Option A</label>
+        <div class="mathquill-container">
+          <div class="mathquill-field"></div>
+          <input type="hidden" name="questions[0][options][A]" required>
+        </div>
+      </div>
+      <!-- Option B -->
+      <div class="col-sm-3">
+        <label>Option B</label>
+        <div class="mathquill-container">
+          <div class="mathquill-field"></div>
+          <input type="hidden" name="questions[0][options][B]" required>
+        </div>
+      </div>
+      <!-- Option C -->
+      <div class="col-sm-3">
+        <label>Option C</label>
+        <div class="mathquill-container">
+          <div class="mathquill-field"></div>
+          <input type="hidden" name="questions[0][options][C]" required>
+        </div>
+      </div>
+      <!-- Option D -->
+      <div class="col-sm-3">
+        <label>Option D</label>
+        <div class="mathquill-container">
+          <div class="mathquill-field"></div>
+          <input type="hidden" name="questions[0][options][D]" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-top:10px;">
+      <label>Set Correct Answer</label>
+      <select name="questions[0][correct]" class="form-control input-sm" required>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+      </select>
+    </div>
+
+    <button type="button" class="btn btn-danger btn-sm remove-question-btn">
+      <i class="fa fa-trash"></i> Delete Question
+    </button>
+  </div>
+</div>
 
 
-                </div>
-               
-               
-              </div>
             </div>
 
             <button type="button" class="btn btn-default btn-sm" id="add_question_btn"><i class="fa fa-plus"></i> Add Another Question</button>
@@ -264,120 +283,132 @@ include_once(COMMON_PATH . "/../partials/head.php");
 
 
 <script>
-  let questionIndex = 1;
+var MQ = MathQuill.getInterface(2);
 
-  document.getElementById('add_question_btn').addEventListener('click', function () {
-    const container = document.getElementById('questions_container');
-    const newBlock = document.createElement('div');
-    newBlock.classList.add('question-block');
-
-    newBlock.innerHTML = `
-      <hr>
-      <h4>Question ${questionIndex + 1}</h4>
-      <div class="form-group">
-        <label>Question</label>
-        <textarea name="questions[${questionIndex}][text]" class="form-control input-sm" required></textarea>
-      </div>
-
-      <div class="row">
-        <div class="col-sm-2">
-          <div class="form-group">
-            <label>Option A</label>
-            <input type="text" name="questions[${questionIndex}][options][A]" class="form-control input-sm" required>
-          </div>
-        </div>
-        <div class="col-sm-2">
-          <div class="form-group">
-            <label>Option B</label>
-            <input type="text" name="questions[${questionIndex}][options][B]" class="form-control input-sm" required>
-          </div>
-        </div>
-        <div class="col-sm-2">
-          <div class="form-group">
-            <label>Option C</label>
-            <input type="text" name="questions[${questionIndex}][options][C]" class="form-control input-sm" required>
-          </div>
-        </div>
-        <div class="col-sm-2">
-          <div class="form-group">
-            <label>Option D</label>
-            <input type="text" name="questions[${questionIndex}][options][D]" class="form-control input-sm" required>
-          </div>
-        </div>
-        <div class="col-sm-2">
-          <div class="form-group">
-            <label>Set Correct Answer</label>
-            <select name="questions[${questionIndex}][correct]" class="form-control input-sm" required>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
-            </select>
-          </div>
-        </div>
-        <div class="col-sm-2">
-          <div class="form-group">
-
-            <label>Delete</label>
-            <button type="button" class="btn btn-danger btn-sm remove-question-btn"><i class="fa fa-trash"></i> Delete Question</button>
-
-          </div>
-        </div>
-      </div>
-
-    `;
-
-    // Append the question block
-    container.appendChild(newBlock);
-    questionIndex++;
-  });
-
-  // Delegate delete button click to container
-  document.getElementById('questions_container').addEventListener('click', function (e) {
-    if (e.target.closest('.remove-question-btn')) {
-      const block = e.target.closest('.question-block');
-      block.remove();
+function initMathFields() {
+  document.querySelectorAll('.mathquill-container').forEach(function(container) {
+    var div = container.querySelector('.mathquill-field');
+    var hiddenInput = container.querySelector('input[type="hidden"]');
+    if (!div.dataset.initialized) {
+      var field = MQ.MathField(div, {
+        spaceBehavesLikeTab: true,
+        handlers: {
+          edit: function() {
+            hiddenInput.value = field.latex();
+          }
+        }
+      });
+      div.dataset.initialized = true;
     }
   });
+}
+
+// Initialize existing fields
+initMathFields();
+
+let questionIndex = 1;
+
+document.getElementById('add_question_btn').addEventListener('click', function() {
+  const container = document.getElementById('questions_container');
+  
+  const newBlock = document.createElement('div');
+  newBlock.classList.add('question-block');
+  newBlock.innerHTML = `
+    <hr>
+    <h4>Question ${questionIndex + 1}</h4>
+
+    <div class="form-group">
+      <label>Question</label>
+      <div class="mathquill-container">
+        <div class="mathquill-field"></div>
+        <input type="hidden" name="questions[${questionIndex}][text]">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3">
+        <label>Option A</label>
+        <div class="mathquill-container">
+          <div class="mathquill-field"></div>
+          <input type="hidden" name="questions[${questionIndex}][options][A]" required>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <label>Option B</label>
+        <div class="mathquill-container">
+          <div class="mathquill-field"></div>
+          <input type="hidden" name="questions[${questionIndex}][options][B]" required>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <label>Option C</label>
+        <div class="mathquill-container">
+          <div class="mathquill-field"></div>
+          <input type="hidden" name="questions[${questionIndex}][options][C]" required>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <label>Option D</label>
+        <div class="mathquill-container">
+          <div class="mathquill-field"></div>
+          <input type="hidden" name="questions[${questionIndex}][options][D]" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-top:10px;">
+      <label>Set Correct Answer</label>
+      <select name="questions[${questionIndex}][correct]" class="form-control input-sm" required>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+      </select>
+    </div>
+
+    <button type="button" class="btn btn-danger btn-sm remove-question-btn">
+      <i class="fa fa-trash"></i> Delete Question
+    </button>
+  `;
+
+  container.appendChild(newBlock);
+  initMathFields();
+  questionIndex++;
+});
+
+document.getElementById('questions_container').addEventListener('click', function(e) {
+  if (e.target.closest('.remove-question-btn')) {
+    e.target.closest('.question-block').remove();
+  }
+});
+
+
 </script>
 
 
+
+
+
+
+
 <style>
-  .form-control {
-    max-width: 100%;
-  }
-  .question-block {
-    margin-bottom: 20px;
-  }
-  .box-header.text-center h3 {
-    text-align: center;
-    margin: 0 auto;
-    font-weight: 600;
-  }
-  .activity-info {
-    margin-top: 15px;
-    margin-bottom: 15px;
-    font-size: 16px;
-  }
-  .activity-info strong {
+ .mathquill-field {
     display: block;
-    margin-bottom: 5px;
-  }
-  @media (max-width: 768px) {
-    .form-control {
-      font-size: 14px;
-    }
-    h4 {
-      font-size: 16px;
-    }
-    .btn {
-      font-size: 14px;
-      padding: 6px 10px;
-    }
-    .activity-info {
-      font-size: 14px;
-    }
-  }
+    width: 100%;
+    min-height: 35px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: text;
+    background-color: #fff;
+}
+
+.mathquill-field:focus {
+    border-color: #66afe9;
+    outline: none;
+}
+
+
 </style>
 
 <script>

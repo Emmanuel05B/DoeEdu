@@ -90,7 +90,7 @@ try {
       $check->store_result();
       if ($check->num_rows > 0) {
          
-            $_SESSION['error'] = "This email has already Registered, use a different email. ";
+            $_SESSION['error'] = "This email has already registred: ";
             header('Location: registration.php?token=' . $token);
             exit();
       }

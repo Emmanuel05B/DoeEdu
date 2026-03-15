@@ -91,21 +91,32 @@ include_once(COMMON_PATH . "/../partials/head.php");
                             <tbody>
                             <?php
                             // Step 4: Get assigned activities for this class
+
                             $stmtActivities = $connect->prepare("
-                                SELECT a.Id, a.Title, a.Topic, a.CreatedAt, aa.DueDate, a.TotalMarks
+                                SELECT 
+                                    a.Id, a.Title, a.Topic, a.CreatedAt, aa.DueDate, a.TotalMarks
                                 FROM onlineactivities a
                                 INNER JOIN onlineactivitiesassignments aa 
                                     ON a.Id = aa.OnlineActivityId
+                                INNER JOIN learnersubject ls
+                                    ON ls.LearnerId = ?
+                                AND ls.SubjectId = ?
                                 WHERE aa.ClassID = ?
+                                AND aa.DueDate > ls.ContractStartDate
                                 ORDER BY aa.AssignedAt DESC
                             ");
+
 
                             if (!$stmtActivities) {
                                     die("Prepare failed: " . $connect->error);
                                 }
 
-                            $stmtActivities->bind_param("i", $classID);
+                            $stmtActivities->bind_param(
+                                "iii", $LearnerId, $subjectId, $classID
+                            );
                             $stmtActivities->execute();
+
+                    
                             $activities = $stmtActivities->get_result();
 
                             if ($activities->num_rows === 0) {

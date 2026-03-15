@@ -34,11 +34,10 @@ $classId = intval($_GET['classId']);
     </section>
 
     <section class="content">
-        
       <div class="box box-solid" style="border-top:3px solid #605ca8;">
         <div class="box-header with-border" style="background-color:#f3edff;">
           <h3 class="box-title" style="color:#605ca8;">
-            <i class="fa fa-video-camera"></i> Video Lessons
+            <i class="fa fa-video-camera"></i> Available Video Lessons
           </h3>
           <div class="box-tools">
             <button id="gridBtn" class="btn btn-sm btn-primary">
@@ -73,9 +72,9 @@ $classId = intval($_GET['classId']);
               <div class="row">
                 <?php while ($row = $result->fetch_assoc()):
                   $title = htmlspecialchars($row['Title']);
+                  $desc = htmlspecialchars($row['Description'] ?? 'No description available.');
                   $filePath = htmlspecialchars($row['FilePath']);
-                 // $fileUrl = "/DoE_Genesis/DoeEdu/genesis/uploads/resources/" . $filePath;
-                  $fileUrl = RESOURCES_URL . '/' . $filePath;
+                  $fileUrl = "/DoE_Genesis/DoeEdu/genesis/uploads/resources/" . $filePath;
                 ?>
                   <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="box box-widget" style="border:1px solid #ddd; border-radius:10px; padding:5px; text-align:center;">
@@ -98,9 +97,9 @@ $classId = intval($_GET['classId']);
               <table class="table table-bordered table-hover">
                 <thead style="background-color:#e6e0fa; color:#333;">
                   <tr>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Action</th>
+                    <th style="width:25%;">Title</th>
+                    <th style="width:65%;">Description</th>
+                    <th style="text-align:center; width:10%;">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -108,11 +107,10 @@ $classId = intval($_GET['classId']);
                     $title = htmlspecialchars($row['Title']);
                     $desc = htmlspecialchars($row['Description'] ?? 'No description available.');
                     $filePath = htmlspecialchars($row['FilePath']);
-                    //$fileUrl = "/DoE_Genesis/DoeEdu/genesis/uploads/resources/" . $filePath;
-                    $fileUrl = RESOURCES_URL . '/' . $filePath;
+                    $fileUrl = "/DoE_Genesis/DoeEdu/genesis/uploads/resources/" . $filePath;
                   ?>
                     <tr>
-                      <td><?= $title ?></td>
+                      <td><strong><?= $title ?></strong></td>
                       <td><?= $desc ?></td>
                       <td style="text-align:center;">
                         <button class="btn btn-default btn-sm playVideo" data-url="<?= $fileUrl ?>" data-title="<?= $title ?>" data-desc="<?= $desc ?>" title="Play Video">
@@ -133,107 +131,6 @@ $classId = intval($_GET['classId']);
           ?>
         </div>
       </div>
-      
-      
-      <!-- ZIP Resources -->
-        <!-- Compressed Resources -->
-        <div class="box box-solid" style="border-top:3px solid #00a65a; margin-top:20px;">
-          <div class="box-header with-border" style="background-color:#e8f5e9;">
-            <h3 class="box-title" style="color:#00a65a;">
-              <i class="fa fa-file-archive-o"></i> Zipped Videos
-            </h3>
-            <div class="box-tools">
-              <button id="zipGridBtn" class="btn btn-sm btn-primary">
-                <i class="fa fa-th"></i> Grid View
-              </button>
-              <button id="zipListBtn" class="btn btn-sm btn-default">
-                <i class="fa fa-th-list"></i> List View
-              </button>
-            </div>
-          </div>
-        
-          <div class="box-body" style="background-color:#ffffff;">
-            <?php
-            $zipSql = "
-              SELECT r.ResourceID, r.Title, r.FilePath, r.Description
-              FROM resources r
-              JOIN resourceassignments ra ON r.ResourceID = ra.ResourceID
-              WHERE r.ResourceType = 'compressed'
-                AND ra.ClassID = ?
-              ORDER BY r.UploadedAt DESC
-            ";
-        
-            $zipStmt = $connect->prepare($zipSql);
-            $zipStmt->bind_param("i", $classId);
-            $zipStmt->execute();
-            $zipResult = $zipStmt->get_result();
-            ?>
-        
-            <!-- Grid View -->
-            <div id="zipGridView" class="row">
-              <?php if ($zipResult && $zipResult->num_rows > 0):
-                $zipResult->data_seek(0); // reset pointer
-                while ($row = $zipResult->fetch_assoc()):
-                  $title = htmlspecialchars($row['Title']);
-                  $filePath = htmlspecialchars($row['FilePath']);
-                  $fileUrl = RESOURCES_URL . '/' . $filePath;
-              ?>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                  <div class="box box-widget" style="border:1px solid #ddd; border-radius:10px; padding:10px; text-align:center;">
-                    <div class="box-body">
-                      <h5 style="margin-top:1px; color:#333; min-height:30px;"><?= $title ?></h5>
-                      <a href="<?= $fileUrl ?>" class="btn btn-success btn-sm" download>
-                        <i class="fa fa-download"></i> Download
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              <?php endwhile; else: ?>
-                <div class="text-center text-muted" style="width:100%;">No compressed resources assigned to this class.</div>
-              <?php endif; ?>
-            </div>
-        
-            <!-- List View -->
-            <div id="zipListView" style="display:none;">
-              <?php if ($zipResult && $zipResult->num_rows > 0):
-                $zipResult->data_seek(0);
-              ?>
-              <table class="table table-bordered table-hover">
-                <thead style="background-color:#c8e6c9; color:#333;">
-                  <tr>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php while ($row = $zipResult->fetch_assoc()):
-                    $title = htmlspecialchars($row['Title']);
-                    $desc = htmlspecialchars($row['Description'] ?? 'No description available.');
-                    $filePath = htmlspecialchars($row['FilePath']);
-                    $fileUrl = RESOURCES_URL . '/' . $filePath;
-                  ?>
-                    <tr>
-                      <td><?= $title ?></td>
-                      <td><?= $desc ?></td>
-                      <td style="text-align:center;">
-                        <a href="<?= $fileUrl ?>" class="btn btn-success btn-sm" download>
-                          <i class="fa fa-download"></i>
-                        </a>
-                      </td>
-                    </tr>
-                  <?php endwhile; ?>
-                </tbody>
-              </table>
-              <?php endif; ?>
-            </div>
-        
-            <?php $zipStmt->close(); ?>
-          </div>
-        </div>
-
-
-
     </section>
   </div>
 
@@ -300,27 +197,6 @@ $classId = intval($_GET['classId']);
     const player = document.getElementById('videoPlayer');
     player.pause();
     player.src = '';
-  });
-</script>
-
-<script>
-  // Toggle Grid/List for Compressed Resources
-  document.getElementById('zipGridBtn').addEventListener('click', function() {
-    document.getElementById('zipGridView').style.display = 'flex';
-    document.getElementById('zipListView').style.display = 'none';
-    this.classList.add('btn-primary');
-    this.classList.remove('btn-default');
-    document.getElementById('zipListBtn').classList.remove('btn-primary');
-    document.getElementById('zipListBtn').classList.add('btn-default');
-  });
-
-  document.getElementById('zipListBtn').addEventListener('click', function() {
-    document.getElementById('zipGridView').style.display = 'none';
-    document.getElementById('zipListView').style.display = 'block';
-    this.classList.add('btn-primary');
-    this.classList.remove('btn-default');
-    document.getElementById('zipGridBtn').classList.remove('btn-primary');
-    document.getElementById('zipGridBtn').classList.add('btn-default');
   });
 </script>
 

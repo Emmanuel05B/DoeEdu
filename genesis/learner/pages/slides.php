@@ -40,7 +40,7 @@ $classId = intval($_GET['classId']);
       <div class="box box-solid" style="border-top:3px solid #605ca8;">
         <div class="box-header with-border" style="background-color:#f3edff;">
           <h3 class="box-title" style="color:#605ca8;">
-            <i class="fa fa-file-powerpoint-o"></i> Slides
+            <i class="fa fa-file-powerpoint-o"></i> Available Slides
           </h3>
           <div class="box-tools pull-right">
             <button id="toggleViewBtn" class="btn btn-default btn-sm">
@@ -82,7 +82,7 @@ $classId = intval($_GET['classId']);
                       $title = htmlspecialchars($row['Title']);
                       $description = htmlspecialchars($row['Description'] ?: 'N/A');
                       $filePath = htmlspecialchars($row['FilePath']);
-                      $fileUrl = RESOURCES_URL . '/' . $filePath;
+                      $fileUrl = "/DoE_Genesis/DoeEdu/genesis/uploads/resources/" . $filePath;
                       ?>
                       <tr>
                         <td><?= $title ?></td>
@@ -124,7 +124,7 @@ $classId = intval($_GET['classId']);
                 $title = htmlspecialchars($row['Title']);
                 $description = htmlspecialchars($row['Description'] ?: 'No description');
                 $filePath = htmlspecialchars($row['FilePath']);
-                $fileUrl = RESOURCES_URL . '/' . $filePath;
+                $fileUrl = "/DoE_Genesis/DoeEdu/genesis/uploads/resources/" . $filePath;
                 ?>
                 <div class="col-md-3 col-sm-6 col-xs-12">
                   <div class="box box-widget" style="border:1px solid #ddd; border-radius:10px; padding:15px; text-align:center;">

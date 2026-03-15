@@ -40,7 +40,7 @@ $tutorId = $_SESSION['user_id'];
   
   <div class="content-wrapper">
     <section class="content-header">
-       <h1>Master Quizzes <small>List of all your created quizzes</small></h1>
+       <h1>Master Activities <small>List of all your created activities</small></h1>
         <ol class="breadcrumb">
           <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
           <li class="active">Activities</li>

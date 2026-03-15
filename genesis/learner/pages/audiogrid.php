@@ -38,7 +38,7 @@ $classId = intval($_GET['classId']);
       <div class="box box-solid" style="border-top:3px solid #605ca8;">
         <div class="box-header with-border" style="background-color:#f3edff;">
           <h3 class="box-title" style="color:#605ca8;">
-            <i class="fa fa-headphones"></i>Audio Lessons
+            <i class="fa fa-headphones"></i> Available Audio Lessons
           </h3>
           <div class="box-tools">
             <button id="gridBtn" class="btn btn-sm btn-primary">
@@ -75,7 +75,7 @@ $classId = intval($_GET['classId']);
                   $title = htmlspecialchars($row['Title']);
                   $desc = htmlspecialchars($row['Description'] ?? 'No description available.');
                   $filePath = htmlspecialchars($row['FilePath']);
-                  $fileUrl = RESOURCES_URL . '/' . $filePath;
+                  $fileUrl = "/DoE_Genesis/DoeEdu/genesis/uploads/resources/" . $filePath;
                 ?>
                   <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="box box-widget" style="border:1px solid #ddd; border-radius:10px; padding:10px; text-align:center;">
@@ -99,9 +99,9 @@ $classId = intval($_GET['classId']);
               <table class="table table-bordered table-hover">
                 <thead style="background-color:#e6e0fa; color:#333;">
                   <tr>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Play</th>
+                    <th style="width:25%;">Title</th>
+                    <th style="width:55%;">Description</th>
+                    <th style="width:20%; text-align:center;">Play</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -109,10 +109,10 @@ $classId = intval($_GET['classId']);
                     $title = htmlspecialchars($row['Title']);
                     $desc = htmlspecialchars($row['Description'] ?? 'No description available.');
                     $filePath = htmlspecialchars($row['FilePath']);
-                    $fileUrl = RESOURCES_URL . '/' . $filePath;
+                    $fileUrl = "/DoE_Genesis/DoeEdu/genesis/uploads/resources/" . $filePath;
                   ?>
                     <tr>
-                      <td><?= $title ?></td>
+                      <td><strong><?= $title ?></strong></td>
                       <td><?= $desc ?></td>
                       <td style="text-align:center;">
                         <audio controls style="width:200px;">

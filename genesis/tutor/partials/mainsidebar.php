@@ -50,13 +50,12 @@ $tutorData = $tutorResult->fetch_assoc();
 
         <li><a href="tutorindex.php"><i class="fa fa-dashboard"></i> <span>Home / Dashboard</span></a></li>
         <li><a href="schedule.php"><i class="fa fa-calendar"></i> <span>Bookings & Availability</span></a></li>
-        <li><a href="myactivities.php"><i class="fa fa-tasks"></i> <span>Quiz Management</span></a></li>
+        <li><a href="myactivities.php"><i class="fa fa-tasks"></i> <span>Activity Management</span></a></li>
         <li><a href="setupquestion.php"><i class="fa fa-cubes"></i> <span>Question Builder</span></a></li>
 
         <li class="header">ACCOUNT</li>
         <li><a href="profilemanagement.php"><i class="fa fa-user"></i> <span>My Profile</span></a></li>
         <li><a href="logout.php"><i class="fa fa-sign-out"></i> <span>Log out</span></a></li>
-
 
         <!--  <li><a href="classes.php"><i class="fa fa-circle-o"></i> My Class</a></li> -->
         <!-- <li><a href="x.php"><i class="fa fa-circle-o"></i> Communications</a></li>  -->

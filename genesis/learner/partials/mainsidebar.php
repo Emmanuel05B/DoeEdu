@@ -49,14 +49,14 @@ $subStmt->close();
     <li class="header">MAIN NAVIGATION</li>
 
     <li><a href="learnerindex.php"><i class="fa fa-home"></i> <span>Home / Dashboard</span></a></li>
-    <li><a href="mytutors.php"><i class="fa fa-calendar-check-o"></i> <span>Sessions & Bookings</span></a></li>
+    <li><a href="mytutors.php"><i class="fa fa-calendar-check-o"></i> <span>Sessions</span></a></li>
     <li><a href="learningresources.php"><i class="fa fa-book"></i> <span>Learning Resources</span></a></li>
     <li><a href="homework.php"><i class="fa fa-pencil-square-o"></i> <span>Homeworks</span></a></li>
 
     <!-- Training -->
     <li class="treeview">
       <a href="#">
-        <i class="fa fa-graduation-cap"></i> <span>Practice Questions</span>
+        <i class="fa fa-graduation-cap"></i> <span>Training</span>
         <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
       </a>
       <ul class="treeview-menu">
@@ -75,10 +75,8 @@ $subStmt->close();
 
     <li><a href="announcements.php"><i class="fa fa-bullhorn"></i> <span>Announcements / News</span></a></li>
     <li><a href="studentvoices.php"><i class="fa fa-comments-o"></i> <span>Student Voice</span></a></li>
-    
-    <li class="header">ACCOUNT</li>
-    <li><a href="profilesettings.php"><i class="fa fa-circle-o"></i> Profile Settings</a></li>
-    <li><a href="logout.php"><i class="fa fa-sign-out"></i> <span>Log out</span></a></li>
+    <li><a href="profilesettings.php"><i class="fa fa-comments-o"></i> <span>My Profile</span></a></li>
+    <li><a href="logout.php"><i class="fa fa-sign-out"></i> <span>Log Out</span></a></li>
   </ul>
 </section>
 </aside>

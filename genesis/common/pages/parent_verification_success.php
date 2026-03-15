@@ -197,13 +197,13 @@ include_once(COMMON_PATH . "/../partials/queries.php");
     </table>
     <div id="payment-info">
         <h4>Payment Options</h4>
-        <p>✅ Monthly installments range from R150 to R180 per month.</p>
+        <p>✅ Monthly instalments from R150/month.</p>
         <p>✅ Pay once-off or split into monthly payments.</p>
         <p>✅ Custom plans available upon request.</p>
-        <p>🏦 Account Number: FNB - <strong>63175981977</strong></p>
+        <p>🏦 Account Number: FNB - <strong>1234567890</strong></p>
         <h4>Contact</h4>
-        <p>📧 info@doetutoring.com</p>
-        <p>📞 +27 814618178</p>
+        <p>📧 thedistributorsofedu@gmail.com</p>
+        <p>📞 +27 8XXXXXXXXX</p>
         
     </div>
 
@@ -228,8 +228,6 @@ Swal.fire({
     html: 'You have approved <strong><?= htmlspecialchars($learnerName) ?></strong>\'s registration.<br>Total fees: R <?= number_format($totalFees, 2) ?>',
     confirmButtonText: 'OK',
 });
-
-
 
 </script>
 

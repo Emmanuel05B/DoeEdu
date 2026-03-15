@@ -1,7 +1,5 @@
 <?php
 
-//no longer usedi think
-
 include(__DIR__ . "/../partials/head.php");
 include(__DIR__ . "/../../partials/connect.php");
 
@@ -43,7 +41,7 @@ if ($row = $result->fetch_assoc()) {
 
 
 // Hardcoded SchoolId
-$schoolId = 1;
+$schoolId = 4;
 
 // Fetch grades for the school
 $gradesStmt = $connect->prepare("SELECT GradeId, GradeName FROM grades WHERE SchoolId = ? ORDER BY GradeName ASC");

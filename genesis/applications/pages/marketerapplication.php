@@ -90,15 +90,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     // --- SEND CONFIRMATION EMAIL USING PHPMailer ---
                     try {
-            
                         $mail = new PHPMailer(true);
                         $mail->isSMTP();
-                        $mail->Host = $_ENV['EMAIL_HOST'];
+                        $mail->Host       = 'smtp.gmail.com';
                         $mail->SMTPAuth   = true;
                         $mail->Username   = $_ENV['EMAIL_ADDRESS'];
                         $mail->Password   = $_ENV['EMAIL_APP_PASSWORD'];
                         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-                        $mail->Port = $_ENV['EMAIL_PORT'];
+                        $mail->Port       = 465;
                         $mail->setFrom($_ENV['EMAIL_ADDRESS'], 'Distributors of Education');
                         $mail->addAddress($email, $surname);
                         $mail->addReplyTo($_ENV['EMAIL_ADDRESS'], 'Distributors of Education');
@@ -302,7 +301,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <span>I confirm that all the information I provided is true and correct. 
             I consent to the use of my data for application processing.  
             I have read and agree to the 
-            <a href="/learn/genesis/applications/pages/terms-and-conditions.php" target="_blank">Terms & Conditions</a>
+            <a href="terms-and-conditions.php" target="_blank">Terms & Conditions</a>
         </span>
       </label>
 

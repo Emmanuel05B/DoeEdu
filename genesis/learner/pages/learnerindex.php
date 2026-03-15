@@ -209,8 +209,6 @@ if(count($classResults) > 0){
   if($rowCount = $resultCount->fetch_assoc()){
       $generalAnnouncementCount = $rowCount['total'];
   }
-  
- 
 
   
 ?>
@@ -615,8 +613,6 @@ if(count($classResults) > 0){
     </div>
   </div>
 </div>
-
-
 
 <!-- Notifications Modal -->
 <div class="modal fade" id="learnerNotificationsModal" tabindex="-1" role="dialog" aria-labelledby="learnerNotifTitle" aria-hidden="true">

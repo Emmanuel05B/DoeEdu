@@ -100,12 +100,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                       $mail = new PHPMailer(true);
                       $mail->isSMTP();
-                      $mail->Host = $_ENV['EMAIL_HOST'];
+                      $mail->Host       = 'smtp.gmail.com';
                       $mail->SMTPAuth   = true;
-                      $mail->Username   = $_ENV['EMAIL_ADDRESS']; 
-                      $mail->Password   = $_ENV['EMAIL_APP_PASSWORD'];
+                      $mail->Username   = $_ENV['EMAIL_ADDRESS'];  // read from .env
+                      $mail->Password   = $_ENV['EMAIL_APP_PASSWORD']; // read from .env
                       $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-                      $mail->Port = $_ENV['EMAIL_PORT']; 
+                      $mail->Port       = 465;
                       $mail->setFrom($_ENV['EMAIL_ADDRESS'], 'Distributors of Education');
                       $mail->addAddress($email, $surname);
                       $mail->addReplyTo($_ENV['EMAIL_ADDRESS'], 'Distributors of Education');
@@ -163,7 +163,7 @@ h3 { margin-top: 0; }
 <body>
 <div class="container">
   <div class="form-container">
-    <h3>DoE Maths & Science Tutor Application</h3>
+    <h3>DoE Online Maths & Physical Sciences Tutor Application</h3>
     <hr>
 
     <?php if ($errors): ?>
@@ -336,7 +336,7 @@ h3 { margin-top: 0; }
           <span>I confirm that all the information I provided is true and correct. 
             I consent to the use of my data for application processing.  
             I have read and agree to the 
-            <a href="/learn/genesis/applications/pages/terms-and-conditions.php" target="_blank">Terms & Conditions</a>
+            <a href="terms-and-conditions.php" target="_blank">Terms & Conditions</a>
           </span>
         </label>
 

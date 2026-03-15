@@ -374,9 +374,9 @@ function formatTime($seconds)
                 title: 'Level Complete!',
                 text: json.passMessage,
                 confirmButtonText: 'OK',
-                allowOutsideClick: false,  
-                allowEscapeKey: false,   
-                allowEnterKey: false
+                allowOutsideClick: false,  // prevent clicking outside
+                allowEscapeKey: false,     // prevent Esc key
+                allowEnterKey: false       // prevent Enter key
             };
         } else if (json.failMessage) {
             alertOptions = {
@@ -384,9 +384,9 @@ function formatTime($seconds)
                 title: 'Level Incomplete',
                 text: json.failMessage,
                 confirmButtonText: 'Retry Level',
-                allowOutsideClick: false,  
-                allowEscapeKey: false,   
-                allowEnterKey: false
+                allowOutsideClick: false,  // prevent clicking outside
+                allowEscapeKey: false,     // prevent Esc key
+                allowEnterKey: false       // prevent Enter key
             };
         } else {
             // Answer feedback (correct/incorrect)
@@ -402,11 +402,11 @@ function formatTime($seconds)
                 confirmButtonText: 'Next Question',
                 cancelButtonText: 'Rest/Continue Later',
                 reverseButtons: true,
-                allowOutsideClick: false,  
-                allowEscapeKey: false,   
-                allowEnterKey: false    
-                
+                allowOutsideClick: false,  // prevent clicking outside
+                allowEscapeKey: false,     // prevent Esc key
+                allowEnterKey: false       // prevent Enter key
             };
+
         }
 
         const result = await Swal.fire(alertOptions);

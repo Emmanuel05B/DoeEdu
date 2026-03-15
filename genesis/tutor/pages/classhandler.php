@@ -144,6 +144,7 @@ include_once(COMMON_PATH . "/../partials/head.php");
                   <button type="button" class="btn btn-danger" id="sendFeedbackBtn">
                     <i class="fa fa-envelope"></i> Send Feedback to Parents (Not Submitted or Attended)
                   </button>
+                  <a href="classlist.php" class="btn btn-warning"><i class="fa fa-users"></i> Create Class List</a>
                 </div>
               </form>
 

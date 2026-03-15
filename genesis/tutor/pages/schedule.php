@@ -219,8 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   <th>Time</th>
                   <th>Notes</th>
                   <th>File</th>
-                  <th>***</th>
-                  <th>***</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -250,8 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
                           <input type="hidden" name="action" value="accept">
                           <button type="submit" class="btn btn-xs btn-success"><i class="fa fa-check"></i> Accept</button>
                         </form>
-                      </td>
-                      <td>
+                        
                         <form method="POST" action="update_session_status.php" class="decline-form" style="display:inline;">
                           <input type="hidden" name="session_id" value="<?= $row['SessionId'] ?>">
                           <input type="hidden" name="action" value="decline">

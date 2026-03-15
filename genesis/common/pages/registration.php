@@ -48,7 +48,7 @@ if ($row = $result->fetch_assoc()) {
 
 
 // Hardcoded SchoolId
-$schoolId = 1;
+$schoolId = 4;
 
 // Fetch grades for the school
 $gradesStmt = $connect->prepare("SELECT GradeId, GradeName FROM grades WHERE SchoolId = ? ORDER BY GradeName ASC");
@@ -172,17 +172,11 @@ while($row = $gradesResult->fetch_assoc()){
                   <!-- Subjects, Duration & Levels -->
                   <fieldset class="tab">
                     <legend>Register Subjects, Duration & Levels</legend>
-                    
-                    <div style="overflow-x:auto;">
-                    <table class="table table-bordered" style="min-width:500px;">
-                     <!-- Instruction messages -->
-                    <p class="text-info" style="font-size:14px;">
-                        🖐 Swipe horizontally (<--->) to see all columns and select current and target levels.
-                    </p>
+                    <table class="table table-bordered">
                       <thead>
                         <tr>
                           <th>Subject</th>
-                          <th>Click button to Register</th>
+                          <th>(Click to Register)</th>
                           <th>Current Level</th>
                           <th>Target Level</th>
                         </tr>
@@ -191,11 +185,6 @@ while($row = $gradesResult->fetch_assoc()){
                         <!-- Subjects will be loaded dynamically -->
                       </tbody>
                     </table>
-                    
-                    <p id="selectGradeMessage" class="text-warning" style="font-size:14px; margin-top:5px;">
-                        ⚠️ Please select a grade first to see available subjects.
-                    </p>
-                    </div><br>
                   </fieldset>
 
                   <!-- Parent Info -->
@@ -331,21 +320,7 @@ while($row = $gradesResult->fetch_assoc()){
                               </td>
                               <td>
                                   <!-- Duration[] array -->
-                                  <select name="Duration[]" class="form-control subject-duration" style="
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        background-color: #0073b7;
-        color: white;
-        padding: 6px 12px;
-        border-radius: 5px;
-        border: none;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        min-width: 120px;
-        text-align: center;
-    "  required>
+                                  <select name="Duration[]" class="form-control subject-duration" required>
                                       <option value="0" selected>Not Registered</option>
                                       <option value="${sub.ThreeMonthsPrice}">3 Months</option>
                                       <option value="${sub.SixMonthsPrice}">6 Months</option>
@@ -354,13 +329,13 @@ while($row = $gradesResult->fetch_assoc()){
                               </td>
                               <td>
                                   <!-- CurrentLevel[] array -->
-                                  <select name="CurrentLevel[]" class="form-control level-select" style="min-width:100px;" disabled>
+                                  <select name="CurrentLevel[]" class="form-control level-select" disabled>
                                       ${[1,2,3,4,5,6,7].map(i => `<option value="${i}" ${i==1?'selected':''}>${i}</option>`).join('')}
                                   </select>
                               </td>
                               <td>
                                   <!-- TargetLevel[] array -->
-                                  <select name="TargetLevel[]" class="form-control level-select" style="min-width:100px;" disabled>
+                                  <select name="TargetLevel[]" class="form-control level-select" disabled>
                                       ${[3,4,5,6,7].map(i => `<option value="${i}" ${i==7?'selected':''}>${i}</option>`).join('')}
                                   </select>
                               </td>

@@ -83,7 +83,7 @@ try {
 
         // Default values if missing
         $maxLearnersPerClass = $subRes['MaxClassSize'] ?? 5;
-        $tutorId = $subRes['DefaultTutorId'] ?? 3;
+        $tutorId = $subRes['DefaultTutorId'] ?? 25;
         
 
         // Try find existing available class

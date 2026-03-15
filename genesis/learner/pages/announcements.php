@@ -43,7 +43,6 @@ while($row = $resultGeneral->fetch_assoc()){
     $generalAnnouncements[] = $row;
 }
 
-
 // --- CLASS NOTIFICATIONS (for modal) ---
 $classNotifications = [];
 if (!empty($classIds)) {
@@ -77,7 +76,7 @@ if (!empty($classIds)) {
 
     <section class="content-header">
       <h1>Announcements & News</h1>
-      <p>Get the latest updates from your Tutors and Directors.</p>
+      <p>Stay up to date with important updates, tips, and events from your Tutors and Directors.</p>
       <ol class="breadcrumb">
         <li><a href="learnerindex.php"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">Announcements</li>
@@ -98,21 +97,17 @@ if (!empty($classIds)) {
             
             
           <?php
-          
           if (!empty($generalAnnouncements)) {
               foreach ($generalAnnouncements as $notice) {
-
-                // Safely check each field exists
-                $posterName = isset($notice['Surname']) ? htmlspecialchars($notice['Surname']) : '[no surname]';
-                $title = isset($notice['Title']) ? htmlspecialchars($notice['Title']) : '[no title]';
-                $content = isset($notice['Content']) ? nl2br(htmlspecialchars($notice['Content'])) : '[no content]';
-                $subjectName = isset($notice['SubjectName']) ? htmlspecialchars($notice['SubjectName']) : '[no subject]';
-                $createdAt = isset($notice['CreatedAt']) ? date('Y-m-d', strtotime($notice['CreatedAt'])) : '[no date]';
-        
-        
+                  $posterName = htmlspecialchars($notice['Surname']);
+                  $title = htmlspecialchars($notice['Title']);
+                  $content = nl2br(htmlspecialchars($notice['Content']));
+                  $subjectName = htmlspecialchars($notice['SubjectName']);
+                  $createdAt = date('Y-m-d', strtotime($notice['CreatedAt']));
+                  
                   echo <<<HTML
                   <div class="post">
-                    <h4><strong>🔔 $title</strong></h4>
+                    <h4><strong>🔔 $title</strong> <small style="font-weight: normal; color: #555;">[$subjectName]</small></h4>
                     <p>Posted by $posterName · $createdAt</p>
                     <p>$content</p>
                   </div>

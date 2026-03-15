@@ -194,20 +194,20 @@ if (isset($_POST['Submit'])) {
             if (!$stmt->execute()) {
                 throw new Exception("Error updating reset code in database.");
             }
-    
+
             // 2. Send email
             $mail = new PHPMailer(true);
             $mail->isSMTP();
-            $mail->Host = $_ENV['EMAIL_HOST'];
+            $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = $_ENV['EMAIL_ADDRESS'];
             $mail->Password = $_ENV['EMAIL_APP_PASSWORD']; 
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port = $_ENV['EMAIL_PORT']; 
+            $mail->Port = 465;
 
-            $mail->setFrom($_ENV['EMAIL_ADDRESS'], $_ENV['EMAIL_FROM_NAME']);
+            $mail->setFrom($_ENV['EMAIL_ADDRESS'], 'Distributors of Education');
             $mail->addAddress($email, $surname);
-            $mail->addReplyTo($_ENV['EMAIL_ADDRESS'], $_ENV['EMAIL_FROM_NAME']);
+            $mail->addReplyTo($_ENV['EMAIL_ADDRESS'], 'Distributors of Education');
 
             $mail->isHTML(true);
             $mail->Subject = 'Your Password Reset Code - Distributors of Education';

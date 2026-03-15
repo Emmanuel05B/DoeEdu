@@ -37,4 +37,14 @@
 
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+ 
+
+
+
+  <!-- MathQuill CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathquill/build/mathquill.css">
+<!-- MathQuill JS -->
+<script src="https://cdn.jsdelivr.net/npm/mathquill/build/mathquill.min.js"></script>
+
+
 </head>
