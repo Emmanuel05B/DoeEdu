@@ -299,12 +299,12 @@ if(count($classResults) > 0){
       <div class="row">
         
          <!-- Online Quizzes Average -->
-        <!--
+        
          
         <div class="col-lg-3 col-xs-6">
           <div class="small-box" style="background:#e2c7fb;">
             <div class="inner">
-              <h3>...</h3>
+              <h3>?</h3>
               <p style="font-size:16px;">Online Quizzes Avg</p>
             </div>
             <div class="icon" style="font-size:50px; top:10px;">
@@ -315,16 +315,16 @@ if(count($classResults) > 0){
             </a>
           </div>
         </div>
-        -->
+        
 
 
         <!-- Tutor Marks Average -->
-        <!--
+        
         
         <div class="col-lg-3 col-xs-6">
           <div class="small-box" style="background:#cce5ff;">
             <div class="inner">
-              <h3>...</h3>
+              <h3>?</h3>
               <p style="font-size:16px;">Vid Activities Avg</p>
             </div>
             
@@ -336,10 +336,10 @@ if(count($classResults) > 0){
             </a>
           </div>
         </div>
-        -->
+        
         
         <!-- Pending Homework Count -->
-        <div class="col-lg-6 col-xs-6">
+        <div class="col-lg-3 col-xs-6">
           <div class="small-box" style="background:#c2daff;">
             <div class="inner">
               <h3><?= $pendingHomeworkCount ?></h3>
@@ -356,7 +356,7 @@ if(count($classResults) > 0){
         
         
         <!-- Upcoming 1-1 Sessions Count -->
-        <div class="col-lg-6 col-xs-6">
+        <div class="col-lg-3 col-xs-6">
           <div class="small-box" style="background:#a8f0be;">
             <div class="inner">
               <h3><?= $confirmedCount ?></h3>
