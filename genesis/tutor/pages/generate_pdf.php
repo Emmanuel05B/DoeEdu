@@ -56,9 +56,17 @@ $SubjectName = $subjectData['SubjectName'];
 $grade = $subjectData['GradeId'];
 
 // Fetch learner info
-$learner_sql = "SELECT * FROM users WHERE Id = $learner_id";
+/*
+$learner_sql = "SELECT * FROM users WHERE Id = $learner_id";   //prone to SQL injection
 $learner_results = $connect->query($learner_sql);
 $final = $learner_results->fetch_assoc();
+*/
+
+$stmtLearner = $connect->prepare("SELECT * FROM users WHERE Id = ?");
+$stmtLearner->bind_param("i", $learner_id);
+$stmtLearner->execute();
+$final = $stmtLearner->get_result()->fetch_assoc();
+$stmtLearner->close();
 
 // Fetch learner activities
 $activity_sql = "
@@ -276,32 +284,20 @@ ob_start();
 // ================= ONLINE QUIZZES OVERALL CALCULATION =================
 
 $onlineOverallSql = "
-    SELECT 
-        a.Id,
-        a.TotalMarks,
-        COUNT(la.Id) AS Answered,
-        SUM(
-            CASE 
-                WHEN la.SelectedAnswer = oq.CorrectAnswer 
-                THEN 1 ELSE 0 
-            END
-        ) AS Correct
-    FROM onlineactivities a
-    INNER JOIN onlineactivitiesassignments aa 
-        ON aa.OnlineActivityId = a.Id
-    INNER JOIN classes c 
-        ON c.ClassID = aa.ClassID
-    INNER JOIN learnersubject ls
-        ON ls.LearnerId = ?
-       AND ls.SubjectId = c.SubjectId
-    LEFT JOIN learneranswers la 
-        ON la.ActivityId = a.Id
-       AND la.UserId = ?
-    LEFT JOIN onlinequestions oq 
-        ON oq.Id = la.QuestionId
-    WHERE c.SubjectId = ?
-      AND aa.DueDate > ls.ContractStartDate
-    GROUP BY a.Id
+SELECT 
+    a.Id AS ActivityId,
+    a.TotalMarks,
+    COUNT(la.Id) AS Answered,
+    SUM(CASE WHEN la.SelectedAnswer = oq.CorrectAnswer THEN 1 ELSE 0 END) AS Correct
+FROM onlineactivities a
+INNER JOIN onlineactivitiesassignments aa ON aa.OnlineActivityId = a.Id
+INNER JOIN classes c ON c.ClassID = aa.ClassID
+INNER JOIN learnersubject ls ON ls.LearnerId = ? AND ls.SubjectId = c.SubjectId
+LEFT JOIN learneranswers la ON la.ActivityId = a.Id AND la.UserId = ?
+LEFT JOIN onlinequestions oq ON oq.Id = la.QuestionId
+WHERE c.SubjectId = ? AND aa.AssignedAt > ls.ContractStartDate
+GROUP BY a.Id
+ORDER BY aa.AssignedAt ASC
 ";
 
 $stmtOnlineOverall = $connect->prepare($onlineOverallSql);
@@ -313,18 +309,21 @@ $onlineTotalCorrect = 0;
 $onlineTotalMarks   = 0;
 
 while ($row = $onlineOverallRes->fetch_assoc()) {
+    // Only consider activities that were attempted
     if ($row['Answered'] > 0) {
         $onlineTotalCorrect += $row['Correct'];
         $onlineTotalMarks   += $row['TotalMarks'];
     }
 }
 
+// Calculate overall online quizzes percentage
 $onlineOverallPercent = ($onlineTotalMarks > 0)
     ? ($onlineTotalCorrect / $onlineTotalMarks) * 100
     : 0;
 
 $stmtOnlineOverall->close();
 ?>
+
 <!-- Overall Performance -->
 <?php
 // ================= FINAL SUBJECT PERFORMANCE =================
@@ -381,34 +380,49 @@ else {
     <th>Percentage</th>
   </tr>
   <?php
-  $onlineSql = "
-      SELECT 
-          a.Id AS ActivityId, a.Title, a.Topic AS Chapter, a.TotalMarks,
-          COUNT(la.Id) AS Answered,
-          SUM(
-              CASE 
-                  WHEN la.SelectedAnswer = oq.CorrectAnswer 
-                  THEN 1 ELSE 0 
-              END
-          ) AS Correct
-      FROM onlineactivities a
-      INNER JOIN onlineactivitiesassignments aa 
-          ON aa.OnlineActivityId = a.Id
-      INNER JOIN classes c 
-          ON c.ClassID = aa.ClassID
-      INNER JOIN learnersubject ls
-          ON ls.LearnerId = ?
-      AND ls.SubjectId = c.SubjectId
-      LEFT JOIN learneranswers la 
-          ON la.ActivityId = a.Id 
-      AND la.UserId = ?
-      LEFT JOIN onlinequestions oq 
-          ON oq.Id = la.QuestionId
-      WHERE c.SubjectId = ?
-      AND aa.DueDate > ls.ContractStartDate
-      GROUP BY a.Id
-      ORDER BY aa.AssignedAt ASC
-  ";
+
+                        $onlineSql = "
+                        SELECT 
+                            a.Id AS ActivityId,
+                            a.Title,
+                            a.Topic AS Chapter,
+                            a.TotalMarks,
+                            COUNT(la.Id) AS Answered,
+                            SUM(
+                                CASE 
+                                    WHEN la.SelectedAnswer = oq.CorrectAnswer 
+                                    THEN 1 ELSE 0 
+                                END
+                            ) AS Correct
+                        FROM onlineactivities a
+
+                        INNER JOIN onlineactivitiesassignments aa 
+                            ON aa.OnlineActivityId = a.Id
+
+                        INNER JOIN learnerclasses lc
+                            ON lc.ClassID = aa.ClassID
+                        AND lc.LearnerID = ?
+
+                        INNER JOIN classes c
+                            ON c.ClassID = lc.ClassID
+
+                        INNER JOIN learnersubject ls
+                            ON ls.LearnerId = lc.LearnerID
+                        AND ls.SubjectId = c.SubjectID
+
+                        LEFT JOIN learneranswers la 
+                            ON la.ActivityId = a.Id
+                        AND la.UserId = ?
+
+                        LEFT JOIN onlinequestions oq 
+                            ON oq.Id = la.QuestionId
+
+                        WHERE aa.AssignedAt >= ls.ContractStartDate 
+                        AND c.SubjectID = ?
+
+                        GROUP BY a.Id
+                        ORDER BY aa.AssignedAt ASC
+                    ";
 
   $stmtOnline = $connect->prepare($onlineSql);
   $stmtOnline->bind_param("iii", $learner_id, $learner_id, $SubjectId);

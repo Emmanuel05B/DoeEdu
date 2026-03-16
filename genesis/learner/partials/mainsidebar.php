@@ -52,6 +52,7 @@ $subStmt->close();
     <li><a href="mytutors.php"><i class="fa fa-calendar-check-o"></i> <span>Sessions</span></a></li>
     <li><a href="learningresources.php"><i class="fa fa-book"></i> <span>Learning Resources</span></a></li>
     <li><a href="homework.php"><i class="fa fa-pencil-square-o"></i> <span>Homeworks</span></a></li>
+    <li><a href="tracklearnerprogress.php"><i class="fa fa-line-chart"></i> <span>Track Progress</span></a></li>
 
     <!-- Training -->
     <li class="treeview">

@@ -373,14 +373,14 @@ $LastPaymentDate = $financial_info['LastPaymentDate'] ?? '-';
             
         <!-- Overall Performance -->
         <?php
-                        $total_marks = 0; 
-                        $total_max = 0;
-                        $result->data_seek(0);
-                        while ($act = $result->fetch_assoc()) {
-                            $total_marks += $act['MarksObtained'];
-                            $total_max += $act['MaxMarks'];
-                        }
-                        $activitiesOverallPercent = ($total_max > 0) ? ($total_marks / $total_max) * 100 : 0;
+            $total_marks = 0; 
+            $total_max = 0;
+            $result->data_seek(0);
+            while ($act = $result->fetch_assoc()) {
+                $total_marks += $act['MarksObtained'];
+                $total_max += $act['MaxMarks'];
+            }
+            $activitiesOverallPercent = ($total_max > 0) ? ($total_marks / $total_max) * 100 : 0;
 
         ?>
 
@@ -390,35 +390,47 @@ $LastPaymentDate = $financial_info['LastPaymentDate'] ?? '-';
 
 $onlineOverallSql = "
     SELECT 
-        a.Id,
-        a.TotalMarks,
-        COUNT(la.Id) AS Answered,
-        SUM(
-            CASE 
-                WHEN la.SelectedAnswer = oq.CorrectAnswer 
-                THEN 1 ELSE 0 
-            END
-        ) AS Correct
-    FROM onlineactivities a
-    INNER JOIN onlineactivitiesassignments aa 
-        ON aa.OnlineActivityId = a.Id
-    INNER JOIN classes c 
-        ON c.ClassID = aa.ClassID
-    INNER JOIN learnersubject ls
-        ON ls.LearnerId = ?
-       AND ls.SubjectId = c.SubjectId
-    LEFT JOIN learneranswers la 
-        ON la.ActivityId = a.Id
-       AND la.UserId = ?
-    LEFT JOIN onlinequestions oq 
-        ON oq.Id = la.QuestionId
-    WHERE c.SubjectId = ?
-      AND aa.DueDate > ls.ContractStartDate
-    GROUP BY a.Id
+    a.Id,
+    a.TotalMarks,
+    COUNT(la.Id) AS Answered,
+    SUM(
+        CASE 
+            WHEN la.SelectedAnswer = oq.CorrectAnswer 
+            THEN 1 ELSE 0 
+        END
+    ) AS Correct
+FROM onlineactivities a
+
+INNER JOIN onlineactivitiesassignments aa 
+    ON aa.OnlineActivityId = a.Id
+
+INNER JOIN learnerclasses lc
+    ON lc.ClassID = aa.ClassID
+   AND lc.LearnerID = ?
+
+INNER JOIN classes c
+    ON c.ClassID = lc.ClassID
+
+INNER JOIN learnersubject ls
+    ON ls.LearnerId = lc.LearnerID
+   AND ls.SubjectId = c.SubjectID
+
+LEFT JOIN learneranswers la 
+    ON la.ActivityId = a.Id
+   AND la.UserId = ?
+
+LEFT JOIN onlinequestions oq 
+    ON oq.Id = la.QuestionId
+
+WHERE aa.AssignedAt >= ls.ContractStartDate
+AND c.SubjectID = ?
+
+GROUP BY a.Id
 ";
 
 $stmtOnlineOverall = $connect->prepare($onlineOverallSql);
 $stmtOnlineOverall->bind_param("iii", $learner_id, $learner_id, $SubjectId);
+
 $stmtOnlineOverall->execute();
 $onlineOverallRes = $stmtOnlineOverall->get_result();
 
@@ -503,38 +515,54 @@ if ($finalOverallPercent >= 90) {
                         <tbody>
                         <?php
 
+
                         $onlineSql = "
-                            SELECT 
-                                a.Id AS ActivityId, a.Title, a.Topic AS Chapter, a.TotalMarks,
-                                COUNT(la.Id) AS Answered,
-                                SUM(
-                                    CASE 
-                                        WHEN la.SelectedAnswer = oq.CorrectAnswer 
-                                        THEN 1 ELSE 0 
-                                    END
-                                ) AS Correct
-                            FROM onlineactivities a
-                            INNER JOIN onlineactivitiesassignments aa 
-                                ON aa.OnlineActivityId = a.Id
-                            INNER JOIN classes c 
-                                ON c.ClassID = aa.ClassID
-                            INNER JOIN learnersubject ls
-                                ON ls.LearnerId = ?
-                            AND ls.SubjectId = c.SubjectId
-                            LEFT JOIN learneranswers la 
-                                ON la.ActivityId = a.Id 
-                            AND la.UserId = ?
-                            LEFT JOIN onlinequestions oq 
-                                ON oq.Id = la.QuestionId
-                            WHERE c.SubjectId = ?
-                            AND aa.DueDate > ls.ContractStartDate
-                            GROUP BY a.Id
-                            ORDER BY aa.AssignedAt ASC
-                        ";
+                        SELECT 
+                            a.Id AS ActivityId,
+                            a.Title,
+                            a.Topic AS Chapter,
+                            a.TotalMarks,
+                            COUNT(la.Id) AS Answered,
+                            SUM(
+                                CASE 
+                                    WHEN la.SelectedAnswer = oq.CorrectAnswer 
+                                    THEN 1 ELSE 0 
+                                END
+                            ) AS Correct
+                        FROM onlineactivities a
+
+                        INNER JOIN onlineactivitiesassignments aa 
+                            ON aa.OnlineActivityId = a.Id
+
+                        INNER JOIN learnerclasses lc
+                            ON lc.ClassID = aa.ClassID
+                        AND lc.LearnerID = ?
+
+                        INNER JOIN classes c
+                            ON c.ClassID = lc.ClassID
+
+                        INNER JOIN learnersubject ls
+                            ON ls.LearnerId = lc.LearnerID
+                        AND ls.SubjectId = c.SubjectID
+
+                        LEFT JOIN learneranswers la 
+                            ON la.ActivityId = a.Id
+                        AND la.UserId = ?
+
+                        LEFT JOIN onlinequestions oq 
+                            ON oq.Id = la.QuestionId
+
+                        WHERE aa.AssignedAt >= ls.ContractStartDate 
+                        AND c.SubjectID = ?
+
+                        GROUP BY a.Id
+                        ORDER BY aa.AssignedAt ASC
+                    ";
 
 
                         $stmtOnline = $connect->prepare($onlineSql);
                         $stmtOnline->bind_param("iii", $learner_id, $learner_id, $SubjectId);
+
                         $stmtOnline->execute();
                         $onlineResults = $stmtOnline->get_result();
 
@@ -657,6 +685,7 @@ if ($finalOverallPercent >= 90) {
             </div>
 
         </div>
+
 
 
 

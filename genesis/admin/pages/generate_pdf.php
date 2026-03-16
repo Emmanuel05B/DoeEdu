@@ -56,9 +56,17 @@ $SubjectName = $subjectData['SubjectName'];
 $grade = $subjectData['GradeId'];
 
 // Fetch learner info
-$learner_sql = "SELECT * FROM users WHERE Id = $learner_id";
+/*
+$learner_sql = "SELECT * FROM users WHERE Id = $learner_id";   //prone to SQL injection
 $learner_results = $connect->query($learner_sql);
 $final = $learner_results->fetch_assoc();
+*/
+
+$stmtLearner = $connect->prepare("SELECT * FROM users WHERE Id = ?");
+$stmtLearner->bind_param("i", $learner_id);
+$stmtLearner->execute();
+$final = $stmtLearner->get_result()->fetch_assoc();
+$stmtLearner->close();
 
 // Fetch learner activities
 $activity_sql = "
@@ -94,6 +102,8 @@ $submission_rate = ($total_activities > 0) ? (($total_activities - $missed_activ
 
 // Capture HTML
 ob_start();
+
+
 ?>
 
 <!DOCTYPE html>
@@ -261,7 +271,7 @@ ob_start();
       $total_marks += $row['MarksObtained'];
       $total_max += $row['MaxMarks'];
       echo "<tr>
-              <td>{$row['ChapterName']} - {$row['ActivityName']}</td>
+              <td><b>{$row['ChapterName']}</b> - {$row['ActivityName']}</td>
               <td>{$row['MarksObtained']}/{$row['MaxMarks']}</td>
               <td>".number_format($percent, 2)."%</td>
             </tr>";
@@ -269,23 +279,183 @@ ob_start();
   ?>
 </table>
 
+<?php
+
+// ================= ONLINE QUIZZES OVERALL CALCULATION =================
+
+$onlineOverallSql = "
+SELECT 
+    a.Id AS ActivityId,
+    a.TotalMarks,
+    COUNT(la.Id) AS Answered,
+    SUM(CASE WHEN la.SelectedAnswer = oq.CorrectAnswer THEN 1 ELSE 0 END) AS Correct
+FROM onlineactivities a
+INNER JOIN onlineactivitiesassignments aa ON aa.OnlineActivityId = a.Id
+INNER JOIN classes c ON c.ClassID = aa.ClassID
+INNER JOIN learnersubject ls ON ls.LearnerId = ? AND ls.SubjectId = c.SubjectId
+LEFT JOIN learneranswers la ON la.ActivityId = a.Id AND la.UserId = ?
+LEFT JOIN onlinequestions oq ON oq.Id = la.QuestionId
+WHERE c.SubjectId = ? AND aa.AssignedAt > ls.ContractStartDate
+GROUP BY a.Id
+ORDER BY aa.AssignedAt ASC
+";
+
+$stmtOnlineOverall = $connect->prepare($onlineOverallSql);
+$stmtOnlineOverall->bind_param("iii", $learner_id, $learner_id, $SubjectId);
+$stmtOnlineOverall->execute();
+$onlineOverallRes = $stmtOnlineOverall->get_result();
+
+$onlineTotalCorrect = 0;
+$onlineTotalMarks   = 0;
+
+while ($row = $onlineOverallRes->fetch_assoc()) {
+    // Only consider activities that were attempted
+    if ($row['Answered'] > 0) {
+        $onlineTotalCorrect += $row['Correct'];
+        $onlineTotalMarks   += $row['TotalMarks'];
+    }
+}
+
+// Calculate overall online quizzes percentage
+$onlineOverallPercent = ($onlineTotalMarks > 0)
+    ? ($onlineTotalCorrect / $onlineTotalMarks) * 100
+    : 0;
+
+$stmtOnlineOverall->close();
+?>
 
 <!-- Overall Performance -->
 <?php
-$overall_score = ($total_max>0)?($total_marks/$total_max)*100:0;
-if($overall_score>=90){ $category='Excellent'; $comment="Outstanding performance! Keep up the great work!"; }
-elseif($overall_score>=70){ $category='Good'; $comment="Good performance. Keep pushing to reach even higher levels!"; }
-elseif($overall_score>=50){ $category='Fair'; $comment="You’ve done well, but there’s room for improvement. Stay focused!"; }
-else{ $category='Poor'; $comment="There’s significant room for improvement"; }
+// ================= FINAL SUBJECT PERFORMANCE =================
 
-// Combine attendance and submission rates into the comment
-    if ($attendance_rate < 75) {
-        $comment .= " Your attendance rate is below 75%. Try to attend all classes for better learning.";
-    } else {
-        $comment .= " Your attendance rate is great!";
-    }
+$activitiesOverallPercent = ($total_max > 0)
+    ? ($total_marks / $total_max) * 100
+    : 0;
+
+$activitiesWeight = 0.5;
+$onlineWeight     = 0.5;
+
+if ($total_max == 0 && $onlineTotalMarks == 0) {
+    $finalOverallPercent = 0;
+}
+elseif ($total_max == 0) {
+    $finalOverallPercent = $onlineOverallPercent;
+}
+elseif ($onlineTotalMarks == 0) {
+    $finalOverallPercent = $activitiesOverallPercent;
+}
+else {
+    $finalOverallPercent =
+        ($activitiesOverallPercent * $activitiesWeight) +
+        ($onlineOverallPercent * $onlineWeight);
+}
+
+// Category
+if ($finalOverallPercent >= 90) {
+    $category='Excellent';
+    $comment="Outstanding overall subject performance!";
+}
+elseif ($finalOverallPercent >= 70) {
+    $category='Good';
+    $comment="Good understanding of subject content.";
+}
+elseif ($finalOverallPercent >= 50) {
+    $category='Fair';
+    $comment="Average performance. More practice required.";
+}
+else {
+    $category='Poor';
+    $comment="Performance below expected level. Immediate intervention needed.";
+}
+
 
 ?>
+
+<!-- Online Quizzes Scores -->
+<b>System Quizzes Scores</b>
+<table>
+  <tr>
+    <th>Homework Name</th>
+    <th>Marks</th>
+    <th>Percentage</th>
+  </tr>
+  <?php
+
+                        $onlineSql = "
+                        SELECT 
+                            a.Id AS ActivityId,
+                            a.Title,
+                            a.Topic AS Chapter,
+                            a.TotalMarks,
+                            COUNT(la.Id) AS Answered,
+                            SUM(
+                                CASE 
+                                    WHEN la.SelectedAnswer = oq.CorrectAnswer 
+                                    THEN 1 ELSE 0 
+                                END
+                            ) AS Correct
+                        FROM onlineactivities a
+
+                        INNER JOIN onlineactivitiesassignments aa 
+                            ON aa.OnlineActivityId = a.Id
+
+                        INNER JOIN learnerclasses lc
+                            ON lc.ClassID = aa.ClassID
+                        AND lc.LearnerID = ?
+
+                        INNER JOIN classes c
+                            ON c.ClassID = lc.ClassID
+
+                        INNER JOIN learnersubject ls
+                            ON ls.LearnerId = lc.LearnerID
+                        AND ls.SubjectId = c.SubjectID
+
+                        LEFT JOIN learneranswers la 
+                            ON la.ActivityId = a.Id
+                        AND la.UserId = ?
+
+                        LEFT JOIN onlinequestions oq 
+                            ON oq.Id = la.QuestionId
+
+                        WHERE aa.AssignedAt >= ls.ContractStartDate 
+                        AND c.SubjectID = ?
+
+                        GROUP BY a.Id
+                        ORDER BY aa.AssignedAt ASC
+                    ";
+
+  $stmtOnline = $connect->prepare($onlineSql);
+  $stmtOnline->bind_param("iii", $learner_id, $learner_id, $SubjectId);
+  $stmtOnline->execute();
+  $onlineResults = $stmtOnline->get_result();
+
+  if ($onlineResults->num_rows > 0) {
+      while ($row = $onlineResults->fetch_assoc()) {
+
+          if ($row['Answered'] > 0) {
+              $marks = $row['Correct'];
+              $percentage = ($marks / $row['TotalMarks']) * 100;
+              $marksDisplay = "{$marks} / {$row['TotalMarks']}";
+              $percentDisplay = number_format($percentage, 2) . "%";
+          } else {
+              $marksDisplay = "-";
+              $percentDisplay = "Not Attempted";
+          }
+
+          echo "<tr>
+                  <td><b>{$row['Chapter']}</b> - {$row['Title']}</td>
+                  <td>{$marksDisplay}</td>
+                  <td>{$percentDisplay}</td>
+                </tr>";
+      }
+  } else {
+      echo "<tr><td colspan='3'>No online homework found.</td></tr>";
+  }
+
+  $stmtOnline->close();
+  ?>
+</table>
+
 <table style="width:100%; border-collapse: collapse; margin-bottom:10px;">
   <tr>
     <th colspan="2" text-align:left; border:1px solid #ddd; padding:5px;">
@@ -294,8 +464,11 @@ else{ $category='Poor'; $comment="There’s significant room for improvement"; }
   </tr>
   <tr>
     <td colspan="2" style="border:1px solid #ddd; padding:10px; text-align:center; line-height:1.6;">
+      
       <b>Status:</b> <?= htmlspecialchars($category) ?><br>
-      <b>Overall Score:</b> <?= number_format($overall_score, 2) ?>%<br>
+      <b>Activities Average:</b> <?= number_format($activitiesOverallPercent, 2) ?>%<br>
+      <b>Online Quiz Average:</b> <?= number_format($onlineOverallPercent, 2) ?>%<br>
+      <b>FINAL SUBJECT PERFORMANCE:</b> <?= number_format($finalOverallPercent, 2) ?>%<br>
       <b>Attendance Rate:</b> <?= number_format($attendance_rate, 2) ?>%<br>
       <b>Submission Rate:</b> <?= number_format($submission_rate, 2) ?>%<br>
       <b>Comment:</b> <?= htmlspecialchars($comment) ?>

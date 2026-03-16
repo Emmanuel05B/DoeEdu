@@ -287,10 +287,10 @@ if(count($classResults) > 0){
 
     <section class="content-header">
       <h1 style="color:#3a3a72; font-weight:600;">Welcome back, <?= htmlspecialchars($learnerName) ?> 👋 </h1>
-      <p style="color:#888;">Here’s a quick overview of your learning journey.</p>
+        
         <ol class="breadcrumb">
-          <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-          <li class="active">Dashboard</li>
+          <li><a href="tracklearnerprogress.php"><i class="fa fa-line-chart"></i>My Progress</a></li>
+          
         </ol>
     </section>
 
