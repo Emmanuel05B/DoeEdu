@@ -169,6 +169,11 @@ $isClosed = $now > new DateTime($dueDate);
         <div class="box box-info">
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fa fa-info-circle"></i> Activity Details</h3>
+                <div class="box-tools pull-right">
+                <a href="questionsdisplay.php?activityId=<?= $activityId ?>" class="btn btn-xs btn-info">
+                    <i></i> View Activity
+                </a>
+                </div>
             </div>
             <div class="box-body">
                 <div class="row">

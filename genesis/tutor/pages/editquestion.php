@@ -128,22 +128,22 @@ $stmt->close();
 
                 <div class="box-body">
                     <!-- Question -->
-                    <div class="form-group">
-                        <label for="QuestionText">Question</label>
-                        <div class="math-box" id="question_box"><?php echo htmlspecialchars($question['QuestionText']); ?></div>
-                        <input type="hidden" name="QuestionText" id="QuestionText" value="<?php echo htmlspecialchars($question['QuestionText']); ?>" class="math-latex">
-                    </div>
+                    <label for="QuestionText">Question:</label>
+                    <div class="math-box multi-line" id="question_box" style="margin-bottom: 15px;"></div>
+                        <input type="hidden" name="QuestionText" id="QuestionText" value="<?php echo htmlspecialchars($question['QuestionText']); ?>">
 
-                    <!-- Options A-D -->
-                    <div class="row">
-                        <?php foreach(['A','B','C','D'] as $opt): ?>
-                        <div class="col-md-6 col-lg-3">
-                            <label><?php echo $opt; ?>.</label>
-                            <div class="math-box option-box"><?php echo htmlspecialchars($question['Option'.$opt]); ?></div>
-                            <input type="hidden" name="Option<?php echo $opt; ?>" class="math-latex" value="<?php echo htmlspecialchars($question['Option'.$opt]); ?>">
+                        <!-- Options vertically -->
+                        <div class="options-row" style="display: flex; flex-direction: column; gap: 12px;">
+                            <?php foreach(['A','B','C','D'] as $opt): ?>
+                            <div>
+                                <label style="option-label"><?php echo $opt; ?>.</label>
+                                <div class="math-box multi-line option-box" id="Option<?php echo $opt; ?>"></div>
+                                <input type="hidden" name="Option<?php echo $opt; ?>" id="HiddenOption<?php echo $opt; ?>" value="<?php echo htmlspecialchars($question['Option'.$opt]); ?>">
+                            </div>
+                            <?php endforeach; ?>
                         </div>
-                        <?php endforeach; ?>
-                    </div>
+                    
+                   
 
                     <!-- Correct Answer -->
                     <div class="form-group">
@@ -216,6 +216,7 @@ $stmt->close();
         <button onclick="insertText('\\cup')">∪</button>
         <button onclick="insertText('\\cap')">∩</button>
         <button onclick="insertText('\\oplus')">⊕</button>
+        <button onclick="insertText('\\infty')">∞</button>
         <button onclick="insertText('\\forall')">∀</button>
         <button onclick="insertText('\\exists')">∃</button>
         <button onclick="insertText('\\neg')">¬</button>
@@ -427,28 +428,6 @@ function insertCmd(cmd) {
     }
 }
 
-// --------------------
-// OPTIONAL: KEYBOARD SHORTCUTS (PRO LEVEL)
-// --------------------
-document.addEventListener('keydown', function(e){
-    if(!activeField) return;
-
-    // Example shortcuts
-    if(e.ctrlKey && e.key === '/'){
-        insertCmd('\\frac');
-        e.preventDefault();
-    }
-
-    if(e.ctrlKey && e.key === 'r'){
-        insertCmd('\\sqrt');
-        e.preventDefault();
-    }
-
-    if(e.ctrlKey && e.key === 'p'){
-        insertText('\\pi');
-        e.preventDefault();
-    }
-});
 </script>
 <script>
 function showTab(tabId) {
@@ -486,9 +465,69 @@ Swal.fire({
 </script>
 <?php endif; ?>
 
-<style>
-.math-box, .option-box { min-height: 70px; font-size: 14px; padding: 6px; }
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var MQ = MathQuill.getInterface(2);
 
+    // Question
+    document.querySelectorAll('.question-field').forEach(function(box){
+        var hidden = box.nextElementSibling;
+        var mq = MQ.StaticMath(box);
+        mq.latex(hidden.value);
+    });
+
+    // Options
+    document.querySelectorAll('.option-field').forEach(function(box){
+        var hidden = box.nextElementSibling;
+        var mq = MQ.StaticMath(box);
+        mq.latex(hidden.value);
+    });
+});
+</script>
+
+
+<style>
+
+.math-box.multi-line {
+    min-height: 50px;
+    padding: 8px;
+    font-size: 16px;
+    line-height: 1.5;
+    max-width: 100%;
+    background: #f7f7f7;
+    border-radius: 4px;
+    white-space: normal;        /* allow wrapping */
+    overflow-wrap: break-word;  /* break long words */
+    word-break: break-word;
+}
+
+/* MathQuill internals for proper wrapping */
+.math-box.multi-line .mq-math-mode {
+    display: inline-block !important;
+    white-space: normal !important;
+}
+.math-box.multi-line .mq-root-block {
+    display: block !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+.options {
+    margin-top: 10px;
+}
+
+.option {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.option-label {
+    font-weight: 600;
+    margin-right: 8px;
+    min-width: 20px;
+}
 
 #math-toolbar {
     position: fixed; 

@@ -148,6 +148,18 @@ include_once(COMMON_PATH . "/../partials/head.php");
 
           <div class="box-footer text-center">
             <button type="submit" class="btn btn-primary btn-sm">Generate Activity</button>
+
+              <button 
+                type="button"
+                class="btn btn-success btn-sm" 
+                style="width: 150px;" 
+                data-toggle="modal" 
+                data-target="#modal-assignActivity"
+                data-grade="<?php echo $grade; ?>"
+                data-subject="<?php echo $SubjectId; ?>"
+                data-group="<?php echo $group; ?>">
+                Assign Available Activities
+              </button>
           </div>
         </form>
       </div>
@@ -156,6 +168,56 @@ include_once(COMMON_PATH . "/../partials/head.php");
 
 <div class="control-sidebar-bg"></div>
 </div>
+
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
+
+  <?php if (isset($_GET['save']) && $_GET['save'] == 1): ?>
+    <script>
+      Swal.fire({
+          icon: 'success',
+          title: 'Activity saved successfully!',
+          text: 'Do you want to assign this activity now?',
+          showDenyButton: true,
+          confirmButtonText: 'Yes, assign now',
+          denyButtonText: 'No, assign later',
+          confirmButtonColor: '#28a745',
+          denyButtonColor: '#3085d6'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              // Open the assign modal directly
+              $('#modal-assignActivity').modal('show');
+          } else if (result.isDenied) {
+              
+              window.location.href = 'classes.php';
+          }
+      });
+    </script>
+  <?php endif; ?>
+
+  <?php if (isset($_GET['memo']) && $_GET['memo'] == 1): ?>
+    <script>
+      Swal.fire({
+          icon: 'error',
+          title: 'Quiz Generation Failed!',
+          text: 'Only Pdf allowed for Memo',
+          
+          confirmButtonText: 'OK'
+      });
+    </script>
+  <?php endif; ?>
+  
+
+  <?php if (isset($_GET['saveerror']) && $_GET['saveerror'] == 1): ?>
+    <script>
+      Swal.fire({
+          icon: 'error',
+          title: 'Failed to save activity!',
+          text: 'Please try again later.',
+          
+          confirmButtonText: 'OK'
+      });
+    </script>
+  <?php endif; ?>
 
 <!-- FIXED MATH TOOLBAR -->
 <div id="math-toolbar">
@@ -206,6 +268,7 @@ include_once(COMMON_PATH . "/../partials/head.php");
         <button onclick="insertText('\\cup')">∪</button>
         <button onclick="insertText('\\cap')">∩</button>
         <button onclick="insertText('\\oplus')">⊕</button>
+        <button onclick="insertText('\\infty')">∞</button>
         <button onclick="insertText('\\forall')">∀</button>
         <button onclick="insertText('\\exists')">∃</button>
         <button onclick="insertText('\\neg')">¬</button>
@@ -343,141 +406,270 @@ include_once(COMMON_PATH . "/../partials/head.php");
 <!-- MathQuill JS -->
 <script>
 
-var MQ = MathQuill.getInterface(2);
-var activeField = null;
-var questionIndex = 1; // first question exists
+  var MQ = MathQuill.getInterface(2);
+  var activeField = null;
+  var questionIndex = 1; // first question exists
 
-function initMathFieldBlock(block) {
-    // Question
-    var mathBox = block.querySelector('.math-box:not(.option-box)');
-    var hiddenInput = block.querySelector('.math-latex:not(.option-box)');
-    var qField = MQ.MathField(mathBox, {
-        handlers: { edit: function(){ hiddenInput.value = qField.latex(); } }
-    });
-    mathBox.addEventListener('click', function(){ activeField = qField; });
+  function initMathFieldBlock(block) {
+      // Question
+      var mathBox = block.querySelector('.math-box:not(.option-box)');
+      var hiddenInput = block.querySelector('.math-latex:not(.option-box)');
+      var qField = MQ.MathField(mathBox, {
+          handlers: { edit: function(){ hiddenInput.value = qField.latex(); } }
+      });
+      mathBox.addEventListener('click', function(){ activeField = qField; });
 
-    // Options
-    block.querySelectorAll('.option-box').forEach(function(optBox){
-        var optHidden = optBox.nextElementSibling;
-        var optField = MQ.MathField(optBox, {
-            handlers: { edit: function(){ optHidden.value = optField.latex(); } }
-        });
-        optBox.addEventListener('click', function(){ activeField = optField; });
-    });
-}
+      // Options
+      block.querySelectorAll('.option-box').forEach(function(optBox){
+          var optHidden = optBox.nextElementSibling;
+          var optField = MQ.MathField(optBox, {
+              handlers: { edit: function(){ optHidden.value = optField.latex(); } }
+          });
+          optBox.addEventListener('click', function(){ activeField = optField; });
+      });
+  }
 
-// Initialize existing blocks
-document.querySelectorAll('.question-block').forEach(initMathFieldBlock);
+  // Initialize existing blocks
+  document.querySelectorAll('.question-block').forEach(initMathFieldBlock);
 
-// Add question button
-document.getElementById('add_question_btn').addEventListener('click', function () {
-    const container = document.getElementById('questions_container');
-    const template = document.querySelector('.question-block');
-    const clone = template.cloneNode(true);
+  // Add question button
+  document.getElementById('add_question_btn').addEventListener('click', function () {
+      const container = document.getElementById('questions_container');
+      const template = document.querySelector('.question-block');
+      const clone = template.cloneNode(true);
 
-    // Reset values
-    clone.querySelectorAll('.math-box').forEach(box=>box.innerHTML='');
-    clone.querySelectorAll('.math-latex').forEach(input=>input.value='');
-    clone.querySelectorAll('select').forEach(sel=>sel.value='A');
-    clone.querySelectorAll('textarea').forEach(txt=>txt.value='');
+      // Reset values
+      clone.querySelectorAll('.math-box').forEach(box=>box.innerHTML='');
+      clone.querySelectorAll('.math-latex').forEach(input=>input.value='');
+      clone.querySelectorAll('select').forEach(sel=>sel.value='A');
+      clone.querySelectorAll('textarea').forEach(txt=>txt.value='');
 
-    clone.querySelector('h4').textContent = `Question ${questionIndex + 1}`;
-    clone.querySelectorAll('input, select, textarea').forEach(el=>{
-        if(el.name) el.name = el.name.replace(/\[\d+\]/, `[${questionIndex}]`);
-    });
+      clone.querySelector('h4').textContent = `Question ${questionIndex + 1}`;
+      clone.querySelectorAll('input, select, textarea').forEach(el=>{
+          if(el.name) el.name = el.name.replace(/\[\d+\]/, `[${questionIndex}]`);
+      });
 
-    container.appendChild(clone);
+      container.appendChild(clone);
 
-    // Initialize MathQuill for the new block
-    initMathFieldBlock(clone);
+      // Initialize MathQuill for the new block
+      initMathFieldBlock(clone);
 
-    questionIndex++;
-});
+      questionIndex++;
+  });
 
-// Delete question
-document.getElementById('questions_container').addEventListener('click', function(e){
-    if(e.target.closest('.remove-question-btn')){
-        const block = e.target.closest('.question-block');
-        if(document.querySelectorAll('.question-block').length > 1){
-            block.remove();
-        }
-    }
-});
+  // Delete question
+  document.getElementById('questions_container').addEventListener('click', function(e){
+      if(e.target.closest('.remove-question-btn')){
+          const block = e.target.closest('.question-block');
+          if(document.querySelectorAll('.question-block').length > 1){
+              block.remove();
+          }
+      }
+  });
 
-// Toolbar functions
-function insertText(text){ if(activeField){ activeField.write(text); activeField.focus(); } }
-function insertCmd(cmd){ if(activeField){ activeField.cmd(cmd); activeField.focus(); } }
+  // Toolbar functions
+  function insertText(text){ if(activeField){ activeField.write(text); activeField.focus(); } }
+  function insertCmd(cmd){ if(activeField){ activeField.cmd(cmd); activeField.focus(); } }
 
 </script>
-<script>
-function showTab(tabId) {
-    // hide all tab contents
-    var tabs = document.querySelectorAll('.tab-content');
-    tabs.forEach(t => t.style.display = 'none');
 
-    // show the selected tab
-    var tab = document.getElementById(tabId);
-    if(tab) tab.style.display = 'block';
-}
+<!-- function to hide all tab contents -->
+<script>
+  function showTab(tabId) {
+      // hide all tab contents
+      var tabs = document.querySelectorAll('.tab-content');
+      tabs.forEach(t => t.style.display = 'none');
+
+      // show the selected tab
+      var tab = document.getElementById(tabId);
+      if(tab) tab.style.display = 'block';
+  }
 </script>
 
 <style>
-.form-control { max-width: 100%; }
-.question-block { margin-bottom: 20px; }
-.box-header.text-center h3 { text-align: center; margin: 0 auto; font-weight: 600; }
-.activity-info { margin-top: 15px; margin-bottom: 15px; font-size: 16px; }
-.activity-info strong { display: block; margin-bottom: 5px; }
-@media (max-width: 768px) {
-    .form-control { font-size: 14px; }
-    h4 { font-size: 16px; }
-    .btn { font-size: 14px; padding: 6px 10px; }
-    .activity-info { font-size: 14px; }
-}
+  .form-control { max-width: 100%; }
+  .question-block { margin-bottom: 20px; }
+  .box-header.text-center h3 { text-align: center; margin: 0 auto; font-weight: 600; }
+  .activity-info { margin-top: 15px; margin-bottom: 15px; font-size: 16px; }
+  .activity-info strong { display: block; margin-bottom: 5px; }
+  @media (max-width: 768px) {
+      .form-control { font-size: 14px; }
+      h4 { font-size: 16px; }
+      .btn { font-size: 14px; padding: 6px 10px; }
+      .activity-info { font-size: 14px; }
+  }
 
-.math-box {
-    min-height: 70px;
-    font-size: 14px;
-    padding: 6px;
-}
-.option-box {
-    min-height: 70px;
-    font-size: 14px;
-    padding: 6px;
-}
+  .math-box {
+      min-height: 70px;
+      font-size: 14px;
+      padding: 6px;
+  }
+  .option-box {
+      min-height: 70px;
+      font-size: 14px;
+      padding: 6px;
+  }
 
-#math-toolbar {
-    position: fixed; 
-    top: 55px; 
-    right: 30px; 
-    width: 90%;          /* use percentage for responsiveness */
-    max-width: 900px;    /* keeps it from growing too big on large screens */
-    max-height: 60vh;    /* vertical limit */
-    overflow: auto;      /* both horizontal & vertical scroll if needed */
-    background: #f9f9f9; 
-    border: 1px solid #132ea7; 
-    padding: 10px; 
-    border-radius: 5px; 
-    z-index: 9999;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-}
+  #math-toolbar {
+      position: fixed; 
+      top: 55px; 
+      right: 30px; 
+      width: 90%;          /* use percentage for responsiveness */
+      max-width: 900px;    /* keeps it from growing too big on large screens */
+      max-height: 60vh;    /* vertical limit */
+      overflow: auto;      /* both horizontal & vertical scroll if needed */
+      background: #f9f9f9; 
+      border: 1px solid #132ea7; 
+      padding: 10px; 
+      border-radius: 5px; 
+      z-index: 9999;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+  }
 
-@media (max-width: 400px) {
-    #math-toolbar {
-        right: 10px;
-        top: 55px;
-        width: 50%;
-        font-size: 12px;  /* shrink buttons slightly */
-    }
-    #math-toolbar button {
-        padding: 4px 6px;
-        font-size: 12px;
-    }
-}
-
+  @media (max-width: 400px) {
+      #math-toolbar {
+          right: 10px;
+          top: 55px;
+          width: 50%;
+          font-size: 12px;  /* shrink buttons slightly */
+      }
+      #math-toolbar button {
+          padding: 4px 6px;
+          font-size: 12px;
+      }
+  }
 
 </style>
+
+
+<script>
+$('#modal-assignActivity').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); 
+    var grade = button.data('grade');
+    var subject = button.data('subject');
+    var group = button.data('group');
+
+    console.log("Grade:", grade, "Subject:", subject, "Group:", group);
+
+    // Later: populate table rows via AJAX here
+});
+</script>
+
+
+<!-- Assign Activity Modal -->
+
+<div class="modal fade" id="modal-assignActivity" tabindex="-1" role="dialog" aria-labelledby="assignActivityLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header bg-success">
+        <h4 class="modal-title" id="assignActivityLabel">Assign Activity</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script>
+      <?php if (isset($_GET['assigned']) && $_GET['assigned'] == 1): ?>
+          // Open the Assign Activity modal
+          $('#modal-assignActivity').modal('show');
+
+          // Show SweetAlert on top of modal
+          Swal.fire({
+              icon: 'success',
+              title: 'Activity assigned successfully!',
+              text: 'The selected activity has been assigned to this class/group.',
+              backdrop: true,
+              confirmButtonText: 'OK'
+          });
+      <?php endif; ?>
+      </script>
+
+      <div class="modal-body">
+        <div class="table-responsive">
+        <table id="assignActivityTable" class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Chapter / Topic</th>
+              <th>Orig. Class</th>
+              <th>Status</th>
+              <th>Assign For My Class (<?php echo htmlspecialchars($group); ?>) / (Due Date?)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+            if (isset($grade) && isset($SubjectId) && isset($group)) {
+                $stmt = $connect->prepare("
+                  SELECT a.Id, a.Title, a.Topic, a.GroupName,
+                        IF(b.OnlineActivityId IS NULL, 0, 1) AS assigned
+                  FROM onlineactivities a
+                  LEFT JOIN onlineactivitiesassignments b 
+                    ON a.Id = b.OnlineActivityId 
+                    AND b.ClassID = (SELECT ClassID FROM classes WHERE Grade = ? AND SubjectId = ? AND GroupName = ? LIMIT 1)
+                  WHERE a.Grade = ? AND a.SubjectId = ?
+                  ORDER BY a.CreatedAt DESC
+                ");
+                $stmt->bind_param("iisii", $grade, $SubjectId, $group, $grade, $SubjectId);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                while ($row = $result->fetch_assoc()) {
+                    $assigned = $row['assigned'] ? true : false;
+                    echo '<tr>';
+                    echo '<td>' . htmlspecialchars($row['Title']) . '</td>';
+                    echo '<td>' . htmlspecialchars($row['Topic']) . '</td>';
+                    echo '<td>' . htmlspecialchars($row['GroupName']) . '</td>';
+                    echo '<td>' . ($assigned ? '<span class="text-success">Assigned</span>' : '<span class="text-warning">Not Assigned</span>') . '</td>';
+                    echo '<td>';
+                    if ($assigned) {
+                        echo '<button class="btn btn-default btn-sm" disabled>Assign</button>';
+                    } else {
+                        echo '
+                            <form method="POST" action="assignactivityhandler.php" style="display:flex; align-items:center; gap:5px;">
+                                <input type="hidden" name="activityId" value="' . $row['Id'] . '">
+                                <input type="hidden" name="grade" value="' . $grade . '">
+                                <input type="hidden" name="subject" value="' . $SubjectId . '">
+                                <input type="hidden" name="group" value="' . $group . '">
+                                <input type="date" name="dueDate" class="form-control input-sm" required style="width:140px;">
+                                <button type="submit" class="btn btn-success btn-sm">Assign</button>
+                            </form>
+                            ';
+
+                    }
+                    echo '</td>';
+                    echo '</tr>';
+                }
+
+                $stmt->close();
+            }
+            ?>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+  $(function () {
+    $('#assignActivityTable').DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false
+    });
+  });
+</script>
 
 </body>
 </html>

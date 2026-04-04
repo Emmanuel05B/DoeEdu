@@ -60,19 +60,7 @@ $qstmt->close();
     <script>
         var MQ = MathQuill.getInterface(2);
     </script>
-    <style>
-        .math-box {
-            min-height: 60px;
-            padding: 10px;
-            font-size: 18px;
-            line-height: 1.4;
-            background: #f9f9f9;
-            border-radius: 4px;
-        }
-        .box-body .form-group {
-            margin-bottom: 15px;
-        }
-    </style>
+
 </head>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -163,38 +151,40 @@ $qstmt->close();
                 </div>
 
                 <div class="box box-primary">
-                    <div class="box-body">
-                        <div class="row">
-                            <?php foreach ($questions as $index => $q): ?>
-                                <div class="col-md-4 col-sm-6">
-                                    <div class="box box-solid" style="margin-bottom:15px;">
-                                        <div class="box-body">
-                                            <h4>Question <?php echo $index+1; ?></h4>
+                  <div class="box-header">
+                    <h3 class="box-title"><?php echo htmlspecialchars($activity['Title']); ?> - Questions</h3>
+                  </div>
 
-                                            <!-- Display Question -->
-                                            <div class="form-group">
-                                                <div class="math-box question-field"></div>
-                                                <input type="hidden" class="question-latex" value="<?php echo htmlspecialchars($q['QuestionText']); ?>">
-                                            </div>
 
-                                            <!-- Display Options -->
-                                            
 
-                                            <?php foreach(['A','B','C','D'] as $opt): ?>
-                                            <div class="form-group">
-                                                <label><?php echo $opt; ?>.</label>
-                                                <div class="math-box option-field" style="display:inline-block; width: calc(100% - 25px);"></div>
-                                                <input type="hidden" class="option-latex" value="<?php echo htmlspecialchars($q['Option'.$opt]); ?>">
-                                            </div>
-                                            <?php endforeach; ?>
+                  <div class="questions-grid">
+                    <?php foreach ($questions as $index => $q): ?>
+                        <div class="question-card">
+                            <h4>Question <?php echo $index+1; ?></h4>
+                            
+                            
+                            <div class="math-box multi-line">
+                              <div class="question-field"></div>
+                              <input type="hidden" class="question-latex" value="<?php echo htmlspecialchars($q['QuestionText']); ?>">
+                            </div>
 
-                                            <a href="editquestion.php?questionId=<?php echo $q['Id']; ?>" class="btn btn-sm btn-primary">Edit Question</a>
-                                        </div>
-                                    </div>
+                            <div class="options">
+                                <?php foreach(['A','B','C','D'] as $opt): ?>
+                                <div class="option">
+                                    <span class="option-label"><?php echo $opt; ?>.</span>
+                                    <div class="math-box multi-line option-field"></div>
+                                    <input type="hidden" class="option-latex" value="<?php echo htmlspecialchars($q['Option'.$opt]); ?>">
                                 </div>
-                            <?php endforeach; ?>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <a href="editquestion.php?questionId=<?php echo $q['Id']; ?>" class="btn btn-sm btn-primary">Edit Question</a>
                         </div>
+                    <?php endforeach; ?>
                     </div>
+
+                    
+
                 </div>
             </div>
         </div>
@@ -203,6 +193,19 @@ $qstmt->close();
 
 <div class="control-sidebar-bg"></div>
 </div>
+
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
+
+<?php if (isset($_SESSION['alert'])): ?>
+<script>
+    Swal.fire({
+        icon: '<?php echo $_SESSION['alert']['icon']; ?>',
+        title: '<?php echo $_SESSION['alert']['title']; ?>',
+        text: '<?php echo $_SESSION['alert']['text']; ?>'
+    });
+</script>
+<?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -221,5 +224,77 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<style>
+/* Grid layout for questions */
+.questions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Individual question card */
+.question-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.question-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.question-card h4 {
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+/* Options styling */
+.options {
+    margin-top: 10px;
+}
+
+.option {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.option-label {
+    font-weight: 600;
+    margin-right: 8px;
+    min-width: 20px;
+}
+
+/* MathQuill boxes */
+.math-box {
+    min-height: 50px;
+    padding: 8px;
+    font-size: 16px;
+    line-height: 1.5;
+    max-width: 100%;
+    background: #f7f7f7;
+    border-radius: 4px;
+    white-space: normal;        /* allow wrapping */
+    overflow-wrap: break-word;  /* break long words */
+    word-break: break-word;
+}
+
+/* MathQuill internals for proper wrapping */
+.math-box .mq-math-mode {
+    display: inline-block !important;
+    white-space: normal !important;
+}
+
+.math-box .mq-root-block {
+    display: block !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+</style>
 </body>
 </html>
