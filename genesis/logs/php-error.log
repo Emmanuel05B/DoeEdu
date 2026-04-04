@@ -38,3 +38,5 @@
 [31-Mar-2026 19:40:42 Europe/Berlin] Error [2]: Undefined array key "TutorId" in C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\tutor\pages\editquestion.php on line 39
 [31-Mar-2026 19:40:53 Europe/Berlin] Error [2]: Undefined array key "TutorId" in C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\tutor\pages\editquestion.php on line 39
 [31-Mar-2026 19:42:12 Europe/Berlin] Error [2]: Undefined array key "TutorId" in C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\tutor\pages\editquestion.php on line 39
+[04-Apr-2026 17:51:48 Europe/Berlin] Error [2]: Undefined variable $question in C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\learner\pages\viewhomework.php on line 209
+[04-Apr-2026 17:51:48 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\learner\partials\header.php:143) in C:\xampp\htdocs\DoE_Genesis\DoeEdu\genesis\common\config.php on line 31

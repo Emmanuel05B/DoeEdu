@@ -13,8 +13,18 @@ include_once(COMMON_PATH . "/../partials/head.php");
 
 ?>
 
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html>
+
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathquill/build/mathquill.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathquill/build/mathquill.js"></script>
+    <script>
+        var MQ = MathQuill.getInterface(2);
+    </script>
+
+</head>
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -188,40 +198,181 @@ Swal.fire({
             </div>
 
             <!-- Homework Form -->
-            <div class="col-xs-12">
-                <form action="submithomework.php" method="POST">
+           
+            <div class="questions-table-wrapper">
+
+            <form action="submithomework.php" method="POST">
                     <input type="hidden" name="activityId" value="<?=$activityId?>">
                     <input type="hidden" name="classId" value="<?=$classId?>">
                     <input type="hidden" name="subjectName" value="<?=htmlspecialchars($subjectName)?>">
+                
+                <table class="table table-borderless questions-table">
+                    <tr>
+                        <?php 
+                            $colsPerRow = 2; 
+                            $colCount = 0;
 
-                    <!-- Questions -->
-                    <?php foreach ($questions as $index => $question): ?>
-                    <div class="col-md-6 col-sm-12" style="margin-bottom:15px;">
-                        <div class="box box-primary">
-                            <div class="box-body">
-                                <p><strong>Q<?=$index + 1?>:</strong> <?=htmlspecialchars($question['QuestionText'])?></p>
-                                <ul class="list-unstyled">
-                                    <li><label><input type="radio" name="answers[<?=$question['id']?>]" value="A" required> A. <?=htmlspecialchars($question['OptionA'])?></label></li>
-                                    <li><label><input type="radio" name="answers[<?=$question['id']?>]" value="B"> B. <?=htmlspecialchars($question['OptionB'])?></label></li>
-                                    <li><label><input type="radio" name="answers[<?=$question['id']?>]" value="C"> C. <?=htmlspecialchars($question['OptionC'])?></label></li>
-                                    <li><label><input type="radio" name="answers[<?=$question['id']?>]" value="D"> D. <?=htmlspecialchars($question['OptionD'])?></label></li>
-                                </ul>
+                            foreach ($questions as $index => $question): 
+                                $colWidth = 100 / $colsPerRow;
+                        ?>
+                        <td class="question-td" style="width: <?= $colWidth ?>%; vertical-align: top; padding: 10px;">
+                            <div class="question-card box box-primary">
+                                <div class="box-body">
+                                    <p><strong>Q<?= $index + 1 ?>:</strong></p>
+                                    <div class="math-box multi-line question-field"></div>
+                                    <input type="hidden" class="question-latex" value="<?=htmlspecialchars($question['QuestionText'])?>">
+
+                                    <div class="options">
+                                        <?php foreach(['A','B','C','D'] as $opt): ?>
+                                    
+                                        <div class="option">
+                                            <label style="display: flex; align-items: flex-start; cursor: pointer;">
+                                                <input type="radio" name="answers[<?=$question['id']?>]" value="<?= $opt ?>" required style="margin-right:8px;">
+                                                <span class="option-label"><?= $opt ?>.</span>
+                                                <div class="math-box multi-line option-field" style="flex:1;"></div>
+                                                <input type="hidden" class="option-latex" value="<?=htmlspecialchars($question['Option'.$opt])?>">
+                                            </label>
+                                        </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
+                        </td>
+                        <?php 
+                            $colCount++;
+                            if ($colCount == $colsPerRow) {
+                                echo "</tr><tr>";
+                                $colCount = 0;
+                            }
+                        endforeach;
 
+                        while ($colCount > 0 && $colCount < $colsPerRow) {
+                            echo "<td></td>";
+                            $colCount++;
+                        }
+                        ?>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Submit Button -->
+ 
                     <div class="col-xs-12" style="margin-top:10px;">
                         <button type="submit" class="btn btn-primary">Submit Homework</button>
                     </div>
-                </form>
-            </div>
+            </form>
+
         </div>
     </section>
 </div>
 
 <div class="control-sidebar-bg"></div>
 </div>
+
+<?php include_once(COMMON_PATH . "/../partials/queries.php"); ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Questions
+    document.querySelectorAll('.question-field').forEach(function(box){
+        var hidden = box.nextElementSibling;
+        var mq = MQ.StaticMath(box);
+        mq.latex(hidden.value);
+    });
+
+    // Options
+    document.querySelectorAll('.option-field').forEach(function(box){
+        var hidden = box.nextElementSibling;
+        var mq = MQ.StaticMath(box);
+        mq.latex(hidden.value);
+    });
+});
+</script>
+<style>
+/* Grid layout for questions */
+.questions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Individual question card */
+.question-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.question-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.question-card h4 {
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+/* Options styling */
+.options {
+    margin-top: 10px;
+}
+
+.option {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.option-label {
+    font-weight: 600;
+    margin-right: 8px;
+    min-width: 20px;
+}
+
+/* MathQuill boxes */
+.math-box {
+    min-height: 50px;
+    padding: 8px;
+    font-size: 16px;
+    line-height: 1.5;
+    max-width: 100%;
+    background: #f7f7f7;
+    border-radius: 4px;
+    white-space: normal;        /* allow wrapping */
+    overflow-wrap: break-word;  /* break long words */
+    word-break: break-word;
+}
+
+/* MathQuill internals for proper wrapping */
+.math-box .mq-math-mode {
+    display: inline-block !important;
+    white-space: normal !important;
+}
+
+.math-box .mq-root-block {
+    display: block !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+@media (max-width: 767px) {
+    .questions-table-wrapper table,
+    .questions-table-wrapper tr,
+    .questions-table-wrapper td {
+        display: block !important;
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    .question-td {
+        margin-bottom: 15px;
+    }
+}
+</style>
 
 </body>
 </html>
